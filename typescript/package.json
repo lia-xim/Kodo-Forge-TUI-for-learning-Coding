@@ -1,0 +1,23 @@
+{
+  "name": "typescript-deep-learning",
+  "version": "1.0.0",
+  "description": "Deep TypeScript learning path — from basics to mastery",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "tsx",
+    "check": "tsc --noEmit",
+    "quiz": "tsx tools/quiz-runner.ts",
+    "progress": "cd ../platform && npm start",
+    "watch": "cd ../platform && npm run watch",
+    "start": "cd ../platform && npm start",
+    "hint": "tsx tools/hint.ts",
+    "playground": "tsx tools/playground-link.ts",
+    "review": "cd ../platform && npm run review"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  }
+}

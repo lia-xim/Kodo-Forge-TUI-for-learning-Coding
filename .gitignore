@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+.vscode/
+
+# Build Artefakte & Caches
+dist/
+build/
+.tsbuildinfo
+
+# TUI Laufzeit States (Progress Tracker nicht committen)
+platform/state/*.json
+!platform/state/.gitkeep
+
+# AI Agent Context
+.claude/
+.gemini/
+.cursor/

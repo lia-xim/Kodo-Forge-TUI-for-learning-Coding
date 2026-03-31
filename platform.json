@@ -1,0 +1,57 @@
+{
+  "courses": [
+    {
+      "id": "typescript",
+      "name": "TypeScript Deep Learning",
+      "description": "Von den Basics bis zur Type-Level-Programmierung",
+      "directory": "typescript",
+      "color": "blue",
+      "icon": "TS",
+      "totalLessons": 40,
+      "prerequisite": null,
+      "status": "active",
+      "recommendNext": "angular"
+    },
+    {
+      "id": "angular",
+      "name": "Angular Mastery",
+      "description": "Component Architecture, Signals, RxJS, DI und mehr",
+      "directory": "angular",
+      "color": "red",
+      "icon": "NG",
+      "totalLessons": 40,
+      "prerequisite": "typescript",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": "react"
+    },
+    {
+      "id": "react",
+      "name": "React mit TypeScript",
+      "description": "Hooks, Patterns, Performance — alles typsicher",
+      "directory": "react",
+      "color": "cyan",
+      "icon": "RE",
+      "totalLessons": 40,
+      "prerequisite": "typescript",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": "nextjs"
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js Production",
+      "description": "App Router, Server Components, Deployment",
+      "directory": "nextjs",
+      "color": "white",
+      "icon": "NX",
+      "totalLessons": 20,
+      "prerequisite": "react",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": null
+    }
+  ],
+  "activeCourse": "typescript",
+  "lastAccessed": {}
+}

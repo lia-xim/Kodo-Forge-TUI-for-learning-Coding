@@ -1,0 +1,103 @@
+{
+  "exercises/01-objekte-modellieren.ts": {
+    "1": [
+      "Ein Interface definiert die Struktur eines Objekts: interface Name { prop: Typ; }",
+      "interface Person { name: string; alter: number; email: string; } const person1: Person = { name: 'Max', alter: 28, email: 'max@test.de' };"
+    ],
+    "2": [
+      "Optionale Properties werden mit '?' markiert: beschreibung?: string",
+      "interface Produkt { name: string; preis: number; beschreibung?: string; rabatt?: number; }"
+    ],
+    "3": [
+      "readonly Properties koennen nach der Erstellung nicht mehr geaendert werden.",
+      "interface Bestellung { readonly bestellNr: string; readonly datum: Date; status: string; betrag: number; }",
+      "bestellung1.status = 'versendet' funktioniert, aber bestellung1.bestellNr = '...' wuerde einen Fehler geben."
+    ],
+    "4": [
+      "Du kannst Interfaces als Typen fuer Properties verwenden — das nennt man Verschachtelung.",
+      "Erstelle erst Adresse und Kontakt als eigene Interfaces, dann verwende sie in Mitarbeiter.",
+      "interface Mitarbeiter { name: string; position: string; adresse: Adresse; kontakt: Kontakt; }"
+    ],
+    "5": [
+      "Mit 'extends' erbt ein Interface alle Properties eines anderen Interfaces.",
+      "interface DigitalesProdukt extends Basisprodukt { downloadUrl: string; dateigroesse: number; }"
+    ],
+    "6": [
+      "Excess Property Checks greifen nur bei frischen Object Literals. Ueber eine Variable oder mit 'as' umgehst du sie.",
+      "Methode 1: const temp = { rot: 255, ... }; const farbe1: Farbe = temp; — Methode 2: extends — Methode 3: as Farbe"
+    ],
+    "7": [
+      "Die Funktion nimmt ein Objekt vom Typ Rechnung und summiert die Betraege der Posten.",
+      "function berechneSumme(rechnung: Rechnung): number { return rechnung.posten.reduce((sum, p) => sum + p.betrag, 0); }"
+    ],
+    "8": [
+      "Eine Index Signature erlaubt dynamische Keys: [key: string]: Typ.",
+      "ACHTUNG: Alle festen Properties muessen zum Index Signature Typ kompatibel sein.",
+      "interface Notenbuch { schueler: string; [fach: string]: string | number; }"
+    ],
+    "9": [
+      "Readonly<T> macht ALLE Properties eines Typs readonly — in einer Zeile.",
+      "type ReadonlyKonfigDatei = Readonly<KonfigDatei>; — das ist kompakter als jede Property einzeln readonly zu machen."
+    ],
+    "10": [
+      "Modelliere den Warenkorb Schritt fuer Schritt: erst WarenkorbArtikel, dann Warenkorb.",
+      "Die Berechnung: artikel.reduce((sum, a) => sum + a.preis * a.menge, 0)",
+      "Vergiss nicht: readonly fuer id und erstelltAm, optional fuer bild und gutscheinCode."
+    ]
+  },
+  "exercises/02-structural-typing-challenge.ts": {
+    "1": [
+      "Structural Typing schaut nur auf die Struktur, nicht auf den Namen. Hat katze (Haustier) alle Properties die Tier braucht?",
+      "Ja! Haustier hat name und beine (was Tier braucht) plus besitzer. Die Zuweisung ist gueltig."
+    ],
+    "2": [
+      "Jetzt umgekehrt: Hat hund (Tier) alle Properties die Haustier braucht?",
+      "Nein! Tier hat kein 'besitzer'. Die Zuweisung ist ungueltig — fuege @ts-expect-error hinzu."
+    ],
+    "3": [
+      "Frische Object Literals werden strenger geprueft (Excess Property Checking).",
+      "Das Objekt hat 'schwimmt' als Extra-Property. Bei einem frischen Literal ist das ein Fehler."
+    ],
+    "4": [
+      "Der Excess Check greift NUR bei frischen Object Literals, nicht bei Variablen.",
+      "fischDaten ist kein frisches Literal — es ist eine Variable. Die Zuweisung ist gueltig."
+    ],
+    "5": [
+      "Fisch hat name und flopigeFlossen. Tier braucht name und beine. Hat Fisch alles was Tier braucht?",
+      "Nein! Fisch hat kein 'beine'. Die Zuweisung ist ungueltig."
+    ],
+    "6": [
+      "Punkt3D hat x, y UND z. Punkt2D braucht nur x und y. In die andere Richtung: Punkt2D hat kein z.",
+      "3D zu 2D: gueltig (hat alles). 2D zu 3D: ungueltig (fehlt z). Fuege @ts-expect-error bei raeumlich hinzu."
+    ]
+  },
+  "exercises/03-praxis-patterns.ts": {
+    "1": [
+      "Intersection Types (&) kombinieren mehrere Typen zu einem. Das Objekt muss ALLE Properties haben.",
+      "type BlogPost = Identifiable & Timestamped & { title: string; content: string; author: string };",
+      "type ArchivablePost = BlogPost & SoftDeletable;"
+    ],
+    "2": [
+      "Omit<T, K> entfernt Properties. Pick<T, K> waehlt Properties aus. Partial<T> macht alles optional.",
+      "type CreateUserDto = Omit<User, 'id' | 'lastLogin'>; type UpdateUserDto = Partial<Pick<User, 'name' | 'email' | 'avatarUrl'>>;"
+    ],
+    "3": [
+      "Der Discriminant ist 'success: true' vs 'success: false' — achte auf Literal Types!",
+      "interface SuccessResponse<T> { success: true; data: T; message: string; }",
+      "In processResponse: if (response.success) { return response.data.name; } else { return 'Error: ' + response.error.message; }"
+    ],
+    "4": [
+      "Erstelle DEFAULTS mit allen Werten und verwende den Spread-Operator fuer Overrides.",
+      "function createConfig(overrides: Partial<AppConfig>): AppConfig { return { ...DEFAULTS, ...overrides }; }"
+    ],
+    "5": [
+      "Bei Intersection Types wird jede Property ebenfalls intersected. Was ist 'active' & 'deleted'?",
+      "C5.status = 'active' (die einzige Ueberschneidung). F5.value = number. I5.x = never (string & number ist unmoeglich)."
+    ],
+    "6": [
+      "Nutze ein switch-Statement auf notification.type fuer die Discriminated Union.",
+      "In jedem case weiss TypeScript welcher spezifische Typ vorliegt: bei 'email' ist es EmailNotification, etc.",
+      "case 'email': return `Sending email to ${notification.to}: ${notification.subject}`;"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "angular-deep-learning",
+  "version": "1.0.0",
+  "description": "Angular Mastery — Component Architecture, Signals, RxJS, DI und mehr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx ../typescript/tools/tui.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  }
+}

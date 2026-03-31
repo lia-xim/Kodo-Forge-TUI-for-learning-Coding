@@ -1,0 +1,105 @@
+{
+  "courses": [
+    {
+      "id": "typescript",
+      "name": "TypeScript Deep Learning",
+      "description": "Von den Basics bis zur Type-Level-Programmierung",
+      "directory": "typescript",
+      "color": "blue",
+      "icon": "TS",
+      "totalLessons": 40,
+      "totalSections": 212,
+      "estimatedHours": 68,
+      "exerciseTypes": 12,
+      "topics": [
+        "Primitives",
+        "Generics",
+        "Mapped Types",
+        "Conditional Types",
+        "Decorators",
+        "Compiler API"
+      ],
+      "prerequisite": null,
+      "prerequisiteDescription": "Keine",
+      "prerequisiteMinPhase": null,
+      "status": "active",
+      "recommendNext": "angular"
+    },
+    {
+      "id": "angular",
+      "name": "Angular Mastery",
+      "description": "Component Architecture, Signals, RxJS, DI und mehr",
+      "directory": "angular",
+      "color": "red",
+      "icon": "NG",
+      "totalLessons": 40,
+      "totalSections": 212,
+      "estimatedHours": 68,
+      "exerciseTypes": 10,
+      "topics": [
+        "Components",
+        "Signals",
+        "RxJS",
+        "DI",
+        "Testing",
+        "SSR"
+      ],
+      "prerequisite": "typescript",
+      "prerequisiteDescription": "TypeScript Phase 2 (Lektion 20)",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": "react"
+    },
+    {
+      "id": "react",
+      "name": "React mit TypeScript",
+      "description": "Hooks, Patterns, Performance — alles typsicher",
+      "directory": "react",
+      "color": "cyan",
+      "icon": "RE",
+      "totalLessons": 40,
+      "totalSections": 200,
+      "estimatedHours": 140,
+      "exerciseTypes": 10,
+      "topics": [
+        "Hooks",
+        "Patterns",
+        "Context",
+        "Performance",
+        "Testing"
+      ],
+      "prerequisite": "typescript",
+      "prerequisiteDescription": "TypeScript Phase 2 (Lektion 20)",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": "nextjs"
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js Production",
+      "description": "App Router, Server Components, Deployment",
+      "directory": "nextjs",
+      "color": "magenta",
+      "icon": "NX",
+      "totalLessons": 20,
+      "totalSections": 100,
+      "estimatedHours": 60,
+      "exerciseTypes": 8,
+      "topics": [
+        "App Router",
+        "Server Components",
+        "Caching",
+        "Deployment"
+      ],
+      "prerequisite": "react",
+      "prerequisiteDescription": "React Phase 2 (Lektion R20)",
+      "prerequisiteMinPhase": 2,
+      "status": "planned",
+      "recommendNext": null
+    }
+  ],
+  "activeCourse": "typescript",
+  "lastAccessed": {
+    "typescript": "2026-03-31T14:55:14.111Z"
+  }
+}

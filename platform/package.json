@@ -1,0 +1,17 @@
+{
+  "name": "learning-platform",
+  "version": "1.0.0",
+  "description": "Multi-Kurs Lernplattform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/tui.ts",
+    "review": "tsx src/review-runner.ts",
+    "watch": "tsx src/watch-runner.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  }
+}
