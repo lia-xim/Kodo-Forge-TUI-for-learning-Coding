@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 .tsbuildinfo
+platform/.tts-cache/
 
 # TUI Laufzeit States (Progress Tracker nicht committen)
 platform/state/*.json

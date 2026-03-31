@@ -144,11 +144,22 @@ export function setSectionRawMarkdown(md: string): void {
 }
 
 // ─── Text-to-Speech (TTS) State ──────────────────────────────────────────
+export type TtsEngine = "edge-tts" | "system";
+export let ttsEngine: TtsEngine = "edge-tts";
+export let ttsVoice = "de-DE-ConradNeural"; // edge-tts default
 export let ttsProcess: ChildProcess | null = null;
 export let ttsActive = false;
 export let ttsParagraphs: string[] = [];
 export let ttsCurrentParagraph = 0;
+/** Label der aktuell genutzten TTS-Engine (wird von tui-tts gesetzt) */
+export let ttsEngineLabel = "";
 
+export function setTtsEngine(e: TtsEngine): void {
+  ttsEngine = e;
+}
+export function setTtsVoice(v: string): void {
+  ttsVoice = v;
+}
 export function setTtsProcess(p: ChildProcess | null): void {
   ttsProcess = p;
 }
@@ -160,6 +171,9 @@ export function setTtsParagraphs(p: string[]): void {
 }
 export function setTtsCurrentParagraph(n: number): void {
   ttsCurrentParagraph = n;
+}
+export function setTtsEngineLabel(label: string): void {
+  ttsEngineLabel = label;
 }
 
 // Cheatsheet reader state

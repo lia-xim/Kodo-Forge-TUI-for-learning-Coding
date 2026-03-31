@@ -26,7 +26,7 @@ import {
   sectionRawMarkdown, setSectionRawMarkdown,
   cheatsheetRenderedLines, setCheatsheetRenderedLines,
   pushHistory, markSectionCompleted, sessionStats, countExerciseProgress,
-  ttsActive, PROJECT_ROOT,
+  ttsActive, ttsEngineLabel, PROJECT_ROOT,
 } from "./tui-state.ts";
 import type { ParsedKey, SectionProgress, Screen, Bookmark } from "./tui-types.ts";
 import { stopTTS, startTTSFromPosition, setRenderSectionReader } from "./tui-tts.ts";
@@ -102,8 +102,8 @@ export function renderSectionReader(
     navParts.push(`${c.bold}[D]${c.reset} Diagramm`);
   navParts.push(
     ttsActive
-      ? `${c.bold}${c.green}[L]${c.reset} ${c.green}Vorlesen: AN${c.reset}`
-      : `${c.bold}[L]${c.reset} Vorlesen`
+      ? `${c.bold}${c.green}[L]${c.reset} ${c.green}Vorlesen: AN${c.reset}${ttsEngineLabel ? ` ${c.dim}(${ttsEngineLabel})${c.reset}` : ""}`
+      : `${c.bold}[L]${c.reset} Vorlesen${ttsEngineLabel ? ` ${c.dim}(${ttsEngineLabel})${c.reset}` : ""}`
   );
   navParts.push(`${c.bold}[A]${c.reset} Annotationen: ${annotationsEnabled ? "AN" : "AUS"}`);
   navParts.push(`${c.bold}[M]${c.reset} Merken`);

@@ -27,6 +27,7 @@ import { handleInput } from "./tui-input.ts";
 import { cleanup, loadPlatformConfig, exitTui } from "./tui-utils.ts";
 import { renderPlatformScreen } from "./tui-platform.ts";
 import { redraw } from "./tui-redraw.ts";
+import { detectTtsEngine } from "./tui-tts.ts";
 
 // ─── Cleanup — IMMER alternate buffer verlassen ────────────────────────────
 
@@ -74,6 +75,9 @@ function main(): void {
   } catch {
     setAdaptiveState({ sectionDepths: {}, conceptScores: {}, hintLevels: {} });
   }
+
+  // TTS-Engine erkennen (edge-tts oder System-Fallback)
+  detectTtsEngine();
 
   // Terminal-Check
   if (!process.stdin.isTTY) {
