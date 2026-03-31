@@ -1,0 +1,96 @@
+{
+  "exercises/01-parameter-und-return-typen.ts": {
+    "1": [
+      "Parameter brauchen immer eine Typ-Annotation — TypeScript kann sie nicht inferieren.",
+      "Schreibe den Typ nach dem Doppelpunkt: function add(a: number, b: number): number"
+    ],
+    "2": [
+      "Ueberlege ob der Return-Typ explizit angegeben werden muss oder ob Inference reicht.",
+      "Bei exportierten Funktionen immer explizit angeben — bei lokalen Hilfsfunktionen kann man inferieren lassen."
+    ],
+    "3": [
+      "void bedeutet 'der Rueckgabewert ist irrelevant' — die Funktion hat Seiteneffekte.",
+      "function logMessage(msg: string): void { console.log(msg); }"
+    ],
+    "4": [
+      "Optionale Parameter werden mit ? markiert. Sie sind automatisch T | undefined.",
+      "function greet(name: string, greeting?: string): string"
+    ],
+    "5": [
+      "Default-Werte ersetzen undefined automatisch. Kein ? noetig!",
+      "function createUser(name: string, role: string = 'user')"
+    ]
+  },
+  "exercises/02-overloads-und-callbacks.ts": {
+    "1": [
+      "Overload-Signaturen definieren die moeglichen Aufrufformen fuer den Aufrufer.",
+      "Schreibe die Overloads VOR der Implementation. Spezifische zuerst!"
+    ],
+    "2": [
+      "Die Implementation Signature muss ALLE Overloads abdecken — sie ist fuer Aufrufer unsichtbar.",
+      "Implementation: function f(x: string | number): string | number { ... }"
+    ],
+    "3": [
+      "Ein Callback-Typ wird als Function Type Expression definiert: (param: T) => U.",
+      "type TransformFn = (value: string, index: number) => string;"
+    ],
+    "4": [
+      "void-Callbacks duerfen Werte zurueckgeben — das ist das Substitutability Principle.",
+      "forEach erwartet () => void, aber push() gibt number zurueck. Funktioniert trotzdem!"
+    ],
+    "5": [
+      "Generische Callbacks machen den Typ wiederverwendbar: type Mapper<T, U> = (item: T) => U.",
+      "TypeScript inferiert T und U automatisch aus den uebergebenen Argumenten."
+    ]
+  },
+  "exercises/03-type-guards-und-assertions.ts": {
+    "1": [
+      "Ein Type Guard hat den Return-Typ 'value is Type'. Wenn true, verengt TypeScript den Typ.",
+      "function isString(value: unknown): value is string { return typeof value === 'string'; }"
+    ],
+    "2": [
+      "Fuer komplexe Objekte: typeof === 'object', !== null, dann 'key' in value pruefen.",
+      "Pruefe jede Property einzeln: typeof (value as User).name === 'string'"
+    ],
+    "3": [
+      "Assertion Functions verwenden 'asserts value is Type' als Return-Typ.",
+      "function assertIsString(v: unknown): asserts v is string { if (typeof v !== 'string') throw new Error('...'); }"
+    ],
+    "4": [
+      "Nach einer Assertion Function ist der Typ garantiert — ohne if/else.",
+      "assertIsString(input); // Ab hier: input ist string"
+    ]
+  },
+  "exercises/04-praxis-szenarien.ts": {
+    "1": [
+      "Das Options-Objekt-Pattern: Ein Interface mit optionalen Properties und Defaults im Destructuring.",
+      "function fetchData({ url, method = 'GET', timeout = 5000 }: FetchOptions): void"
+    ],
+    "2": [
+      "Currying trennt Konfiguration und Ausfuehrung. Die aeussere Funktion gibt eine innere zurueck.",
+      "function createFormatter(locale: string): (amount: number) => string"
+    ],
+    "3": [
+      "Factory Functions erstellen Objekte ohne new — ideal fuer Konfiguration und Closures.",
+      "function createLogger(prefix: string): Logger { return { log(msg) { ... } }; }"
+    ],
+    "4": [
+      "Constructor Signatures: type Ctor<T> = new (...args: unknown[]) => T.",
+      "Das 'new' Keyword macht den Typ zu einer Constructor Signature."
+    ]
+  },
+  "exercises/05-predict-the-output.ts": {
+    "1": [
+      "Bei Overloads: Welcher Overload matcht? TypeScript prueft von oben nach unten.",
+      "Der erste passende Overload bestimmt den Return-Typ."
+    ],
+    "2": [
+      "this in regulaeren Funktionen haengt vom Aufrufkontext ab.",
+      "Arrow Functions erben this lexikalisch — unabhaengig vom Aufrufkontext."
+    ],
+    "3": [
+      "void-Callbacks duerfen Werte zurueckgeben — aber bei direkten Deklarationen ist void streng.",
+      "Merke: Callback-void = tolerant, Deklarations-void = streng."
+    ]
+  }
+}

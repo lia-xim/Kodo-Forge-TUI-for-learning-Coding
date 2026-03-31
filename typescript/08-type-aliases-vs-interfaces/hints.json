@@ -1,0 +1,64 @@
+{
+  "exercises/01-type-oder-interface.ts": {
+    "1": [
+      "Brauchst du einen Union Type? Dann geht nur type.",
+      "type Status = 'active' | 'inactive'; — Interfaces koennen keine Unions."
+    ],
+    "2": [
+      "Beschreibst du eine Objekt-Form? Dann geht beides — waehle was dein Team bevorzugt.",
+      "interface User { name: string; } ODER type User = { name: string; }; — beides OK."
+    ],
+    "3": [
+      "Brauchst du Declaration Merging? Dann muss es interface sein.",
+      "Fuer Library-Augmentation: interface Window { myProp: string; }"
+    ]
+  },
+  "exercises/02-declaration-merging.ts": {
+    "1": [
+      "Interfaces mit gleichem Namen werden zusammengefuehrt — alle Properties vereint.",
+      "interface Config { a: string; }\ninterface Config { b: number; }\n// Config hat a UND b"
+    ],
+    "2": [
+      "Gemeinsame Properties muessen denselben Typ haben — sonst Fehler.",
+      "Du kannst nicht port: number und port: string in zwei Deklarationen haben."
+    ],
+    "3": [
+      "Module Augmentation: declare module 'express' { interface Request { userId?: string; } }",
+      "So erweiterst du Bibliotheks-Typen ohne deren Quellcode zu aendern."
+    ]
+  },
+  "exercises/03-extends-vs-intersection.ts": {
+    "1": [
+      "extends meldet Konflikte als Fehler. & erzeugt stilles never.",
+      "interface B extends A { x: number; } — Fehler wenn A.x ein anderer Typ ist."
+    ],
+    "2": [
+      "extends ist schneller fuer den Compiler und besser fuer Fehlermeldungen.",
+      "Fuer Objekt-Vererbung: extends bevorzugen. & fuer Ad-hoc-Kombinationen."
+    ],
+    "3": [
+      "extends erlaubt Verengung: legs: 0 extends legs: number ist OK (Subtyp).",
+      "Aber legs: string extends legs: number ist NICHT OK (anderer Typ)."
+    ]
+  },
+  "exercises/04-mapped-types-ueben.ts": {
+    "1": [
+      "Mapped Types gehen nur mit type — nicht mit interface.",
+      "type Readonly<T> = { readonly [K in keyof T]: T[K] };"
+    ],
+    "2": [
+      "Utility Types wie Partial, Readonly, Pick, Omit sind Mapped Types.",
+      "type CreateDto = Omit<User, 'id' | 'createdAt'>;"
+    ]
+  },
+  "exercises/05-praxis-entscheidungen.ts": {
+    "1": [
+      "Angular: Interface fuer Objekte. React: type fuer Props.",
+      "Konsistenz im Team ist wichtiger als die 'richtige' Wahl."
+    ],
+    "2": [
+      "ESLint-Regel: @typescript-eslint/consistent-type-definitions",
+      "Erzwingt teamweit entweder type oder interface fuer Objekt-Typen."
+    ]
+  }
+}

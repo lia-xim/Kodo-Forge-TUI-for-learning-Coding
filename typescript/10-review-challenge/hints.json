@@ -1,0 +1,68 @@
+{
+  "exercises/01-data-model.ts": {
+    "1": [
+      "Beginne mit einem BaseEntity Interface das id und Timestamps hat (L08: extends).",
+      "interface BaseEntity { id: string; createdAt: Date; updatedAt: Date; }"
+    ],
+    "2": [
+      "Verwende Discriminated Unions fuer verschiedene Entitaets-Typen (L07).",
+      "type Entity = User | Product | Order; — mit 'type' als Tag-Property."
+    ],
+    "3": [
+      "Optional Properties fuer Felder die nicht immer vorhanden sind (L05).",
+      "description?: string; — das ? macht die Property optional."
+    ]
+  },
+  "exercises/02-type-safe-api.ts": {
+    "1": [
+      "Result<T> ist eine Discriminated Union: { success: true; data: T } | { success: false; error: string } (L07).",
+      "Verwende Generics (T) damit der Daten-Typ flexibel bleibt."
+    ],
+    "2": [
+      "Type Guards validieren API-Daten: function isUser(data: unknown): data is User (L06).",
+      "Pruefe typeof === 'object', !== null, und 'property' in data."
+    ],
+    "3": [
+      "Assertion Functions: function assertUser(data: unknown): asserts data is User (L06).",
+      "Wirft bei Misserfolg — danach ist der Typ garantiert."
+    ]
+  },
+  "exercises/03-form-validation.ts": {
+    "1": [
+      "Validierungs-Ergebnis als Discriminated Union: { valid: true; value: T } | { valid: false; errors: string[] } (L07).",
+      "Der Tag 'valid' bestimmt ob value oder errors zugreifbar ist."
+    ],
+    "2": [
+      "Branded Types fuer validierte Werte: type ValidEmail = string & { __brand: 'ValidEmail' } (L09).",
+      "Braucht eine Konstruktor-Funktion mit as-Cast."
+    ]
+  },
+  "exercises/04-state-machine.ts": {
+    "1": [
+      "Zustaende als Discriminated Union: type State = { status: 'idle' } | { status: 'loading' } | ... (L07).",
+      "Jeder Zustand hat eigene Properties."
+    ],
+    "2": [
+      "Actions als Discriminated Union: type Action = { type: 'fetch' } | { type: 'success'; data: T } | ... (L07).",
+      "Der Reducer verwendet switch mit Exhaustive Check."
+    ],
+    "3": [
+      "Exhaustive Check: default: const _: never = state; return _; (L07).",
+      "Erzwingt dass ALLE Zustaende und Actions behandelt werden."
+    ]
+  },
+  "exercises/05-refactoring-challenge.ts": {
+    "1": [
+      "Ersetze 'any' durch 'unknown' und fuege Type Guards hinzu (L02 + L06).",
+      "unknown erzwingt Pruefung, any deaktiviert den Compiler."
+    ],
+    "2": [
+      "Ersetze String-Literale durch as const Objects oder Union Literal Types (L09).",
+      "type Status = 'active' | 'inactive'; statt status: string."
+    ],
+    "3": [
+      "Ersetze optionale Properties durch Discriminated Unions wo sinnvoll (L07).",
+      "Statt { data?: T; error?: string } besser { success: true; data: T } | { success: false; error: string }."
+    ]
+  }
+}

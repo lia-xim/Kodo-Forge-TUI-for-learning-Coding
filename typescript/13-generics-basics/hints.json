@@ -1,0 +1,126 @@
+{
+  "exercises/01-erste-generische-funktion.ts": {
+    "1": [
+      "Generische Funktionen nutzen <T> nach dem Funktionsnamen.",
+      "function identity<T>(arg: T): T — T ist sowohl Parameter- als auch Rueckgabetyp."
+    ],
+    "2": [
+      "Greife auf das letzte Element zu: arr[arr.length - 1].",
+      "Rueckgabetyp ist T | undefined — das Array koennte leer sein."
+    ],
+    "3": [
+      "wrap<T>(value: T) gibt { value: T } zurueck.",
+      "TypeScript inferiert T aus dem uebergebenen Argument."
+    ],
+    "4": [
+      "Zwei Typparameter: <T, U> — einer pro Argument.",
+      "Rueckgabetyp ist ein Tuple: [T, U]."
+    ],
+    "5": [
+      "Filtere null und undefined mit item != null (prueft beides).",
+      "Nutze einen Type Predicate: (item): item is T => item != null."
+    ]
+  },
+  "exercises/02-generische-interfaces.ts": {
+    "1": [
+      "interface Box<T> { content: T; label: string; }",
+      "Die unbox-Funktion: function unbox<T>(box: Box<T>): T"
+    ],
+    "2": [
+      "ApiResponse<T> hat data: T als generische Property.",
+      "extractData<T> wirft Error bei status >= 400, gibt sonst data zurueck."
+    ],
+    "3": [
+      "Result<T, E = string> ist ein Discriminated Union mit success als Diskriminator.",
+      "{ success: true; data: T } | { success: false; error: E }"
+    ],
+    "4": [
+      "KeyValueStore<K, V> definiert get, set, has, delete.",
+      "Implementierung nutzt intern eine Map<K, V>."
+    ],
+    "5": [
+      "Stack<T> hat push, pop, peek und size.",
+      "Implementiere mit einem internen Array und gib ein Objekt mit den Methoden zurueck."
+    ]
+  },
+  "exercises/03-constraints.ts": {
+    "1": [
+      "T extends { length: number } — beide Argumente muessen .length haben.",
+      "Vergleiche a.length und b.length und gib den laengeren zurueck."
+    ],
+    "2": [
+      "Zweiter Typparameter: K extends keyof T.",
+      "Rueckgabetyp ist T[K] — der praezise Typ der jeweiligen Property."
+    ],
+    "3": [
+      "pluck extrahiert einen bestimmten Key aus jedem Element.",
+      "items.map(item => item[key]) mit K extends keyof T."
+    ],
+    "4": [
+      "Beide Parameter mit extends object einschraenken.",
+      "Spread-Operator: { ...target, ...source } als Rueckgabe."
+    ],
+    "5": [
+      "T extends HasId & HasTimestamp — Intersection fuer mehrere Constraints.",
+      "Partial<Omit<T, 'id' | 'updatedAt'>> fuer die Updates — id und updatedAt nicht aenderbar."
+    ]
+  },
+  "exercises/04-default-typparameter.ts": {
+    "1": [
+      "interface Container<T = string> — Default-Typ ist string.",
+      "Container ohne Typangabe = Container<string>."
+    ],
+    "2": [
+      "Zwei Defaults: <K = string, V = string>.",
+      "createCache() ohne Typparameter nutzt beide Defaults."
+    ],
+    "3": [
+      "Record<string, unknown> ist ein guter Default fuer flexible Kontexte.",
+      "Logger<TContext = Record<string, unknown>> — context ist optional."
+    ],
+    "4": [
+      "E extends Error = Error — Constraint UND Default kombiniert.",
+      "Der Default muss den Constraint erfuellen: Error extends Error = OK."
+    ]
+  },
+  "exercises/05-utility-funktionen.ts": {
+    "1": [
+      "groupBy<T> iteriert ueber items und nutzt keyFn um den Key zu bestimmen.",
+      "Ergebnis: Record<string, T[]> — gruppiert nach dem Key."
+    ],
+    "2": [
+      "chunk teilt ein Array in Untergruppen: arr.slice(i, i + size).",
+      "Rueckgabetyp ist T[][] — Array von Arrays."
+    ],
+    "3": [
+      "Nutze ein Set um gesehene Keys zu speichern.",
+      "filter mit keyFn(item) — nur das erste Vorkommen behalten."
+    ],
+    "4": [
+      "Iteriere ueber Object.keys(obj) und transformiere jeden Wert.",
+      "Rueckgabetyp: Record<string, U> mit U als Output der Transformation."
+    ],
+    "5": [
+      "State-Machine speichert den aktuellen State in einer Closure.",
+      "transition prueft ob der Uebergang in transitions[currentState] enthalten ist."
+    ]
+  },
+  "exercises/06-praxis-integration.ts": {
+    "1": [
+      "TypedEmitter<TEvents> nutzt K extends keyof TEvents fuer typsichere Events.",
+      "Intern: Map<string, Function[]> fuer Handler-Speicherung."
+    ],
+    "2": [
+      "Repository<T extends Entity> mit T fuer den Entity-Typ.",
+      "Intern: Map<number, T> fuer ID-basierte Speicherung."
+    ],
+    "3": [
+      "createConfig<T> speichert values intern und nutzt K extends keyof T.",
+      "get<K extends keyof T>(key: K): T[K] — praeziser Rueckgabetyp pro Key."
+    ],
+    "4": [
+      "asyncPipe iteriert ueber die Funktionen und awaitet jede.",
+      "let result = initial; for (const fn of fns) result = await fn(result);"
+    ]
+  }
+}

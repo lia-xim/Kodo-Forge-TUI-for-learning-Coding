@@ -1,0 +1,112 @@
+{
+  "exercises/01-grundlagen.ts": {
+    "1": [
+      "readonly vor [K in keyof T] stellen.",
+      "type MyReadonly<T> = { readonly [K in keyof T]: T[K] };"
+    ],
+    "2": [
+      "-readonly entfernt den readonly-Modifier.",
+      "type Mutable<T> = { -readonly [K in keyof T]: T[K] };"
+    ],
+    "3": [
+      "T[K] | null fuegt null zum bestehenden Typ hinzu.",
+      "type Nullable<T> = { [K in keyof T]: T[K] | null };"
+    ],
+    "4": [
+      "Ersetze T[K] einfach durch string.",
+      "type AllString<T> = { [K in keyof T]: string };"
+    ],
+    "5": [
+      "Kombiniere -readonly und -? in einem Mapped Type.",
+      "{ -readonly [K in keyof T]-?: T[K] } entfernt beide Modifier."
+    ]
+  },
+  "exercises/02-key-remapping.ts": {
+    "1": [
+      "Nutze as mit Template Literal Type: `get${Capitalize<string & K>}`.",
+      "Der Rueckgabetyp ist eine Funktion: () => T[K]."
+    ],
+    "2": [
+      "Wie Getters, aber mit 'set' Prefix und Parameter.",
+      "set${Capitalize<string & K>}: (value: T[K]) => void"
+    ],
+    "3": [
+      "Key Remapping mit Conditional: as T[K] extends string ? K : never.",
+      "never im Key Remapping entfernt den Key."
+    ],
+    "4": [
+      "Template Literal im Key: as `${P}_${string & K}`.",
+      "P extends string als Constraint fuer den Prefix."
+    ],
+    "5": [
+      "Kombiniere Template Literal mit on-Prefix und Change-Suffix.",
+      "as `on${Capitalize<string & K>}Change` fuer den Event-Namen."
+    ]
+  },
+  "exercises/03-eigene-utility-types.ts": {
+    "1": [
+      "Pruefe T[K] extends object (aber nicht Function) fuer Rekursion.",
+      "T[K] extends Function ? T[K] : DeepPartial<T[K]> fuer den Function-Guard."
+    ],
+    "2": [
+      "Wie DeepPartial aber mit readonly statt ?.",
+      "readonly [K in keyof T]: ... mit derselben Rekursions-Logik."
+    ],
+    "3": [
+      "Omit<T, K> entfernt K komplett. Partial<Pick<T, K>> macht nur K optional.",
+      "Kombiniere mit Intersection: Omit<T, K> & Partial<Pick<T, K>>."
+    ],
+    "4": [
+      "Wie PartialBy, aber mit Required statt Partial.",
+      "Omit<T, K> & Required<Pick<T, K>>."
+    ],
+    "5": [
+      "{} extends Pick<T, K> prueft ob K optional ist.",
+      "Mapped Type + [keyof T] am Ende extrahiert nur die Key-Namen."
+    ]
+  },
+  "exercises/04-bedingte-mapped-types.ts": {
+    "1": [
+      "Conditional im Key Remapping: T[K] extends U ? never : K.",
+      "never entfernt den Key, K behaelt ihn."
+    ],
+    "2": [
+      "Verschachtelte Conditionals: T[K] extends string ? ... : T[K] extends number ? ... : ...",
+      "Jeder Branch hat einen anderen Funktions-Parameter-Typ."
+    ],
+    "3": [
+      "undefined extends T[K] prueft ob K optional ist.",
+      "Nur fuer optionale Properties: T[K] | null hinzufuegen."
+    ],
+    "4": [
+      "T[K] extends number | boolean ? string : T[K].",
+      "Beide numerischen und booleschen Typen werden zu string."
+    ],
+    "5": [
+      "Arrays zuerst pruefen: T[K] extends (infer U)[] ? readonly U[] : ...",
+      "Dann Objekte rekursiv, Funktionen durchreichen, Primitive direkt."
+    ]
+  },
+  "exercises/05-praxis-patterns.ts": {
+    "1": [
+      "FormErrors: [K in keyof T]?: string — optional, da nicht jedes Feld einen Fehler hat.",
+      "initFormState: Object.keys + false-Initialisierung fuer touched/dirty."
+    ],
+    "2": [
+      "CreateDTO = Omit<T, keyof BaseEntity>. UpdateDTO = Partial davon.",
+      "ResponseDTO: Conditional fuer Date -> string Konvertierung."
+    ],
+    "3": [
+      "Intersection: T & Getters<T> & Setters<T> fuer das vollstaendige Objekt.",
+      "createAccessible: Object.keys Loop mit charAt(0).toUpperCase()."
+    ],
+    "4": [
+      "EventMap mit Template Literal Keys: `${string & K}Changed`.",
+      "makeObservable mit Proxy: set-Trap fuer Change-Detection."
+    ],
+    "5": [
+      "ConfigSchema: { value: T[K]; default: T[K]; description: string; required: boolean }.",
+      "createConfig: Fuer jeden Key value ?? default extrahieren."
+    ]
+  }
+}
