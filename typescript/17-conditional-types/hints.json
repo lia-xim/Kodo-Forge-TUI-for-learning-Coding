@@ -1,0 +1,38 @@
+{
+  "exercises/01-extends-bedingung.ts": {
+    "1": ["T extends number ? true : false", "Literal-Zahlen wie 42 sind auch number."],
+    "2": ["Verschachtelte Conditionals: T extends string ? 'string' : T extends number ? ...", "Der letzte Branch faengt alles andere auf."],
+    "3": ["T extends any[] prueft ob T ein Array ist.", "Nicht T extends Array<any> — beide funktionieren aber any[] ist kuerzer."],
+    "4": ["T extends null | undefined ? never : T", "Distribution entfernt automatisch null und undefined aus Unions."],
+    "5": ["C extends true ? T : F", "C ist auf boolean eingeschraenkt, also nur true oder false moeglich."]
+  },
+  "exercises/02-infer-keyword.ts": {
+    "1": ["T extends Promise<infer U> ? U : T", "Bei Nicht-Promises wird T unveraendert zurueckgegeben."],
+    "2": ["T extends (...args: any[]) => infer R ? R : never", "infer R steht an der Return-Position."],
+    "3": ["T extends (first: infer P, ...rest: any[]) => any ? P : never", "infer P steht an der Position des ersten Parameters."],
+    "4": ["T extends (infer U)[] ? U : T", "Klammern um infer U sind wichtig: (infer U)[]."],
+    "5": ["T extends new (...args: any[]) => infer R ? R : never", "new vor der Signatur fuer Konstruktoren."],
+    "6": ["T extends (...args: [...infer _, infer L]) => any ? L : never", "Variadic Tuple: ...infer _ faengt alle bis auf den letzten."]
+  },
+  "exercises/03-distributive-types.ts": {
+    "1": ["T extends any ? T[] : never", "any im extends triggert immer — Distribution macht den Rest."],
+    "2": ["[T] extends [any] ? T[] : never", "Tuple-Wrapping verhindert Distribution."],
+    "3": ["T extends string ? T : never", "Distribution behaelt nur string-Member, rest wird never."],
+    "4": ["[T] extends [never] ? true : false", "Ohne [T] wuerde Distribution bei never zuschlagen."],
+    "5": ["Vergleiche T extends T (distributiv) mit [T] extends [T] (nicht-distributiv).", "Bei Unions gibt distributiv verschiedene Ergebnisse."]
+  },
+  "exercises/04-rekursive-conditional.ts": {
+    "1": ["T extends (infer U)[] ? Flatten<U> : T", "Flatten ruft sich selbst auf — das ist die Rekursion."],
+    "2": ["T extends Promise<infer U> ? DeepAwaited<U> : T", "Wie Flatten aber mit Promise statt Array."],
+    "3": ["T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T", "Function-Guard: T extends Function ? T : ..."],
+    "4": ["T extends (infer U)[] ? U : never", "Distribution ueber das Array extrahiert den Element-Typ."],
+    "5": ["T extends [infer F, ...infer R] ? [...Reverse<R>, F] : []", "Erstes Element ans Ende, Rest rekursiv umkehren."]
+  },
+  "exercises/05-praxis-patterns.ts": {
+    "1": ["Key Remapping: as T[K] extends Function ? K : never (Methods)", "Umgekehrt fuer Data: as T[K] extends Function ? never : K"],
+    "2": ["T extends (infer U)[] ? U : T", "Einmal entpacken, nicht rekursiv!"],
+    "3": ["T[K] extends (...args: infer A) => infer R ? (...args: A) => Promise<R> : T[K]", "Mapped + Conditional + infer Kombination."],
+    "4": ["Path extends `${infer K}.${infer Rest}` — String-Parsing mit infer", "K extends keyof T fuer Typ-Lookup: T[K], dann rekursiv."],
+    "5": ["type StrictOmit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>", "K extends keyof T stellt sicher dass nur gueltige Keys angegeben werden."]
+  }
+}

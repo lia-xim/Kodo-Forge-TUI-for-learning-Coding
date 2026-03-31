@@ -105,13 +105,15 @@ export function renderPlatformScreen(): void {
         : `   ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen`;
       const line3 = `   [${barStr}] ${String(pr.percent).padStart(3)}%${statusTxt}`;
 
-      const hours = co.estimatedHours ?? "?";
-      const sects = co.totalSections ?? "?";
+      // Dynamische Werte aus der Berechnung nutzen (nicht statisch aus platform.json)
+      const hours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
+      const sects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
+      const exCount = pr.actualExercises > 0 ? pr.actualExercises : null;
       let detail = "";
       if (!unlocked) {
         detail = `   ~${hours}h \u00B7 ${sects} Sektionen \u00B7 Braucht: ${co.prerequisiteDescription ?? ""}`;
       } else {
-        const exStr = co.exerciseTypes ? ` \u00B7 ${co.exerciseTypes} Aufgabentypen` : "";
+        const exStr = exCount ? ` \u00B7 ${exCount} Uebungen` : "";
         detail = `   ~${hours}h \u00B7 ${sects} Sektionen${exStr}`;
       }
       const line4 = detail;
@@ -192,11 +194,12 @@ export function renderPlatformScreen(): void {
         ? `Phase ${pr.currentPhase} \u00B7 ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}`
         : `${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen`;
       const info = `   [${barStr}] ${String(pr.percent).padStart(3)}%  ${statusTxt}`;
-      const hours = co.estimatedHours ?? "?";
+      const colHours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
+      const colSects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
       const prereq = !unlocked ? `Braucht: ${co.prerequisiteDescription ?? ""}` : "";
       const detail = prereq
-        ? `   ~${hours}h \u00B7 ${prereq}`
-        : `   ~${hours}h \u00B7 ${co.totalSections ?? "?"} Sektionen`;
+        ? `   ~${colHours}h \u00B7 ${prereq}`
+        : `   ~${colHours}h \u00B7 ${colSects} Sektionen`;
 
       const cellLines = mode === "ultra-compact" ? [name, info] : [name, info, detail];
 

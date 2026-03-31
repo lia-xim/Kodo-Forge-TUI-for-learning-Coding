@@ -18,6 +18,10 @@
 
 ## Pick\<T, K\> — Properties auswaehlen
 
+> **Analogie:** Pick ist wie ein SQL-SELECT — du waehlst **nur die
+> relevanten Spalten** aus einer Datenbank-Tabelle. Statt `SELECT *`
+> sagst du `SELECT id, name, email FROM users`.
+
 `Pick<T, K>` erstellt einen neuen Typ mit nur den angegebenen Properties:
 
 ```typescript annotated
@@ -55,9 +59,27 @@ type PublicUserAuto = Pick<User, "id" | "name" | "email">;
 > **Pick ist typsicher:** Wenn du einen Key angibst, der nicht in T existiert,
 > bekommst du einen Compile-Error. `Pick<User, "phone">` waere ein Fehler.
 
+> ⚡ **Praxis-Tipp: Pick fuer Child-Components**
+>
+> ```typescript
+> // React: Ein Child braucht nicht alle Props des Eltern-Typs
+> type UserListItemProps = Pick<User, "id" | "name" | "email">;
+> function UserListItem({ id, name, email }: UserListItemProps) { ... }
+>
+> // Angular: Service-Response auf das Noetigste reduzieren
+> type UserSummary = Pick<FullUserResponse, "id" | "name" | "avatar">;
+> ```
+
+> 🧠 **Erklaere dir selbst:** Warum ist `Pick<User, "id" | "name">` besser als ein neues `interface UserSummary { id: number; name: string }`?
+> **Kernpunkte:** Pick bleibt synchron mit User | Aendert sich der Typ von name in User, aendert er sich automatisch in Pick | Weniger Wartungsaufwand | DRY-Prinzip
+
 ---
 
 ## Omit\<T, K\> — Properties ausschliessen
+
+> **Analogie:** Omit ist wie "Alles kopieren ausser dem Passwort-Feld" — du
+> nimmst den gesamten Datensatz und **schwaezt** bestimmte Felder. Perfekt fuer
+> API-Responses, bei denen sensible Daten entfernt werden muessen.
 
 `Omit<T, K>` ist das Gegenteil von Pick — es entfernt die angegebenen Properties:
 
@@ -94,6 +116,22 @@ type Broken = Omit<User, "passwort">;  // Tippfehler! Kein Error!
 > K muss nur ein Property-Key-Typ sein, nicht zwingend ein Key von T.
 > Das wurde bewusst so designed fuer Flexibilitaet (z.B. Omit mit
 > berechneten Strings). Aber es ist eine haeufige Fehlerquelle.
+>
+> Interessanterweise wurde Omit erst in **TypeScript 3.5** (Mai 2019)
+> zur Standardbibliothek hinzugefuegt — fast 3 Jahre nach Pick.
+> Vorher mussten Entwickler es selbst bauen:
+> `type Omit<T, K> = Pick<T, Exclude<keyof T, K>>`.
+> Die Community hatte so viele verschiedene Omit-Implementierungen,
+> dass das TS-Team es schliesslich standardisierte.
+
+> 💭 **Denkfrage:** `Omit<T, K>` prueft NICHT ob K ein gueltiger Key
+> von T ist. Warum ist das ein Problem? Was waere die sichere Alternative?
+>
+> **Antwort:** Bei einem Tippfehler wie `Omit<User, "passwort">` (statt
+> "password") bekommst du keinen Fehler — es wird einfach nichts entfernt.
+> Beim Refactoring (z.B. `password` wird zu `passwordHash`) bleibt der alte
+> String stehen ohne Warnung. StrictOmit (`K extends keyof T`) verhindert
+> beides.
 
 ### StrictOmit — Die typsichere Alternative
 
@@ -112,6 +150,10 @@ type SafeUser = StrictOmit<User, "password">;     // OK
 ---
 
 ## Record\<K, V\> — Typsichere Dictionaries
+
+> **Analogie:** Record ist wie ein **Woerterbuch**: Fuer jeden Key (Wort)
+> gibt es genau einen Value (Definition). Wenn du `Record<"de" | "en" | "fr", string>`
+> schreibst, sagst du: "Fuer jede dieser drei Sprachen muss es einen String geben."
 
 `Record<K, V>` erstellt einen Typ mit Keys vom Typ K und Values vom Typ V:
 
@@ -169,6 +211,11 @@ const methodConfigs: Record<HttpMethod, MethodConfig> = {
 // ^ Falscher Key? Compile-Error!
 ```
 
+> 🔬 **Experiment:** Oeffne `examples/02-pick-omit-record.ts` und entferne
+> eine Zeile aus der `methodConfigs`-Definition (z.B. DELETE). Was sagt
+> der Compiler? Fuege dann einen ungueltigen Key hinzu (z.B. "PATCH").
+> Beobachte wie `Record<HttpMethod, ...>` in beide Richtungen schuetzt.
+
 > 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen
 > `Record<string, T>` und `Map<string, T>`?
 > **Kernpunkte:** Record ist ein Typ-Alias fuer ein Objekt | Map ist eine Laufzeit-Datenstruktur | Record-Properties sind direkt zugaenglich (.key) | Map braucht .get()/.set() | Record ist JSON-serialisierbar
@@ -195,6 +242,24 @@ type ProductPreview = Omit<Product, "stock" | "description">;
 // Beide ergeben hier das gleiche Ergebnis!
 // Wann welches? Pick bei wenigen gewuenschten, Omit bei wenigen ungewuenschten.
 ```
+
+> 🔍 **Tieferes Wissen: Pick und Omit intern**
+>
+> ```typescript annotated
+> // Pick: Mapped Type ueber die angegebenen Keys
+> type Pick<T, K extends keyof T> = {
+>   [P in K]: T[P];
+> // ^ Nur ueber K iterieren (nicht keyof T!)
+> };
+>
+> // Omit: Pick mit den UMGEKEHRTEN Keys
+> type Omit<T, K extends string | number | symbol> =
+>   Pick<T, Exclude<keyof T, K>>;
+> // ^ Exclude filtert K aus keyof T heraus, Pick nimmt den Rest
+> ```
+>
+> Das zeigt auch, warum Pick typsicher ist (`K extends keyof T`) und
+> Omit nicht (`K extends string | number | symbol`).
 
 ---
 

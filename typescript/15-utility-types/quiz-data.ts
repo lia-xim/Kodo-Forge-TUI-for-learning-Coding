@@ -15,12 +15,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht `Partial<User>` mit dem User-Interface?",
     options: [
-      "Entfernt alle Properties",
       "Macht alle Properties optional",
+      "Entfernt alle Properties",
       "Macht alle Properties readonly",
       "Macht alle Properties zu string",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Partial<T> macht ALLE Properties optional (fuegt ? hinzu). " +
       "Das ist ideal fuer Update-Operationen wo nur geaenderte Felder gesendet werden. " +
@@ -48,11 +48,11 @@ export const questions: QuizQuestion[] = [
     question: "Ist `Readonly<T>` deep oder shallow?",
     options: [
       "Deep — alle verschachtelten Properties werden readonly",
-      "Shallow — nur die erste Ebene wird readonly",
       "Abhaengig von strictNullChecks",
       "Weder noch — Readonly schuetzt nur Primitives",
+      "Shallow — nur die erste Ebene wird readonly",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Readonly<T> ist SHALLOW — es macht nur die Properties der ersten Ebene " +
       "readonly. Verschachtelte Objekte koennen weiterhin veraendert werden. " +
@@ -64,12 +64,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welcher Utility Type ist NICHT typsicher bei den Keys?",
     options: [
-      "Pick<T, K>",
       "Omit<T, K>",
+      "Pick<T, K>",
       "Record<K, V>",
       "Required<T>",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Omit<T, K> akzeptiert BELIEBIGE Strings als K — nicht nur Keys von T. " +
       "Das bedeutet: Omit<User, 'tippfehler'> erzeugt keinen Error! " +
@@ -100,11 +100,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist das Ergebnis von `Exclude<'a' | 'b' | 'c', 'a' | 'c'>`?",
     options: [
       '"a" | "c"',
-      '"b"',
       '"a" | "b" | "c"',
       'never',
+      '"b"',
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Exclude entfernt die angegebenen Mitglieder aus dem Union. " +
       "'a' und 'c' werden entfernt, 'b' bleibt. " +
@@ -147,12 +147,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum braucht man `typeof` bei `ReturnType<typeof myFunc>`?",
     options: [
-      "typeof ist optional — beide Formen funktionieren",
       "ReturnType erwartet einen TYP, nicht einen Wert — typeof extrahiert den Typ",
+      "typeof ist optional — beide Formen funktionieren",
       "typeof macht die Funktion async",
       "typeof ist ein Runtime-Operator",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "ReturnType<T> erwartet einen Funktions-TYP als Typ-Parameter. " +
       "myFunc ist ein Wert (die Funktion selbst). typeof extrahiert den " +
@@ -199,11 +199,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum braucht DeepPartial eine Fallunterscheidung fuer Arrays?",
     options: [
       "Arrays sind keine Objekte in TypeScript",
-      "Ohne Sonderbehandlung wuerde das Array selbst als Objekt behandelt und seine Methoden optional gemacht",
       "TypeScript kann keine rekursiven Typen",
+      "Ohne Sonderbehandlung wuerde das Array selbst als Objekt behandelt und seine Methoden optional gemacht",
       "Arrays koennen nicht partial sein",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Arrays sind technisch Objekte. Ohne Sonderbehandlung wuerde " +
       "DeepPartial die Array-Methoden (push, pop, etc.) optional machen " +
@@ -216,11 +216,11 @@ export const questions: QuizQuestion[] = [
     question: "Was bedeutet `-readonly` in einem Mapped Type?",
     options: [
       "Fuegt readonly hinzu",
-      "Entfernt readonly von allen Properties",
       "Macht die Property negativ",
       "Syntax-Error — es gibt kein -readonly",
+      "Entfernt readonly von allen Properties",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Das Minus-Zeichen (-) ENTFERNT einen Modifier. " +
       "-readonly entfernt readonly, -? entfernt optional. " +
@@ -233,11 +233,11 @@ export const questions: QuizQuestion[] = [
     question: "Was beschreibt `Pick<T, K> & Partial<Omit<T, K>>` am besten?",
     options: [
       "Alle Properties required",
-      "K bleibt wie im Original, Rest wird optional",
       "Alle Properties optional",
+      "K bleibt wie im Original, Rest wird optional",
       "K wird entfernt, Rest bleibt",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Pick<T, K> behaelt K mit dem Original-Typ (required wenn es required war). " +
       "Partial<Omit<T, K>> macht den gesamten Rest optional. " +
@@ -250,12 +250,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist das Standard-Pattern um den 'echten' Rueckgabetyp einer async Funktion zu bekommen?",
     options: [
-      "ReturnType<typeof fn>",
-      "Awaited<typeof fn>",
       "Awaited<ReturnType<typeof fn>>",
+      "Awaited<typeof fn>",
+      "ReturnType<typeof fn>",
       "Parameters<typeof fn>",
     ],
-    correct: 2,
+    correct: 0,
     explanation:
       "ReturnType<typeof fn> gibt bei async Funktionen Promise<...> zurueck. " +
       "Awaited entpackt das Promise. Die Kombination Awaited<ReturnType<typeof fn>> " +

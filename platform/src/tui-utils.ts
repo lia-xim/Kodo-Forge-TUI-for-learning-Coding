@@ -349,15 +349,31 @@ export function getCourseProgressSummary(course: PlatformCourse): CourseProgress
   }
 
   let actualLessons = 0;
+  let actualSections = 0;
+  let actualExercises = 0;
   try {
     if (fs.existsSync(courseDir)) {
-      actualLessons = fs.readdirSync(courseDir, { withFileTypes: true })
-        .filter(e => e.isDirectory() && /^\d{2}-/.test(e.name))
-        .length;
+      const lessonDirs = fs.readdirSync(courseDir, { withFileTypes: true })
+        .filter(e => e.isDirectory() && /^\d{2}-/.test(e.name));
+      actualLessons = lessonDirs.length;
+
+      for (const ld of lessonDirs) {
+        const sectDir = path.join(courseDir, ld.name, "sections");
+        const exDir = path.join(courseDir, ld.name, "exercises");
+        if (fs.existsSync(sectDir)) {
+          actualSections += fs.readdirSync(sectDir).filter(f => f.endsWith(".md")).length;
+        }
+        if (fs.existsSync(exDir)) {
+          actualExercises += fs.readdirSync(exDir).filter(f => f.endsWith(".ts")).length;
+        }
+      }
     }
   } catch {
     // ignore
   }
+
+  // Geschaetzte Stunden: 10 Min pro Sektion lesen + 15 Min pro Exercise + Quizzes
+  const actualHours = Math.round((actualSections * 10 + actualExercises * 15 + actualLessons * 10) / 60);
 
   const totalForPercent = actualLessons > 0 ? actualLessons : course.totalLessons;
   const percent = totalForPercent > 0 ? Math.round((completedLessons / totalForPercent) * 100) : 0;
@@ -368,6 +384,9 @@ export function getCourseProgressSummary(course: PlatformCourse): CourseProgress
     currentPhase,
     lastLessonTitle,
     percent,
+    actualSections,
+    actualHours: actualHours > 0 ? actualHours : (course.estimatedHours ?? 0),
+    actualExercises,
   };
 
   courseProgressCache.set(course.id, summary);

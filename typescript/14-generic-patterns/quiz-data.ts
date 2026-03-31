@@ -15,12 +15,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was beschreibt der Typ `new () => T` in einer Generic Factory?",
     options: [
-      "Eine Funktion die T als Parameter nimmt",
       "Eine Constructor Signature — etwas das mit new aufgerufen werden kann und T erzeugt",
+      "Eine Funktion die T als Parameter nimmt",
       "Ein Interface fuer T",
       "Eine abstrakte Klasse",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "`new () => T` ist eine Constructor Signature. Sie beschreibt " +
       "alles was mit dem `new`-Keyword aufgerufen werden kann und eine " +
@@ -49,11 +49,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum gibt `Stack<T>.pop()` den Typ `T | undefined` zurueck statt `T`?",
     options: [
       "Weil TypeScript keine generischen Return Types unterstuetzt",
-      "Weil der Stack leer sein kann und dann kein Element zum Zurueckgeben existiert",
       "Weil T immer optional ist",
+      "Weil der Stack leer sein kann und dann kein Element zum Zurueckgeben existiert",
       "Weil pop() den Stack nicht veraendert",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Ein leerer Stack hat kein Element zum Zurueckgeben. `undefined` " +
       "signalisiert diesen Fall. Ohne `undefined` im Typ muesste man " +
@@ -65,11 +65,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum braucht `pipe()` Overloads statt eines einzigen generischen Typs?",
     options: [
       "Weil pipe nur mit Overloads funktioniert",
-      "Weil jeder Schritt einen ANDEREN Typ hat und TypeScript nicht beliebig viele Typparameter aus Rest-Parametern ableiten kann",
       "Weil Generics keine Funktionsparameter unterstuetzen",
       "Weil Overloads schneller sind als Generics",
+      "Weil jeder Schritt einen ANDEREN Typ hat und TypeScript nicht beliebig viele Typparameter aus Rest-Parametern ableiten kann",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "pipe(value, fn1, fn2, fn3) hat verschiedene Typen an jedem Schritt: " +
       "A -> B -> C -> D. TypeScript kann nicht beliebig viele verschiedene " +
@@ -81,12 +81,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Hauptunterschied zwischen pipe() und compose()?",
     options: [
-      "pipe ist typsicher, compose nicht",
       "compose gibt eine Funktion zurueck, pipe fuehrt sofort aus; die Reihenfolge ist umgekehrt",
+      "pipe ist typsicher, compose nicht",
       "pipe funktioniert nur mit Arrays",
       "compose braucht keine Generics",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "pipe(value, f, g) fuehrt sofort aus: g(f(value)). " +
       "compose(g, f) gibt eine neue Funktion zurueck: (x) => g(f(x)). " +
@@ -116,11 +116,11 @@ export const questions: QuizQuestion[] = [
     question: "Was beschreibt `interface TreeNode<T> { value: T; children: TreeNode<T>[]; }`?",
     options: [
       "Einen flachen Array-Typ",
-      "Einen rekursiven Baumknoten — jeder Knoten hat denselben Typ fuer Wert und Kinder",
       "Einen zirkulaeren Referenzfehler",
+      "Einen rekursiven Baumknoten — jeder Knoten hat denselben Typ fuer Wert und Kinder",
       "Ein Union Type",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "TreeNode<T> referenziert sich selbst in der children-Property. " +
       "Das erzeugt keinen Fehler — TypeScript unterstuetzt rekursive Typen. " +
@@ -133,11 +133,11 @@ export const questions: QuizQuestion[] = [
     question: "Was bewirkt `<const T>` (TS 5.0) bei einem Typparameter?",
     options: [
       "T wird unveraenderlich (readonly)",
-      "TypeScript inferiert den praezisesten Literal-Typ — als haette der Aufrufer as const geschrieben",
       "T wird zu einer Konstante",
       "T akzeptiert nur const-Variablen",
+      "TypeScript inferiert den praezisesten Literal-Typ — als haette der Aufrufer as const geschrieben",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "`<const T>` erzwingt Literal-Inferenz beim Aufrufer. Ohne const " +
       "wird ['a', 'b'] als string[] inferiert. Mit const wird es zu " +
@@ -166,12 +166,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum verwendet das Repository<T> Interface `Omit<T, 'id'>` bei `create()`?",
     options: [
-      "Weil id optional ist",
       "Weil die id vom Repository automatisch generiert wird — der Aufrufer soll sie nicht setzen",
+      "Weil id optional ist",
       "Weil Omit schneller ist",
       "Weil id ein reserved word ist",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Bei `create(data: Omit<T, 'id'>)` muss der Aufrufer alle Properties " +
       "von T angeben AUSSER id. Die id wird intern vom Repository generiert. " +
@@ -183,11 +183,11 @@ export const questions: QuizQuestion[] = [
     question: "Wie stellt der TypedEventEmitter<Events> sicher, dass Event-Name und Payload zusammenpassen?",
     options: [
       "Durch Runtime-Validierung",
-      "Durch ein Interface das Event-Namen auf Payload-Typen mappt — K extends keyof Events verknuepft sie",
       "Durch separate Interfaces pro Event",
+      "Durch ein Interface das Event-Namen auf Payload-Typen mappt — K extends keyof Events verknuepft sie",
       "Durch String-Matching",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Das Events-Interface mappt Event-Namen auf Payload-Typen. " +
       "Bei `emit<K extends keyof Events>(event: K, data: Events[K])` " +
@@ -200,11 +200,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum verwendet der DI Container `Token<T>` statt einfache Strings als Schluessel?",
     options: [
       "Strings sind zu langsam",
-      "Token<T> traegt den Service-Typ als Phantom-Typ — resolve() kann T daraus ableiten",
       "Strings koennen nicht als Map-Keys verwendet werden",
+      "Token<T> traegt den Service-Typ als Phantom-Typ — resolve() kann T daraus ableiten",
       "Token ist ein eingebauter TypeScript-Typ",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Token<T> ist ein Phantom-Type-Traeger. Token<DatabaseService> und " +
       "Token<LoggerService> sind verschiedene Typen. Bei container.resolve(token) " +
@@ -231,12 +231,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie funktioniert `EventMap[K]` wenn K durch `keyof EventMap` eingeschraenkt ist?",
     options: [
-      "Es gibt immer unknown zurueck",
       "TypeScript schlaegt den konkreten Typ fuer den Key K in der Map nach — voellig typsicher",
+      "Es gibt immer unknown zurueck",
       "Es erzeugt einen Union aller Values",
       "Es gibt den Key als String zurueck",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Indexed Access Types: EventMap[K] schlaegt den Wert fuer den " +
       "konkreten Key K nach. Wenn K = 'click', wird EventMap['click'] " +
@@ -249,11 +249,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum braucht die generische `memoize<Args, R>()` Funktion `JSON.stringify(args)` als Cache-Key?",
     options: [
       "Weil Map nur Strings als Keys akzeptiert",
-      "Weil verschiedene Argument-Kombinationen verschiedene Cache-Eintraege brauchen und Arrays nicht direkt vergleichbar sind",
       "Weil JSON schneller ist",
       "Weil TypeScript das erfordert",
+      "Weil verschiedene Argument-Kombinationen verschiedene Cache-Eintraege brauchen und Arrays nicht direkt vergleichbar sind",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "JavaScript vergleicht Arrays/Objekte per Referenz, nicht per Wert. " +
       "[1, 2] !== [1, 2]. JSON.stringify erzeugt einen String der den " +

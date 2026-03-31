@@ -49,12 +49,12 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert im else-Branch nach `if (msg.kind === 'text')`?",
     code: 'type Message = { kind: "text"; content: string } | { kind: "image"; url: string };\nif (msg.kind === "text") { ... } else { ... }',
     options: [
-      "msg hat Typ Message",
       'msg hat Typ { kind: "image"; url: string }',
+      "msg hat Typ Message",
       "msg hat Typ never",
       "msg hat Typ unknown",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "TypeScript eliminiert die 'text'-Variante im else-Branch. " +
       "Da nur 'image' uebrig bleibt, ist msg automatisch der ImageMessage-Typ. " +
@@ -99,12 +99,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Vorteil von Option<T> gegenueber T | null?",
     options: [
-      "Option<T> ist schneller zur Laufzeit",
       "Option<T> erzwingt die Pruefung beider Faelle durch den Diskriminator",
+      "Option<T> ist schneller zur Laufzeit",
       "Option<T> braucht weniger Speicher",
       "Option<T> funktioniert mit Generics, T | null nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Option<T> mit dem Tag 'some'/'none' erzwingt eine explizite Pruefung: " +
       "Du kannst auf value nicht zugreifen, ohne vorher den Tag zu pruefen. " +
@@ -135,12 +135,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ein Sum Type in TypeScript?",
     options: [
-      "Ein Interface mit vielen Properties",
       "Eine Discriminated Union (ODER-Verknuepfung)",
+      "Ein Interface mit vielen Properties",
       "Ein Tuple mit fester Laenge",
       "Eine generische Klasse",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Sum Type = ODER-Verknuepfung: Genau EINE Variante ist aktiv. " +
       "Product Type = UND-Verknuepfung: ALLE Properties gleichzeitig. " +
@@ -189,11 +189,11 @@ export const questions: QuizQuestion[] = [
     code: 'const { kind } = shape;\nif (kind === "circle") {\n  // shape.radius? \n}',
     options: [
       "shape wird korrekt zu Circle narrowed",
-      "TypeScript verliert die Verbindung — shape bleibt Shape",
       "Compile-Error bei der Destrukturierung",
       "kind hat Typ never",
+      "TypeScript verliert die Verbindung — shape bleibt Shape",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Bei Destrukturierung geht die Verbindung zwischen der Variable " +
       "'kind' und dem Original-Objekt 'shape' verloren. TypeScript kann " +
@@ -206,11 +206,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Diskriminator bei Redux/NgRx Action Types?",
     options: [
       'Das Property "action"',
-      'Das Property "type"',
       'Das Property "kind"',
       'Das Property "payload"',
+      'Das Property "type"',
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Redux/NgRx verwenden konventionell 'type' als Diskriminator " +
       "fuer Actions. Jede Action hat einen eindeutigen type-String " +
@@ -258,12 +258,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Aus welcher Programmier-Tradition stammen Discriminated Unions?",
     options: [
-      "Objektorientierte Programmierung (Java, C#)",
       "Funktionale Programmierung (Haskell, ML, Rust)",
       "Prozedurale Programmierung (C, Pascal)",
+      "Objektorientierte Programmierung (Java, C#)",
       "Logische Programmierung (Prolog)",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Discriminated Unions (Sum Types / Algebraische Datentypen) kommen " +
       "aus ML (1973) und wurden in Haskell perfektioniert. Rust hat sie " +

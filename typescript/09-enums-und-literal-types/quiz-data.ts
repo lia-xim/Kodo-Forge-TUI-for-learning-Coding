@@ -48,12 +48,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was gibt `Direction[0]` zurueck, wenn `enum Direction { Up, Down, Left, Right }`?",
     options: [
-      "0",
       '"Up"',
+      "0",
       "undefined",
       "Error — Enums unterstuetzen keinen Index-Zugriff",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Numerische Enums haben Reverse Mapping: Direction[0] gibt den " +
       "String-Namen 'Up' zurueck. Das generierte JavaScript-Objekt hat " +
@@ -83,11 +83,11 @@ export const questions: QuizQuestion[] = [
     question: "Kompiliert `const d: Direction = 42`? (enum Direction { Up, Down, Left, Right })",
     options: [
       "Nein, 42 ist kein gueltiger Direction-Wert",
-      "Ja, TypeScript erlaubt jede Zahl bei numerischen Enums",
       "Nur mit as-Assertion",
       "Nur wenn 42 ein definierter Wert waere",
+      "Ja, TypeScript erlaubt jede Zahl bei numerischen Enums",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Das ist ein bekanntes Soundness-Loch: TypeScript erlaubt JEDE Zahl " +
       "als numerischen Enum-Wert. Der Grund: Bitwise-Flags wie " +
@@ -101,11 +101,11 @@ export const questions: QuizQuestion[] = [
     question: "Wie viele Eintraege hat `Object.keys(Color)` bei `enum Color { Red, Green, Blue }`?",
     options: [
       "3 — nur die Namen",
-      "6 — Namen und Zahlenwerte",
       "9 — Namen, Werte und Reverse-Mappings",
+      "6 — Namen und Zahlenwerte",
       "0 — Enums haben keine Keys",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Bei numerischen Enums hat das generierte Objekt DOPPELTE Eintraege: " +
       "Die Namen als Keys (Red, Green, Blue) UND die Zahlen als Keys (0, 1, 2). " +
@@ -170,12 +170,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist das Hauptproblem von `const enum`?",
     options: [
-      "Es erzeugt zu viel Laufzeit-Code",
       "Es ist nicht mit isolatedModules kompatibel",
+      "Es erzeugt zu viel Laufzeit-Code",
       "Es unterstuetzt keine String-Werte",
       "Es hat kein Reverse Mapping",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "const enum wird inline ersetzt — der Compiler muss also die " +
       "Enum-Definition in der Quelldatei kennen. Mit isolatedModules " +
@@ -226,11 +226,11 @@ export const questions: QuizQuestion[] = [
     question: "Koennen Wert und Typ in TypeScript denselben Namen haben?",
     options: [
       "Nein, das erzeugt einen Namenskonflikt",
-      "Ja, sie leben in verschiedenen Namensraeumen",
       "Nur bei Enums",
       "Nur bei Klassen",
+      "Ja, sie leben in verschiedenen Namensraeumen",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "TypeScript hat separate Namensraeume fuer Werte und Typen. " +
       "Man kann `const X = { ... } as const` und `type X = typeof X[...]` " +
@@ -262,11 +262,11 @@ export const questions: QuizQuestion[] = [
     question: "Was beschreibt der Typ `\\`on${string}\\`` am besten?",
     options: [
       'Nur den String "on"',
-      'Jeden String der mit "on" anfaengt',
       'Jeden String der "on" enthaelt',
       'Nur "onClick", "onScroll", "onFocus"',
+      'Jeden String der mit "on" anfaengt',
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "`on${string}` ist ein Template Literal Type der JEDEN String " +
       "akzeptiert, der mit 'on' anfaengt. ${string} ist ein Wildcard fuer " +

@@ -32,6 +32,18 @@ Das ist korrekt. `T` koennte `string` sein (hat `.length`), aber auch
 `number` (hat kein `.length`). TypeScript erlaubt nur Operationen die
 fuer **jeden moeglichen Typ** gelten.
 
+> 💭 **Denkfrage:** Was passiert ohne den `extends`-Constraint? Und warum
+> reicht `unknown` als Constraint nicht?
+>
+> **Denk kurz nach, bevor du weiterliest...**
+>
+> Ohne Constraint ist `T` voellig unbeschraenkt — TypeScript behandelt es
+> wie `unknown`. Du kannst keine Properties lesen, keine Methoden aufrufen,
+> nichts. `unknown` als expliziter Constraint (`T extends unknown`) aendert
+> daran nichts, denn `unknown` hat null bekannte Properties. Ein Constraint
+> muss die **konkreten Faehigkeiten** beschreiben, die du brauchst —
+> z.B. `{ length: number }`.
+
 ---
 
 ## Die Loesung: `extends` als Constraint
@@ -54,6 +66,29 @@ getLength({ length: 10 }); // OK — Objekt hat .length
 `T extends { length: number }` bedeutet: "T muss ein Typ sein, der
 mindestens eine Property `length: number` hat." TypeScript prueft das
 bei jedem Aufruf.
+
+> 🔬 **Experiment:** Oeffne `examples/04-constraints.ts` und entferne
+> den `extends { length: number }`-Constraint aus der `getLength`-Funktion.
+> Was sagt TypeScript dir? Beobachte die Fehlermeldung genau — sie erklaert
+> **praezise** warum der Zugriff auf `.length` unsicher waere. Fuege den
+> Constraint dann wieder hinzu und rufe `getLength(42)` auf — jetzt
+> beschwert sich TypeScript an der **Aufrufstelle** statt in der Funktion.
+
+> 🔍 **Tieferes Wissen: Constraints in TypeScript vs. Bounds in Java**
+>
+> TypeScript's `<T extends { length: number }>` entspricht konzeptionell
+> Java's *Upper Bounds*: `<T extends Comparable<T>>`. Aber es gibt einen
+> entscheidenden Unterschied:
+>
+> - **Java** prueft ob T eine Klasse/ein Interface **implementiert**
+>   (nominale Typisierung). `T extends Comparable<T>` heisst: T muss
+>   `Comparable` explizit implementieren.
+> - **TypeScript** prueft ob T die **Struktur** erfuellt (strukturelle
+>   Typisierung). `T extends { length: number }` heisst: T muss eine
+>   Property `length: number` haben — egal woher.
+>
+> Das macht TypeScript-Constraints flexibler: Ein `string` erfuellt
+> `{ length: number }` ohne dass `String` irgendetwas implementieren muss.
 
 ---
 
@@ -119,6 +154,16 @@ Lass uns das aufschluesseln:
 
 > Das ist der Grundbaustein fuer TypeScript-Utility-Types wie
 > `Pick<T, K>`, `Omit<T, K>`, `Record<K, V>` usw.
+
+> 🧠 **Self-Explanation:** Halt kurz an und erklaere dir selbst: Warum
+> braucht `getProperty` **zwei** Typparameter (`T` und `K`) statt einem?
+> Was waere das Problem, wenn K einfach `string` waere statt
+> `K extends keyof T`?
+>
+> **Kernpunkte:** Mit `K extends keyof T` weiss TypeScript den **exakten**
+> Schluessel | Der Rueckgabetyp `T[K]` ist dann praezise (`string`, nicht
+> `string | number | boolean`) | Mit `string` als Key-Typ gaebe es keine
+> Compilezeit-Pruefung ob der Key existiert
 
 ---
 
@@ -211,6 +256,41 @@ function createInstance<T>(Constructor: new () => T): T {
 }
 // ^ Akzeptiert nur Klassen die mit new() aufgerufen werden koennen
 ```
+
+---
+
+## Praxis-Bezug: Constraints in Angular und React
+
+Constraints sind in echten Frameworks allgegenwaertig:
+
+**Angular — Pipe mit Generic Constraint:**
+
+```typescript annotated
+// Eine Pipe die nur auf Arrays mit id-Property funktioniert
+@Pipe({ name: 'sortById' })
+class SortByIdPipe implements PipeTransform {
+  transform<T extends { id: number }>(items: T[]): T[] {
+    return [...items].sort((a, b) => a.id - b.id);
+  }
+  // ^ T behaelt den vollen Typ — die Pipe funktioniert mit
+  //   User[], Product[], Order[] — alles was eine id hat
+}
+```
+
+**React — useSelector mit Constraint:**
+
+```typescript annotated
+// Redux useSelector — vereinfacht
+function useSelector<TState, TSelected>(
+  selector: (state: TState) => TSelected
+): TSelected;
+
+// Verwendung:
+const userName = useSelector((state: RootState) => state.user.name);
+// ^ TSelected wird als string inferiert — typsicher!
+```
+
+In beiden Faellen sorgen Constraints dafuer, dass die Generics **genug wissen** um nuetzlich zu sein, aber **offen genug** bleiben um wiederverwendbar zu sein.
 
 ---
 

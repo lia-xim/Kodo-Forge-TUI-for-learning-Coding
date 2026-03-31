@@ -15,12 +15,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist das Hauptproblem bei `function firstAny(arr: any[]): any`?",
     options: [
-      "Die Funktion ist zu langsam",
       "Der Rueckgabetyp ist any — TypeScript verliert alle Typinformationen",
+      "Die Funktion ist zu langsam",
       "any ist ein ungueltiger Typ",
       "Die Funktion akzeptiert keine Arrays",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "any deaktiviert den TypeScript-Compiler fuer diesen Wert vollstaendig. " +
       "Der Rueckgabetyp ist any — du kannst .foo.bar.baz aufrufen ohne Fehler. " +
@@ -67,11 +67,11 @@ export const questions: QuizQuestion[] = [
     question: "Wann MUSS man den Typparameter explizit angeben?",
     options: [
       "Immer — Inference funktioniert bei Generics nicht",
-      "Wenn T nur im Rueckgabetyp vorkommt und nicht aus Argumenten inferiert werden kann",
       "Nur bei Arrow Functions",
       "Nur bei mehreren Typparametern",
+      "Wenn T nur im Rueckgabetyp vorkommt und nicht aus Argumenten inferiert werden kann",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Wenn T in keinem Parameter vorkommt (z.B. function create<T>(): T[]), " +
       "kann TypeScript T nicht aus den Argumenten ableiten. Dann muss man T " +
@@ -101,12 +101,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was beschreibt `ApiResponse<User>`?",
     options: [
-      "Ein Interface mit data: any",
       "Ein Interface mit data: User und allen anderen Properties des Basis-Interfaces",
+      "Ein Interface mit data: any",
       "Eine Klasse die User erweitert",
       "Ein Union Type von Api und Response und User",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "ApiResponse<User> ersetzt T durch User. Wenn ApiResponse<T> die Properties " +
       "data: T, status: number, message: string hat, dann hat ApiResponse<User> " +
@@ -120,11 +120,11 @@ export const questions: QuizQuestion[] = [
     question: "Welche zwei Schreibweisen sind in TypeScript identisch?",
     options: [
       "Array<number> und number()",
-      "number[] und Array<number>",
       "Array[number] und number[]",
+      "number[] und Array<number>",
       "number<Array> und number[]",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "number[] ist Syntactic Sugar fuer Array<number>. Intern uebersetzt " +
       "TypeScript number[] zu Array<number>. Beide sind exakt derselbe Typ. " +
@@ -135,12 +135,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bewirkt `T extends { length: number }` bei einem Typparameter?",
     options: [
-      "T wird zu { length: number }",
       "T muss mindestens eine Property length: number haben",
+      "T wird zu { length: number }",
       "T darf nur string sein",
       "T wird auf number eingeschraenkt",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "extends bei Typparametern ist ein Constraint — eine Mindestanforderung. " +
       "T kann jeder Typ sein der MINDESTENS { length: number } hat. " +
@@ -154,11 +154,11 @@ export const questions: QuizQuestion[] = [
     question: "Was gibt `getProperty(user, 'name')` zurueck wenn user `{ name: string; age: number }` ist?",
     options: [
       "string | number (Union aller Property-Typen)",
-      "string (praezise der Typ von user.name)",
       "unknown",
+      "string (praezise der Typ von user.name)",
       "any",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "K wird zu 'name' inferiert. T[K] = T['name'] = string. " +
       "Der Indexed Access Type T[K] gibt den PRAEZISEN Typ der jeweiligen " +
@@ -172,11 +172,11 @@ export const questions: QuizQuestion[] = [
     question: "Wie kombiniert man mehrere Constraints fuer einen Typparameter?",
     options: [
       "T extends A, B",
-      "T extends A & B",
       "T extends A | B",
       "T extends A extends B",
+      "T extends A & B",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Intersection Types (&) kombinieren Constraints. T extends A & B " +
       "bedeutet: T muss SOWOHL A als auch B erfuellen. Union (|) wuerde " +
@@ -208,11 +208,11 @@ export const questions: QuizQuestion[] = [
     question: "Ist `interface Cache<K = string, V>` gueltig?",
     options: [
       "Ja — Reihenfolge spielt keine Rolle",
-      "Nein — Typparameter mit Default muessen am Ende stehen",
       "Ja — aber nur bei Interfaces",
       "Nein — man kann keine zwei Typparameter haben",
+      "Nein — Typparameter mit Default muessen am Ende stehen",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Wie bei Funktions-Parametern: Defaults muessen am Ende stehen. " +
       "<K = string, V> ist ungueltig weil V (ohne Default) nach K (mit Default) " +
@@ -240,12 +240,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `function log<T>(x: T): void` ein Anti-Pattern?",
     options: [
-      "T kann nicht inferiert werden",
       "T kommt nur einmal vor — es stellt keine Verbindung her",
+      "T kann nicht inferiert werden",
       "void ist kein gueltiger Rueckgabetyp",
       "Generics duerfen nicht mit void verwendet werden",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Ein Typparameter sollte mindestens ZWEIMAL vorkommen: im Parameter " +
       "UND im Rueckgabetyp (oder in einem anderen Parameter). Wenn T nur " +
@@ -259,11 +259,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum muss man bei `http.get<User>(url)` den Typ explizit angeben?",
     options: [
       "Angular-Konvention — es gibt keinen technischen Grund",
-      "HTTP-Daten kommen zur Laufzeit — TypeScript kann den Typ nicht inferieren",
       "get() hat keinen Typparameter",
+      "HTTP-Daten kommen zur Laufzeit — TypeScript kann den Typ nicht inferieren",
       "Man muss es nicht — TypeScript inferiert immer",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "TypeScript inferiert Typen aus COMPILE-ZEIT-Informationen (Argumente, " +
       "Literale). HTTP-Daten kommen erst zur Laufzeit — der Compiler hat " +

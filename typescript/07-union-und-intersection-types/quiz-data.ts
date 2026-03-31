@@ -37,12 +37,12 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Typ von `x` nach `if (typeof x === 'string')`?",
     code: "function f(x: string | number) {\n  if (typeof x === 'string') {\n    // x ist ???\n  }\n}",
     options: [
-      "string | number",
       "string",
+      "string | number",
       "unknown",
       "any",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "TypeScript's Control Flow Analysis verengt den Typ automatisch. " +
       "Nach typeof x === 'string' weiss TypeScript, dass x ein string sein MUSS. " +
@@ -54,11 +54,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist eine Discriminated Union?",
     options: [
       "Ein Union von Primitives mit Literal Types",
-      "Ein Union von Objekten mit einer gemeinsamen Tag-Property die den Typ identifiziert",
       "Ein Union der automatisch diskriminiert wird",
+      "Ein Union von Objekten mit einer gemeinsamen Tag-Property die den Typ identifiziert",
       "Ein Union mit mehr als 3 Mitgliedern",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Eine Discriminated Union besteht aus Objekt-Typen die eine gemeinsame " +
       "Tag-Property (Diskriminator) haben — z.B. { type: 'circle', radius: number } | " +
@@ -71,11 +71,11 @@ export const questions: QuizQuestion[] = [
     code: "function area(shape: Shape): number {\n  switch (shape.type) {\n    case 'circle': return ...;\n    case 'rect': return ...;\n    default: const _exhaustive: never = shape; // ???\n  }\n}",
     options: [
       "Nichts — der Code funktioniert weiter",
-      "Compile-Error: Das neue Mitglied ist nicht 'never' zuweisbar",
       "Laufzeit-Error im default-Case",
       "TypeScript ignoriert den never-Check",
+      "Compile-Error: Das neue Mitglied ist nicht 'never' zuweisbar",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Wenn alle Cases behandelt sind, ist shape im default-Block 'never'. " +
       "Fuegst du ein neues Mitglied hinzu (z.B. 'triangle'), ist shape im " +
@@ -103,12 +103,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ergibt `string & number`?",
     options: [
-      "string | number",
       "never — kein Wert ist gleichzeitig string UND number",
+      "string | number",
       "any",
       "unknown",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Kein Wert kann gleichzeitig string UND number sein. Die Intersection " +
       "von inkompatiblen Primitives ergibt 'never' — den leeren Typ, der " +
@@ -121,11 +121,11 @@ export const questions: QuizQuestion[] = [
     code: "type User = { name: string } | { name: string; email: string };\nfunction f(user: User) {\n  if ('email' in user) { /* user ist ??? */ }\n}",
     options: [
       "User — unveraendert",
-      "{ name: string; email: string } — der Typ mit email",
       "{ email: string } — nur die email-Property",
+      "{ name: string; email: string } — der Typ mit email",
       "never",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Der 'in'-Operator verengt auf das Union-Mitglied das die " +
       "gepruefte Property hat. Nach 'email' in user weiss TypeScript, " +
@@ -138,11 +138,11 @@ export const questions: QuizQuestion[] = [
     code: "const arr = [1, null, 2, null, 3];\nconst filtered = arr.filter(x => x !== null);",
     options: [
       "filter() existierte vorher nicht",
-      "TypeScript inferiert automatisch den Type Guard — filtered ist number[]",
       "filter() gibt jetzt ein Set zurueck",
       "Nichts — man brauchte schon immer keinen Type Guard",
+      "TypeScript inferiert automatisch den Type Guard — filtered ist number[]",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Ab TS 5.5 erkennt TypeScript automatisch Type Predicates in filter-Callbacks. " +
       "x => x !== null wird als Type Guard erkannt — filtered ist number[] statt " +
@@ -171,11 +171,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Hauptunterschied zwischen `interface B extends A` und `type B = A & Extra`?",
     options: [
       "Kein Unterschied",
-      "extends ist schneller fuer den Compiler und meldet Konflikte als Fehler",
       "extends funktioniert nur mit Klassen",
+      "extends ist schneller fuer den Compiler und meldet Konflikte als Fehler",
       "& ist veraltet seit TS 5.0",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "extends ist fuer den Compiler effizienter und meldet Property-Konflikte " +
       "direkt als Fehler. & erzeugt bei Konflikten stillschweigend 'never'-Properties. " +
@@ -188,11 +188,11 @@ export const questions: QuizQuestion[] = [
     code: "type A = string;\ntype B = 'GET' | 'POST' | 'PUT' | 'DELETE';",
     options: [
       "A — akzeptiert mehr Werte",
-      "B — nur gueltige HTTP-Methoden erlaubt, Autocomplete inklusive",
       "Beide gleich — TypeScript behandelt sie identisch",
       "A — weniger Tippaufwand",
+      "B — nur gueltige HTTP-Methoden erlaubt, Autocomplete inklusive",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Literal Unions wie 'GET' | 'POST' | 'PUT' | 'DELETE' sind praeziser " +
       "als string. Sie erlauben nur gueltige Werte, bieten IDE-Autocomplete, " +
@@ -204,12 +204,12 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Typ von `name` nach `if (name)`?",
     code: "function f(name: string | null | undefined) {\n  if (name) {\n    // name ist ???\n  }\n}",
     options: [
-      "string | null | undefined",
       "string — null, undefined und '' sind falsy",
+      "string | null | undefined",
       "string | null",
       "unknown",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Truthiness-Check entfernt alle falsy-Werte: null, undefined, '' (leerer String), " +
       "0 und false. Nach if (name) ist name vom Typ string. " +
@@ -255,11 +255,11 @@ export const questions: QuizQuestion[] = [
     question: "Warum sind Discriminated Unions ideal fuer State Machines?",
     options: [
       "Weil sie schneller sind als Klassen",
-      "Weil der Compiler ungueltige Zustaende und fehlende State-Behandlung verhindert",
       "Weil State Machines immer genau 2 Zustaende haben",
+      "Weil der Compiler ungueltige Zustaende und fehlende State-Behandlung verhindert",
       "Weil TypeScript State Machines nativ unterstuetzt",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Discriminated Unions modellieren Zustaende als eigene Typen mit " +
       "zustandsspezifischen Properties. Der Compiler verhindert Zugriff auf " +

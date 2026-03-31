@@ -48,11 +48,11 @@ export const questions: QuizQuestion[] = [
     question: "Welchen Typ hat 'wert' im else-Zweig?",
     options: [
       "string | number",
-      "number",
       "string",
       "never",
+      "number",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Im if-Zweig wird string behandelt (typeof === 'string'). " +
       "Im else-Zweig bleibt nur number uebrig — TypeScript eliminiert " +
@@ -87,12 +87,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Typ von 'form' nach dem in-Check?",
     options: [
-      "Kreis | Rechteck",
       "Kreis",
+      "Kreis | Rechteck",
       "Rechteck",
       "object",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       'Der in-Operator prueft ob "radius" auf dem Objekt existiert. ' +
       "Nur Kreis hat eine radius-Property, also narrowt TypeScript zu Kreis.",
@@ -127,12 +127,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche gueltige Portnummer wird von 'if (port)' faelschlicherweise ausgeschlossen?",
     options: [
-      "1",
       "0",
+      "1",
       "80",
       "Keine — alle Zahlen sind truthy",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "0 ist in JavaScript falsy! 'if (port)' schliesst Port 0 aus, " +
       "obwohl 0 ein gueltiger Port ist (OS waehlt einen freien Port). " +
@@ -177,11 +177,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen 'x is string' und 'asserts x is string'?",
     options: [
       "Kein Unterschied — beide sind Type Guards",
-      "'is' gibt boolean zurueck, 'asserts' wirft einen Error oder gibt void zurueck",
       "'asserts' ist deprecated seit TS 5.0",
       "'is' funktioniert nur mit typeof, 'asserts' mit allem",
+      "'is' gibt boolean zurueck, 'asserts' wirft einen Error oder gibt void zurueck",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Type Guards (is) geben boolean zurueck und werden in if-Bedingungen genutzt. " +
       "Assertion Functions (asserts) geben void zurueck oder werfen einen Error. " +
@@ -240,12 +240,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist assertNever besser als ein leerer default-Zweig?",
     options: [
-      "assertNever ist schneller",
       "assertNever gibt Compile-Schutz UND Laufzeit-Schutz",
+      "assertNever ist schneller",
       "assertNever ist die einzige Moeglichkeit fuer exhaustive Checks",
       "assertNever wird von ESLint erzwungen",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "assertNever bietet ZWEI Sicherheitsnetze: (1) Compile-Fehler wenn ein " +
       "Fall im Union fehlt, (2) Laufzeit-Error wenn ein unerwarteter Wert " +
@@ -258,10 +258,10 @@ export const questions: QuizQuestion[] = [
     options: [
       "string | null",
       "null",
-      "string",
       "never",
+      "string",
     ],
-    correct: 2,
+    correct: 3,
     explanation:
       "Nach dem early return (if x === null) weiss TypeScript: Wenn wir " +
       "weiter im Code sind, kann x nicht null sein. Also: string. " +
@@ -278,11 +278,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der fundamentale Unterschied zwischen Narrowing und 'as' (Type Assertion)?",
     options: [
       "Narrowing ist langsamer weil es Laufzeit-Checks macht",
-      "Narrowing ist ein Beweis (Laufzeit-Check), as ist ein Versprechen (kein Check)",
       "as funktioniert nur mit primitiven Typen",
+      "Narrowing ist ein Beweis (Laufzeit-Check), as ist ein Versprechen (kein Check)",
       "Narrowing funktioniert nur in if-Statements",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Narrowing fuehrt einen echten Laufzeit-Check durch und BEWEIST dem Compiler " +
       "den Typ. 'as' ist ein Versprechen an den Compiler ohne Laufzeit-Pruefung. " +

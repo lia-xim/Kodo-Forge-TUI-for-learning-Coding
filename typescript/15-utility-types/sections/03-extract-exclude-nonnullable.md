@@ -18,8 +18,23 @@
 
 ## Der Unterschied: Objekt-Types vs Union-Types
 
+> 📖 **Hintergrund: Conditional Types und Distribution**
+>
+> Extract, Exclude und NonNullable basieren alle auf **Conditional Types**,
+> die ebenfalls in TypeScript 2.1-2.8 Stueck fuer Stueck eingefuehrt wurden.
+> Der entscheidende Mechanismus — **Distributive Conditional Types** — kam
+> mit TS 2.8 (Maerz 2018). Die Idee: Wenn ein Conditional Type auf einen
+> Union-Typ angewendet wird, wird er auf JEDES Mitglied einzeln angewendet
+> und die Ergebnisse wieder zu einem Union zusammengefasst. Das ist wie
+> `Array.filter()` — aber fuer Typen statt fuer Werte.
+
 In Sektion 01-02 haben wir Properties von **Objekt-Typen** manipuliert.
 Jetzt manipulieren wir **Union-Typen** selbst — wir filtern ihre Mitglieder.
+
+> **Analogie:** Stell dir einen Union-Typ als **Kartenstapel** vor.
+> Pick/Omit waehlen **Spalten auf einer einzelnen Karte** aus.
+> Extract/Exclude waehlen **ganze Karten** aus dem Stapel — sie filtern
+> welche Karten du behaeltst und welche du wegwirfst.
 
 ```typescript annotated
 // Objekt-Typ: Pick/Omit waehlen Properties
@@ -73,6 +88,8 @@ type WritingMethod = Exclude<HttpMethod, "GET">;
 ```typescript annotated
 // Die eingebaute Definition:
 type Exclude<T, U> = T extends U ? never : T;
+// ^ Wenn T dem Typ U zuweisbar ist → verschwinde (never)
+//                                    ^ Sonst: bleib wie du bist
 ```
 
 > 📖 **Hintergrund: Distributive Conditional Types**
@@ -90,6 +107,24 @@ type Exclude<T, U> = T extends U ? never : T;
 >
 > `never` in einem Union verschwindet automatisch — es ist das "neutrale
 > Element" der Union-Typen, wie 0 bei der Addition.
+
+> 🔍 **Tieferes Wissen: Wann Distribution NICHT passiert**
+>
+> Distribution passiert nur, wenn der Typ-Parameter **nackt** (naked) im
+> Conditional steht. Wenn du T in ein Tuple packst, wird NICHT distribuiert:
+>
+> ```typescript
+> // Distributiv (T ist nackt):
+> type D<T> = T extends string ? "ja" : "nein";
+> type R1 = D<string | number>;  // "ja" | "nein"
+>
+> // NICHT distributiv (T ist in [T] verpackt):
+> type ND<T> = [T] extends [string] ? "ja" : "nein";
+> type R2 = ND<string | number>;  // "nein" (der ganze Union wird geprueft)
+> ```
+>
+> Diesen Trick braucht man selten, aber er erklaert, warum die Syntax
+> so funktioniert wie sie funktioniert.
 
 ---
 
@@ -141,6 +176,23 @@ type ErrorResponse = Extract<ApiResponse, { message: string }>;
 // ^ { status: "error"; message: string }
 ```
 
+> ⚡ **Praxis-Tipp: Extract bei Discriminated Unions in Angular/React**
+>
+> ```typescript
+> // Angular: NgRx Actions filtern
+> type AllActions = LoadUsers | LoadUsersSuccess | LoadUsersFailure;
+> type SuccessActions = Extract<AllActions, { type: `[Users] ${string} Success` }>;
+>
+> // React: Reducer-States filtern
+> type AppState =
+>   | { status: "idle" }
+>   | { status: "loading" }
+>   | { status: "success"; data: User[] }
+>   | { status: "error"; error: string };
+> type ActiveState = Exclude<AppState, { status: "idle" }>;
+> // Nur die States in denen "etwas passiert ist"
+> ```
+
 > 🧠 **Erklaere dir selbst:** Was ist der Zusammenhang zwischen
 > Extract/Exclude und Pick/Omit?
 > **Kernpunkte:** Pick/Omit arbeiten auf Objekt-Properties | Extract/Exclude arbeiten auf Union-Mitglieder | Omit nutzt intern Exclude (fuer die Keys) | Alle vier sind komplementaere Paare
@@ -172,12 +224,18 @@ type DefiniteNickname = NonNullable<User["nickname"]>;
 ```typescript annotated
 // NonNullable ist intern:
 type NonNullable<T> = Exclude<T, null | undefined>;
+// ^ Entferne null       ^ und undefined aus dem Union
 
 // Identisch:
 type A = NonNullable<string | null | undefined>;
 type B = Exclude<string | null | undefined, null | undefined>;
 // Beide: string
 ```
+
+> 🔬 **Experiment:** Oeffne `examples/03-extract-exclude-nonnullable.ts` und
+> schreibe `type Test = NonNullable<0 | "" | false | null | undefined>`.
+> Welche Werte bleiben uebrig? Tipp: NonNullable entfernt nur `null` und
+> `undefined`, nicht "falsy values" wie `0` oder `""`.
 
 ### Typisches Pattern: Nach einer Null-Pruefung
 

@@ -40,6 +40,12 @@ export interface CourseProgressSummary {
   currentPhase: number;
   lastLessonTitle: string;
   percent: number;
+  /** Dynamisch berechnet: tatsaechliche Sektionen auf der Festplatte */
+  actualSections: number;
+  /** Dynamisch berechnet: geschaetzte Stunden (Sektionen * 10min + Uebungen) */
+  actualHours: number;
+  /** Dynamisch berechnet: Anzahl vorhandener Exercise-Dateien */
+  actualExercises: number;
 }
 
 // ─── Lektions-Typen ─────────────────────────────────────────────────────────

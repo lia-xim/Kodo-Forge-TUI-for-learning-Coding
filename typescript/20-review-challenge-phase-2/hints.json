@@ -1,0 +1,37 @@
+{
+  "exercises/01-type-system-mastery.ts": {
+    "1": ["FormErrors: [K in keyof T]?: string. FormTouched: [K in keyof T]: boolean.", "initFormState: Object.keys Loop mit false-Initialisierung."],
+    "2": ["Methods: as T[K] extends Function ? K : never. Data: umgekehrt.", "Key Remapping mit Conditional fuer Filterung."],
+    "3": ["EventMap: [K in keyof T & string as `${K}Changed`]: { prev, next }.", "Emitter: on/emit mit K extends keyof Events."],
+    "4": ["Path extends `${infer K}.${infer Rest}` — String-Split mit infer.", "Rekursion: K extends keyof T ? PathValue<T[K], Rest> : never."],
+    "5": ["Alle drei: Rekursion + Function-Guard + jeweiliger Modifier.", "T[K] extends Function ? T[K] : DeepX<T[K]> fuer den Guard."]
+  },
+  "exercises/02-real-world-types.ts": {
+    "1": ["CreateDTO = Omit<T, keyof BaseEntity>. UpdateDTO = Partial davon.", "ResponseDTO: Date -> string mit Conditional Mapped Type."],
+    "2": ["ValidationRule pro Feld mit Conditional fuer verschiedene Feld-Typen.", "validate<T>: Object.keys Loop mit Rule-Checks."],
+    "3": ["StateMachine<States, Transitions> mit Record<State, State[]>.", "transition() prueft zur Compile-Zeit ob der Uebergang erlaubt ist."],
+    "4": ["Plugin<Config, Events> Interface mit init(config) und destroy().", "PluginManager.register(plugin, config) inferiert Config aus dem Plugin."],
+    "5": ["ConfigSchema: { value, default, description, required } pro Key.", "createConfig: value ?? default fuer jeden Key."]
+  },
+  "exercises/03-declaration-challenge.ts": {
+    "1": ["declare module 'http-client' { export function get<T>(url: string): Promise<T>; }", "Generische Funktionen in Declarations erlaubt."],
+    "2": ["declare module 'express' { interface Request { user?: ... } }", "Import 'express' am Anfang der Datei."],
+    "3": ["declare global { namespace NodeJS { interface ProcessEnv { ... } } }", "export {} am Ende!"],
+    "4": ["declare module '*.svg' { const src: string; export default src; }", "Wildcard * fuer beliebige Dateinamen."],
+    "5": ["export { } from './types'; export { } from './services';", "Re-Exports mit export type { } fuer reine Typen."]
+  },
+  "exercises/04-type-puzzle.ts": {
+    "1": ["IsEqual nutzt den Trick: (<T>() => T extends A ? 1 : 2) extends ...", "Vergleicht die 'Signatur' der beiden Typen."],
+    "2": ["UnionToIntersection nutzt contravariant position: (U extends any ? (x: U) => void : never)", "Contravariance erzwingt Intersection statt Union."],
+    "3": ["Permutation nutzt Distribution + Rekursion.", "T extends T ? [T, ...Permutation<Exclude<Original, T>>] : []"],
+    "4": ["T extends readonly string[] ? { [K in T[number]]: unknown } : never", "T[number] gibt den Union aller Tuple-Elemente."],
+    "5": ["Chainable: set<K, V>(key: K, value: V): Chainable<T & Record<K, V>>", "Builder Pattern mit Typ-Wachstum durch Intersection."]
+  },
+  "exercises/05-refactoring-to-types.ts": {
+    "1": ["Discriminated Union: type: 'user' | 'product' als Tag.", "switch(data.type) fuer typsicheren Zugriff."],
+    "2": ["TypedEmitter<Events> mit on<E extends keyof Events>(event, handler).", "Events-Interface mappt Event-Namen auf Payload-Typen."],
+    "3": ["ApiClient<T extends Entity> mit generischen CRUD-Methoden.", "Omit<T, 'id'> fuer create, Partial davon fuer update."],
+    "4": ["getConfig<K extends keyof AppConfig>(key: K): AppConfig[K]", "Indexed Access Type fuer typsicheren Key-Zugriff."],
+    "5": ["Rules<T> und Errors<T> als Mapped Types.", "validate<T extends Record<string, unknown>>(data, rules): Errors<T>."]
+  }
+}

@@ -17,6 +17,17 @@
 
 ---
 
+> 📖 **Hintergrund:** Generics sind der Grund warum `useState<User[]>([])`
+> in React funktioniert und warum `HttpClient.get<Product[]>()` in Angular
+> typsicher ist. Ohne Generics muessten Frameworks entweder `any` zurueck-
+> geben (keine Typsicherheit) oder fuer jeden Datentyp eigene Funktionen
+> bereitstellen (unmoeglich wartbar). Generics sind die **Bruecke** zwischen
+> Framework-Code und deinem Domain-Modell — sie erlauben es einer Library,
+> Code zu schreiben, der mit Typen arbeitet, die zum Zeitpunkt der
+> Library-Entwicklung noch gar nicht existieren.
+
+---
+
 ## React: useState\<T\>
 
 React's wichtigster Hook ist generisch:
@@ -87,6 +98,52 @@ this.http.get<User>('/api/users/1').subscribe(user => {
 > (die Daten kommen erst zur Laufzeit). Deshalb musst du `T` **explizit**
 > angeben. Das ist einer der Faelle wo Inference nicht funktioniert.
 
+### Weitere Angular-Generics: InjectionToken\<T\>
+
+```typescript annotated
+// Angular Dependency Injection mit typsicherem Token:
+import { InjectionToken } from '@angular/core';
+
+interface AppConfig {
+  apiUrl: string;
+  features: string[];
+}
+
+// InjectionToken<T> sorgt dafuer, dass inject() den richtigen Typ liefert:
+const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
+
+// Im Component:
+const config = inject(APP_CONFIG);
+// ^ Typ: AppConfig — ohne Cast, ohne any!
+// config.apiUrl — string
+// config.features — string[]
+```
+
+### Weitere React-Generics: createContext\<T\>()
+
+```typescript annotated
+import { createContext, useContext } from 'react';
+
+interface Theme {
+  primary: string;
+  secondary: string;
+  dark: boolean;
+}
+
+// createContext<T> macht den Context typsicher:
+const ThemeContext = createContext<Theme>({
+  primary: '#007bff',
+  secondary: '#6c757d',
+  dark: false,
+});
+
+// In einem Component:
+const theme = useContext(ThemeContext);
+// ^ Typ: Theme — volle IDE-Unterstuetzung!
+// theme.primary — string
+// theme.dark — boolean
+```
+
 ---
 
 ## Promise\<T\> — Asynchrone Typsicherheit
@@ -117,6 +174,17 @@ const namePromise: Promise<string> = fetchUser(1).then(user => user.name);
 Die `then`-Methode ist selbst generisch: `then<U>` nimmt eine Funktion
 die von `T` nach `U` transformiert und gibt ein `Promise<U>` zurueck.
 So bleibt die gesamte Promise-Kette typsicher.
+
+> 🧠 **Self-Explanation:** Halt kurz an und erklaere dir selbst: Warum
+> **muss** `Promise<T>` generisch sein? Was waere die Alternative?
+>
+> **Kernpunkte:** Ohne Generics muesste Promise `any` zurueckgeben —
+> dann verlierst du jede Typsicherheit nach einem `await` | Die Alternative
+> waere separate Klassen: `PromiseString`, `PromiseNumber`,
+> `PromiseUser`... — offensichtlich absurd | Generics erlauben es **einem**
+> Promise-Typ, mit **jedem** Ergebnis-Typ typsicher zu arbeiten |
+> Das gleiche Argument gilt fuer `Array<T>`, `Map<K,V>`, `Set<T>` —
+> Container-Typen **muessen** generisch sein
 
 ---
 
@@ -236,6 +304,36 @@ const data = await retry(() => fetch("/api/data").then(r => r.json()));
 
 Generics durchziehen **jede Ebene**. Von den eingebauten Typen ueber
 Framework-APIs bis zu deinem eigenen Code. Deshalb sind sie das Herzstuck.
+
+---
+
+> 🔍 **Tieferes Wissen: Generic Type Erasure**
+>
+> Ein entscheidender Punkt, der oft uebersehen wird: TypeScript-Generics
+> **verschwinden zur Laufzeit**. Wenn du `Array<string>` schreibst,
+> wird daraus im JavaScript einfach `Array`. Es gibt zur Laufzeit keinen
+> Unterschied zwischen `Array<string>` und `Array<number>`.
+>
+> Das nennt sich **Type Erasure** — der TypeScript-Compiler entfernt alle
+> Typinformationen beim Kompilieren. Du kannst also **nicht** schreiben:
+>
+> ```typescript
+> // DAS GEHT NICHT:
+> function isStringArray<T>(arr: T[]): boolean {
+>   return T === string; // Error! T existiert nicht zur Laufzeit
+> }
+> ```
+>
+> **Interessanter Vergleich mit Java:** Java hat seit Java 5 (2004) ebenfalls
+> Type Erasure bei Generics. `List<String>` wird zur Laufzeit zu `List`.
+> Allerdings arbeitet Java an *Reifiable Types* (Project Valhalla), die
+> in Zukunft Typinformationen zur Laufzeit bewahren koennten. TypeScript
+> wird diesen Weg nie gehen — es kompiliert zu JavaScript, und JavaScript
+> hat kein Typsystem zur Laufzeit.
+>
+> **Fazit:** Generics sind ein reines **Compilezeit-Werkzeug**. Sie machen
+> deinen Code sicher waehrend du schreibst, verschwinden aber spurlos
+> im fertigen JavaScript.
 
 ---
 

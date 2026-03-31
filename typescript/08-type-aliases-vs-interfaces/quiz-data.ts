@@ -34,12 +34,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was kann `type` was `interface` NICHT kann?",
     options: [
-      "Objekt-Typen beschreiben",
       "Union Types, Mapped Types, Conditional Types, Tuple Types",
+      "Objekt-Typen beschreiben",
       "Methoden definieren",
       "Von Klassen implementiert werden",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "type ist das Allzweck-Werkzeug: Es kann Unions, Intersections, " +
       "Mapped Types, Conditional Types und Tuples — alles was interfaces " +
@@ -51,11 +51,11 @@ export const questions: QuizQuestion[] = [
     code: "interface User { name: string; }\ninterface User { email: string; }\n// User hat jetzt name UND email",
     options: [
       "Ein Fehler — man kann ein Interface nicht zweimal deklarieren",
-      "Beide Deklarationen werden zu einem Interface zusammengefuehrt",
       "Die zweite Deklaration ueberschreibt die erste",
+      "Beide Deklarationen werden zu einem Interface zusammengefuehrt",
       "Nur die gemeinsamen Properties bleiben",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Declaration Merging ist ein Feature von Interfaces: Mehrere " +
       "Deklarationen mit demselben Namen werden automatisch zusammengefuegt. " +
@@ -81,12 +81,12 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen `extends` und `&`?",
     code: "interface B extends A { extra: string; }\ntype B = A & { extra: string; }",
     options: [
-      "Kein Unterschied — sie sind austauschbar",
       "extends ist schneller fuer den Compiler und meldet Konflikte als Fehler",
+      "Kein Unterschied — sie sind austauschbar",
       "& ist schneller",
       "extends funktioniert nur mit Klassen",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "extends ist fuer den Compiler effizienter (wird gecached) und meldet " +
       "Property-Konflikte direkt als Fehler. & erzeugt bei Konflikten " +
@@ -98,11 +98,11 @@ export const questions: QuizQuestion[] = [
     code: "interface A { x: string; }\ninterface B extends A { x: number; }",
     options: [
       "x wird zu string & number = never",
-      "Compile-Error: Types of property 'x' are incompatible",
       "x wird zu string | number",
+      "Compile-Error: Types of property 'x' are incompatible",
       "Die zweite Deklaration gewinnt",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "extends meldet Konflikte DIREKT als Compile-Error. Das ist ein " +
       "Vorteil gegenueber &, das stillschweigend never-Properties erzeugt. " +
@@ -128,12 +128,12 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert bei einem Property-Konflikt mit `&`?",
     code: "type A = { x: string };\ntype B = { x: number };\ntype AB = A & B; // x ist ???",
     options: [
-      "Compile-Error",
       "x wird zu string & number = never (kein Fehler, aber unbrauchbar)",
+      "Compile-Error",
       "x wird zu string | number",
       "x wird zu string (erstes gewinnt)",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Intersection-Konflikte erzeugen KEINEN Fehler! Die Property wird " +
       "string & number = never — technisch gueltig aber kein Wert kann " +
@@ -145,11 +145,11 @@ export const questions: QuizQuestion[] = [
     code: "interface Printable { print(): void; }\nclass Report implements Printable { ... }",
     options: [
       "implements erzeugt Laufzeit-Code",
-      "implements ist ein Compile-Zeit-Check dass die Klasse die Interface-Form erfuellt",
       "Nur Interfaces koennen implementiert werden, nicht Types",
+      "implements ist ein Compile-Zeit-Check dass die Klasse die Interface-Form erfuellt",
       "implements vererbt die Methoden automatisch",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "implements ist ein reiner Compile-Zeit-Check: TypeScript prueft ob " +
       "die Klasse alle Properties und Methoden des Interfaces hat. " +
@@ -176,12 +176,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann empfiehlt der Angular Style Guide Interfaces?",
     options: [
-      "Nie — Angular bevorzugt type",
       "Fuer Service-Contracts, DTOs und alles was Objekt-Formen beschreibt",
+      "Nie — Angular bevorzugt type",
       "Nur fuer Dependency Injection",
       "Nur fuer Components",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Angular bevorzugt Interfaces fuer die meisten Objekt-Typen: " +
       "Service-Contracts, DTOs, Component-Inputs. Declaration Merging " +
@@ -192,11 +192,11 @@ export const questions: QuizQuestion[] = [
     question: "Wann bevorzugt die React-Community `type`?",
     options: [
       "Nie — React bevorzugt interface",
-      "Fuer Props (oft Unions), State, und allgemein weil type flexibler ist",
       "Nur fuer Hooks",
       "Nur fuer Styled Components",
+      "Fuer Props (oft Unions), State, und allgemein weil type flexibler ist",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Die React-Community bevorzugt type: Props sind oft Unions, " +
       "Discriminated Unions fuer State, und type ist flexibler fuer " +
@@ -207,11 +207,11 @@ export const questions: QuizQuestion[] = [
     question: "Was sind die drei Faustregeln fuer type vs interface?",
     options: [
       "Immer type, nie interface",
-      "Union/Mapped/Conditional → type, Objekt-Formen → interface (oder type), Konsistenz im Team",
       "Immer interface, nur type fuer Primitives",
       "Es gibt keine klaren Regeln",
+      "Union/Mapped/Conditional → type, Objekt-Formen → interface (oder type), Konsistenz im Team",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "1) Brauchst du Union/Mapped/Conditional Types → type. " +
       "2) Beschreibst du eine Objekt-Form → interface (oder type — beides OK). " +
@@ -222,11 +222,11 @@ export const questions: QuizQuestion[] = [
     question: "Was kann `interface` was `type` NICHT kann?",
     options: [
       "Union Types definieren",
-      "Declaration Merging — ein Interface mehrfach deklarieren und zusammenfuehren",
       "Funktionstypen beschreiben",
+      "Declaration Merging — ein Interface mehrfach deklarieren und zusammenfuehren",
       "In Generics verwendet werden",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Declaration Merging ist das einzige Feature das nur Interfaces haben. " +
       "Eine doppelte type-Deklaration ist ein Fehler. Interfaces koennen " +
@@ -237,11 +237,11 @@ export const questions: QuizQuestion[] = [
     question: "Welches Tool erzwingt team-weite type/interface-Konsistenz?",
     options: [
       "TypeScript Compiler",
-      "ESLint mit @typescript-eslint/consistent-type-definitions",
       "Prettier",
       "tsconfig.json",
+      "ESLint mit @typescript-eslint/consistent-type-definitions",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Die ESLint-Regel @typescript-eslint/consistent-type-definitions kann " +
       "erzwingen, ob das Team immer type oder immer interface fuer Objekt-Typen " +

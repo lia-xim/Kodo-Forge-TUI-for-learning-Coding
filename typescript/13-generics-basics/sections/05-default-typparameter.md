@@ -16,6 +16,17 @@
 
 ---
 
+> 📖 **Hintergrund:** Default Type Parameters wurden in **TypeScript 2.3**
+> (April 2017) eingefuehrt. Die Inspiration kam direkt aus C++, wo
+> *Default Template Arguments* seit C++11 existieren:
+> `template<typename T = int>`. Auch Java diskutiert das Konzept seit
+> Jahren, hat es aber nie eingefuehrt — dort muss man immer explizit sein.
+> In TypeScript loesen Defaults ein echtes Ergonomie-Problem: Bibliotheken
+> koennen den "einfachen Fall" einfach halten, ohne Flexibilitaet zu
+> opfern.
+
+---
+
 ## Das Problem: Immer den Typ angeben muessen
 
 Manchmal gibt es einen "ueblichen" Typ, aber du willst Flexibilitaet:
@@ -55,6 +66,12 @@ const b: Container<number> = { value: 42, label: "zahl" };
 
 Die Syntax `<T = string>` funktioniert genau wie Default-Parameter
 bei Funktionen: Wenn nichts angegeben wird, gilt der Default.
+
+> **Analogie:** Defaults bei Generics sind wie Defaults bei
+> Funktionsparametern — wenn du nichts angibst, wird der Standard
+> verwendet. So wie `function greet(name = "Welt")` ohne Argument
+> `"Welt"` nutzt, nutzt `Container` ohne Typargument `string`.
+> Der Mechanismus ist derselbe, nur auf der Typ-Ebene statt der Wert-Ebene.
 
 ---
 
@@ -109,6 +126,23 @@ const numberCache: Cache<string, number> = { /* ... */ } as any;
 // interface Bad<T = string, U> { ... }
 //                          ^ Error! Required nach Optional
 ```
+
+> 💭 **Denkfrage:** Warum muessen Default-Parameter am **Ende** stehen?
+> Was waere das Problem, wenn sie vorne stehen koennten?
+>
+> **Denk kurz nach, bevor du weiterliest...**
+>
+> Stell dir vor: `interface Bad<T = string, U>`. Wenn du `Bad<number>`
+> schreibst — ist `number` jetzt T (und U fehlt) oder U (und T ist der
+> Default)? Es waere mehrdeutig. Genau wie bei Funktionen:
+> `function f(a = 1, b)` — bei `f(5)` ist unklar ob 5 fuer a oder b ist.
+> Deshalb: Defaults immer am Ende, damit die Zuordnung eindeutig bleibt.
+
+> 🔬 **Experiment:** Oeffne `examples/05-default-typparameter.ts` und
+> aendere die Reihenfolge der Typparameter — setze einen Default-Parameter
+> **vor** einen ohne Default. Was sagt TypeScript? Die Fehlermeldung ist
+> sehr aufschlussreich: *"Required type parameters may not follow
+> optional type parameters."*
 
 Bei mehreren Defaults koennen alle am Ende stehen:
 

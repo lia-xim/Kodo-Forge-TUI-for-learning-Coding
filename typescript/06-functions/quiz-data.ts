@@ -39,12 +39,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen `void` und `undefined` als Return-Typ?",
     options: [
-      "Kein Unterschied — beide bedeuten 'kein Rueckgabewert'",
       "void bedeutet 'Rueckgabewert irrelevant', undefined bedeutet 'gibt konkret undefined zurueck'",
+      "Kein Unterschied — beide bedeuten 'kein Rueckgabewert'",
       "undefined ist veraltet, void ist die moderne Variante",
       "void ist fuer Callbacks, undefined fuer normale Funktionen",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "void sagt 'der Rueckgabewert ist irrelevant' — besonders wichtig bei Callbacks, " +
       "wo void-Callbacks trotzdem Werte zurueckgeben duerfen. undefined ist ein konkreter " +
@@ -56,11 +56,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen `x?: string` und `x: string | undefined`?",
     options: [
       "Kein Unterschied",
-      "Bei x?: string kann man das Argument weglassen, bei x: string | undefined muss man es uebergeben",
       "x?: string akzeptiert auch null",
+      "Bei x?: string kann man das Argument weglassen, bei x: string | undefined muss man es uebergeben",
       "x: string | undefined ist nur in Interfaces erlaubt",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Bei x?: string kann der Aufrufer das Argument komplett weglassen: f(). " +
       "Bei x: string | undefined MUSS man es uebergeben: f(undefined). " +
@@ -88,11 +88,11 @@ export const questions: QuizQuestion[] = [
     question: "Welchen Typ hat `args` in `function log(...args: string[])`?",
     options: [
       "string",
-      "string[]",
       "...string[]",
       "Array<string> | string",
+      "string[]",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Rest-Parameter sammeln alle uebergebenen Argumente in ein Array. " +
       "Der Typ von args ist string[] — ein normales Array. Die Spread-Syntax " +
@@ -121,12 +121,12 @@ export const questions: QuizQuestion[] = [
     question: "Kann ein Aufrufer die Implementation Signature einer ueberladenen Funktion direkt aufrufen?",
     code: "function format(x: string): string;\nfunction format(x: number): string;\nfunction format(x: string | number): string { return String(x); }\n\nformat(true); // ???",
     options: [
-      "Ja, die Implementation akzeptiert string | number also auch boolean",
       "Nein, die Implementation Signature ist fuer Aufrufer unsichtbar",
+      "Ja, die Implementation akzeptiert string | number also auch boolean",
       "Ja, wenn man explizit castet",
       "Nur innerhalb desselben Moduls",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Die Implementation Signature ist fuer Aufrufer unsichtbar. Nur die Overload-Signaturen " +
       "definieren, wie die Funktion aufgerufen werden kann. format(true) scheitert, " +
@@ -139,11 +139,11 @@ export const questions: QuizQuestion[] = [
     question: "In welcher Reihenfolge sollte man Overload-Signaturen schreiben?",
     options: [
       "Breiteste zuerst, spezifischste zuletzt",
-      "Spezifischste zuerst, breiteste zuletzt",
       "Die Reihenfolge ist egal",
+      "Spezifischste zuerst, breiteste zuletzt",
       "Alphabetisch nach Parametertyp",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "TypeScript prueft Overloads von oben nach unten und nimmt den ersten Treffer. " +
       "Spezifische Overloads muessen VOR breiteren stehen, sonst wuerde der breite " +
@@ -156,11 +156,11 @@ export const questions: QuizQuestion[] = [
     code: "type VoidCallback = () => void;\nconst fn: VoidCallback = () => 42;",
     options: [
       "Nein, 42 ist nicht void",
-      "Ja, void-Callbacks duerfen Werte zurueckgeben — der Wert wird ignoriert",
       "Nur mit explizitem return",
       "Nur wenn VoidCallback als Interface definiert ist",
+      "Ja, void-Callbacks duerfen Werte zurueckgeben — der Wert wird ignoriert",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Void-Callbacks sind absichtlich tolerant: Sie duerfen Werte zurueckgeben. " +
       "Das basiert auf dem Substitutability Principle — eine Funktion die 'mehr' " +
@@ -172,12 +172,12 @@ export const questions: QuizQuestion[] = [
   {
     question: "Kompiliert `function doSomething(): void { return 42; }`?",
     options: [
-      "Ja, void erlaubt beliebige Rueckgabewerte",
       "Nein, bei direkter Funktionsdeklaration ist void STRENG",
+      "Ja, void erlaubt beliebige Rueckgabewerte",
       "Ja, aber nur in strict mode",
       "Nein, void-Funktionen duerfen kein return haben",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Bei DIREKTEN Funktionsdeklarationen ist void streng — return 42 ist ein Fehler. " +
       "Nur bei Callback-Typen (z.B. type Cb = () => void) ist void tolerant. " +
@@ -191,11 +191,11 @@ export const questions: QuizQuestion[] = [
     code: "function greet(this: { name: string }): string {\n  return `Hallo, ${this.name}`;\n}",
     options: [
       "Er wird als normaler erster Parameter uebergeben",
-      "Er verschwindet komplett (Type Erasure)",
       "Er wird zu einem Property auf dem Funktions-Objekt",
       "Er wird in einen Closure umgewandelt",
+      "Er verschwindet komplett (Type Erasure)",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Der this-Parameter ist ein reines Compilezeit-Feature. Durch Type Erasure " +
       "verschwindet er im kompilierten JavaScript komplett. Er dient nur dazu, " +
@@ -223,12 +223,12 @@ export const questions: QuizQuestion[] = [
     question: "Was bedeutet `value is string` als Return-Typ einer Funktion?",
     code: "function isString(value: unknown): value is string {\n  return typeof value === 'string';\n}",
     options: [
-      "Die Funktion gibt einen String zurueck",
       "Wenn die Funktion true gibt, weiss TypeScript dass value ein string ist",
+      "Die Funktion gibt einen String zurueck",
       "Die Funktion wirft einen Error wenn value kein string ist",
       "value wird zur Laufzeit in einen String konvertiert",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Ein Type Guard mit 'value is Type' sagt TypeScript: 'Wenn diese Funktion " +
       "true zurueckgibt, ist value von diesem Typ.' Der Compiler vertraut dem Guard " +
@@ -241,11 +241,11 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen einem Type Guard und einer Assertion Function?",
     options: [
       "Kein Unterschied, nur andere Syntax",
-      "Type Guard gibt boolean zurueck (if-Verzweigung), Assertion Function wirft bei Misserfolg",
       "Type Guard ist fuer Primitives, Assertion Function fuer Objekte",
+      "Type Guard gibt boolean zurueck (if-Verzweigung), Assertion Function wirft bei Misserfolg",
       "Assertion Functions existieren erst ab TS 5.0",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Ein Type Guard gibt boolean zurueck — der Aufrufer entscheidet mit if/else. " +
       "Eine Assertion Function (asserts value is T) wirft einen Error bei Misserfolg — " +

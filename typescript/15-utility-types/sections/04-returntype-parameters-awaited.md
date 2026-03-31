@@ -19,6 +19,24 @@
 
 ## ReturnType\<T\> — Was gibt die Funktion zurueck?
 
+> 📖 **Hintergrund: Typ-Inferenz rueckwaerts nutzen**
+>
+> ReturnType, Parameters und Co. nutzen ein maechtiges Feature von
+> Conditional Types: das **`infer`-Keyword** (eingefuehrt in TS 2.8).
+> `infer` laesst TypeScript einen Typ **aus einer Struktur herausziehen**.
+> Intern sieht ReturnType so aus:
+>
+> ```typescript
+> type ReturnType<T extends (...args: any) => any> =
+>   T extends (...args: any) => infer R ? R : any;
+> //                            ^^^^^^^ "Wenn T eine Funktion ist,
+> //                                      nenne den Rueckgabetyp R
+> //                                      und gib R zurueck"
+> ```
+>
+> Das `infer`-Keyword ist wie eine Variable in einem Pattern-Match:
+> TypeScript setzt den passenden Typ ein und gibt ihn dir zurueck.
+
 `ReturnType<T>` extrahiert den Rueckgabetyp einer Funktion:
 
 ```typescript annotated
@@ -44,6 +62,9 @@ type FormatterResult = ReturnType<Formatter>;
 // ^ { formatted: string; length: number }
 // Kein typeof noetig — Formatter IST bereits ein Typ
 ```
+
+> 🧠 **Erklaere dir selbst:** Warum ist es besser, den Rueckgabetyp mit `ReturnType<typeof fn>` abzuleiten statt ihn manuell zu definieren?
+> **Kernpunkte:** Single Source of Truth | Aendert sich die Funktion, aendert sich der Typ automatisch | Kein Risiko dass Typ und Implementierung auseinanderlaufen | Weniger Code zu pflegen
 
 ### Praktischer Einsatz: API-Response-Typen ableiten
 
@@ -105,6 +126,26 @@ function loggingFetch(...args: Parameters<typeof originalFetch>): Promise<Respon
 > und kein Object mit benannten Properties?
 > **Kernpunkte:** Funktionsparameter haben eine Reihenfolge | Tuples bewahren Reihenfolge und Laenge | Optionale Parameter werden zu optionalen Tuple-Elementen | Spread-Syntax funktioniert mit Tuples
 
+> ⚡ **Praxis-Tipp: ReturnType in Angular und React**
+>
+> ```typescript
+> // Angular: Service-Methoden-Rueckgabetypen ableiten
+> class UserService {
+>   getUser(id: number) {
+>     return this.http.get<{ id: number; name: string }>(`/api/users/${id}`);
+>   }
+> }
+> type UserObservable = ReturnType<UserService['getUser']>;
+> // Observable<{ id: number; name: string }>
+>
+> // React: Custom Hook Rueckgabetypen ableiten
+> function useAuth() {
+>   return { user: null as User | null, login: async () => {}, logout: () => {} };
+> }
+> type AuthContext = ReturnType<typeof useAuth>;
+> // { user: User | null; login: () => Promise<void>; logout: () => void }
+> ```
+
 ---
 
 ## ConstructorParameters\<T\> und InstanceType\<T\>
@@ -158,6 +199,10 @@ type D = Awaited<Promise<string | number>>;
 // ^ string | number
 ```
 
+> **Analogie:** Awaited ist wie das Oeffnen einer Matroschka-Puppe —
+> egal wie viele Schichten (`Promise<Promise<Promise<string>>>`) darin
+> stecken, Awaited packt sie ALLE aus und gibt dir den innersten Wert.
+
 ### Vor Awaited: Manuelles Entpacken war muehsam
 
 ```typescript annotated
@@ -197,6 +242,18 @@ type UserData = Awaited<ReturnType<typeof fetchUserData>>;
 > Hilfsfunktion, und verschachtelte Promises waren ein Albtraum.
 > Awaited standardisierte das und behandelt auch Edge Cases wie
 > `PromiseLike` und thenable Objekte korrekt.
+>
+> Der entscheidende Impuls kam von `Promise.all()`: Dessen Rueckgabetyp
+> war extrem schwer korrekt zu tippen, weil er ein Tuple von Promises
+> zu einem Promise eines Tuples machen muss. Mit Awaited wurde die
+> Implementierung von `Promise.all`, `Promise.race` und `Promise.allSettled`
+> deutlich einfacher und korrekter.
+
+> 🔬 **Experiment:** Oeffne `examples/04-returntype-parameters-awaited.ts`
+> und schreibe: `type Test = Awaited<Promise<Promise<Promise<string>>>>`.
+> Hovere ueber `Test` — wie viele Schichten werden entpackt? Vergleiche
+> mit `type Manual = Promise<Promise<Promise<string>>> extends Promise<infer U> ? U : never`
+> — wie viele Schichten packt das manuelle Pattern aus?
 
 ---
 

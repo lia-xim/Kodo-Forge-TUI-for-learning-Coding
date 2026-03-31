@@ -26,12 +26,12 @@ logLength("Hello");
 logLength([1, 2, 3]);
 logLength({ length: 42, extra: true });`,
     options: [
-      "Fehler: string ist kein HasLength",
       "5, 3, 42 — Structural Typing: alles mit 'length: number' passt",
+      "Fehler: string ist kein HasLength",
       "Fehler: { length: 42, extra: true } hat eine Excess Property",
       "5, 3, Fehler bei der dritten Zeile",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Structural Typing in Aktion! 'string' hat length: number, Arrays haben length: number, " +
       "und das Objekt wird ueber eine Variable uebergeben (kein Literal), also kein Excess Property Check. " +
@@ -53,11 +53,11 @@ logLength({ length: 42, extra: true });`,
 type Method = typeof config.method;`,
     options: [
       "string",
-      '"GET"',
       '"GET" | "POST" | "PUT" | "DELETE"',
       "Readonly<string>",
+      '"GET"',
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "Mit 'as const' wird jeder Wert zum Literal Type. config.method ist nicht mehr 'string', " +
       "sondern genau der Literal Type '\"GET\"'. Das ist der ganze Sinn von as const: maximale Praezision.",
@@ -153,12 +153,12 @@ function processData(data) {
 // D:
 const numbers = [1, 2, 3];`,
     options: [
-      "Bei A und D — Variablen sollten immer annotiert werden",
       "Bei C — Parameter ohne Annotation sind implizit 'any'",
+      "Bei A und D — Variablen sollten immer annotiert werden",
       "Bei allen — explizit ist immer besser",
       "Bei keinem — TypeScript kann alles inferieren",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Funktionsparameter koennen (im strict mode) nicht inferiert werden — " +
       "'data' wird zu 'any'. Bei A und D inferiert TypeScript korrekt (string bzw. number[]). " +
@@ -235,11 +235,11 @@ cfg.db.pool = 20;
 cfg.db = { name: "other", pool: 5 };`,
     options: [
       "Nur B — host ist readonly",
-      "B und D — host und db-Referenz sind readonly, aber db.name und db.pool nicht",
       "A, B, C und D — alles ist readonly",
       "Keines — readonly wird zur Laufzeit nicht erzwungen",
+      "B und D — host und db-Referenz sind readonly, aber db.name und db.pool nicht",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "readonly ist SHALLOW! cfg.host und cfg.db sind readonly (Zeile B und D fehlschlagen). " +
       "Aber cfg.db.name und cfg.db.pool sind NICHT readonly — die Properties innerhalb von db " +
@@ -364,11 +364,11 @@ function infiniteLoop(): never {
 }`,
     options: [
       "Nur B — throw erzeugt never",
-      "B und D — Funktionen die NIEMALS normal zurueckkehren",
       "A, B, C und D — alle geben nichts zurueck",
       "Keine — never wird nur manuell zugewiesen",
+      "B und D — Funktionen die NIEMALS normal zurueckkehren",
     ],
-    correct: 1,
+    correct: 3,
     explanation:
       "void = Funktion kehrt zurueck, gibt aber keinen sinnvollen Wert zurueck. " +
       "never = Funktion kehrt NIEMALS zurueck (throw oder Endlosschleife). " +
@@ -423,12 +423,12 @@ fn({ x: 1, y: 2, z: 3 });
 const data = { x: 1, y: 2, z: 3 };
 fn(data);`,
     options: [
-      "Nur A und B — Variablen-Zuweisungen prueft TypeScript strenger",
       "A und C — Excess Property Check greift bei frischen Object Literals",
+      "Nur A und B — Variablen-Zuweisungen prueft TypeScript strenger",
       "Alle vier — z existiert nicht in Point",
       "Keiner — Structural Typing erlaubt extra Properties",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "A (direktes Literal bei Zuweisung) und C (direktes Literal bei Funktionsaufruf) " +
       "erzeugen Fehler wegen Excess Property Checking. B und D verwenden Variablen — " +
@@ -455,11 +455,11 @@ sum(mutable);
 sum(immutable);`,
     options: [
       "Fehler: mutable (number[]) passt nicht zu readonly number[]",
-      "Beide Aufrufe kompilieren — number[] ist kompatibel mit readonly number[]",
       "Fehler: readonly Arrays koennen nicht an Funktionen uebergeben werden",
+      "Beide Aufrufe kompilieren — number[] ist kompatibel mit readonly number[]",
       "Fehler bei beiden — reduce() funktioniert nicht auf readonly Arrays",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "number[] ist ein SUBTYP von readonly number[]. Ein mutable Array hat alle Methoden " +
       "eines readonly Arrays (und mehr). Die Zuweisung ist sicher. Umgekehrt waere es " +
@@ -541,12 +541,12 @@ d.nonExistentMethod();`,
   [key: string]: number;
 }`,
     options: [
-      "Index Signatures und feste Properties koennen nicht gemischt werden",
       "name (string) ist nicht kompatibel mit der Index Signature (number)",
+      "Index Signatures und feste Properties koennen nicht gemischt werden",
       "Der Typ von [key: string] muss 'any' sein",
       "Es fehlt ein Semikolon",
     ],
-    correct: 1,
+    correct: 0,
     explanation:
       "Wenn eine Index Signature [key: string]: number existiert, muessen ALLE Properties " +
       "(auch feste wie 'name') mit dem Index-Typ kompatibel sein. name: string ist nicht " +
@@ -623,11 +623,11 @@ const result = user.address?.city;`,
 // Anforderung: Ungueltige Zustaende muessen zur Compile-Zeit ausgeschlossen sein.`,
     options: [
       "Ein Interface mit optionalen Feldern: data?, error?, loading?, notFound?",
-      "Discriminated Union mit status-Feld: 'success' | 'loading' | 'error' | 'not_found'",
       "Vier separate Interfaces ohne gemeinsames Feld",
+      "Discriminated Union mit status-Feld: 'success' | 'loading' | 'error' | 'not_found'",
       "Ein boolean-Flags-Objekt: { isLoading: boolean; isError: boolean; isNotFound: boolean }",
     ],
-    correct: 1,
+    correct: 2,
     explanation:
       "Discriminated Union! Ein gemeinsames status-Feld mit Literal Types stellt sicher, " +
       "dass nur gueltige Kombinationen moeglich sind. Optionale Felder oder Flags erlauben " +

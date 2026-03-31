@@ -19,6 +19,21 @@
 
 ## Das Prinzip: Composition
 
+> 📖 **Hintergrund: Composition over Inheritance — auch bei Typen**
+>
+> Das Prinzip "Composition over Inheritance" ist eines der wichtigsten
+> Designprinzipien in der Softwareentwicklung (Gang of Four, 1994).
+> Es gilt nicht nur fuer Klassen, sondern auch fuer Typen: Statt fuer
+> jeden Anwendungsfall ein neues Interface zu schreiben, **kombinierst**
+> du bestehende Utility Types zu neuen Typen. Das ist wie LEGO —
+> mit wenigen Grundbausteinen (Partial, Pick, Omit, Required, Readonly)
+> kannst du nahezu jeden gewuenschten Typ zusammenbauen.
+
+> **Analogie:** Utility Types sind wie **Unix-Pipes**: Jedes Tool macht
+> eine Sache gut. `cat file | grep "error" | sort | uniq` — jeder
+> Befehl transformiert den Input. Genauso: `Readonly<Partial<Pick<User, "name" | "email">>>` —
+> jeder Utility Type transformiert den Typ einen Schritt weiter.
+
 Utility Types sind wie Funktionen — man kann sie **verschachteln**:
 
 ```typescript annotated
@@ -62,6 +77,9 @@ updateUser({ id: 1 });                          // OK — nur id
 updateUser({ id: 1, name: "Max" });              // OK — id + name
 // updateUser({ name: "Max" });                  // Error! id fehlt!
 ```
+
+> 🧠 **Erklaere dir selbst:** Warum braucht `PartialExcept` eine **Intersection** (`&`) statt eines einzelnen Mapped Types? Koennte man das mit nur einem Mapped Type loesen?
+> **Kernpunkte:** Ein Mapped Type kann nur EINE Transformation pro Key ausfuehren | Wir brauchen unterschiedliches Verhalten fuer verschiedene Key-Gruppen | Pick waehlt die required Keys, Partial+Omit die optionalen | Intersection vereint beide Haelften
 
 ### Pattern 2: Bestimmte Felder required, Rest optional
 
@@ -120,6 +138,17 @@ function createArticle(input: CreateArticle): Article {
 ---
 
 ## Pattern 4: Form-State mit Validierung
+
+> ⚡ **Praxis-Tipp: Das Form-Pattern in der realen Welt**
+>
+> Dieses Pattern ist die Grundlage von:
+> - **Angular Reactive Forms**: `FormGroup` nutzt intern Mapped Types
+>   um fuer jedes Feld Controls, Validators und Status zu generieren
+> - **React Hook Form**: `useForm<T>()` leitet Errors, Touched und
+>   Dirty-State automatisch aus dem Formular-Typ T ab
+> - **Formik**: `FormikErrors<T>` ist exakt `Partial<Record<keyof T, string>>`
+>
+> Wenn du dieses Pattern verstehst, verstehst du wie diese Libraries funktionieren.
 
 ```typescript annotated
 interface FormFields {
@@ -215,6 +244,29 @@ type UpdateUser = TransformType<User, "id", "name" | "email" | "role", "avatar" 
 > ueberall. Statt fuer jede API-Operation einen separaten Typ manuell
 > zu definieren, leitet man sie alle aus einem Basis-Typ ab. Das
 > garantiert Konsistenz und reduziert Wartungsaufwand drastisch.
+>
+> Ein reales Beispiel: Das Next.js-Framework nutzt intern komplexe
+> Utility-Type-Kombinationen fuer `getServerSideProps`, `getStaticProps`
+> und API-Routes. Der Rueckgabetyp von `getServerSideProps` wird mit
+> `InferGetServerSidePropsType` (ein Awaited+ReturnType-Kombination)
+> automatisch an die Page-Component weitergegeben.
+
+> 🔬 **Experiment:** Oeffne `examples/06-utility-types-kombinieren.ts`
+> und baue einen `FormType<T, RequiredFields, OptionalFields>` der
+> folgendes kann:
+> 1. RequiredFields werden zu Pflichtfeldern
+> 2. OptionalFields werden optional
+> 3. Felder die in keiner Gruppe sind werden entfernt
+> Teste ihn mit dem `User`-Interface.
+
+> 💭 **Denkfrage:** Was passiert, wenn in `TransformType<T, R, O, X>` ein
+> Key gleichzeitig in R und O vorkommt? Ist das ein Fehler?
+>
+> **Antwort:** TypeScript gibt keinen Fehler — aber das Verhalten ist
+> undefiniert (der Key erscheint in beiden Haelften der Intersection).
+> In der Praxis "gewinnt" Required, weil `Required<Pick<T, K>>` den
+> Key explizit als Pflicht markiert. Trotzdem sollte man das vermeiden —
+> ein robusterer TransformType wuerde die Constraints pruefen.
 
 ---
 
