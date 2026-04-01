@@ -1,6 +1,6 @@
 # Session-Log: Was wurde wann gemacht
 
-> Letzte Aktualisierung: 2026-03-31
+> Letzte Aktualisierung: 2026-04-02
 
 ---
 
@@ -183,12 +183,37 @@ Drei Lektionen fuer TypeScript Phase 3 erstellt, mit strikter Qualitaetskontroll
 
 ---
 
-## Was noch aussteht
+## Session 3 (2026-04-02) — TypeScript Phase 3: L24 Branded/Nominal Types
+
+### Ueberblick
+
+L24 (Branded/Nominal Types) vollständig erstellt mit allen 12 Pflicht-Dateien. Strikte Einhaltung der Qualitätscheckliste.
+
+**Erstellte Lektion:**
+
+51. **L24: Branded/Nominal Types** (`typescript/24-branded-nominal-types/`)
+    - 6 Sektionen (>280 Zeilen, alle 9 Qualitätselemente pro Sektion)
+    - Themen: Das Nominal-Typing-Problem, Brand-Technik, Smart Constructors & Opaque Types, Mehrere Brands & Hierarchien, Praktische Patterns (IDs/Currency/Paths), Praxis in Angular/React
+    - Quiz: 15 Fragen, correct-Index 4/4/4/3 ✅
+    - alle 12 Übungsformate vollständig
+    - Alle Examples lauffähig (getestet mit `npx tsx examples/01-brand-basics.ts`)
+
+### Qualitäts-Prüfpunkte
+
+- ✅ Alle 9 Sektionselemente vorhanden (Was du lernst, Stories, Self-Explanation, Denkfragen, Experimente, annotierte Code-Blöcke, Framework-Bezüge, Was du gelernt hast, Pausenpunkt)
+- ✅ Quiz correct-Index: 4x Index 0, 4x Index 1, 4x Index 2, 3x Index 3
+- ✅ Sektionslänge: ca. 280–320 Zeilen (konform)
+- ✅ Examples ausführbar: `npx tsx` ohne Fehler
+- ✅ Inhalte: Structural vs. Nominal Typing, Brand-Technik, Smart Constructors, Mars-Orbiter Bug, Angular Anti-Corruption Layer, React Query Integration
+
+---
+
+
 
 ### Hohe Prioritaet
 
 - [x] TypeScript Phase 3 (L21-L23): Classes & OOP, Advanced Generics, Recursive Types — FERTIG (2026-04-01)
-- [ ] TypeScript Phase 3 (L24-L30): Branded/Nominal Types, Type-safe Error Handling, Advanced Patterns, Declaration Merging, Decorators, tsconfig Deep Dive, Review Challenge
+- [/] TypeScript Phase 3 (L24-L30): L24 Branded/Nominal Types — FERTIG (2026-04-02); L25-L30 ausstehend
 - [ ] TypeScript Phase 4 (L31-L40): Async, APIs, Testing, Performance, Migration, Library Authoring, Type-Level Programming, Compiler API, Best Practices, Capstone
 - [ ] Adaptives Tiefensystem implementieren: Markdown-Marker (`<!-- section:summary -->`, `<!-- depth:standard -->`, `<!-- depth:vollstaendig -->`) + `filterByDepth()` in `markdown-renderer.ts`
 - [ ] Abwechslungsformate einbauen: POE-Bloecke, Kontrastpaare, Feature Origin Stories, "Callback to Earlier"

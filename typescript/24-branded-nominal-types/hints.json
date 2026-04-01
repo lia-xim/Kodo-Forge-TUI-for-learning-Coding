@@ -1,0 +1,42 @@
+{
+  "exercise-01": {
+    "hints": [
+      "Ein Brand-Typ ist eine Intersection: `type UserId = string & { readonly __brand: 'UserId' }`. Das `__brand`-Property macht den Typ strukturell einzigartig.",
+      "Für den generischen Helfer: `type Brand<T, B extends string> = T & { readonly __brand: B }`. Dann: `type UserId = Brand<string, 'UserId'>`.",
+      "Smart Constructor: Validiere zuerst (if/throw), dann `return raw as UserId`. Der `as`-Cast ist nur hier erlaubt!",
+      "Teste: `const wrongId: OrderId = 'ord-1' as OrderId; getUser(wrongId)` — sollte COMPILE-ERROR sein."
+    ]
+  },
+  "exercise-02": {
+    "hints": [
+      "Email-Regex: `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/`. Nicht zu kompliziert — einfach die Grundform prüfen.",
+      "Normalisierung VOR Validierung: `const normalized = raw.trim().toLowerCase()`. Validiere dann `normalized`, gib `normalized as Email` zurück.",
+      "Result-Typ: `type Result<T> = { ok: true; value: T } | { ok: false; error: string }`. Bei Erfolg: `{ ok: true, value: normalized as Email }`. Bei Fehler: `{ ok: false, error: '...' }`.",
+      "TypeScript Discriminated Union: Wenn du auf `result.ok` prüfst, weiß TypeScript im `if`-Zweig dass `result.value` existiert (und `Email` ist)."
+    ]
+  },
+  "exercise-03": {
+    "hints": [
+      "Starte mit: `type Meter = number & { readonly __brand: 'Meter' }`. Gleiches Muster für Kilogram und Second.",
+      "Formel: `velocity(d: Meter, t: Second): MeterPerSecond = (d / t) as MeterPerSecond`. Division erzeugt `number`, dann `as` casten.",
+      "Kinetische Energie: `Ekin = 0.5 * mass * velocity * velocity`. Ergebnis ist `number` (Joule) — kein Brand nötig.",
+      "Konversion: `footToMeter(f: Foot): Meter = (f * 0.3048) as Meter`. Der Multiplikations-Ergebnis ist `number`, dann als `Meter` casten."
+    ]
+  },
+  "exercise-04": {
+    "hints": [
+      "Flags sind einfache Marker-Interfaces: `type Trimmed = { readonly __trimmed: true }`. Kein Basis-Typ (nur der Marker).",
+      "`TrimmedString = string & Trimmed` — Intersection kombiniert beides. Und `SearchQuery = string & Trimmed & NonEmpty & Lowercase` kombiniert alle.",
+      "`trim(s: string): TrimmedString = s.trim() as TrimmedString`. Der Cast ist sicher: nach `.trim()` WISSEN wir dass der String Trimmed ist.",
+      "Pipeline: `trim(input)` → `assertNonEmpty(trimmed)` → `toLowercase(nonEmpty)`. Jeder Schritt fügt einen Brand hinzu."
+    ]
+  },
+  "exercise-05": {
+    "hints": [
+      "Generischer ID-Typ: `type Id<E extends string> = string & { readonly __idType: E }`. E ist der Typ-Parameter — macht jeden `Id<E>` einzigartig.",
+      "Repository-Interface mit Constraint: `interface Repository<T extends { id: Id<TId> }, TId extends string>`. `T` muss eine `id`-Property vom Typ `Id<TId>` haben.",
+      "InMemoryRepository nutzt `Map<string, T>`. Um von `Id<TId>` zu `string` zu kommen: `id as string` (intern sicher — wir kennen die Implementation).",
+      "Teste: `userRepo.findById('art-001' as ArticleId)` — sollte COMPILE-ERROR sein weil `ArticleId ≠ Id<'User'>`."
+    ]
+  }
+}
