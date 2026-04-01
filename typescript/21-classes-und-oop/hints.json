@@ -1,0 +1,104 @@
+{
+  "exercises/01-vehicle-hierarchy.ts": {
+    "1": [
+      "Beginne mit einer Basisklasse 'Vehicle' mit gemeinsamen Feldern (name, speed).",
+      "Verwende Parameter Properties: constructor(public name: string, protected speed: number).",
+      "protected erlaubt Zugriff in Subklassen — perfekt fuer 'speed'."
+    ],
+    "2": [
+      "Erstelle Subklassen mit 'extends Vehicle'. Vergiss super() nicht!",
+      "Jede Subklasse braucht super(name, speed) als erste Constructor-Anweisung.",
+      "Fuege subklassenspezifische Felder und Methoden hinzu."
+    ],
+    "3": [
+      "Ueberschreibe describe() mit dem 'override' Keyword.",
+      "Nutze super.describe() um die Basis-Beschreibung zu erweitern.",
+      "override describe(): string { return `${super.describe()} — ${this.extraInfo}`; }"
+    ]
+  },
+  "exercises/02-access-control.ts": {
+    "1": [
+      "Private Felder sind nur innerhalb der Klasse zugaenglich.",
+      "Stelle oeffentliche Methoden (Getter) bereit um private Felder sicher zu lesen.",
+      "deposit() und withdraw() koennen Validierung enthalten (z.B. Betrag > 0)."
+    ],
+    "2": [
+      "Verwende #private (ES2022) fuer echte Laufzeit-Kapselung.",
+      "#-Felder sind nicht einmal mit 'as any' zugaenglich.",
+      "Ersetze 'private balance' durch '#balance' und passe alle Zugriffe an."
+    ],
+    "3": [
+      "readonly Felder koennen nur im Constructor gesetzt werden.",
+      "Kombiniere readonly mit anderen Modifiern: private readonly id.",
+      "Getter ohne Setter = readonly von aussen, aber intern berechnbar."
+    ]
+  },
+  "exercises/03-interface-implementierung.ts": {
+    "1": [
+      "Eine Klasse kann mehrere Interfaces mit Komma implementieren: implements A, B.",
+      "Jedes Interface verlangt bestimmte Methoden — du musst ALLE implementieren.",
+      "implements erbt keinen Code — du musst jede Methode selbst schreiben."
+    ],
+    "2": [
+      "Generische Interfaces: Repository<T> — die Klasse gibt den konkreten Typ an.",
+      "class UserRepo implements Repository<User> — alle T werden zu User.",
+      "Verwende eine Map<string, User> als internen Speicher."
+    ],
+    "3": [
+      "Structural Typing: Teste ob ein Objekt-Literal ohne 'implements' funktioniert.",
+      "Erstelle ein Objekt { serialize(): string { ... } } und uebergib es an eine Funktion die Serializable erwartet.",
+      "Es funktioniert! Structural Typing prueft die Struktur, nicht die Deklaration."
+    ]
+  },
+  "exercises/04-static-registry.ts": {
+    "1": [
+      "Verwende eine static Map<string, T> als Registry.",
+      "static register(key, value) fuegt Eintraege hinzu.",
+      "static get(key) gibt einen Eintrag zurueck (oder undefined)."
+    ],
+    "2": [
+      "Factory-Methoden: static fromJSON(json: string) parst JSON und erstellt eine Instanz.",
+      "Verwende einen private Constructor wenn nur Factory-Methoden erlaubt sein sollen.",
+      "Validierung im Factory: Pruefe die JSON-Daten bevor du die Instanz erstellst."
+    ],
+    "3": [
+      "Zaehle Instanzen mit einem static counter.",
+      "Im Constructor: ClassName.counter++.",
+      "Static method getCount(): number { return ClassName.counter; }"
+    ]
+  },
+  "exercises/05-mixin-pattern.ts": {
+    "1": [
+      "Ein Mixin ist eine Funktion: function WithX<T extends Constructor>(Base: T) { return class extends Base { ... } }",
+      "type Constructor<T = {}> = new (...args: any[]) => T;",
+      "Die zurueckgegebene Klasse erbt von Base und fuegt neue Features hinzu."
+    ],
+    "2": [
+      "Verkette Mixins: const Enhanced = WithB(WithA(Base));",
+      "Jedes Mixin fuegt unabhaengig Funktionalitaet hinzu.",
+      "Die Reihenfolge kann wichtig sein wenn Mixins sich gegenseitig beeinflussen."
+    ],
+    "3": [
+      "Typisierung: Der Rueckgabetyp des Mixins enthaelt automatisch die Base-Typen + neue Typen.",
+      "TypeScript kann manchmal Probleme mit Mixin-Typen haben — explizite Interfaces helfen.",
+      "Definiere ein Interface fuer die Mixin-Erweiterung: interface WithTimestamp { createdAt: Date; }"
+    ]
+  },
+  "exercises/06-refactoring-challenge.ts": {
+    "1": [
+      "Identifiziere gemeinsamen Code in den Klassen — der gehoert in eine Basisklasse oder ein Mixin.",
+      "Suche nach 'ist-ein' (Vererbung) vs 'hat-ein' (Komposition) Beziehungen.",
+      "Tiefe Vererbung (>3 Stufen) ist ein Code Smell — erwäge Komposition."
+    ],
+    "2": [
+      "Ersetze Vererbung durch Interfaces + Komposition wo moeglich.",
+      "Injiziere Abhaengigkeiten ueber den Constructor statt sie zu erben.",
+      "Faehigkeiten als separate Objekte modellieren und kombinieren."
+    ],
+    "3": [
+      "Nutze das Strategy-Pattern: Verhalten als austauschbare Objekte.",
+      "Definiere Interfaces fuer austauschbare Strategien.",
+      "Der Constructor nimmt Strategien als Parameter — leicht testbar und erweiterbar."
+    ]
+  }
+}
