@@ -1,0 +1,115 @@
+{
+  "exercises/01-linked-list.ts": {
+    "1": [
+      "Ein rekursiver Typ referenziert sich selbst. LinkedList<T> hat ein 'next' Feld das wieder LinkedList<T> oder null ist.",
+      "type LinkedList<T> = { value: T; next: LinkedList<T> | null };"
+    ],
+    "2": [
+      "Erstelle ein verschachteltes Objekt: { value: 'alpha', next: { value: 'beta', next: { value: 'gamma', next: null } } }",
+      "Jeder Knoten hat value und next. Der letzte Knoten hat next: null."
+    ],
+    "3": [
+      "Iteriere mit einer while-Schleife: solange current nicht null ist, push current.value und gehe zu current.next.",
+      "let current: LinkedList<T> | null = list; while (current !== null) { result.push(current.value); current = current.next; }"
+    ],
+    "4": [
+      "prepend erstellt einen neuen Knoten der auf die bestehende Liste zeigt.",
+      "return { value, next: list };"
+    ],
+    "5": [
+      "Rekursiv: Wenn list null ist → 0, sonst → 1 + length(list.next).",
+      "if (list === null) return 0; return 1 + length(list.next);"
+    ]
+  },
+  "exercises/02-json-validator.ts": {
+    "1": [
+      "JSON kennt 6 Wert-Typen: string, number, boolean, null, Array und Objekt.",
+      "type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };"
+    ],
+    "2": [
+      "Pruefe rekursiv: null → true, string/number/boolean → true, Array → alle Elemente pruefen, Objekt → alle Werte pruefen.",
+      "Verwende typeof, Array.isArray() und Object.getPrototypeOf() um 'echte' Objekte von Date, RegExp etc. zu unterscheiden."
+    ],
+    "3": [
+      "Wrappe JSON.parse in einen try-catch. Bei Erfolg cast zu JsonValue, bei Fehler gib Error zurueck.",
+      "try { return JSON.parse(text) as JsonValue; } catch (e) { return new Error(...); }"
+    ],
+    "4": [
+      "Rekursiv: Wenn der Wert ein Objekt ist (kein Array, nicht null), iteriere ueber die Schluessel.",
+      "Fuer jeden Schluessel: Fuege den vollstaendigen Pfad hinzu und rekursiere in den Wert."
+    ]
+  },
+  "exercises/03-deep-partial.ts": {
+    "1": [
+      "DeepPartial nutzt einen Mapped Type mit ? und prueft ob der Wert ein Objekt ist.",
+      "Arrays separat behandeln: T[K] extends (infer U)[] ? DeepPartial<U>[] : ...",
+      "type DeepPartial<T> = { [K in keyof T]?: T[K] extends (infer U)[] ? DeepPartial<U>[] : T[K] extends object ? DeepPartial<T[K]> : T[K] };"
+    ],
+    "2": [
+      "DeepReadonly nutzt readonly vor dem Mapped Type und macht Arrays zu readonly Arrays.",
+      "type DeepReadonly<T> = { readonly [K in keyof T]: T[K] extends (infer U)[] ? readonly DeepReadonly<U>[] : T[K] extends object ? DeepReadonly<T[K]> : T[K] };"
+    ],
+    "3": [
+      "Nur die Felder setzen die du aendern willst: { server: { port: 8080 }, database: { pool: { max: 20 } } }",
+      "Alle anderen Felder werden von deepMerge aus dem base-Objekt uebernommen."
+    ],
+    "4": [
+      "Iteriere ueber Object.keys(update). Wenn beide Werte Objekte sind → rekursiv mergen, sonst → update-Wert uebernehmen.",
+      "const result = { ...base }; for (key of Object.keys(update)) { if (typeof ...) { result[key] = deepMerge(...) } else { result[key] = update[key] } }"
+    ]
+  },
+  "exercises/04-flatten-type.ts": {
+    "1": [
+      "Flatten prueft: Ist T ein Array? Ja → Rekursion auf den Element-Typ. Nein → Fertig.",
+      "type DeepFlatten<T> = T extends (infer U)[] ? DeepFlatten<U> : T;"
+    ],
+    "2": [
+      "FlatN braucht eine Abbruchbedingung fuer die Tiefe (Depth extends 0 → T) und eine MinusOne-Hilfsfunktion.",
+      "MinusOne nutzt ein Lookup-Tuple: [never, 0, 1, 2, ...][N]."
+    ],
+    "3": [
+      "Pruefe mit Array.isArray() ob ein Element ein Array ist. Wenn ja → rekursiv flatten, wenn nein → zum Ergebnis hinzufuegen.",
+      "function deepFlatten<T>(arr: unknown[]): T[] { const result: T[] = []; function flatten(items: unknown[]) { for (const item of items) { if (Array.isArray(item)) flatten(item); else result.push(item as T); } } flatten(arr); return result; }"
+    ]
+  },
+  "exercises/05-type-safe-paths.ts": {
+    "1": [
+      "Paths nutzt einen Mapped Type: Fuer jeden String-Schluessel K → K selbst ODER K.Paths<T[K]>.",
+      "type Paths<T> = T extends object ? { [K in keyof T & string]: K | `${K}.${Paths<T[K]>}` }[keyof T & string] : never;"
+    ],
+    "2": [
+      "PathValue zerlegt den Pfad an Punkten: `${infer Head}.${infer Tail}` → Rekursion mit T[Head] und Tail.",
+      "Wenn kein Punkt: P extends keyof T ? T[P] : never."
+    ],
+    "3": [
+      "Splitte den Pfad mit path.split('.') und navigiere Schritt fuer Schritt durch das Objekt.",
+      "let current: unknown = obj; for (const key of path.split('.')) { current = (current as Record<string, unknown>)[key]; } return current;"
+    ],
+    "4": [
+      "has prueft bei jedem Schritt ob der Schluessel existiert und ob current nicht null/undefined ist.",
+      "Verwende 'key in current' und typeof-Checks."
+    ]
+  },
+  "exercises/06-recursive-tree-ops.ts": {
+    "1": [
+      "treeMap erstellt einen neuen Knoten: { value: fn(node.value), children: node.children.map(child => treeMap(child, fn)) }",
+      "Rekursion: Wende fn auf den Wert an und mappe alle Kinder rekursiv."
+    ],
+    "2": [
+      "treeFilter: Wenn der Knoten den Test nicht besteht → null. Sonst: Kinder rekursiv filtern und null-Ergebnisse entfernen.",
+      "return predicate(node.value) ? { value: node.value, children: node.children.map(c => treeFilter(c, pred)).filter(Boolean) } : null;"
+    ],
+    "3": [
+      "treeFind: Pruefe den aktuellen Knoten. Wenn er matcht → zurueckgeben. Sonst: Kinder der Reihe nach pruefen (Tiefensuche).",
+      "for (const child of node.children) { const found = treeFind(child, pred); if (found !== undefined) return found; }"
+    ],
+    "4": [
+      "treeReduce: Wende fn auf den aktuellen Wert an, dann rekursiere in alle Kinder.",
+      "let acc = fn(initial, node.value); for (const child of node.children) { acc = treeReduce(child, fn, acc); } return acc;"
+    ],
+    "5": [
+      "treeDepth: Blatt-Knoten (keine Kinder) hat Tiefe 1. Sonst: 1 + Maximum der Kinder-Tiefen.",
+      "if (node.children.length === 0) return 1; return 1 + Math.max(...node.children.map(treeDepth));"
+    ]
+  }
+}
