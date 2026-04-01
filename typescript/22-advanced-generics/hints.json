@@ -1,0 +1,102 @@
+{
+  "exercises/01-generic-container.ts": {
+    "1": [
+      "Denke an einen Container-Typ der verschiedene Datenstrukturen wrappen kann.",
+      "Ein einfaches Generic `<T>` reicht nicht — du brauchst eine Abstraktion ueber Container-Typen.",
+      "Nutze ein Interface mit mehreren konkreten Implementierungen: ArrayContainer, SetContainer, etc."
+    ],
+    "2": [
+      "Erstelle ein gemeinsames Interface: `Container<T>` mit get(), add(), size().",
+      "Implementiere es fuer Array und Set: `class ArrayContainer<T> implements Container<T>`.",
+      "Die Factory-Funktion nimmt den Container-Typ als String und gibt den richtigen Container zurueck."
+    ],
+    "3": [
+      "Fuer die typsichere Factory: Nutze Overloads oder einen Discriminated Union.",
+      "Overload-Variante: `function createContainer(type: 'array'): ArrayContainer<T>` etc."
+    ]
+  },
+  "exercises/02-hkt-emulation.ts": {
+    "1": [
+      "Das URI-to-Kind-Pattern nutzt ein Interface als Lookup-Map.",
+      "Definiere: `interface URItoKind<A> { 'MyType': ConcreteType<A>; }`",
+      "Dann: `type Kind<URI extends keyof URItoKind<any>, A> = URItoKind<A>[URI]`"
+    ],
+    "2": [
+      "Registriere mehrere Typen in der Map: Array, Set, Promise.",
+      "Erstelle eine `map`-Funktion die ueber beliebige Container mappt.",
+      "Die Signatur: `function map<URI extends URIS, A, B>(uri: URI, fa: Kind<URI, A>, f: (a: A) => B): Kind<URI, B>`"
+    ],
+    "3": [
+      "Fuer die volle Loesung: Implementiere konkrete map-Funktionen pro URI.",
+      "Nutze ein Record<URIS, MapImplementation> als Dispatch."
+    ]
+  },
+  "exercises/03-varianz-pruefung.ts": {
+    "1": [
+      "Definiere Animal und Cat Interfaces. Cat extends Animal.",
+      "Erstelle Producer<T> (nur Output) und Consumer<T> (nur Input)."
+    ],
+    "2": [
+      "Teste: Kann man Producer<Cat> einem Producer<Animal> zuweisen? (Kovarianz)",
+      "Teste: Kann man Consumer<Animal> einem Consumer<Cat> zuweisen? (Kontravarianz)",
+      "Nutze `declare const` fuer die Test-Variablen."
+    ],
+    "3": [
+      "Fuer den Invarianz-Test: Erstelle MutableBox<T> mit get() UND set().",
+      "Zeige: MutableBox<Cat> ist NICHT zuweisbar an MutableBox<Animal> (und umgekehrt)."
+    ]
+  },
+  "exercises/04-variance-annotationen.ts": {
+    "1": [
+      "Fuege `out` zu Producer hinzu: `interface Producer<out T>`.",
+      "Fuege `in` zu Consumer hinzu: `interface Consumer<in T>`."
+    ],
+    "2": [
+      "Fuer MutableBox: Nutze `in out T` fuer explizite Invarianz.",
+      "Teste: Was passiert wenn du `out T` bei MutableBox verwendest?",
+      "TypeScript sollte einen Fehler geben: T in Input-Position verletzt `out`."
+    ],
+    "3": [
+      "Erstelle ReadonlyBox<out T> (nur get) und WriteOnlyBox<in T> (nur set).",
+      "Zeige wie die Modifier die Varianz-Checks beschleunigen."
+    ]
+  },
+  "exercises/05-multi-constraint.ts": {
+    "1": [
+      "Definiere mehrere Interfaces: HasId, HasName, Serializable, Loggable.",
+      "Nutze Intersection-Constraints: `T extends HasId & Serializable`."
+    ],
+    "2": [
+      "Schreibe Funktionen mit verschiedenen Constraint-Kombinationen.",
+      "Teste welche Objekte die Constraints erfuellen und welche nicht.",
+      "Beachte: Extra-Properties sind bei Generics erlaubt (anders als bei direkten Zuweisungen)."
+    ],
+    "3": [
+      "Fuer den F-bounded Teil: `T extends Comparable<T>`.",
+      "Implementiere eine sort-Funktion die nur selbst-vergleichbare Typen akzeptiert."
+    ],
+    "4": [
+      "Bonus: Kombiniere Intersection-Constraints mit Conditional Types.",
+      "Beispiel: `T extends HasId & (T extends Serializable ? HasVersion : {})`"
+    ]
+  },
+  "exercises/06-api-redesign.ts": {
+    "1": [
+      "Identifiziere zuerst welche Generics ueberfluessig sind (Rule of Two).",
+      "Ein Typparameter der nur einmal vorkommt korreliert nichts."
+    ],
+    "2": [
+      "Ersetze einmal-verwendete Typparameter durch `unknown` oder konkrete Unions.",
+      "Behalte Typparameter die Input und Output korrelieren."
+    ],
+    "3": [
+      "Entscheide fuer jede Funktion: Generic, Overload, oder Union?",
+      "Overloads fuer diskrete Mappings, Generics fuer parametrische Beziehungen.",
+      "Teste die refactored API: Sind die Typen genauso praezise wie vorher?"
+    ],
+    "4": [
+      "Fuer die pipe()-Funktion: Nutze mehrere Typparameter die sich verketten.",
+      "pipe<A, B, C>(value: A, fn1: (a: A) => B, fn2: (b: B) => C): C"
+    ]
+  }
+}
