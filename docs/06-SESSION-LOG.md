@@ -122,11 +122,73 @@ Diese Session war eine Marathon-Session in der das gesamte Projekt von Null aufg
 
 ---
 
+## Session 2 (2026-04-01) — TypeScript Phase 3 Start (L21-L23)
+
+### Ueberblick
+
+Drei Lektionen fuer TypeScript Phase 3 erstellt, mit strikter Qualitaetskontrolle und Subagent-Driven-Development. Jede Lektion wurde von einem dedizierten Implementer-Agenten erstellt und danach von einem Spec-Reviewer auditiert.
+
+**Strategie:** Maximal 3 Lektionen pro Session (Lehre aus Qualitaets-Regression bei L13-L20). Sequenzielle Erstellung statt parallel. Jede Lektion einzeln auditiert.
+
+### Erstellte Lektionen
+
+48. **L21: Classes & OOP in TypeScript** (`typescript/21-classes-und-oop/`)
+    - 6 Sektionen (359-416 Zeilen, alle 9 Qualitaetselemente)
+    - Themen: Klassen-Grundlagen, Access Modifiers (private vs #private), Vererbung/Abstract, Interfaces implementieren, Static/Patterns, Praxis (Komposition vs Vererbung, Hooks vs Classes)
+    - Quiz: 15 Fragen, correct-Index 4/4/4/3
+    - Alle 12 Uebungsformate vollstaendig
+    - Spec-Review: Bestanden
+
+49. **L22: Advanced Generics** (`typescript/22-advanced-generics/`)
+    - 6 Sektionen (290-360 Zeilen, alle 9 Qualitaetselemente)
+    - Themen: Generics-Grenzen, Higher-Order Types/HKT-Emulation, Varianz (Ko-/Kontravarianz), in/out Modifier (TS 4.7), Fortgeschrittene Constraints, API-Design
+    - Quiz: 15 Fragen, correct-Index 4/4/4/3
+    - Alle 12 Uebungsformate vollstaendig
+    - Spec-Review: Bestanden
+
+50. **L23: Recursive Types** (`typescript/23-recursive-types/`)
+    - 6 Sektionen (347-449 Zeilen, alle 9 Qualitaetselemente)
+    - Themen: Rekursive Typen Grundlagen, Baumstrukturen (JSON, DOM, AST), Deep-Operationen, Rekursive Conditional Types (Paths, Flatten), Grenzen/Performance, Praxis (Zod, React Hook Form)
+    - Quiz: 15 Fragen, correct-Index 4/4/4/3
+    - Alle 12 Uebungsformate vollstaendig
+    - Spec-Review: Bestanden
+
+### Qualitaets-Metriken
+
+| Metrik | L21 | L22 | L23 |
+|--------|-----|-----|-----|
+| Dateien | 36 | 36 | 36 |
+| Sektionen | 6 | 6 | 6 |
+| Qualitaetselemente (9/9 pro Sektion) | 54/54 | 54/54 | 54/54 |
+| Quiz correct-Index 4/4/4/3 | Ja | Ja | Ja |
+| Sektions-Laenge | 359-416 Z | 290-360 Z | 347-449 Z |
+| Bewertung | A- | A | A- |
+
+### Anmerkungen
+
+- **Sektions-Laenge:** Fortgeschrittene Themen (L21, L23) tendieren zu laengeren Sektionen (bis 449 Zeilen). Das ist akzeptabel fuer die Tiefe der Konzepte — besser ausfuehrlich als oberflaechlich.
+- **TTS-Update:** Vor Session-Beginn wurde ein verbessertes TTS-System (edge-tts) gepullt.
+- **Branch:** `feature/typescript-phase3-L21-L23` auf `master`
+
+### Was funktioniert hat
+
+- Subagent-Driven Development: Dedizierte Agenten pro Lektion + Spec-Review danach
+- Sequenzielle Erstellung verhindert Qualitaets-Regression
+- Alle 9 Qualitaetselemente in jeder Sektion vorhanden
+
+### Was verbessert werden kann
+
+- Sektions-Laenge besser im 280-350 Korridor halten (besonders bei L23)
+- L17-L20 Audits stehen noch aus
+
+---
+
 ## Was noch aussteht
 
 ### Hohe Prioritaet
 
-- [ ] TypeScript Phase 3 (L21-L30): Classes & OOP, Advanced Generics, Recursive Types, Branded/Nominal Types, Type-safe Error Handling, Advanced Patterns, Declaration Merging, Decorators, tsconfig Deep Dive, Review Challenge
+- [x] TypeScript Phase 3 (L21-L23): Classes & OOP, Advanced Generics, Recursive Types — FERTIG (2026-04-01)
+- [ ] TypeScript Phase 3 (L24-L30): Branded/Nominal Types, Type-safe Error Handling, Advanced Patterns, Declaration Merging, Decorators, tsconfig Deep Dive, Review Challenge
 - [ ] TypeScript Phase 4 (L31-L40): Async, APIs, Testing, Performance, Migration, Library Authoring, Type-Level Programming, Compiler API, Best Practices, Capstone
 - [ ] Adaptives Tiefensystem implementieren: Markdown-Marker (`<!-- section:summary -->`, `<!-- depth:standard -->`, `<!-- depth:vollstaendig -->`) + `filterByDepth()` in `markdown-renderer.ts`
 - [ ] Abwechslungsformate einbauen: POE-Bloecke, Kontrastpaare, Feature Origin Stories, "Callback to Earlier"
