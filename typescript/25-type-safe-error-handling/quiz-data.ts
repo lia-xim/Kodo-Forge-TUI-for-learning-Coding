@@ -10,7 +10,10 @@ export interface QuizQuestion {
   elaboratedFeedback: { whyCorrect: string; commonMistake: string };
 }
 
-export const quizData: QuizQuestion[] = [
+export const lessonId = "25";
+export const lessonTitle = "Type-safe Error Handling";
+
+export const questions: QuizQuestion[] = [
   // correct: 0 (1-4)
   {
     id: 1,
@@ -198,10 +201,10 @@ export const quizData: QuizQuestion[] = [
     options: [
       "Either ist Haskell's Fehler-Monad, Result ist das TypeScript-Äquivalent ohne Monaden-Eigenschaften",
       "Either und Result sind identisch — beide kommen aus funktionaler Programmierung",
-      "Either = binäre Wahl ohne Semantik; Result = immer mit ok/error Feldern und Typsicherheit",
-      "Either ist der mathematische Ursprung (Left=Fehler, Right=Erfolg) dem TypeScript's Result<T,E> nachempfunden ist"
+      "Either ist der mathematische Ursprung (Left=Fehler, Right=Erfolg) dem TypeScript's Result<T,E> nachempfunden ist",
+      "Either = binäre Wahl ohne Semantik; Result = immer mit ok/error Feldern und Typsicherheit"
     ],
-    correct: 3,
+    correct: 2,
     explanation: "Haskell's `Either a b` = Either Left(a) oder Right(b). Konvention: Left=Fehler, Right=Erfolg ('right'=richtig). TypeScript's Result<T,E> = semantisch gleich, aber mit ok/value/error statt Left/Right.",
     elaboratedFeedback: {
       whyCorrect: "'Either a b' in Haskell ist entweder `Left a` (Fehler) oder `Right b` (Erfolg). Die Konvention Left=Error, Right=Success kommt daher: 'right' = Richtig/Korrekt. TypeScript's `{ ok: true; value: T } | { ok: false; error: E }` ist die pragmatische TS-Version des gleichen Konzepts.",
@@ -209,7 +212,7 @@ export const quizData: QuizQuestion[] = [
     }
   },
 
-  // correct: 3 (13-15)
+  // correct: 3 (13-15) — 3x3
   {
     id: 13,
     question: "Welche tsconfig-Option ist für `useUnknownInCatchVariables` zuständig?",
