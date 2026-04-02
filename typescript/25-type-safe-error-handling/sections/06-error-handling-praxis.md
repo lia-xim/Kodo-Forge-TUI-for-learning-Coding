@@ -224,6 +224,15 @@ function safeParseJson<T>(json: string): Result<T, string> {
 > Funktion ist ein Bug → throw. Die Frage: "Kann ein korrektes Programm
 > in diese Situation kommen?"
 
+> ⚡ **Experiment:** Oeffne `examples/05-error-types.ts` und baue einen
+> eigenen `safeParseJson<T>(json: string): Result<T, ParseError>` Wrapper:
+> 1. Fange den `JSON.parse`-throw ab und konvertiere ihn in ein Result
+> 2. Verwende ihn in einer `fetchUser`-Funktion die `Result<User, FetchError | ParseError>` zurueckgibt
+> 3. Beobachte: Das aeussere `throw` (JSON.parse) wird EINMAL gewrappt —
+>    danach fliesst nur noch `Result` durch deine Anwendung.
+> 4. Bonus: Schreibe die gleiche Funktion mit try/catch — vergleiche
+>    die Lesbarkeit und Typsicherheit.
+
 ---
 
 ## Vollständige Fehler-Architektur
