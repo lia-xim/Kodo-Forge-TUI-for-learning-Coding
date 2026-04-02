@@ -224,5 +224,17 @@ export const pretestData: PretestQuestion[] = [
     ],
     correct: 3,
     explanation: "YAGNI: Wenn lokale Variablen im gleichen Scope (`width`, `height`) keine Verwechslung ermöglichen, ist ein Brand-Typ unnötige Komplexität ohne Sicherheitsgewinn."
+  },
+  {
+    sectionId: 6,
+    question: "Welchen Vorteil haben Branded Types gegenüber Runtime-Validierung mit Klassen (z.B. `class UserId { constructor(public value: string) {} }`)?",
+    options: [
+      "Branded Types sind schneller in der Ausführung weil sie zur Laufzeit existieren",
+      "Klassen bieten bessere Typsicherheit als Branded Types",
+      "Branded Types haben Zero Runtime-Overhead — sie verschwinden nach der Kompilierung (Type Erasure)",
+      "Es gibt keinen Unterschied — beide Ansätze sind gleichwertig"
+    ],
+    correct: 2,
+    explanation: "Branded Types existieren nur zur Compilezeit (Type Erasure). Im transpilierten JavaScript ist ein `UserId` einfach ein `string` — kein Wrapper-Objekt, kein Overhead. Klassen erzeugen reale Objekte zur Laufzeit, was Serialisierung und API-Kompatibilität erschwert."
   }
 ];

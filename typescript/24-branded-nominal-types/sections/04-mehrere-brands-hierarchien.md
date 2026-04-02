@@ -134,6 +134,26 @@ function sendCriticalEmail(to: VerifiedEmail): void {
 > durch `VerifiedEmail` erhöht die Sicherheit. TypeScript's Structural Typing
 > und die Hierarchie-Brands ergänzen sich hier elegant.
 
+> 🧪 **Experiment:** Erstelle eine Brand-Hierarchie fuer verschiedene ID-Typen:
+>
+> ```typescript
+> type BaseId = string & { readonly __brand: 'BaseId' };
+> type UserId = string & { readonly __brand: 'BaseId' } & { readonly __userBrand: true };
+> type AdminId = string & { readonly __brand: 'BaseId' } & { readonly __userBrand: true } & { readonly __admin: true };
+>
+> function processUser(id: UserId): void { console.log(id); }
+> function processAdmin(id: AdminId): void { console.log(id); }
+>
+> const admin = 'admin-1' as AdminId;
+> processUser(admin);   // Kompiliert das?
+> // processAdmin('user-1' as UserId);  // Und das?
+> ```
+>
+> Pruefe: Kann `AdminId` an eine Funktion uebergeben werden die `UserId` erwartet?
+> Und umgekehrt? Beobachte wie TypeScript's Structural Typing die Hierarchie
+> automatisch erzwingt — `AdminId` hat alle Properties von `UserId` (plus mehr),
+> also ist es ein Subtyp.
+
 ---
 
 ## Number Brands: Physikalische Einheiten
@@ -313,7 +333,7 @@ const config: ServerConfig = {
 
 - Brands können **kombiniert** werden: `string & Trimmed & NonEmpty` — jeder Brand
   repräsentiert eine garantierte Eigenschaft
-- **Brand-Hierarchien**: `VerifiedEmail` ist Subtyp von `Email` → überall onde `Email`
+- **Brand-Hierarchien**: `VerifiedEmail` ist Subtyp von `Email` → überall wo `Email`
   erwartet wird, kann `VerifiedEmail` eingesetzt werden
 - Brands sind ideal für **Einheiten** (Meter vs. Foot) und **Validierungszustände**
 - Number-Brands verhindern reale Bugs wie den Mars-Orbiter-Unfall (1999, 327 Mio. USD)

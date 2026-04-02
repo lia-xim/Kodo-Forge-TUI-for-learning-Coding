@@ -79,6 +79,85 @@ validateSession(userId); // KEIN FEHLER! Literal string
 > bedeutet: "UserId IST string" (Alias, kein neuer Typ) | Für echten Schutz
 > brauchen wir strukturellen Unterschied | Lösung: Einzigartiges Property hinzufügen
 
+> 🧪 **Experiment:** Oeffne deinen TypeScript-Playground oder Editor und probiere:
+>
+> ```typescript
+> type UserId = string;
+> type OrderId = string;
+>
+> function getOrder(id: OrderId): void {
+>   console.log(`Order fuer: ${id}`);
+> }
+>
+> const userId: UserId = "user-42";
+> getOrder(userId);  // Was passiert?
+> ```
+>
+> TypeScript beschwert sich **NICHT** — genau das ist das Problem das Branded Types
+> loesen. Fuer den Compiler ist `UserId` exakt dasselbe wie `OrderId` wie `string`.
+> Es gibt keinen strukturellen Unterschied. Der Type Alias ist nur ein Label fuer
+> Menschen, nicht fuer den Compiler.
+>
+> Probiere jetzt den Gegenversuch:
+>
+> ```typescript
+> type UserId = string & { readonly __brand: 'UserId' };
+> type OrderId = string & { readonly __brand: 'OrderId' };
+>
+> function getOrder(id: OrderId): void {
+>   console.log(`Order fuer: ${id}`);
+> }
+>
+> const userId = "user-42" as UserId;
+> getOrder(userId);  // Jetzt: COMPILE-ERROR!
+> ```
+>
+> Siehst du den Unterschied? Der `__brand`-Property-Wert ist verschieden
+> (`'UserId'` vs `'OrderId'`), also sind die Typen strukturell inkompatibel.
+
+---
+
+## Warum Structural Typing dieses Problem erzeugt
+
+Das Problem liegt nicht darin, dass Structural Typing schlecht waere — es liegt
+darin, dass **primitive Typen keine innere Struktur haben**.
+
+Wenn du zwei Interfaces mit unterschiedlichen Properties hast, erkennt TypeScript
+den Unterschied sofort:
+
+```typescript annotated
+interface User { name: string; email: string; }
+interface Product { title: string; price: number; }
+
+// TypeScript erkennt: User ≠ Product (verschiedene Properties)
+function greetUser(user: User): void { /* ... */ }
+// greetUser({ title: "Laptop", price: 999 }); // ❌ COMPILE-ERROR
+// ^ "title" existiert nicht in User
+```
+
+Aber bei primitiven Typen — `string`, `number`, `boolean` — gibt es **keine**
+Properties die TypeScript unterscheiden koennte:
+
+```typescript annotated
+type UserId = string;    // Struktur: string ← keine eigenen Properties
+type OrderId = string;   // Struktur: string ← identisch!
+
+// TypeScript sieht: string === string → kompatibel
+```
+
+Das ist der Kern des Problems. **Structural Typing funktioniert perfekt bei
+Objekten** (verschiedene Properties → verschiedene Typen). Es versagt nur dort,
+wo es keine Struktur zum Vergleichen gibt — bei primitiven Aliases.
+
+> 💭 **Denkfrage:** Wenn Structural Typing bei Objekten korrekt unterscheidet,
+> warum reicht es dann nicht, alle IDs als Objekte zu modellieren?
+> Z.B. `{ value: string, type: 'UserId' }` statt `type UserId = string`?
+>
+> **Antwort:** Das wuerde funktionieren — aber es aendert die Runtime-Repraesentation.
+> Ueberall wo ein `string` erwartet wird (APIs, JSON, Datenbank-Queries), muesste
+> man `.value` extrahieren. Branded Types sind eleganter: Sie existieren **nur zur
+> Compilezeit** und verschwinden komplett im transpilierten JavaScript.
+
 ---
 
 ## Reale Bugs durch Typ-Verwechslung
