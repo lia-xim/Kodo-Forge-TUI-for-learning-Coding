@@ -153,6 +153,7 @@ export let ttsParagraphs: string[] = [];
 export let ttsCurrentParagraph = 0;
 /** Label der aktuell genutzten TTS-Engine (wird von tui-tts gesetzt) */
 export let ttsEngineLabel = "";
+export let ttsLoading = false;
 
 export function setTtsEngine(e: TtsEngine): void {
   ttsEngine = e;
@@ -165,6 +166,9 @@ export function setTtsProcess(p: ChildProcess | null): void {
 }
 export function setTtsActive(v: boolean): void {
   ttsActive = v;
+}
+export function setTtsLoading(v: boolean): void {
+  ttsLoading = v;
 }
 export function setTtsParagraphs(p: string[]): void {
   ttsParagraphs = p;

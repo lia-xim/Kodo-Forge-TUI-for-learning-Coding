@@ -49,6 +49,11 @@ export function parseKey(data: Buffer): ParsedKey {
 
       if (button === 64 && !isRelease) return { name: "mouse-scroll-up", raw, ctrl: false };
       if (button === 65 && !isRelease) return { name: "mouse-scroll-down", raw, ctrl: false };
+      if (button === 0 && !isRelease) {
+        const cx = parseInt(match[2], 10);
+        const cy = parseInt(match[3], 10);
+        return { name: "mouse-click", raw, ctrl: false, x: cx, y: cy };
+      }
     }
     return { name: "mouse-other", raw, ctrl: false };
   }

@@ -26,7 +26,7 @@ import {
   sectionRawMarkdown, setSectionRawMarkdown,
   cheatsheetRenderedLines, setCheatsheetRenderedLines,
   pushHistory, markSectionCompleted, sessionStats, countExerciseProgress,
-  ttsActive, ttsEngineLabel, PROJECT_ROOT,
+  ttsActive, ttsEngineLabel, ttsLoading, PROJECT_ROOT,
 } from "./tui-state.ts";
 import type { ParsedKey, SectionProgress, Screen, Bookmark } from "./tui-types.ts";
 import { stopTTS, startTTSFromPosition, setRenderSectionReader } from "./tui-tts.ts";
@@ -100,11 +100,21 @@ export function renderSectionReader(
   }
   if (sectionMermaidBlocks.length > 0)
     navParts.push(`${c.bold}[D]${c.reset} Diagramm`);
-  navParts.push(
-    ttsActive
-      ? `${c.bold}${c.green}[L]${c.reset} ${c.green}Vorlesen: AN${c.reset}${ttsEngineLabel ? ` ${c.dim}(${ttsEngineLabel})${c.reset}` : ""}`
-      : `${c.bold}[L]${c.reset} Vorlesen${ttsEngineLabel ? ` ${c.dim}(${ttsEngineLabel})${c.reset}` : ""}`
-  );
+
+  let ttsLabel = "";
+  if (ttsActive) {
+    if (ttsLoading) {
+      ttsLabel = `${c.bold}${c.yellow}[L]${c.reset} ${c.yellow}Vorlesen: LÄDT...${c.reset}`;
+    } else {
+      ttsLabel = `${c.bold}${c.green}[L]${c.reset} ${c.green}Vorlesen: AN${c.reset}`;
+    }
+  } else {
+    ttsLabel = `${c.bold}[L]${c.reset} Vorlesen`;
+  }
+  if (ttsEngineLabel) {
+    ttsLabel += ` ${c.dim}(${ttsEngineLabel})${c.reset}`;
+  }
+  navParts.push(ttsLabel);
   navParts.push(`${c.bold}[A]${c.reset} Annotationen: ${annotationsEnabled ? "AN" : "AUS"}`);
   navParts.push(`${c.bold}[M]${c.reset} Merken`);
   navParts.push(`${c.bold}[V]${c.reset} VS Code`);
@@ -229,6 +239,17 @@ export function handleSectionInput(key: ParsedKey): void {
 
   if (key.name === "up" || key.name === "mouse-scroll-up") {
     scrollTo(scrollOffset - 1);
+    return;
+  }
+  if (key.name === "mouse-click" && key.y !== undefined) {
+    const contentY = key.y - 3; // Row 1 is header, Row 2 is border
+    if (contentY >= 0 && contentY < contentHeight) {
+      const clickedRenderedLine = scrollOffset + contentY;
+      if (clickedRenderedLine < totalLines) {
+        startTTSFromPosition(sectionRawMarkdown, clickedRenderedLine, totalLines);
+        renderSectionReader(lessonIndex, sectionIndex, scrollOffset);
+      }
+    }
     return;
   }
   if (key.name === "down" || key.name === "mouse-scroll-down") {

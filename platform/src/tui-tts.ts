@@ -10,12 +10,12 @@
 import * as os from "node:os";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { spawn, execSync } from "node:child_process";
+import { spawn, execSync, ChildProcess } from "node:child_process";
 import {
   ttsProcess, ttsActive, ttsParagraphs, ttsCurrentParagraph,
-  ttsEngine, ttsVoice,
+  ttsEngine, ttsVoice, ttsLoading,
   setTtsProcess, setTtsActive, setTtsParagraphs, setTtsCurrentParagraph,
-  setTtsEngine, setTtsEngineLabel,
+  setTtsEngine, setTtsEngineLabel, setTtsLoading,
   sectionRawMarkdown, currentScreen, PLATFORM_ROOT,
 } from "./tui-state.ts";
 import type { TtsEngine } from "./tui-state.ts";
@@ -124,12 +124,44 @@ export function detectTtsEngine(): void {
  */
 export function extractReadableText(markdown: string, fromLine: number): string {
   const lines = markdown.split("\n");
-  const relevantLines = lines.slice(fromLine);
+  
+  let inCodeBlock = false;
+  let codeBlockType = "";
+  const processedLines: string[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isCodeFence = line.trim().startsWith("```");
+    
+    if (isCodeFence) {
+      if (!inCodeBlock) {
+        inCodeBlock = true;
+        codeBlockType = line.trim().substring(3).toLowerCase();
+        if (i >= fromLine) {
+          if (codeBlockType.startsWith("mermaid")) {
+            processedLines.push(" Diagramm uebersprungen. ");
+          } else {
+            processedLines.push(" Code-Beispiel uebersprungen. ");
+          }
+        }
+      } else {
+        inCodeBlock = false;
+      }
+      continue;
+    }
+    
+    // Skip everything inside a code block
+    if (inCodeBlock) {
+      continue;
+    }
+    
+    if (i >= fromLine) {
+      processedLines.push(line);
+    }
+  }
 
-  let text = relevantLines
+  let text = processedLines
     .join("\n")
-    .replace(/```mermaid[\s\S]*?```/g, " Diagramm uebersprungen. ")
-    .replace(/```[\s\S]*?```/g, " Code-Beispiel uebersprungen. ")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/\*\*([^*]+)\*\*/g, "$1")
@@ -168,6 +200,15 @@ export function getMarkdownLineFromScroll(
   return Math.floor((scrollOffset / totalRendered) * totalMarkdown);
 }
 
+// ─── Trigger Redraw (Helper) ─────────────────────────────────────────────
+
+function redrawFooterIfSection(): void {
+  if (currentScreen.type === "section" && _renderSectionReader) {
+    const s = currentScreen as Extract<Screen, { type: "section" }>;
+    _renderSectionReader(s.lessonIndex, s.sectionIndex, s.scrollOffset);
+  }
+}
+
 // ─── Stop TTS ────────────────────────────────────────────────────────────
 
 export function stopTTS(): void {
@@ -187,6 +228,7 @@ export function stopTTS(): void {
     setTtsProcess(null);
   }
   setTtsActive(false);
+  setTtsLoading(false);
   setTtsParagraphs([]);
   setTtsCurrentParagraph(0);
 }
@@ -204,8 +246,11 @@ function startEdgeTTS(text: string, onDone: () => void): void {
     return;
   }
 
+  setTtsLoading(true);
+  redrawFooterIfSection();
+
   // Edge-TTS aufrufen — generiert MP3-Datei
-  let genProc;
+  let genProc: ChildProcess;
   const edgeTtsPath = findEdgeTts();
 
   if (edgeTtsPath === "python3-module") {
@@ -231,11 +276,20 @@ function startEdgeTTS(text: string, onDone: () => void): void {
 
   genProc.on("error", () => {
     cleanupTtsFile(tmpFile);
-    setTtsProcess(null);
-    setTtsActive(false);
+    if (ttsProcess === genProc) {
+      setTtsProcess(null);
+      setTtsActive(false);
+      setTtsLoading(false);
+      redrawFooterIfSection();
+    }
   });
 
-  genProc.on("exit", (code) => {
+  genProc.on("exit", (code: number | null) => {
+    if (ttsProcess !== genProc) {
+      cleanupTtsFile(tmpFile);
+      return;
+    }
+
     if (!ttsActive) {
       cleanupTtsFile(tmpFile);
       setTtsProcess(null);
@@ -246,9 +300,14 @@ function startEdgeTTS(text: string, onDone: () => void): void {
       // Edge-TTS fehlgeschlagen — Fallback auf System-TTS fuer diesen Paragraph
       cleanupTtsFile(tmpFile);
       setTtsProcess(null);
+      setTtsLoading(false);
+      redrawFooterIfSection();
       startSystemTTS(text, onDone);
       return;
     }
+
+    setTtsLoading(false);
+    redrawFooterIfSection();
 
     // MP3 abspielen — plattformabhaengig
     playAudioFile(tmpFile, () => {
@@ -262,7 +321,7 @@ function startEdgeTTS(text: string, onDone: () => void): void {
 
 function playAudioFile(filePath: string, onDone: () => void): void {
   const platform = os.platform();
-  let player;
+  let player: ChildProcess;
 
   if (platform === "darwin") {
     // macOS: afplay (built-in)
@@ -310,21 +369,27 @@ function playAudioFile(filePath: string, onDone: () => void): void {
   setTtsProcess(player);
 
   player.on("exit", () => {
-    setTtsProcess(null);
-    onDone();
+    if (ttsProcess === player) {
+      setTtsProcess(null);
+      onDone();
+    }
   });
 
   player.on("error", () => {
-    setTtsProcess(null);
-    onDone();
+    if (ttsProcess === player) {
+      setTtsProcess(null);
+      onDone();
+    }
   });
 }
 
 // ─── System-TTS Fallback (Cross-Platform) ────────────────────────────────
 
 function startSystemTTS(text: string, onDone: () => void): void {
+  setTtsLoading(false); // System TTS has no visible loading latency
+  redrawFooterIfSection();
   const platform = os.platform();
-  let proc;
+  let proc: ChildProcess;
 
   if (platform === "darwin") {
     // macOS: say-Befehl
@@ -335,13 +400,28 @@ function startSystemTTS(text: string, onDone: () => void): void {
       detached: true,
     });
 
+    setTtsProcess(proc);
+
     // Falls Markus nicht installiert → Fallback auf Default say
     proc.on("error", () => {
-      proc = spawn("say", [cleanText], { stdio: "ignore", detached: true });
-      setTtsProcess(proc);
-      proc.on("exit", () => { setTtsProcess(null); onDone(); });
-      proc.on("error", () => { setTtsProcess(null); setTtsActive(false); });
+      if (ttsProcess === proc) {
+        let fallbackProc = spawn("say", [cleanText], { stdio: "ignore", detached: true });
+        setTtsProcess(fallbackProc);
+        fallbackProc.on("exit", () => { if (ttsProcess === fallbackProc) { setTtsProcess(null); onDone(); } });
+        fallbackProc.on("error", () => { if (ttsProcess === fallbackProc) { setTtsProcess(null); setTtsActive(false); } });
+      }
     });
+
+    proc.on("exit", (code: number | null) => {
+      if (ttsProcess === proc) {
+        // Falls Fehler, uebernimmt der error-Handler oben den Fallback
+        if (code === 0) {
+          setTtsProcess(null);
+          onDone();
+        }
+      }
+    });
+    
   } else if (platform === "win32") {
     // Windows: PowerShell System.Speech (SAPI)
     const escaped = text
@@ -367,6 +447,7 @@ function startSystemTTS(text: string, onDone: () => void): void {
         detached: true,
       }
     );
+    setTtsProcess(proc);
   } else {
     // Linux: espeak-ng (bevorzugt) oder espeak
     const cleanText = text.replace(/\r\n/g, " ").replace(/\n/g, " ");
@@ -382,19 +463,25 @@ function startSystemTTS(text: string, onDone: () => void): void {
       stdio: "ignore",
       detached: true,
     });
+    setTtsProcess(proc);
   }
 
-  setTtsProcess(proc);
+  // Registriere exit/error Handler nur fuer non-macOS, da macOS seinen eigenen Logic-Flow hat
+  if (platform !== "darwin") {
+    proc.on("exit", () => {
+      if (ttsProcess === proc) {
+        setTtsProcess(null);
+        onDone();
+      }
+    });
 
-  proc.on("exit", () => {
-    setTtsProcess(null);
-    onDone();
-  });
-
-  proc.on("error", () => {
-    setTtsProcess(null);
-    setTtsActive(false);
-  });
+    proc.on("error", () => {
+      if (ttsProcess === proc) {
+        setTtsProcess(null);
+        setTtsActive(false);
+      }
+    });
+  }
 }
 
 // ─── Unified TTS Start ──────────────────────────────────────────────────
@@ -412,12 +499,9 @@ function startTTSSingle(text: string, onDone: () => void): void {
 export function readNextParagraph(): void {
   if (!ttsActive || ttsCurrentParagraph >= ttsParagraphs.length) {
     setTtsActive(false);
+    setTtsLoading(false);
     setTtsProcess(null);
-    // Redraw footer um Status zu aktualisieren
-    if (currentScreen.type === "section" && _renderSectionReader) {
-      const s = currentScreen as Extract<Screen, { type: "section" }>;
-      _renderSectionReader(s.lessonIndex, s.sectionIndex, s.scrollOffset);
-    }
+    redrawFooterIfSection();
     return;
   }
 

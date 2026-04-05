@@ -266,4 +266,6 @@ export interface ParsedKey {
   name: string;
   raw: string;
   ctrl: boolean;
+  x?: number;
+  y?: number;
 }
