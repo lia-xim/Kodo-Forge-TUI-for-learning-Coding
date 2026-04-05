@@ -10,39 +10,237 @@ export interface PretestQuestion {
 }
 
 export const pretestData: PretestQuestion[] = [
-  // ─── Sektion 1: Die 10 haeufigsten Fehler ──────────────────────────────
+  // ─── Sektion 1: Haeufigste Fehler ──────────────────────────────────────
 
-  { sectionId: 1, question: "Was ist das Problem mit 'as User' bei API-Responses?", options: ["Es ist langsamer", "TypeScript prueft nicht ob die Daten tatsaechlich dem Typ entsprechen", "Es funktioniert nicht mit Generics", "Ich weiss es nicht"], correct: 1, explanation: "'as' ist ein 'Trust me' an den Compiler — keine Runtime-Pruefung." },
-  { sectionId: 1, question: "Was passiert wenn man in einem switch ueber eine Union einen Case vergisst?", options: ["Der Compiler zeigt immer einen Fehler", "Kein Fehler — ausser man nutzt einen Exhaustive Check mit never", "TypeScript ergaenzt den fehlenden Case automatisch", "Ich weiss es nicht"], correct: 1, explanation: "Ohne never-Check im default gibt es keinen Compile-Error bei fehlendem Case." },
-  { sectionId: 1, question: "Warum sollten exportierte Funktionen einen expliziten Return Type haben?", options: ["Performance-Verbesserung", "Der Return Type ist ein Vertrag — Aenderungen werden sofort erkannt", "TypeScript kann Return Types nicht inferieren", "Ich weiss es nicht"], correct: 1, explanation: "Explizite Return Types verhindern dass Implementierungsaenderungen den oeffentlichen Typ stillschweigend aendern." },
+  {
+    sectionId: 1,
+    question: "Was ist das Problem mit 'as User' bei API-Responses?",
+    options: [
+      "Der Compiler prueft nicht ob die Daten wirklich ein User sind — Runtime-Crash moeglich",
+      "Es ist langsamer als ein Type Guard",
+      "Es funktioniert nicht mit strict: true",
+      "Ich weiss es nicht",
+    ],
+    correct: 0,
+    explanation: "'as' ist ein 'Trust me' an den Compiler. Wenn die API etwas anderes liefert, crasht der Code zur Laufzeit.",
+  },
+  {
+    sectionId: 1,
+    question: "Was passiert wenn man 'any' fuer eine Variable verwendet und dann auf ein Property zugreift?",
+    options: [
+      "TypeScript prueft den Zugriff und gibt eine Warnung",
+      "Der Zugriff ergibt wieder 'any' — keine Pruefung, 'any' ist ansteckend",
+      "Der Zugriff ergibt 'unknown'",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Jeder Zugriff auf any ergibt any. Das breitet sich durch die gesamte Aufrufkette aus.",
+  },
+  {
+    sectionId: 1,
+    question: "Wie erzwingt man dass ein switch-Statement alle Faelle einer Union abdeckt?",
+    options: [
+      "Mit einer speziellen Compiler-Option",
+      "Mit einem default-Case der den Wert an 'never' zuweist — Compile-Error bei fehlendem Case",
+      "Das geht in TypeScript nicht",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Der never-Trick: const _: never = value im default. Wenn ein Case fehlt, ist value nicht never → Compile-Error.",
+  },
 
   // ─── Sektion 2: any vs unknown vs never ─────────────────────────────────
 
-  { sectionId: 2, question: "Wann sollte man 'any' statt 'unknown' verwenden?", options: ["Bei allen API-Responses", "Fast nie — nur bei Migration oder Typ-System-Grenzen", "Immer wenn man den Typ nicht kennt", "Ich weiss es nicht"], correct: 1, explanation: "unknown ist in 95% der Faelle die richtige Wahl. any nur temporaer bei Migration." },
-  { sectionId: 2, question: "Was bedeutet 'any ist ansteckend'?", options: ["any verlangsamt den Compiler", "Jeder Zugriff auf any ergibt wieder any — es breitet sich aus", "any veraendert andere Typen im Projekt", "Ich weiss es nicht"], correct: 1, explanation: "const x: any; const y = x.foo; → y ist auch any. Das propagiert durch die gesamte Aufrufkette." },
-  { sectionId: 2, question: "Welche drei Rollen hat 'never' in TypeScript?", options: ["Nur fuer Fehler", "Exhaustive Check, unmoegliche Funktion (throw), Typ-Level-Filterung", "Nur als Bottom-Type", "Ich weiss es nicht"], correct: 1, explanation: "never hat drei Hauptrollen: Exhaustive Checks, Funktionen die nie zurueckkehren, und Typ-Filterung (in Conditional Types)." },
+  {
+    sectionId: 2,
+    question: "Wann sollte man 'unknown' statt 'any' verwenden?",
+    options: [
+      "Nur bei Funktionsparametern",
+      "Fast immer — unknown erzwingt Pruefung, any nicht",
+      "Nur bei API-Responses",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "In 95% der Faelle wo man any schreiben wuerde ist unknown die richtige Wahl. Die 5% Ausnahmen: Migration, Double Cast, Library-Internals.",
+  },
+  {
+    sectionId: 2,
+    question: "Was sind die drei Hauptrollen von 'never' in TypeScript?",
+    options: [
+      "Fehlerbehandlung, Logging, Testing",
+      "Exhaustive Checks, unmoegliche Funktionen, Typ-Level-Filterung",
+      "Validierung, Parsing, Serialisierung",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "never: (1) Exhaustive switch, (2) Funktionen die nie zurueckkehren (throw), (3) Typen filtern (T extends string ? never : T).",
+  },
+  {
+    sectionId: 2,
+    question: "Was gibt es fuer einen Entscheidungsbaum bei 'any vs unknown vs never'?",
+    options: [
+      "Immer unknown verwenden",
+      "Externe Daten → unknown, generische Container → Generic T, nie zurueckkehren → never, sonst → unknown",
+      "Immer any verwenden und spaeter refactoren",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Der Entscheidungsbaum: unknown fuer unbekannte Daten, Generic T fuer Container, never fuer Unmoegliches, any nur bei Migration.",
+  },
 
   // ─── Sektion 3: Overengineering vermeiden ───────────────────────────────
 
-  { sectionId: 3, question: "Was ist YAGNI?", options: ["You Aren't Gonna Need It — implementiere nichts bis du es brauchst", "Yet Another Generic Notation Interface", "Ein TypeScript-Compiler-Flag", "Ich weiss es nicht"], correct: 0, explanation: "YAGNI (Kent Beck, 1999): Schreibe den einfachsten Code der funktioniert. Gilt auch fuer Typen." },
-  { sectionId: 3, question: "Wann ist ein Generic Over-Engineering?", options: ["Wenn T einen Constraint hat", "Wenn T nur einmal vorkommt und keinen Zusammenhang herstellt", "Wenn die Funktion weniger als 3 Zeilen hat", "Ich weiss es nicht"], correct: 1, explanation: "Generics verbinden Typen. Ein einzelnes T verbindet nichts — unknown ist einfacher und gleichwertig." },
-  { sectionId: 3, question: "Wann lohnen sich Branded Types?", options: ["Immer fuer jeden String", "Wenn Verwechslung gleichfoermiger Werte echte Bugs verursachen wuerde", "Nur fuer Zahlen", "Ich weiss es nicht"], correct: 1, explanation: "Branded Types lohnen sich wenn UserId und OrderId verwechselt werden koennten — nicht fuer lokale Formularfelder." },
+  {
+    sectionId: 3,
+    question: "Wann ist ein Generic Over-Engineering?",
+    options: [
+      "Wenn er einen Constraint hat",
+      "Wenn der Typparameter T nur einmal vorkommt (kein Zusammenhang zwischen Input und Output)",
+      "Wenn er mit extends verwendet wird",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Ein Generic der nur einmal vorkommt verbindet nichts. function log<T>(msg: T): void → besser: function log(msg: unknown): void.",
+  },
+  {
+    sectionId: 3,
+    question: "Was ist YAGNI?",
+    options: [
+      "Eine TypeScript-Compiler-Option",
+      "You Aren't Gonna Need It — implementiere keine Komplexitaet die du nicht jetzt brauchst",
+      "Yet Another Generic Naming Issue",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "YAGNI gilt auch fuer Typen: Ein einfaches Interface ist besser als ein verschachtelter Conditional Type wenn beides den Job erledigt.",
+  },
+  {
+    sectionId: 3,
+    question: "Wann sind Branded Types Over-Engineering?",
+    options: [
+      "Immer",
+      "Fuer lokale Formularfelder die nur in einer Komponente existieren",
+      "Fuer Entity-IDs wie UserId und OrderId",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Branded Types lohnen sich wenn Verwechslung echte Bugs verursacht. Lokale Formularfelder werden nicht zwischen Modulen ausgetauscht.",
+  },
 
   // ─── Sektion 4: Type Assertions vs Type Guards ─────────────────────────
 
-  { sectionId: 4, question: "Was ist der fundamentale Unterschied zwischen 'as User' und 'isUser(data)'?", options: ["Kein Unterschied", "'as' ist ein Trust-me ohne Pruefung, Type Guard ist ein Prove-it mit Runtime-Check", "'as' ist schneller", "Ich weiss es nicht"], correct: 1, explanation: "Assertions: Keine Runtime-Pruefung. Type Guards: Runtime-Pruefung. Assertions sind unsicher bei externen Daten." },
-  { sectionId: 4, question: "Was macht eine Assertion Function (asserts value is T)?", options: ["Gibt boolean zurueck", "Wirft bei ungueltigem Wert und engt den Typ danach ein — ohne if noetig", "Konvertiert den Wert zur Laufzeit", "Ich weiss es nicht"], correct: 1, explanation: "asserts wirft bei Fehler. Danach ist der Typ eingeengt — kein if/else noetig." },
-  { sectionId: 4, question: "Wann ist 'as' akzeptabel?", options: ["Bei jeder API-Response", "In Tests (Partial-Mocks) und bei Typ-System-Grenzen (Double Cast)", "Nie", "Ich weiss es nicht"], correct: 1, explanation: "In Tests, bei DOM-Zugriff mit instanceof-Check, und bei Double Casts an Typ-System-Grenzen." },
+  {
+    sectionId: 4,
+    question: "Was ist der fundamentale Unterschied zwischen 'as User' und einem Type Guard?",
+    options: [
+      "'as' prueft zur Runtime, Type Guard prueft zur Compilezeit",
+      "'as' ist ein 'Trust me' (keine Pruefung), Type Guard ist ein 'Prove it' (Runtime-Pruefung)",
+      "Kein Unterschied",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Type Assertion = Compiler glaubt dir blind. Type Guard = Du lieferst den Beweis mit Runtime-Checks.",
+  },
+  {
+    sectionId: 4,
+    question: "Was macht 'asserts value is T' anders als 'value is T'?",
+    options: [
+      "Kein Unterschied",
+      "'asserts' wirft bei Fehler — der Typ gilt danach direkt ohne if",
+      "'asserts' ist nur fuer Klassen",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "is → boolean (fuer if/else). asserts → void oder throw. Nach asserts gilt der Typ sofort im Scope.",
+  },
+  {
+    sectionId: 4,
+    question: "Wann ist 'as' (Type Assertion) akzeptabel?",
+    options: [
+      "Bei jeder API-Response",
+      "In Test-Code (Mocks), bei DOM-Zugriff (getElementById) und bei Typ-System-Grenzen",
+      "Immer wenn der Compiler meckert",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "In Tests sind partielle Mocks OK. Bei DOM weisst du welches Element es ist. Bei Typ-Grenzen: Double Cast mit Kommentar.",
+  },
 
   // ─── Sektion 5: Defensive vs Offensive Typing ──────────────────────────
 
-  { sectionId: 5, question: "Was ist 'Defensive Typing'?", options: ["Typen die Fehler verhindern", "Runtime-Validierung an Systemgrenzen wo das Typsystem nicht greifen kann", "Typen mit vielen Constraints", "Ich weiss es nicht"], correct: 1, explanation: "Defensive Typing prueft Daten zur Laufzeit an Stellen wo TypeScript keine Garantie geben kann (API, JSON.parse)." },
-  { sectionId: 5, question: "Was ist 'Parse, Don't Validate'?", options: ["JSON.parse statt JSON.stringify", "Validiere UND transformiere in einen staerkeren Typ statt nur boolean zurueckzugeben", "Nutze regulaere Ausdruecke statt Typ-Guards", "Ich weiss es nicht"], correct: 1, explanation: "parseEmail(s): Email statt validateEmail(s): boolean. Der Typ ist der Beweis der Validierung." },
-  { sectionId: 5, question: "Warum ist HttpClient.get<User>() problematisch?", options: ["HttpClient ist veraltet", "Der Generic ist eine getarnte Assertion — keine Runtime-Pruefung ob die API wirklich User liefert", "HttpClient unterstuetzt keine Generics", "Ich weiss es nicht"], correct: 1, explanation: "<User> verschwindet zur Laufzeit (Type Erasure). Wenn die API ein anderes Format liefert, merkt es niemand." },
+  {
+    sectionId: 5,
+    question: "Was ist die 'Defensive Schale, offensiver Kern' Architektur?",
+    options: [
+      "Alles defensiv typisieren",
+      "An Systemgrenzen Runtime-validieren, im Kern dem Typsystem vertrauen",
+      "Nur Tests defensiv schreiben",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Systemgrenzen (API, User-Input): unknown + Validierung. Kern (Services, Logik): Typsystem reicht.",
+  },
+  {
+    sectionId: 5,
+    question: "Ist HttpClient.get<User>() in Angular echte Typsicherheit?",
+    options: [
+      "Ja, der Generic prueft den Response",
+      "Nein, es ist eine getarnte Assertion — die API koennte etwas anderes liefern",
+      "Nur mit strict: true",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "<User> wird zur Laufzeit entfernt (Type Erasure). Es ist ein 'Trust me' an den Compiler, keine Pruefung.",
+  },
+  {
+    sectionId: 5,
+    question: "Was bedeutet 'Parse, Don't Validate'?",
+    options: [
+      "JSON.parse statt regulaere Ausdruecke verwenden",
+      "Validiere UND transformiere in einen staerkeren Typ — der Typ beweist die Validierung",
+      "Parsing ist immer schneller als Validierung",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "parseEmail(s): Email statt validateEmail(s): boolean. Nach dem Parse IST der Typ der Beweis.",
+  },
 
   // ─── Sektion 6: Praxis ─────────────────────────────────────────────────
 
-  { sectionId: 6, question: "Welches Refactoring hat den groessten Impact auf Typsicherheit?", options: ["Alle Strings durch Template Literals ersetzen", "Boolean-Flags durch Discriminated Unions ersetzen", "Alle Interfaces durch Types ersetzen", "Ich weiss es nicht"], correct: 1, explanation: "Boolean-Flags → Discriminated Union eliminiert unmoegliche Zustaende — ganze Fehlerkategorien verschwinden." },
-  { sectionId: 6, question: "Was ist eine sinnvolle Metrik fuer TypeScript-Qualitaet?", options: ["Anzahl der Zeilen", "any-Dichte: Anzahl 'any' pro 1000 Zeilen", "Anzahl der Interfaces", "Ich weiss es nicht"], correct: 1, explanation: "Weniger any = mehr Compiler-Schutz = weniger Runtime-Bugs. Messbar und actionable." },
-  { sectionId: 6, question: "Was sollte die wichtigste ESLint-Regel fuer TypeScript sein?", options: ["no-console", "@typescript-eslint/no-explicit-any", "prefer-const", "Ich weiss es nicht"], correct: 1, explanation: "no-explicit-any verhindert das haeufigste Anti-Pattern: das Typsystem per any zu deaktivieren." },
+  {
+    sectionId: 6,
+    question: "Was ist die wichtigste Metrik fuer TypeScript-Qualitaet?",
+    options: [
+      "Anzahl der Generics",
+      "any-Dichte: Anzahl 'any' pro 1000 Zeilen (Ziel: < 1)",
+      "Anzahl der Dateien",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "any-Dichte ist direkt messbar und korreliert mit der Anzahl der Runtime-Bugs durch fehlende Typpruefung.",
+  },
+  {
+    sectionId: 6,
+    question: "Welches Refactoring-Pattern hat den groessten Impact?",
+    options: [
+      "Alle Strings mit Branded Types versehen",
+      "Boolean-Flags durch Discriminated Unions ersetzen (verhindert unmoegliche Zustaende)",
+      "Alle Kommentare entfernen",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Boolean-Flags → DU eliminiert ganze Klassen von Bugs: unmoegliche Zustaende, korrelierte Nullability, vergessene Cases.",
+  },
+  {
+    sectionId: 6,
+    question: "Was ist die einzelne wichtigste TypeScript Best Practice?",
+    options: [
+      "Moeglichst viele Generics verwenden",
+      "Dem Compiler vertrauen und 'as'/'any' nicht als Loesung verwenden",
+      "Jede Variable explizit annotieren",
+      "Ich weiss es nicht",
+    ],
+    correct: 1,
+    explanation: "Der Compiler ist dein Partner. Wenn er meckert, hat er meistens recht. 'as' und 'any' unterdrücken nur Symptome.",
+  },
 ];
