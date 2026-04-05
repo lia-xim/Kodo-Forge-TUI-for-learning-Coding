@@ -31,10 +31,27 @@
 > Bruecke. Jede Woche wurden 50-100 Dateien migriert, begleitet von
 > automatisierten Codemod-Scripts. Nach 18 Monaten war die Codebase
 > vollstaendig in TypeScript — und die Bug-Rate sank um 38%.
+>
+> Was ist dabei schiefgegangen? Airbnb berichtet, dass die groesste
+> Herausforderung nicht die Technik war, sondern die Menschen: Entwickler,
+> die unter Zeitdruck standen, neigten dazu `any` hinzuzufuegen statt
+> echte Typen zu erarbeiten. Am Ende der Migration hatten sie 11.000
+> explizite `any`-Annotationen — einen "Typen-Schulden"-Berg, den sie
+> in den Folgejahren systematisch abgebaut haben. Die Lernlektion:
+> Plane von Anfang an explizit, wie du mit `any` umgehst.
 
 Fast jeder professionelle Entwickler wird irgendwann eine JS-zu-TS-
 Migration durchfuehren oder daran beteiligt sein. Die Frage ist nicht
 OB, sondern WIE.
+
+**Warum ueberhaupt migrieren?** TypeScript bietet konkrete Vorteile
+die bei grossen Codebasen besonders zum Tragen kommen: bessere IDE-
+Unterstuetzung mit praezisem Autocomplete, fruehzeitige Fehlererkennung
+vor dem Testen, sichere Refaktorierungen (umbenennen einer Property
+findet alle Verwendungen), und leichteres Onboarding neuer Entwickler
+die den Code lesen koennen ohne jeden Aufruf zu verfolgen. Die Airbnb-
+Zahl von 38% weniger Bugs ist keine Ausnahme — Microsofts eigene Studien
+zeigen aehnliche Werte fuer grosse TypeScript-Projekte.
 
 ---
 
@@ -60,6 +77,11 @@ OB, sondern WIE.
 
 **Passt fuer:** Kleine Projekte (< 50 Dateien), Nebenprojekte, Prototypen
 
+**Analogie:** Big Bang ist wie einen Raum in einem Tag komplett renovieren.
+Du leerst ihn, schleppst alles raus, renovierst, und schleppst alles zurueck.
+Bei einem kleinen Gaestezimmer — kein Problem. Bei einem Grossraumbuero mit
+50 Arbeitsplaetzen bedeutet das zwei Wochen ohne Arbeitsplaetze. Nicht praktikabel.
+
 ### Strategie 2: Graduell (empfohlen)
 
 ```
@@ -80,6 +102,11 @@ OB, sondern WIE.
 - Temporaer mehr Komplexitaet (zwei Welten)
 
 **Passt fuer:** Grosse Projekte, Teams, Produktion-kritischer Code
+
+**Analogie:** Graduelle Migration ist wie das Renovieren eines Bueros
+Zimmer fuer Zimmer, waehrend die Arbeit weiterlaeuft. Du schliesst
+Zimmer 1 ab, ziehst die Mitarbeiter um, renovierst es, und gehst
+zum naechsten. Das Buero bleibt immer funktionsfaehig.
 
 ### Strategie 3: Hybrid (Codemod-gestuetzt)
 
@@ -173,6 +200,10 @@ Unabhaengig von der Strategie brauchst du einen Plan:
 > bedeutet hier meist: Strict Mode aktivieren und bestehende `any`-Stellen
 > typisieren. Wenn du ein altes AngularJS-Projekt (Angular 1.x) migrierst,
 > ist das eine andere Geschichte — da brauchst du die volle JS→TS-Migration.
+>
+> Konkret fuer dein Angular-Projekt: Pruefe zuerst ob `strict: true` und
+> `strictTemplates: true` in deiner `tsconfig.json` aktiv sind. Wenn nicht,
+> ist das deine "Migration" — und Sektion 3 dieser Lektion zeigt genau wie.
 
 ---
 
@@ -212,9 +243,21 @@ Die wichtigste Regel bei gradueller Migration:
 > # Oder einfacher — finde Dateien ohne Imports:
 > grep -rL "^import" src/ --include="*.js" | head -10
 > # Diese Dateien haben keine Abhaengigkeiten → ideale Startpunkte
+>
+> # Zaehle JS- vs TS-Dateien (aktuelle Migrationsbasis):
+> find src -name "*.ts" -o -name "*.tsx" | wc -l  # TypeScript
+> find src -name "*.js" -o -name "*.jsx" | wc -l  # JavaScript
 > ```
 >
 > Die Dateien ohne Imports sind deine "Blaetter" — migriere sie zuerst.
+> Die Zaehlung zeigt deinen Startpunkt fuer die Migration-Metriken.
+
+**Warum ist die Reihenfolge so wichtig?** Wenn du eine "Wurzel"-Datei
+(z.B. eine Hauptkomponente) migrierst, bevor ihre Abhaengigkeiten
+typisiert sind, wirst du ueberall `any` verwenden muessen — weil die
+importierten Module noch kein Typ-Information liefern. Blaetter zuerst
+stellt sicher, dass jede migrierte Datei echte Typen aus ihren
+Abhaengigkeiten bekommt, nicht `any`.
 
 ---
 
@@ -225,8 +268,10 @@ Die wichtigste Regel bei gradueller Migration:
 - **Hybrid/Codemod** beschleunigt den Start, erfordert aber Nacharbeit
 - Migriere immer **Blaetter zuerst** (Dateien ohne Abhaengigkeiten)
 - Ein **Migration-Plan** mit klaren Phasen verhindert Chaos
+- **any-Schulden** von Anfang an einplanen — explizit markieren und systematisch abbauen
+- **Metriken helfen:** TS-Anteil, any-Count und strict-Fehlerzahl messen den echten Fortschritt
 
-**Kernkonzept zum Merken:** Migration ist kein technisches Problem — es ist ein organisatorisches. Die beste Strategie ist die, die dein Team durchhalten kann, ohne dass die Feature-Arbeit stoppt. Graduelle Migration ist fast immer die richtige Wahl.
+**Kernkonzept zum Merken:** Migration ist kein technisches Problem — es ist ein organisatorisches. Die beste Strategie ist die, die dein Team durchhalten kann, ohne dass die Feature-Arbeit stoppt. Graduelle Migration ist fast immer die richtige Wahl. Und: Plane `any` als temporaeres Werkzeug ein, nicht als Loesung — der Unterschied zwischen einer sauberen Migration und einem "TypeScript in Name only"-Projekt liegt im konsequenten Abbau dieser technischen Schulden.
 
 ---
 

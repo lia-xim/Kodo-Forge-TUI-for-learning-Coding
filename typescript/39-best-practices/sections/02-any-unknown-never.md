@@ -16,6 +16,23 @@
 
 ---
 
+## Die Kosten von any — eine echte Geschichte
+
+Stell dir vor: Ein Team migriert eine Angular-App von JavaScript zu
+TypeScript. Unter Zeitdruck annotieren sie alle unbekannten Daten
+mit `any`. Der Code kompiliert, alle Tests laufen, das Team ist
+zufrieden. Sechs Monate spaeter hat die App mysterious Runtime-Crashes
+in Production. Nach langer Suche stellt sich heraus: Eine `any`-
+annotierte Utility-Funktion hat ihren Rueckgabetyp von `string` zu
+`string | null` veraendert, aber niemand hat es bemerkt weil `any`
+jeden Fehler verschluckt. 23 Components hatten diesen Wert einfach
+als `string` verwendet — keine einzige mit einer null-Pruefung.
+
+Das ist **any-Drift**: Der Typ wandert durch den Code, infiziert
+jede Variable die ihn beruehrt, und endet irgendwann als Runtime-
+Crash an einer Stelle die scheinbar nichts mit dem urspruenglichen
+`any` zu tun hat.
+
 ## Die drei Spezialtypen im Vergleich
 
 Du kennst diese Typen seit L02. Jetzt, mit 39 Lektionen Erfahrung,
@@ -143,14 +160,102 @@ function processUser(user: any): void {  // eslint-disable-line @typescript-esli
 }
 ```
 
-> ⚡ **Framework-Bezug:** In Angular-Projekten findest du `any` oft
+> ⚡ **Angular-Bezug:** In Angular-Projekten findest du `any` oft
 > in Legacy-Services die noch nicht vollstaendig migriert sind.
 > Die Regel: `any` IMMER mit einem `// TODO: Type this` Kommentar
-> versehen. In React-Projekten taucht `any` oft bei Event-Handlern
-> auf: `onChange={(e: any) => ...}` — hier ist die korrekte Loesung
-> `React.ChangeEvent<HTMLInputElement>`.
+> versehen und ein GitHub-Issue erstellen. Ohne Tracking wandern
+> "temporaere" `any`-Annotationen dauerhaft in den Code.
+>
+> Fuer Event-Handler in Angular-Templates gibt es eine haeufige
+> Falle: `(click)="handle($event)"` uebergibt ein `Event` Objekt
+> aber viele Entwickler tippen den Handler als `handle(event: any)`.
+> Die korrekte Annotation ist `handle(event: MouseEvent)`.
+>
+> In React ist das Aequivalent bei Event-Handlern noch verbreiteter:
+> `onChange={(e: any) => ...}` findest du in fast jedem Anfaengerprojekt.
+> Die korrekte Loesung: `onChange={(e: React.ChangeEvent<HTMLInputElement>) => ...}`.
+> Ja, es ist laenger — aber es zeigt dir genau welche Properties
+> `e` hat (z.B. `e.target.value`, `e.target.checked`).
 
 ---
+
+## Die any-Ansteckungskette — visualisiert
+
+```typescript annotated
+// Schritt 1: any betritt den Code
+function parseConfig(raw: any) {
+  return raw.settings;  // Typ: any
+  // ^ settings ist any weil raw any ist
+}
+
+// Schritt 2: any infiziert die naechste Funktion
+function getTimeout(config: ReturnType<typeof parseConfig>) {
+  return config.timeout;  // Typ: any
+  // ^ ReturnType von parseConfig ist any → timeout ist any
+}
+
+// Schritt 3: any landet in einer Berechnung
+const delay = getTimeout(config) * 1000;
+// delay: any (any * number = any!)
+
+// Schritt 4: any landet in einer Conditional
+if (delay > 5000) {  // any > number: immer erlaubt, niemals sicher
+  // ...
+}
+
+// Ergebnis: Vier Codezeilen von der Quelle, noch immer any
+// TypeScript hat nichts davon beanstandet.
+```
+
+Das ist **any-Drift** in Aktion. Ein einziges `any` am Eingang
+infiziert jeden Wert der jemals damit berechnet, verglichen oder
+zurrueckgegeben wird.
+
+---
+
+## unknown als Drop-in Ersatz fuer any
+
+Der einfachste Schritt um `any` loszuwerden ist: Ersetze `any` durch
+`unknown` und lass den Compiler dir sagen wo du Pruefungen brauchst.
+Das ist kein theoretisches Ratschlag — es ist ein konkreter Workflow:
+
+```typescript annotated
+// Ausgangszustand: any ueberall
+function parseApiResponse(data: any): any {
+  return data.users.map((u: any) => u.name);
+}
+
+// Schritt 1: Ersetze outer any durch unknown
+function parseApiResponse(data: unknown): unknown {
+  // ^ Sofort: Fehler! data.users ist nicht erlaubt auf unknown
+  // ^ TypeScript zeigt dir exakt wo Pruefungen fehlen
+}
+
+// Schritt 2: Fuege Pruefung hinzu
+function parseApiResponse(data: unknown): string[] {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "users" in data &&
+    Array.isArray((data as Record<string, unknown>).users)
+  ) {
+    const users = (data as { users: unknown[] }).users;
+    return users.filter(
+      (u): u is { name: string } =>
+        typeof u === "object" && u !== null && "name" in u &&
+        typeof (u as Record<string, unknown>).name === "string"
+    ).map(u => u.name);
+  }
+  return [];
+}
+// ^ Mehr Code, aber JEDER Fehlerfall ist explizit behandelt
+// ^ Kein Runtime-Crash mehr wenn die API unerwartete Daten liefert
+```
+
+Der erste Schritt — `any` durch `unknown` ersetzen — kostet weniger
+als eine Minute. Der zweite Schritt (Pruefungen hinzufuegen) ist
+Arbeit, die du sowieso haettest tun muessen — du hast sie nur
+verschoben.
 
 ## never in der Praxis
 
@@ -196,24 +301,43 @@ type Result = NonString<string | number | boolean>;
 
 ## Experiment: any-Audit
 
-Fuehre ein any-Audit an deinem Projekt durch:
+Betrachte die Entscheidungsmatrix mit konkreten Beispielen:
 
 ```typescript
-// Schritt 1: Zaehle alle 'any' in deinem Projekt
-// Terminal: grep -r ": any" --include="*.ts" | wc -l
+// Aufgabe: Fuer jedes 'any' unten entscheide: unknown, never, Generic oder any (mit Grund)?
 
-// Schritt 2: Kategorisiere jedes 'any':
-// - Kann es 'unknown' sein? (meistens ja)
-// - Ist es ein Double Cast? (akzeptabel mit Kommentar)
-// - Ist es Migration-Legacy? (TODO setzen)
-// - Ist es unnoetig? (entfernen)
+// Fall A:
+function logError(err: any): void {
+  console.error("Error:", err);
+}
+// → Deine Entscheidung: ___
+// → Loesung: unknown — console.error nimmt alles entgegen, kein Zugriff noetig
 
-// Schritt 3: Ersetze 5 'any' durch 'unknown' und fixe die Fehler
-// Du wirst sehen: Die Fixes sind meistens Type Guards oder Narrowing —
-// Code der sowieso noetig ist fuer korrekte Fehlerbehandlung.
+// Fall B:
+function parseJson<T>(text: string): T {
+  return JSON.parse(text) as any as T;
+  //                        ^^^^ inneres any
+}
+// → Deine Entscheidung fuer das innere any: ___
+// → Loesung: akzeptabel — Double Cast an Typ-System-Grenze, JSON.parse gibt any zurueck
+
+// Fall C:
+const handler: (event: any) => void = (e) => {
+  console.log(e.target.value);  // Zugriff auf Properties!
+};
+// → Deine Entscheidung: ___
+// → Loesung: Event oder MouseEvent/InputEvent — konkreter Typ noetig wegen Zugriff
+
+// Fall D:
+function assertDefined<T>(value: T | undefined): asserts value is T {
+  if (value === undefined) throw new Error("Value is undefined");
+}
+// → Kein any hier — welcher Typ ist der Rueckgabetyp de facto?
+// → Loesung: never (implizit, wenn die Assertion fehlschlaegt) / asserts gibt void zurueck
 
 // Bonus: Aktiviere "@typescript-eslint/no-explicit-any": "warn"
-// in deiner ESLint-Config.
+// in deiner ESLint-Config und schau wie viele Treffer du bekommst.
+// Kategorisiere jeden Treffer nach den 5% Regeln.
 ```
 
 ---
@@ -221,10 +345,12 @@ Fuehre ein any-Audit an deinem Projekt durch:
 ## Was du gelernt hast
 
 - **any** deaktiviert das Typsystem komplett und ist ansteckend — fast nie die richtige Wahl
+- **any-Drift**: Ein einziges `any` infiziert jeden Wert der damit berechnet oder verglichen wird
 - **unknown** ist der sichere Top-Type — erzwingt Narrowing vor Zugriff
-- **never** ist der Bottom-Type — fuer Exhaustive Checks, unmoeliche Funktionen und Typ-Filterung
+- **never** ist der Bottom-Type — fuer Exhaustive Checks, unmoegliche Funktionen und Typ-Filterung
 - Der **Entscheidungsbaum**: Im Zweifel immer `unknown`
 - **5% der Faelle** wo `any` akzeptabel ist: Double Cast, Library-Internals, temporaere Migration
+- **any durch unknown ersetzen** ist ein konkreter Workflow, kein theoretisches Ideal
 
 > 🧠 **Erklaere dir selbst:** Jemand sagt: "any und unknown sind
 > dasselbe — bei beiden kann man jeden Wert zuweisen." Was antwortest
@@ -232,9 +358,10 @@ Fuehre ein any-Audit an deinem Projekt durch:
 > **Kernpunkte:** Zuweisung AN den Typ: Beide akzeptieren alles |
 > Zugriff AUF den Typ: unknown erzwingt Pruefung, any nicht |
 > any ist bidirektional unsicher, unknown ist unidirektional sicher |
-> Der Unterschied zeigt sich beim LESEN, nicht beim SCHREIBEN
+> Der Unterschied zeigt sich beim LESEN, nicht beim SCHREIBEN |
+> In Angular: `HttpClient.get<unknown>()` + Validierung statt `get<User>()` (getarnte Assertion)
 
-**Kernkonzept zum Merken:** unknown = "Ich weiss nicht was das ist, also pruefe ich." any = "Ich weiss nicht was das ist, also ignoriere ich es." Der Unterschied ist Sicherheit vs. Bequemlichkeit.
+**Kernkonzept zum Merken:** unknown = "Ich weiss nicht was das ist, also pruefe ich." any = "Ich weiss nicht was das ist, also ignoriere ich es." Der Unterschied ist Sicherheit vs. Bequemlichkeit — und in Production-Code ist Bequemlichkeit teuer.
 
 ---
 

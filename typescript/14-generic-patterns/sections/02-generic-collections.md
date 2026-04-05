@@ -12,8 +12,29 @@
 - Warum typsichere Datenstrukturen besser sind als `any[]`
 - Stack\<T\> implementieren (Last In, First Out)
 - Queue\<T\> implementieren (First In, First Out)
-- LinkedList\<T\> als verkettete Liste
-- Das Iterator-Pattern mit Generics
+- LinkedList\<T\> als verkettete Liste mit Iterator-Support
+- Constrained Collections: Nur Typen mit bestimmten Properties erlauben
+
+---
+
+## Hintergrund: Warum Java Generics bekaempfte und TypeScript davon lernte
+
+Im Jahr 2004 fuegte Java Generics zur Sprache hinzu — und erzeugte einen
+der groessten Rueckwaertskompatibilitaets-Kompromisse der Programmiergeschichte.
+Java-Generics werden durch "Type Erasure" implementiert: `List<String>` und
+`List<Integer>` sind zur Laufzeit dasselbe Objekt. Das schraenkt bis heute ein,
+was Java-Generics koennen.
+
+TypeScript kennt dieses Problem nicht, weil TypeScript-Typen IMMER erased
+werden — es gibt keine Laufzeit-Repraesentation. Aber das Ergebnis ist dasselbe:
+Typsichere Collections, die zur Compile-Zeit vollstaendig geprueft werden,
+zur Laufzeit aber effizientes, schlankes JavaScript erzeugen.
+
+Das Ergebnis kannst du in jeder grossen TypeScript-Codebase sehen: Die
+Angular Material `DataSource<T>`, die RxJS `Subject<T>` und `BehaviorSubject<T>`,
+die NgRx `Store<State>` — sie alle sind im Kern typsichere Collections, die
+Generics verwenden um sicherzustellen, dass das was reinkommt, auch typsicher
+rauskommt.
 
 ---
 
@@ -101,6 +122,12 @@ undoStack.push({ type: "DELETE", payload: { id: 42 }, timestamp: new Date() });
 > zurueck statt nur `T`? Was passiert bei einem leeren Stack?
 > **Kernpunkte:** Leerer Stack hat nichts zum Zurueckgeben | undefined signalisiert "nichts da" | Ohne undefined muesste man eine Exception werfen oder luegen
 
+> 💭 **Denkfrage:** Browser-History, Call Stack im Debugger, Undo/Redo in
+> jedem Editor — alle sind Stacks. Aber Angular und React implementieren
+> Undo-History oft mit einem `UndoAction[]`-Array statt einer Stack-Klasse.
+> Welchen Vorteil hat eine typisierte Stack\<T\>-Klasse gegenueber einem
+> einfachen Array, wenn man `pop()` auf einem leeren Array aufruft?
+
 ---
 
 ## Queue\<T\> — First In, First Out
@@ -157,6 +184,31 @@ if (next) {
   // Volle Typsicherheit und Autovervollstaendigung nach dem if-Check
 }
 ```
+
+> ⚡ **Angular-Bezug:** `HttpClient` verwendet intern eine Queue fuer
+> ausgehende Requests. Wenn du in einem Angular-Service mehrere
+> `this.http.get<User[]>()` Aufrufe machst, werden sie in einer internen
+> Queue verwaltet. Das Generic `<User[]>` stellt sicher, dass der
+> `Observable`-Stream genau den richtigen Typ emittiert — keine Casts noetig.
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> class Queue<T> {
+>   private items: T[] = [];
+>   enqueue(item: T): void { this.items.push(item); }
+>   dequeue(): T | undefined { return this.items.shift(); }
+> }
+>
+> // Erstelle eine Queue<number> und eine Queue<string>
+> const numQ = new Queue<number>();
+> const strQ = new Queue<string>();
+>
+> numQ.enqueue(42);
+> // Was passiert wenn du versuchst: numQ.enqueue("oops")?
+> // Was ist der Typ von numQ.dequeue()?
+> // Vergleiche: was waere der Typ wenn du Queue<unknown> nutzt?
+> ```
+> Teste beide Varianten und beobachte die Compiler-Fehler.
 
 ---
 
@@ -238,6 +290,16 @@ for (const user of users) {
 }
 ```
 
+> 📖 **Hintergrund: Generator-Methoden und das Iterator-Protokoll**
+>
+> Die `*[Symbol.iterator]()` Methode implementiert das JavaScript Iterator
+> Protocol. Das `*` macht sie zur Generator-Funktion — sie kann mit `yield`
+> Werte "pausieren und liefern". TypeScript leitet den Typ `Iterator<T>`
+> automatisch ab. Dadurch funktioniert `for...of` auf jeder Klasse, die
+> dieses Protokoll implementiert — einschliesslich Stack und Queue oben.
+> In Angular verwendest du dasselbe Protokoll, wenn du `async/await` mit
+> Iterables in Services kombinierst.
+
 ---
 
 ## Constrainted Collections
@@ -279,20 +341,30 @@ const laptop = products.get(1);
 > Element eine `id` hat. Ohne Constraint koennte man `IndexedCollection<string>`
 > erstellen — was keinen Sinn ergibt, weil Strings keine `.id` haben.
 
----
-
-## Zusammenfassung
-
-| Collection | Prinzip | Typischer Einsatz |
-|-----------|---------|-------------------|
-| Stack\<T\> | LIFO — Last In, First Out | Undo/Redo, Klammerung |
-| Queue\<T\> | FIFO — First In, First Out | Auftraege, Events, BFS |
-| LinkedList\<T\> | Verkettete Knoten | Haeufiges Einfuegen am Anfang |
-| IndexedCollection\<T\> | Map nach ID | CRUD mit ID-basiertem Zugriff |
+> ⚡ **React-Bezug:** In React-Projekten mit Redux oder Zustand wirst du
+> normalisierte State-Strukturen kennenlernen: `entities: Record<string, User>`.
+> Das ist konzeptuell identisch mit `IndexedCollection<User>`. Der Constraint
+> `T extends { id: string }` entspricht dem NgRx-Pattern wo alle Entities
+> ein `id`-Feld haben muessen, damit der EntityAdapter funktioniert.
 
 ---
 
-> **Pause moeglich!** Collections sind das Fundament fuer Datenverarbeitung.
-> Weiter geht es mit funktionalen Patterns.
+## Was du gelernt hast
+
+- Generische Collections erhalten den Typ des Elements von der Erstellung bis zur Entnahme
+- `Stack<T>` implementiert LIFO und gibt bei leerem Stack `undefined` zurueck
+- `Queue<T>` implementiert FIFO — nuetzlich fuer Nachrichten, Events, Requests
+- `LinkedList<T>` verkettete Knoten sind selbst generisch: `ListNode<T>`
+- Das Iterator Protocol (`*[Symbol.iterator]`) macht eigene Collections `for...of`-kompatibel
+- Constraints (`T extends { id: ... }`) schraenken ein, welche Typen eine Collection akzeptiert
+
+**Kernkonzept:** Eine Generic Collection ist mehr als ein typisiertes Array —
+sie erzwingt Invarianten (LIFO/FIFO/ID-Existenz) UND garantiert den Typ bei
+jeder Operation. Beides zusammen macht den Unterschied zu `any[]`.
+
+---
+
+> **Pausenpunkt** — Collections sind das Fundament fuer Datenverarbeitung.
+> Weiter geht es mit funktionalen Patterns und HOFs.
 >
-> Naechste Sektion: [03 - Generic Higher-Order Functions](./03-generic-hof.md)
+> Weiter geht es mit: [Sektion 03 — Generic Higher-Order Functions](./03-generic-hof.md)

@@ -27,14 +27,28 @@ und zu generieren.
 > 📖 **Hintergrund: Warum TypeScript eine oeffentliche API hat**
 >
 > Die meisten Compiler sind Black Boxes — du gibst Code rein und
-> bekommst Output. TypeScript ist anders. Das Team um Anders Hejlsberg
-> entschied frueh, die Compiler-Interna als API bereitzustellen.
-> Der Grund: Das TypeScript-Oekosystem sollte erweiterbar sein.
-> IDEs (VS Code), Linter (ESLint mit @typescript-eslint), Bundler
-> (webpack, esbuild) und Code-Generatoren nutzen alle die Compiler
-> API. Ohne sie waere das TypeScript-Oekosystem nicht moeglich.
+> bekommst Output. GCC, Clang, javac — sie alle verbergen ihre
+> internen Strukturen. TypeScript ist fundamental anders. Das Team
+> um Anders Hejlsberg (Erfinder von Turbo Pascal, Delphi und C#)
+> entschied von Anfang an, die Compiler-Interna als oeffentliche
+> API bereitzustellen.
+>
+> Der Grund war pragmatisch: Microsoft wollte nicht das einzige
+> Unternehmen sein, das TypeScript-Tools baut. Sie wollten ein
+> Oekosystem. Die Entscheidung war revolutionaer — denn ein Compiler
+> der sich selbst als Bibliothek anbietet, wird zu einer Plattform.
+>
+> Das Ergebnis siehst du heute: VS Code kommuniziert direkt mit dem
+> TypeScript-Compiler-Kern (tsserver). ESLint mit `@typescript-eslint`
+> nutzt `ts.createProgram` um Typ-basierte Regeln zu pruefen — etwas
+> das ohne diese API schlicht unmoglich waere. Bundler wie esbuild
+> und Vite parsen TypeScript mit der gleichen Infrastruktur. Code-
+> Generatoren wie GraphQL-Codegen lesen TypeScript-Typen und erzeugen
+> automatisch Client-Code.
+>
 > Die API ist unter `typescript` (dem npm-Paket) direkt verfuegbar —
-> kein separates Paket noetig.
+> kein separates Paket noetig. Dieselbe `typescript`-Abhaengigkeit
+> die `tsc` ausfuehrt, gibt dir auch Zugang zum gesamten Compiler-Kern.
 
 ---
 
@@ -84,6 +98,15 @@ Quellcode (String)
 > — jeder Node kennt seinen Typ, seine Position und seinen Kontext.
 > String-basierte Tools (RegExp) brechen bei Kommentaren, Strings-
 > in-Strings und verschachteltem Code.
+>
+> Stell dir vor, du willst alle Funktionsaufrufe von `console.log`
+> finden. Mit RegExp: `/console\.log\(/g` — aber was ist mit
+> `// console.log(...)` in einem Kommentar? Oder `"console.log("` in
+> einem String-Literal? Oder `console\n.log(`mit Zeilenumbruch? Jede
+> Sonderfall-Behandlung macht den RegExp komplexer und fehleranfaelliger.
+> Der AST hat diese Probleme nicht — `ts.isCallExpression(node)` und
+> `ts.isPropertyAccessExpression(node.expression)` sind exakt und
+> kontextsicher.
 
 ---
 
@@ -164,13 +187,30 @@ if (ts.isFunctionDeclaration(node)) {
 }
 ```
 
-> ⚡ **Framework-Bezug:** Angular's Compiler (`@angular/compiler-cli`)
-> nutzt die TypeScript Compiler API intensiv. Er liest Component-
-> Decorators ueber den AST, analysiert Template-Expressions und
-> generiert Factory-Code. Wenn du `ng build` aufrufst, laeuft unter
-> der Haube `ts.createProgram` mit Angular-spezifischen Transformern.
+> ⚡ **Framework-Bezug: Angular und die Compiler API**
+>
+> In deinem Angular-Projekt ist die Compiler API allgegenwaertig,
+> auch wenn du sie nie direkt siehst. Wenn du `ng build` ausfuehrst,
+> passiert folgendes:
+>
+> 1. `@angular/compiler-cli` ruft `ts.createProgram` auf — genau wie
+>    in Sektion 1 gezeigt
+> 2. Angular-spezifische Transformer durchsuchen den AST nach
+>    `@Component`, `@Injectable`, `@NgModule`-Decorators
+> 3. Fuer jede Component wird Template-Code gelesen, analysiert und
+>    in optimierten JavaScript-Code (Ivy-Instructions) umgewandelt
+> 4. Dependency-Injection-Factories werden automatisch generiert —
+>    das `ɵfac`-Property das du in kompiliertem Angular-Code siehst
+>
+> Das ist der Grund warum Angular einen eigenen Build-Schritt (`ngc`)
+> braucht statt reinem `tsc`. Der Angular-Compiler ist eine der
+> groessten und komplexesten Compiler-API-Anwendungen in der
+> Open-Source-Welt. Dein Wissen ueber `ts.createProgram` und den AST
+> ist direkt auf das Angular-Innenleben uebertragbar.
+>
 > ESLint mit `@typescript-eslint/parser` parst ebenfalls den AST —
-> deshalb kann es Typ-basierte Regeln pruefen.
+> deshalb kann es Typ-basierte Regeln wie `no-floating-promises`
+> pruefen, die ohne Type Checker schlicht unmoglich waeren.
 
 ---
 
@@ -194,19 +234,37 @@ const sourceFile = ts.createSourceFile(
   source,
   ts.ScriptTarget.Latest,
   true  // setParentNodes = true (wichtig fuer Traversierung!)
+  // ^ Ohne setParentNodes: node.parent ist undefined!
+  // ^ Mit setParentNodes: Jeder Node kennt seinen Eltern-Node
 );
 
 // Gib alle Top-Level-Nodes aus:
 sourceFile.forEachChild(node => {
   console.log(
-    ts.SyntaxKind[node.kind],    // Node-Typ als String
+    ts.SyntaxKind[node.kind],     // Node-Typ als String (z.B. "VariableStatement")
     node.getFullText(sourceFile)  // Quellcode dieses Nodes
   );
 });
 
+// Erkundung: Geh tiefer in den Baum hinein
+sourceFile.forEachChild(node => {
+  if (ts.isFunctionDeclaration(node)) {
+    console.log("Funktion:", node.name?.text);
+    // Parameters ausgeben:
+    node.parameters.forEach(param => {
+      console.log("  Parameter:", param.name.getText(sourceFile));
+      if (param.type) {
+        console.log("  Typ:", ts.SyntaxKind[param.type.kind]);
+      }
+    });
+  }
+});
+
 // Experiment: Aendere den Source-String und beobachte wie sich
 // der AST aendert. Was passiert bei einem Syntax-Fehler?
-// Was passiert bei einem Interface? Bei einer Klasse?
+// Tipp: ts.createSourceFile versucht fehlertolerantes Parsen —
+// auch ungueliger Code erzeugt einen (unvollstaendigen) AST.
+// Was passiert bei einem Interface? Bei einer Klasse? Bei einem Enum?
 ```
 
 ---

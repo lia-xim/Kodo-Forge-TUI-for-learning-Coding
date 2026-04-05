@@ -25,6 +25,15 @@ Variablen (Type Aliases), Bedingungen (Conditional Types), Schleifen
 (Rekursion), Datenstrukturen (Tuples und Objects) und Funktionen
 (generische Typen).
 
+Stell dir vor, du haettest zwei Schichten Papier uebereinandergelegt.
+Die untere Schicht ist JavaScript — der Code der zur Laufzeit
+ausgefuehrt wird. Die obere Schicht ist das Typsystem — ein komplett
+separates Programm das nur zur Compilezeit lebt. Beide Schichten
+folgen eigenen Regeln, eigenen Kontrollflussoperatoren, eigenen
+Datenstrukturen. Wenn du `T extends string ? A : B` schreibst,
+programmierst du die obere Schicht — und der TypeScript-Compiler ist
+dein Interpreter.
+
 > 📖 **Hintergrund: Wie TypeScript's Typsystem Turing-vollstaendig wurde**
 >
 > Als Anders Hejlsberg 2012 TypeScript entwarf, war das Typsystem
@@ -37,6 +46,15 @@ Variablen (Type Aliases), Bedingungen (Conditional Types), Schleifen
 > immer maechtigere Typ-Werkzeuge zu geben. Heute gibt es Leute die
 > einen Schachcomputer, einen JSON-Parser und sogar einen
 > SQL-Interpreter rein auf Type-Level implementiert haben.
+>
+> Der entscheidende Moment kam mit **TypeScript 2.8 (2018)**: Conditional
+> Types und `infer` machten das Typsystem erstmals vollstaendig
+> ausdrucksstark fuer bedingte Logik. Vorher konnte man Typen nur
+> beschreiben; jetzt konnte man Typen **berechnen**. Die Community
+> erkannte das Potential sofort — innerhalb von Wochen entstanden
+> Type-Level-Bibliotheken wie `type-fest` (Sindre Sorhus) und
+> `ts-toolbelt` (Pierre-Antoine Mills). Heute sind diese Techniken
+> in den Kernbibliotheken von tRPC, Zod und Prisma verbaut.
 
 ### Was heisst "Turing-vollstaendig"?
 
@@ -158,12 +176,42 @@ Lohnt sich:                           Lohnt sich NICHT:
 └── Framework-Typen (Angular/React)
 ```
 
-> ⚡ **Framework-Bezug:** Sowohl Angular als auch React nutzen
-> Type-Level Programming intern. Angular's `Signal<T>` berechnet
+Der beste Test: Wenn du einen Typ baust und dich fragst "koennte ich
+das auch mit einem einfachen Generic loesen?" — dann tue es. Type-Level
+Programming ist ein Werkzeug, kein Stil-Statement.
+
+> ⚡ **Framework-Bezug Angular:** Angular's `Signal<T>` berechnet
 > den Typ von `computed()` basierend auf dem Return-Typ der uebergebenen
-> Funktion. React's `ComponentProps<typeof MyComponent>` extrahiert
-> Props-Typen aus einer Komponente. Du hast diese Typ-Magie schon
-> benutzt — jetzt lernst du sie zu bauen.
+> Funktion. Das ist Type-Level Programming in Reinform:
+>
+> ```typescript
+> // Angular intern — vereinfacht:
+> declare function computed<T>(computation: () => T): Signal<T>;
+> // ^ T wird aus dem Rueckgabetyp der Funktion abgeleitet
+>
+> const count = signal(0);
+> const doubled = computed(() => count() * 2);
+> // ^ doubled: Signal<number> — TypeScript berechnet das automatisch
+> ```
+>
+> Das ist dasselbe Pattern wie `ReturnOf<T>` aus dem Code-Beispiel oben.
+
+> ⚡ **Framework-Bezug React:** React's `ComponentProps<typeof MyComponent>`
+> extrahiert Props-Typen aus einer Komponente — ohne dass du ein
+> separates Interface exportieren musst:
+>
+> ```typescript
+> // Statt: props: ButtonProps (manuell exportiert)
+> // Besser:
+> type ButtonProps = React.ComponentProps<typeof Button>;
+> // ^ Extrahiert automatisch aus der Komponenten-Definition
+>
+> // Und fuer HTML-Elemente:
+> type DivProps = React.ComponentPropsWithRef<"div">;
+> // ^ Alle nativen div-Attribute mit korrekten Typen
+> ```
+>
+> Du hast diese Typ-Magie schon benutzt — jetzt lernst du sie zu bauen.
 
 ---
 
@@ -200,21 +248,50 @@ Beobachte die Distributivitaet!
 
 ---
 
+## Die Grenzen der Sprache im Blick behalten
+
+Bevor du in die Details einsteigst, ein wichtiger Kontext: Obwohl das
+Typsystem Turing-vollstaendig ist, hat es spezifische Einschraenkungen
+die du kennen musst.
+
+| Einschraenkung | Wert | Konsequenz |
+|---|---|---|
+| Rekursionstiefe | ~1000 (mit TCO) | Tiefe Algorithmen brauchen Accumulator-Pattern |
+| Instanziierungstiefe | ~100 Verschachtelungen | Komplex verschachtelte Generics schlagen fehl |
+| Union-Breite | Einige Tausend Member | Grosse String-Unions werden langsam |
+| Compile-Zeit | Wächst quadratisch | Komplexe Typen verlangsamen den Editor |
+
+> 💭 **Denkfrage:** Wenn TypeScript's Typsystem Turing-vollstaendig
+> ist und theoretisch jeden Algorithmus ausdruecken kann — warum gibt
+> es dann trotzdem Type-Level-Bibliotheken wie `ts-toolbelt` und
+> `type-fest`? Was liefern sie zusaetzlich?
+>
+> **Antwort:** Drei Dinge: Erstens **getestete Implementierungen** —
+> Kantenfall-Handling bei `never`, `any`, `unknown` ist nicht trivial.
+> Zweitens **Dokumentation** — Type-Level-Code ist schwer lesbar,
+> gute Bibliotheken erklaren jeden Typ. Drittens **Performance** —
+> optimierte Implementierungen die das Rekursionslimit ausloten ohne
+> es zu ueberschreiten.
+
+---
+
 ## Was du gelernt hast
 
 - TypeScript's Typsystem ist eine **Turing-vollstaendige Sprache** mit Variablen, Bedingungen, Schleifen und Datenstrukturen
 - Die drei Saeulen: **Conditional Types** (Kontrollfluss), **Rekursion** (Iteration), **Mapped Types** (Transformation)
 - `infer` ist der Schluessel zu Pattern-Matching auf Type-Level
 - Type-Level Programming lohnt sich fuer **Library-APIs und kritische Schnittstellen** — nicht fuer Business-Logik
+- Die Sprache hat Grenzen: Rekursionstiefe, Compile-Zeit, Lesbarkeit — diese kennen ist Teil des Handwerks
 
 > 🧠 **Erklaere dir selbst:** Wenn jemand sagt "TypeScript's Typsystem
 > ist eine Programmiersprache", was genau meint er damit? Welche
 > Einschraenkungen hat diese "Sprache" gegenueber JavaScript?
 > **Kernpunkte:** Alle Bausteine einer Programmiersprache vorhanden |
 > Einschraenkungen: Rekursionstiefe, keine I/O, keine Side Effects,
-> schwer zu debuggen | Nur Compilezeit, nicht Laufzeit
+> schwer zu debuggen | Nur Compilezeit, nicht Laufzeit | Kein
+> Debugging-Tool wie console.log — nur Hover-Types im Editor
 
-**Kernkonzept zum Merken:** Das Typsystem hat zwei Schichten — die einfache (Annotationen, Interfaces) und die programmatische (Conditional Types, Rekursion, infer). Die programmatische Schicht ist eine Sprache in der Sprache.
+**Kernkonzept zum Merken:** Das Typsystem hat zwei Schichten — die einfache (Annotationen, Interfaces) und die programmatische (Conditional Types, Rekursion, infer). Die programmatische Schicht ist eine Sprache in der Sprache. Nutze sie dort wo sie echten Mehrwert liefert: an Schnittstellen zwischen Code-Einheiten.
 
 ---
 

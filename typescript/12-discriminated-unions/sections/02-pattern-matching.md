@@ -257,17 +257,68 @@ const myShape = {
 // myShape.kind hat Typ "circle" — nicht string!
 ```
 
+> **Experiment:** Probiere den Exhaustive Check direkt im TypeScript Playground (typescriptlang.org/play) aus:
+>
+> ```typescript
+> function assertNever(value: never): never {
+>   throw new Error(`Unbehandelter Fall: ${JSON.stringify(value)}`);
+> }
+>
+> type Shape =
+>   | { kind: "circle"; radius: number }
+>   | { kind: "rectangle"; width: number; height: number };
+>
+> function area(shape: Shape): number {
+>   switch (shape.kind) {
+>     case "circle": return Math.PI * shape.radius ** 2;
+>     case "rectangle": return shape.width * shape.height;
+>     default: return assertNever(shape);
+>   }
+> }
+>
+> // Jetzt fuege eine neue Variante zur Union hinzu:
+> // | { kind: "triangle"; base: number; height: number }
+> ```
+>
+> Was passiert im `default`-Branch nachdem du `triangle` hinzugefuegt hast? Welche Fehlermeldung gibt TypeScript aus? Was veraendert sich wenn du stattdessen `return 0` im default schreibst?
+
 ---
 
-## Zusammenfassung Sektion 2
+**In deinem Angular-Projekt:** NgRx Reducer sind klassische switch/case-Funktionen auf einer Action-Union. Der Exhaustive Check ist hier besonders wertvoll — wenn ein Kollege eine neue Action hinzufuegt aber den Reducer vergisst, faengt der Compiler es sofort ab:
 
-| Pattern | Wann verwenden |
-|---------|---------------|
-| **switch/case** | Mehrere Varianten, klare Fallunterscheidung |
-| **Exhaustive Check (never)** | Sicherheit bei Erweiterungen — pflicht in grossen Codebasen |
-| **if/else** | Wenige Varianten, boolean-Diskriminatoren |
-| **Early Return** | Sequenzielle Pruefungen, flacher Code |
-| **Direkt pruefen** | Immer `obj.tag` pruefen, nicht destrukturierte Variablen |
+```typescript
+import { createReducer, on } from '@ngrx/store';
+import { loadUsers, loadUsersSuccess, loadUsersFailure } from './user.actions';
+
+// Mit manuellem Exhaustive Pattern (ohne NgRx-Makros):
+function userReducer(state: UserState, action: UserAction): UserState {
+  switch (action.type) {
+    case '[User] Load':
+      return { ...state, loading: true, error: null };
+    case '[User] Load Success':
+      return { ...state, loading: false, users: action.users };
+    case '[User] Load Failure':
+      return { ...state, loading: false, error: action.error };
+    default:
+      // assertNever(action) hier => Compile-Error wenn neue Action fehlt!
+      return state;
+  }
+}
+```
+
+**In React:** Der `useReducer`-Hook ist dasselbe Muster. Dein Reducer erhaelt eine Action-Union und gibt neuen State zurueck — switch/case auf den Diskriminator, assertNever im default.
+
+---
+
+## Was du gelernt hast
+
+- **switch/case** ist der natuerliche Partner fuer Discriminated Unions — jeder case-Branch narrowt den Typ automatisch
+- Der **Exhaustive Check mit `never`** deckt fehlende Faelle zur Compile-Zeit auf und zeigt exakt welche Variante fehlt
+- **if/else mit Early Return** ("Narrowing by Elimination") ist bei wenigen Varianten oft lesbarer als switch
+- **Destrukturierung bricht das Narrowing** — pruefe immer direkt `obj.tag`, nicht eine destrukturierte Variable
+- Der `satisfies`-Operator behaelt den inferierten Literal-Typ bei und prueft gleichzeitig die Typ-Konformitaet
+
+**Kernkonzept:** Der Exhaustive Check mit `assertNever` ist dein Sicherheitsnetz in jeder grossen Codebasis — er verwandelt das Vergessen einer Union-Variante von einem Laufzeitfehler in einen Compilerfehler.
 
 ---
 

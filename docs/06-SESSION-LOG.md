@@ -183,6 +183,62 @@ Drei Lektionen fuer TypeScript Phase 3 erstellt, mit strikter Qualitaetskontroll
 
 ---
 
+## Session 4 (2026-04-05) — TypeScript komplett + Qualitaets-Audit aller 40 Lektionen
+
+### Ueberblick
+
+Zwei grosse Initiativen: (1) Neues Quiz-Format-System mit 4 Fragetypen, integriert ins TUI; (2) TypeScript-Kurs vollstaendig abgeschlossen (L25-L40); (3) Vollstaendiger Qualitaets-Audit aller 40 Lektionen mit 4 parallelen Agenten.
+
+### 1. Neue Lern-Philosophie (permanente Aenderung)
+
+Der Lernende ist ein **theoretischer Lerner** — liest lieber ausfuehrlich, denkt mit, bleibt im TUI-Flow. Konsequenzen:
+
+52. CLAUDE.md grundlegend aktualisiert: "Lese-und-Denk-Flow statt Aufgaben-Marathon"
+53. Keine neuen exercises/*.ts, solutions/*.ts, examples/*.ts — Code inline in Sektionen
+54. Experiment-Boxen: Code INLINE zeigen, nicht auf externe Dateien verweisen
+55. Kern = Lesen + Quizzes. Optionale Formate (Misconceptions etc.) nur wenn didaktisch sinnvoll
+
+### 2. Neues Quiz-Format-System (4 Fragetypen)
+
+56. `QuizQuestion` Discriminated Union erweitert: 4 Typen (MC, short-answer, predict-output, explain-why)
+57. TUI integriert: Neuer "quiz"-Screen-Typ mit Free-Text-Input (Character-by-character)
+58. `tui-quiz.ts`: Vollstaendige Render + Input-Handler fuer alle 4 Typen inkl. Confidence-Prompts
+59. `tui-lesson-menu.ts`: Quiz startet jetzt direkt im TUI (kein Child-Process-Spawn mehr)
+60. `review-runner.ts` kompatibel gemacht mit neuer Union (filtert MC-only)
+61. Batch-Konvertierung: Alle 25 bestehenden quiz-data.ts um 6 neue Format-Mix-Fragen erweitert
+
+**Quiz-Format-Mix (Pflicht):** 6-8 MC + 3-4 short-answer + 2-3 predict-output + 1-2 explain-why
+
+### 3. TypeScript Kurs abgeschlossen (L25-L40)
+
+62. L25: Type-safe Error Handling
+63. L26-L30 (Phase 3): Advanced Patterns, Declaration Merging, Decorators, tsconfig Deep Dive, Review Phase 3
+64. L31-L34 (Phase 4 Start): Async TypeScript, Type-safe APIs, Testing TypeScript, Performance & Compiler
+65. L35-L40 (Phase 4 Ende): Migration Strategies, Library Authoring, Type-Level Programming, Compiler API, Best Practices, Capstone
+
+**Agent Teams** (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1) genutzt fuer parallele Erstellung.
+
+### 4. Qualitaets-Audit aller 40 Lektionen
+
+4 parallele Audit-Agenten, je 10 Lektionen. Ergebnisse:
+
+| Phase | Lektionen | Durchschnitts-Note |
+|-------|-----------|-------------------|
+| Phase 1 | L01-L10 | B |
+| Phase 2 | L11-L20 | B-/C |
+| Phase 3 | L21-L30 | A- |
+| Phase 4 | L31-L40 | B+/A |
+
+**Kritische Befunde:**
+- **L17, L18, L19** — Nur 83-127 Zeilen pro Sektion! Alle didaktischen Elemente fehlen. Rewrite noetig.
+- **L12, L13, L14** — Fehlende Experimente, Framework-Bezuege, Denkfragen, "Was du gelernt hast"
+- **L35-L39** — Sektionen 214-258 Zeilen (Ziel: 280-320)
+- **L01-L09** — Experiment-Boxen verweisen noch auf externe examples/ Dateien (altes Format)
+
+**Staerkste Lektionen:** L02, L07, L22, L24, L28, L29, L31-L34 (alle Note A)
+
+---
+
 ## Session 3 (2026-04-02) — TypeScript Phase 3: L24 Branded/Nominal Types
 
 ### Ueberblick
@@ -213,19 +269,22 @@ L24 (Branded/Nominal Types) vollständig erstellt mit allen 12 Pflicht-Dateien. 
 ### Hohe Prioritaet
 
 - [x] TypeScript Phase 3 (L21-L23): Classes & OOP, Advanced Generics, Recursive Types — FERTIG (2026-04-01)
-- [/] TypeScript Phase 3 (L24-L30): L24 Branded/Nominal Types — FERTIG (2026-04-02); L25-L30 ausstehend
-- [ ] TypeScript Phase 4 (L31-L40): Async, APIs, Testing, Performance, Migration, Library Authoring, Type-Level Programming, Compiler API, Best Practices, Capstone
-- [ ] Adaptives Tiefensystem implementieren: Markdown-Marker (`<!-- section:summary -->`, `<!-- depth:standard -->`, `<!-- depth:vollstaendig -->`) + `filterByDepth()` in `markdown-renderer.ts`
-- [ ] Abwechslungsformate einbauen: POE-Bloecke, Kontrastpaare, Feature Origin Stories, "Callback to Earlier"
+- [x] TypeScript Phase 3 (L24-L30): L24-L30 alle fertig (2026-04-05)
+- [x] TypeScript Phase 4 (L31-L40): Alle fertig (2026-04-05)
+- [x] Qualitaets-Audit aller 40 Lektionen (2026-04-05)
+- [ ] **KRITISCH: L17, L18, L19 komplett neu schreiben** — Sektionen nur 83-127 Zeilen, alle didaktischen Elemente fehlen
+- [ ] L12, L13, L14 aufwerten — fehlende Experimente, Framework-Bezuege, Denkfragen, "Was du gelernt hast"
+- [ ] L35-L39 Sektionen verlaengern — 214-258 Zeilen statt Ziel 280-320
+- [ ] Adaptives Tiefensystem implementieren: Markdown-Marker + `filterByDepth()` in `markdown-renderer.ts`
 - [ ] Pretest correct-Index Diversifizierung (gleiche Bias wie bei Quiz — noch nicht geprueft/gefixt)
 
 ### Mittlere Prioritaet
 
+- [ ] L01-L09 extern→inline Experiment-Referenzen umstellen (examples/*.ts verweisen)
+- [ ] L01, L03, L04 annotierte Code-Bloecke und Self-Explanation nachruestigen
 - [ ] Angular-Kurs Lektionen erstellen (40 Lektionen, Curriculum fertig)
 - [ ] React-Kurs Lektionen erstellen (40 Lektionen, Curriculum fertig)
 - [ ] Next.js-Kurs Module erstellen (20 Module, Curriculum fertig)
-- [ ] Framework-spezifische Didaktik-Engines (Marble Diagrams, DI-Tracer, Re-Render-Simulator)
-- [ ] Qualitaets-Audits fuer L17-L20 (noch nicht auditiert)
 
 ### Niedrige Prioritaet
 

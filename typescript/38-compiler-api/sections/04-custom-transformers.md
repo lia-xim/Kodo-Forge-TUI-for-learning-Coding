@@ -27,12 +27,26 @@ kannst du Code generieren, entfernen oder umschreiben.
 > TypeScript selbst nutzt intern Transformer: Der Compiler wandelt
 > `async/await` in Promises um, entfernt Typ-Annotationen und
 > kompiliert `enum` zu JavaScript-Objekten — alles ueber interne
-> Transformer. Die oeffentliche Transformer-API wurde ab TS 2.3
-> (2017) verfuegbar gemacht. Angular's `@angular/compiler-cli`
-> nutzt sie um Template-Code zu generieren. `ts-auto-mock` nutzt
-> sie um Mock-Objekte zur Compile-Zeit zu erzeugen. Und
-> `typescript-plugin-css-modules` nutzt sie um CSS-Klassen als
-> Typen bereitzustellen.
+> Transformer.
+>
+> Die oeffentliche Transformer-API wurde ab TypeScript 2.3 (2017)
+> verfuegbar gemacht. Es war ein bewusster Schritt: Microsoft wollte
+> Tools wie Angular, Babel und webpack ermoelichen, in den Build-
+> Prozess einzugreifen ohne eigene Parser schreiben zu muessen.
+>
+> Konkrete Anwendungen heute:
+> - **Angular `@angular/compiler-cli`**: Generiert Ivy-Render-Functions
+>   und DI-Factories aus Component-Decorators
+> - **`ts-auto-mock`**: Erzeugt zur Compile-Zeit automatisch typsichere
+>   Mock-Objekte — komplett ohne Laufzeit-Overhead
+> - **`typescript-plugin-css-modules`**: Wandelt CSS-Klassennamen in
+>   TypeScript-Typen um — du bekommst Autocomplete fuer CSS-Klassen
+> - **`@swc/core`**: Der schnelle TypeScript-Transpiler (in Rust)
+>   implementiert die gleichen Transformations-Semantiken
+>
+> Der Schluessel-Unterschied zu anderen Compile-Zeit-Tools (Babel,
+> SWC): TypeScript-Transformer haben Zugang zum Type Checker. Das
+> macht sie maechtiger — und komplexer.
 
 ---
 
@@ -107,6 +121,13 @@ const varDecl = factory.createVariableStatement(
 > gegenseitig zu stoeren | Debugging: Man kann den Zustand vor
 > und nach jedem Transformer vergleichen | Wie Immer's produce()
 > oder Redux's State
+>
+> Die Analogie zu React ist treffend: Genau wie React-State nie
+> direkt mutiert werden soll (`state.value = x` ist falsch), darf
+> der AST nie direkt mutiert werden. Stattdessen gibt `ts.factory`
+> neue Nodes zurueck und `visitEachChild` baut einen neuen Teilbaum
+> auf. Der Compiler entscheidet dann, welche Teile des Baumes
+> wiederverwendet werden koennen (structural sharing).
 
 ---
 

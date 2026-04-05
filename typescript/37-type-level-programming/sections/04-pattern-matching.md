@@ -37,7 +37,20 @@ type D = DecomposeFunction<(name: string, age: number, active: boolean) => void>
 // ^ { firstParam: string; restParams: [age: number, active: boolean]; returnType: void }
 ```
 
-> 📖 **Hintergrund: infer als Pattern-Variable**
+Vergleiche das mit JavaScript-Destructuring:
+
+```typescript
+// Werteebene: Destructuring einer Funktion gibt es nicht direkt.
+// Aber Pattern Matching in Python (3.10+):
+// match value:
+//   case (first, *rest): ...
+
+// TypeScript Type-Level ist konzeptuell dasselbe — nur auf Typen:
+// T extends (first: infer A, ...rest: infer B) => infer R
+// Das "Pattern" beschreibt die erwartete Form, infer "faengt" Teile auf.
+```
+
+> 📖 **Hintergrund: infer als Pattern-Variable und Unifikation**
 >
 > Das Keyword `infer` wurde in TypeScript 2.8 eingefuehrt (2018),
 > zusammen mit Conditional Types. Es war inspiriert von Pattern
@@ -48,6 +61,13 @@ type D = DecomposeFunction<(name: string, age: number, active: boolean) => void>
 > konsistent belegt werden. Das ist im Grunde **Unifikation** —
 > derselbe Algorithmus den auch Prolog und Haskell's Typchecker
 > verwenden.
+>
+> Unifikation funktioniert so: Gegeben `T = (x: string) => number`
+> und das Pattern `(x: infer A) => infer R`, versucht der Compiler
+> `A = string` und `R = number` zu belegen. Wenn es eine konsistente
+> Belegung gibt, matcht das Pattern — und die infer-Variablen haben
+> ihre Werte. Das passiert bei jeder einzelnen Conditional-Type-
+> Auswertung im Hintergrund, unsichtbar.
 
 ---
 
@@ -174,12 +194,40 @@ type Methods = MethodsOf<UserService>;
 // ^ { getUser(id: number): Promise<User>; deleteUser(id: number): Promise<void> }
 ```
 
-> ⚡ **Framework-Bezug:** Angular's `inject()` nutzt intern
+> ⚡ **Framework-Bezug Angular:** Angular's `inject()` nutzt intern
 > Pattern Matching um den Typ aus dem `InjectionToken<T>` zu
 > extrahieren: `inject(HttpClient)` gibt `HttpClient` zurueck
 > weil der Compiler den Typ aus dem Class-Constructor-Parameter
-> inferiert. React's `useContext` macht dasselbe mit dem
-> `Context<T>`-Typ. Beide nutzen `infer` unter der Haube.
+> inferiert:
+>
+> ```typescript
+> // Angular's inject() — vereinfachte Typdefinition:
+> declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
+> // ^ T wird durch Pattern Matching aus dem Token inferiert
+>
+> const http = inject(HttpClient);   // T = HttpClient
+> const token = new InjectionToken<string>("MY_TOKEN");
+> const value = inject(token);       // T = string
+> ```
+>
+> Das Pattern `token: Type<T> | InjectionToken<T>` ist das Muster
+> das der Compiler "matcht" — `T` ist die infer-Variable.
+
+> ⚡ **Framework-Bezug React:** React's `useContext` macht dasselbe
+> mit dem `Context<T>`-Typ:
+>
+> ```typescript
+> // React's useContext() — vereinfachte Typdefinition:
+> declare function useContext<T>(context: React.Context<T>): T;
+> // ^ T wird aus dem Context-Typ inferiert
+>
+> const ThemeContext = createContext<"light" | "dark">("light");
+> const theme = useContext(ThemeContext);  // "light" | "dark"
+> ```
+>
+> Beide — Angular `inject()` und React `useContext()` — sind
+> Beispiele fuer Type-Level Pattern Matching das du taegliche
+> bereits nutzt, ohne es zu bemerken.
 
 > 💭 **Denkfrage:** Warum ist Pattern Matching auf Type-Level
 > maechtigerals einfache Typ-Constraints (`T extends SomeType`)?
@@ -228,13 +276,65 @@ type UserEvents = EventsOf<"user">;
 
 ---
 
+## Pattern Matching schrittweise entwickeln
+
+Ein praktisches Beispiel wie man ein Pattern Matching-Problem Schritt
+fuer Schritt loest — das "Erst so... dann so... schliesslich"-Prinzip:
+
+```typescript annotated
+// Aufgabe: Extrahiere den Wert-Typ aus einem RxJS-Observable
+// (oder einem aehnlichen Wrapper-Typ)
+
+// Schritt 1: Einfache Version — nur ein Niveau tief
+type UnwrapSimple<T> =
+  T extends Observable<infer V> ? V : T;
+
+// Schritt 2: Was wenn es kein Observable ist?
+// UnwrapSimple<string> → string  (gut, passthrough)
+// UnwrapSimple<Observable<string>> → string  (gut)
+
+// Schritt 3: Was bei verschachtelten Observables?
+// Observable<Observable<string>>? Eher ungewoehnlich, aber...
+type UnwrapDeep<T> =
+  T extends Observable<infer V>
+    ? UnwrapDeep<V>  // Rekursion!
+    : T;
+
+// Schritt 4: Was wenn T ein Array von Observables ist?
+type UnwrapAll<T> =
+  T extends Observable<infer V>
+    ? UnwrapDeep<V>
+    : T extends Array<infer Item>
+      ? Array<UnwrapAll<Item>>  // Auch Arrays durchsuchen
+      : T;
+
+// Schritt 5: Mit infer-Constraints verfeinern (TS 4.7+):
+type UnwrapSafe<T> =
+  T extends Observable<infer V extends object>  // Nur Objekte auspacken
+    ? V
+    : T;
+```
+
+> 💭 **Denkfrage:** Welchen Vorteil hat es, Pattern Matching
+> schrittweise zu entwickeln statt gleich die finale Loesung zu
+> schreiben?
+>
+> **Antwort:** Typ-Fehler in Type-Level-Code sind notorisch schwer
+> zu debuggen — du hast kein `console.log`. Wenn du schrittweise
+> entwickelst, kannst du nach jedem Schritt testen ob die Typen
+> stimmen (durch Hover im Editor). Ausserdem wird der Code
+> besser wartbar weil jede Stufe einen klaren Zweck hat.
+
+---
+
 ## Was du gelernt hast
 
 - **Pattern Matching** mit `infer` ist das TypeScript-Aequivalent zu Destructuring auf Type-Level
 - **Mehrfaches `infer`** erlaubt komplexe Zerlegung in einem einzigen Conditional Type
 - **`infer` mit Constraints** (TS 4.7+) kombiniert Inferenz und Typeinschraenkung
 - Fortgeschrittene Patterns: Rekursives Unwrapping, Tuple-Operationen, Objekt-Transformation
-- Pattern Matching ist die Grundlage fuer typsichere APIs in Angular und React
+- Pattern Matching schrittweise entwickeln — jeder Schritt testbar, bevor der naechste kommt
+- Pattern Matching ist die Grundlage fuer typsichere APIs in Angular `inject()` und React `useContext()`
 
 > 🧠 **Erklaere dir selbst:** Vergleiche Pattern Matching in JavaScript
 > (Destructuring: `const { a, b } = obj`) mit Pattern Matching in
@@ -243,9 +343,10 @@ type UserEvents = EventsOf<"user">;
 > **Kernpunkte:** Beide "zerlegen" eine Struktur | JS-Destructuring
 > zur Laufzeit, TS-Pattern-Matching zur Compilezeit | JS kann nur
 > eine Ebene, TS kann rekursiv matchen | JS hat Defaults, TS hat
-> den else-Branch (`: never`)
+> den else-Branch (`: never`) | TS-Pattern-Matching basiert auf
+> Unifikation — ein Algorithmus der Typ-Variablen konsistent belegt
 
-**Kernkonzept zum Merken:** `infer` ist das maechtigste einzelne Keyword im Typsystem. Es verwandelt Conditional Types von "pruefe ob" zu "pruefe und extrahiere" — das ist der Unterschied zwischen `instanceof` und Destructuring.
+**Kernkonzept zum Merken:** `infer` ist das maechtigste einzelne Keyword im Typsystem. Es verwandelt Conditional Types von "pruefe ob" zu "pruefe und extrahiere" — das ist der Unterschied zwischen `instanceof` und Destructuring. Du nutzt `infer` schon indirekt in jedem `inject()` und `useContext()` Aufruf.
 
 ---
 

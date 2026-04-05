@@ -31,6 +31,20 @@
 > neues TypeScript-Release ein neues Strict-Flag einfuehrt, wird es
 > automatisch aktiv. Das ist gewollt — aber bei Upgrades solltest du die
 > Release Notes lesen.
+>
+> Ein gutes Beispiel: TypeScript 4.9 fuegte `useUnknownInCatchVariables`
+> hinzu (catch-Variablen werden `unknown` statt `any`). Alle Projekte mit
+> `strict: true` bekamen dieses Flag automatisch beim Upgrade. Das fuehlte
+> sich fuer manche Teams ueberraschend an — aber es war genau die richtige
+> Entscheidung, weil caught errors wirklich `unknown` sind.
+
+**Warum ist Strict Mode so wichtig?** Nicht-striktes TypeScript gibt
+dir 30-40% des moeglichen Schutzes. Striktes TypeScript gibt dir 90%+.
+Der Unterschied liegt meist in `strictNullChecks`: Ohne dieses Flag
+kann `null` oder `undefined` jeden Typ infizieren, ohne dass TypeScript
+protestiert. Die beruechtigten "Cannot read property of null"-Crashes
+in JavaScript sind fast immer Faelle, die `strictNullChecks` abgefangen
+haette.
 
 `strict: true` ist kein einzelnes Flag — es ist ein **Buendel** aus
 9 Einzelflags (Stand TypeScript 5.x):
@@ -101,6 +115,14 @@ empfohlene Reihenfolge — vom einfachsten zum schwersten:
 
 ---
 
+> 💭 **Denkfrage:** Du aktivierst Phase 1 und siehst 0 Fehler. Ist das gut?
+> Oder solltest du misstrauisch sein?
+>
+> **Antwort:** 0 Fehler in Phase 1 ist normal und erwartet. Die "leichten"
+> Flags (alwaysStrict, strictBindCallApply) betreffen Muster die in modernem
+> Code kaum vorkommen. Das ist kein Zeichen, dass dein Code gut typisiert ist
+> — es ist nur ein warmer Einstieg. Die echte Arbeit beginnt in Phase 2 und 3.
+
 ## Phase 2: noImplicitAny
 
 Das ist das Flag mit dem besten Aufwand-Nutzen-Verhaeltnis:
@@ -134,6 +156,13 @@ function processData(data) {
 > ueber die naechsten Wochen abarbeiten.
 
 ---
+
+**Warum ist noImplicitAny das Flag mit dem besten Aufwand-Nutzen-Verhaeltnis?**
+Weil es die haeufigste Ursache fuer unbeabsichtigte `any`-Ausbreitung loest.
+Implizites `any` ist ansteckend: Wenn ein Parameter `any` ist, wird der
+Rueckgabewert oft `any`, dann die Variable die ihn speichert `any`, und
+schon ist ein ganzer Aufrufpfad untypisiert. `noImplicitAny` kuerzt diese
+Kaskade ab — jede `any`-Stelle muss explizit sein, also bewusst und findbar.
 
 ## Phase 3: strictNullChecks — der grosse Brocken
 
@@ -239,15 +268,48 @@ du damit um:
 
 ---
 
+## Strict Mode im CI absichern
+
+Sobald du ein Strict-Flag aktiviert hast, willst du sicherstellen, dass
+es nicht versehentlich zurueckgedreht wird. Und: Du willst verhindern,
+dass neue Dateien die Strict-Anforderungen nicht erfuellen:
+
+```typescript annotated
+// package.json Scripts zur Fortschrittssicherung:
+{
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    // ^ Prueft alle Dateien gegen die aktuelle tsconfig
+    // ^ Laeuft im CI bei jedem PR
+
+    "typecheck:strict": "tsc --noEmit --strict",
+    // ^ Prueft ob der Code BEREIT fuer strict: true ist
+    // ^ Nuetzlich um den Fortschritt zu messen
+
+    "typecheck:changed": "tsc --noEmit && git diff --name-only HEAD | grep '\\.ts' | xargs -I{} sh -c 'tsc --noEmit {}'",
+    // ^ Vereinfachte Idee: Pruefe nur geaenderte Dateien
+    // ^ In Praxis: ts-strictify oder eslint --rule "no-explicit-any"
+  }
+}
+```
+
+**Analogie:** Das schrittweise Aktivieren von Strict-Flags ist wie das
+Anziehen von Schutzausruestung: Du kannst ohne Helm arbeiten, aber
+jedes Sicherheitselement das du hinzufuegst reduziert das Risiko. Am
+Ende willst du die volle Ausruestung — aber du zwingst niemanden,
+sofort vom ersten Tag an alles anzuziehen.
+
 ## Was du gelernt hast
 
 - `strict: true` buendelt **9 Einzelflags** und inkludiert zukuenftige automatisch
 - Aktivierungsreihenfolge: **alwaysStrict → noImplicitAny → strictNullChecks → strict**
-- **strictNullChecks** ist das wichtigste und aufwendigste Flag
+- **strictNullChecks** ist das wichtigste und aufwendigste Flag — verhindert "Cannot read property of null"
 - Non-null Assertions (`!`) sind ein akzeptabler **Uebergangsmechanismus** (aber abbauen!)
 - `strict: true` mit einzelnen Flags auf `false` ist ein valider Zwischenschritt
+- **CI-Integration** stellt sicher, dass aktivierte Flags nicht zurueckgedreht werden
+- **noImplicitAny** hat das beste Aufwand-Nutzen-Verhaeltnis: stoppt any-Ausbreitung
 
-**Kernkonzept zum Merken:** Strict Mode ist kein Schalter den du einmal umlegst — es ist ein Prozess. Aktiviere die leichten Flags zuerst, dann die schweren. strictNullChecks allein verhindert mehr Bugs als alle anderen Flags zusammen — aber es erfordert auch die meiste Arbeit.
+**Kernkonzept zum Merken:** Strict Mode ist kein Schalter den du einmal umlegst — es ist ein Prozess. Aktiviere die leichten Flags zuerst, dann die schweren. strictNullChecks allein verhindert mehr Bugs als alle anderen Flags zusammen — aber es erfordert auch die meiste Arbeit. Das Ziel ist `strict: true` ohne einzelne Ueberschreibungen — dann und nur dann hast du den vollen TypeScript-Schutz.
 
 ---
 

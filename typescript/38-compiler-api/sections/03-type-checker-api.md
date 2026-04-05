@@ -27,12 +27,24 @@ nicht, dass `greeting` vom Typ `string` ist — das weiss nur der
 > Der Type Checker wurde von Anders Hejlsberg persoenlich
 > implementiert und ist mit Abstand die komplexeste Komponente des
 > TypeScript-Compilers (~50.000 Zeilen in `checker.ts`). Er
-> durchlaeuft den AST und berechnet fuer jeden Ausdruck den Typ.
-> Dabei loest er Generics auf, fuehrt Type Narrowing durch,
-> checkt Zuweisungskompatibilitaet und vieles mehr. Die Datei
-> `checker.ts` im TypeScript-Repository ist eine der groessten
-> einzelnen Dateien in der Open-Source-Welt — und sie waechst
-> mit jedem Release.
+> durchlaeuft den AST in mehreren Paessen und berechnet fuer jeden
+> Ausdruck den Typ.
+>
+> Der Prozess ist nicht linear: Der Checker nutzt **Lazy Evaluation**.
+> Er berechnet Typen erst dann, wenn sie benoetigt werden — nicht
+> beim ersten Durchlauf. Das ist wichtig fuer zirkulaere Referenzen:
+> Wenn Klasse A eine Methode hat die Klasse B zurueckgibt, und Klasse
+> B eine Methode hat die Klasse A zurueckgibt, wuerde ein naiver Checker
+> in eine Endlosschleife geraten. Lazy Evaluation verhindert das.
+>
+> Dabei loest er Generics auf, fuehrt Type Narrowing durch (Control
+> Flow Analysis), checkt Zuweisungskompatibilitaet und vieles mehr.
+> Die Datei `checker.ts` im TypeScript-Repository ist eine der
+> groessten einzelnen Dateien in der Open-Source-Welt — und sie waechst
+> mit jedem Release. Ein Lernziel: Wenn du verstehst warum `checker.ts`
+> so komplex ist, verstehst du auch warum TypeScript-Features wie
+> Template Literal Types oder Conditional Types so lange gebraucht haben
+> um implementiert zu werden.
 
 ---
 
@@ -138,12 +150,29 @@ function findSymbolInfo(node: ts.Node): void {
 }
 ```
 
-> ⚡ **Framework-Bezug:** VS Code's "Go to Definition" (F12) nutzt
-> genau `getSymbolAtLocation` — es nimmt den Identifier unter dem
-> Cursor, loest das Symbol auf und springt zu dessen Deklaration.
-> "Find All References" macht dasselbe rueckwaerts: Finde alle
-> Identifier die auf dasselbe Symbol zeigen. Angular's Language
-> Service nutzt die gleiche API fuer Template-Autocompletition.
+> ⚡ **Framework-Bezug: Symbole in deinem Angular-Alltag**
+>
+> Jedes Mal wenn du in VS Code auf einen Namen in deiner Angular-Komponente
+> klickst und F12 drueckst, laeuft folgender Code hinter den Kulissen:
+>
+> ```
+> cursor-position → getNodeAt(position) → ts.isIdentifier(node)?
+>   → checker.getSymbolAtLocation(node)
+>   → symbol.getDeclarations()[0]
+>   → oeffne Datei, springe zu Position
+> ```
+>
+> Das gilt auch fuer Template-Bindings: Angular's Language Service
+> (`@angular/language-service`) erweitert genau diesen Mechanismus.
+> Wenn du in `{{ user.name }}` im HTML-Template F12 drueckst, nutzt
+> der Angular Language Service den TypeScript-Checker um das Symbol
+> `user` zu loesen und dann die Property `name` darauf.
+>
+> "Find All References" (Shift+F12) macht dasselbe rueckwaerts: Finde
+> alle Identifier die auf dasselbe Symbol zeigen. Das ist besonders
+> nuetzlich wenn du eine Service-Methode umbenennst — alle Usages in
+> Templates und Komponenten werden gefunden, weil sie alle auf dasselbe
+> Symbol zeigen.
 
 ---
 

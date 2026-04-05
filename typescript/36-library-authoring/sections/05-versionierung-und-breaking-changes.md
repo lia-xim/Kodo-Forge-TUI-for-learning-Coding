@@ -30,6 +30,17 @@
 > sind die Typen genauso Teil der oeffentlichen API wie die Funktionen.
 > Eine Typ-Aenderung die Konsumenten-Code zum Nicht-Kompilieren bringt,
 > ist ein Breaking Change — auch wenn sich zur Laufzeit nichts aendert.
+>
+> Vor diesem RFC hatten viele Libraries eine implizite Regel: "Laufzeit-
+> Aenderungen folgen SemVer, Typ-Aenderungen sind irgendwie egal." Das
+> RFC machte klar: NEIN. Ein Konsument dessen Build bricht, ist genauso
+> betroffen wie jemand dessen Anwendung zur Laufzeit crasht. Manchmal
+> sogar mehr — ein Typ-Fehler in CI kann einen Deployment-Prozess
+> blockieren, ohne dass zur Laufzeit jemals etwas schiefgegangen waere.
+
+Die Konsequenz: Typ-Design muss von Anfang an auf Erweiterbarkeit
+ausgelegt sein. Was du jetzt als Interface exportierst, ist fuer alle
+Zeiten dein Vertrag — bis zur naechsten Major-Version.
 
 Die Regel ist einfach: **Wenn dein Typ-Update den Build eines
 Konsumenten bricht, ist es ein Breaking Change und erfordert eine
@@ -154,6 +165,18 @@ export type Status = "active" | "inactive" | (string & {});
 > Version fuegt Properties hinzu — das ist nie ein Breaking Change
 > weil sie optional sind. Konsumenten die die neuen Properties nicht
 > nutzen, merken nichts.
+>
+> Schau dir auch Angulars `HttpContextToken` an: Es verwendet einen
+> Branded Type (`InjectionToken<T>`) um Typ-Sicherheit zu gewaehrleisten
+> ohne das Interface zu brechen. Neue Tokens koennen hinzugefuegt werden
+> ohne bestehende zu aendern. Dasselbe Muster koenntest du in deiner
+> eigenen Angular-Library einsetzen wenn du erweiterbare Konfigurationen
+> baust.
+>
+> In React-Component-Libraries ist das Options-Objekt-Pattern ebenfalls
+> Standard: `<Button variant="primary" size="md" />` — das Props-Interface
+> bekommt neue optionale Properties mit jeder Minor-Version. Keine
+> Breaking Changes, keine grossen Migrations.
 
 ---
 
@@ -240,13 +263,16 @@ Das Erhoehen der minimalen TypeScript-Version ist ein Breaking Change:
 
 ## Was du gelernt hast
 
-- **Typ-Aenderungen** sind genauso Breaking Changes wie Code-Aenderungen
+- **Typ-Aenderungen** sind genauso Breaking Changes wie Code-Aenderungen — das Ember.js RFC hat das formalisiert
 - Properties **entfernen** = Major, Properties **hinzufuegen** (optional) = Minor
+- **Optional zu Required** machen ist immer ein Breaking Change — auch wenn es logisch klingt
+- **`string | null` als Rueckgabetyp** wo vorher `string` stand ist ein versteckter Breaking Change
 - **Options-Objekte** statt fester Parameter sind erweiterungsfreundlicher
-- **TypeScript-Version erhoehen** ist ein Breaking Change
-- **Changelog** sollte Typ-Aenderungen explizit dokumentieren
+- **TypeScript-Version erhoehen** ist ein Breaking Change — in peerDependencies kommunizieren
+- **Changelog** sollte Typ-Aenderungen explizit dokumentieren — Migration-Anleitungen mitliefern
+- Der Gedankentest: "Kompiliert bestehender Konsumenten-Code noch?" — wenn nein, ist es Major
 
-**Kernkonzept zum Merken:** Deine Typen sind ein Vertrag mit deinen Konsumenten. Jede Aenderung die bestehenden Konsumenten-Code bricht, erfordert eine Major-Version — egal ob sich zur Laufzeit etwas aendert oder nicht. Designe Typen von Anfang an erweiterbar: Options-Objekte, optionale Properties, Branded Types.
+**Kernkonzept zum Merken:** Deine Typen sind ein Vertrag mit deinen Konsumenten. Jede Aenderung die bestehenden Konsumenten-Code bricht, erfordert eine Major-Version — egal ob sich zur Laufzeit etwas aendert oder nicht. Designe Typen von Anfang an erweiterbar: Options-Objekte, optionale Properties, Branded Types. Die beste Typ-Aenderung ist die die niemand bemerkt — weil der bestehende Code einfach weiter funktioniert.
 
 ---
 

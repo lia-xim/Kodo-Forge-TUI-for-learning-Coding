@@ -34,6 +34,18 @@ Aber **mehr Typsicherheit ist nicht immer besser**.
 > nicht die komplexesten Typen — sie schreiben die **einfachsten
 > Typen die den Job erledigen**.
 
+Eine reale Erfahrung aus einem grossen React-Projekt: Ein Entwickler
+erstellte ein ausgefeiltes generisches API-Framework mit sieben
+verschachtelten Generics, Conditional Types und Phantom Types. Die
+Typdefinitionen umfassten 300 Zeilen fuer eine Utility die 15 Zeilen
+Code kapselte. Das Ergebnis: Neue Teammitglieder brauchten drei Tage
+um zu verstehen wie man den Typ benutzt. IntelliSense-Vorschlaege
+dauerten mehrere Sekunden. Der Compiler brauchte 40 Sekunden fuer
+einen Build der vorher 8 Sekunden dauerte. Das Team entschied sich
+nach zwei Monaten fuer einen kompletten Rewrite mit einfachen Interfaces —
+der Ersatz war in einem Nachmittag geschrieben und in einer Stunde
+erklaeert.
+
 ---
 
 ## Warnsignal 1: Generics die nur einmal vorkommen
@@ -63,6 +75,39 @@ function identity<T>(value: T): T {
 > **Verwende einen Generic nur wenn er mindestens zweimal vorkommt**
 > (in Parametern und/oder Rueckgabetyp). Ein Generic der nur einmal
 > auftaucht ist fast immer `unknown`.
+
+In Angular-Services findest du dieses Anti-Pattern haeufig:
+
+```typescript annotated
+// OVER-ENGINEERED: Angular Service mit unnoetigem Generic
+@Injectable({ providedIn: "root" })
+class DataService<T> {  // Generic am Service-Level
+  getData(): Observable<T> {
+    return this.http.get<T>("/api/data");
+    // ^ T erscheint zweimal — aber wird am Service gebunden,
+    //   nicht am Methoden-Aufruf. Das macht den Service schwer
+    //   zu injecten: DataService<User> vs DataService<Product>?
+  }
+}
+
+// BESSER: Generic auf Methoden-Ebene
+@Injectable({ providedIn: "root" })
+class DataService {
+  getData<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(endpoint);
+    // ^ T wird pro Aufruf gebunden — viel flexibler
+  }
+}
+
+// NOCH BESSER: Spezifische Services statt Generic
+@Injectable({ providedIn: "root" })
+class UserService {
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>("/api/users");
+    // ^ Kein Generic — der Typ ist klar und pruefbar
+  }
+}
+```
 
 ---
 
@@ -184,22 +229,75 @@ type OrderId = string & { __brand: "OrderId" };
 
 **Regel: Starte immer unten. Gehe nur nach oben wenn unten nicht reicht.**
 
+> ⚡ **React-Bezug:** In React-Projekten siehst du Over-Engineering
+> oft bei Props-Interfaces. Ein Component der nur Name und Age
+> anzeigt braucht kein generisches `ComponentProps<T>` Interface —
+> ein einfaches `{ name: string; age: number }` reicht. Generische
+> Props-Interfaces lohnen sich erst wenn ein Component wirklich mit
+> verschiedenen Datentypen arbeitet (z.B. eine generische Tabelle
+> oder eine Liste). Die Faustregel: Wenn du den Generic im Component-
+> Body nie fuer Typ-Pruefungen brauchst, brauche ihn im Props-Interface
+> auch nicht.
+
+> 💭 **Denkfrage:** Wann ist Typ-Komplexitaet gerechtfertigt? Gibt
+> es Situationen wo ein 50-Zeilen Typ-Definiton besser ist als ein
+> 5-Zeilen Interface?
+>
+> **Antwort:** Ja — in Library-Code der von vielen Teams genutzt wird.
+> Eine komplexe `DeepPartial<T>` oder `RecursiveRequired<T>` Definition
+> amortisiert ihren Komplexitaets-Aufwand durch tausendfache Nutzung.
+> In Applikations-Code (der nur intern genutzt wird) ist Komplexitaet
+> fast nie gerechtfertigt. Die Frage: "Wie viele Entwickler profitieren
+> von diesem Typ, und wie oft?"
+
 ---
 
-## Experiment: Typ-Audit an eigenem Code
+## Experiment: Vereinfache diese Typen
 
-Nimm ein TypeScript-Modul aus deinem Projekt und pruefe:
+Drei Over-engineered Typen — vereinfache jeden:
 
 ```typescript
-// Checkliste:
-// 1. Gibt es Generics die nur einmal vorkommen? → Ersetze durch konkreten Typ
-// 2. Gibt es Conditional Types die als Map geschrieben werden koennten? → Vereinfache
-// 3. Gibt es Branded Types fuer lokale Werte? → Entferne den Brand
-// 4. Gibt es verschachtelte Generics (T extends U extends V)? → Vereinfache
-// 5. Versteht ein neuer Entwickler den Typ in unter 30 Sekunden? → Wenn nein: zu komplex
+// Typ A: Braucht er wirklich Conditional Types?
+type Stringify<T> = T extends string
+  ? T
+  : T extends number
+  ? `${T}`
+  : T extends boolean
+  ? `${T}`
+  : never;
 
-// Bonus: Zaehle die Zeilen die NUR fuer Typ-Definitionen da sind.
-// Wenn Typ-Code > 30% des gesamten Codes → wahrscheinlich Over-Engineering.
+// Deine vereinfachte Version: ___
+// Hinweis: String() und Template Literals loesen das einfacher
+
+// Typ B: Braucht er Generics?
+function wrapInArray<T extends string | number | boolean>(value: T): T[] {
+  return [value];
+}
+
+// Deine vereinfachte Version: ___
+// Hinweis: T wird hier tatsaechlich zweimal verwendet — ist er gerechtfertigt?
+// Alternativ: Kann man es ohne Generic schreiben und trotzdem korrekte Typen haben?
+
+// Typ C: Braucht er Branded Types?
+type ButtonLabel = string & { __brand: "ButtonLabel" };
+type TooltipText = string & { __brand: "TooltipText" };
+type PlaceholderText = string & { __brand: "PlaceholderText" };
+
+interface FormField {
+  label: ButtonLabel;
+  tooltip: TooltipText;
+  placeholder: PlaceholderText;
+}
+
+// Deine Entscheidung: Brands behalten oder entfernen?
+// Begründung: Was ist das schlimmste was passiert wenn label und placeholder vertauscht werden?
+
+// Checkliste fuer deinen eigenen Code:
+// 1. Generics die nur einmal vorkommen → Ersetze durch konkreten Typ oder unknown
+// 2. Conditional Types die als Map passen → Vereinfache zu Record/Interface
+// 3. Branded Types fuer unkritische Werte → Entferne Brand
+// 4. Verschachtelte Generics (T extends U extends V) → Vereinfache
+// 5. Versteht ein Kollege den Typ in 30 Sekunden? → Wenn nein: zu komplex
 ```
 
 ---
@@ -207,10 +305,13 @@ Nimm ein TypeScript-Modul aus deinem Projekt und pruefe:
 ## Was du gelernt hast
 
 - **YAGNI gilt auch fuer Typen** — schreibe den einfachsten Typ der den Job erledigt
-- **Generics** nur wenn T mindestens zweimal vorkommt
+- Over-Engineering hat reale Kosten: Compiler-Zeit, Onboarding-Zeit, Wartbarkeit
+- **Generics** nur wenn T mindestens zweimal vorkommt — sonst `unknown` oder konkreter Typ
 - **Conditional Types** nur wenn eine Map oder Overloads nicht reichen
 - **Branded Types** nur fuer Domain-kritische Werte deren Verwechslung echte Bugs verursacht
-- Die **Komplexitaets-Pyramide**: Starte unten, gehe nur hoch wenn noetig
+- Die **Komplexitaets-Pyramide**: Starte unten, gehe nur hoch wenn unten nicht reicht
+- In Angular: Service-Generics auf Methoden-Ebene, nicht auf Service-Ebene
+- In React: Generische Props nur wenn wirklich verschiedene Datentypen gebraucht werden
 
 > 🧠 **Erklaere dir selbst:** Ein Kollege schreibt: `type ApiResponse<T
 > extends Record<string, unknown>> = T extends { error: infer E } ?
@@ -219,9 +320,10 @@ Nimm ein TypeScript-Modul aus deinem Projekt und pruefe:
 > **Kernpunkte:** Der Conditional Type ist unnoetig wenn nur 2 Faelle
 > existieren | Einfacher: Discriminated Union `{ success: true; data: T }
 > | { success: false; error: E }` | Keine Inferenz noetig | Klarere
-> Fehlermeldungen
+> Fehlermeldungen | Die vereinfachte Version ist kuerzer, lesbarer und
+> erzeugt bessere TypeScript-Fehlermeldungen
 
-**Kernkonzept zum Merken:** Typ-Komplexitaet hat Kosten — Compiler-Zeit, Lesbarkeit, Wartbarkeit. Jeder Typ muss seinen Nutzen rechtfertigen. Im Zweifel: einfacher.
+**Kernkonzept zum Merken:** Typ-Komplexitaet hat Kosten — Compiler-Zeit, Lesbarkeit, Wartbarkeit. Jeder Typ muss seinen Nutzen rechtfertigen. Im Zweifel: einfacher. Ein simpler Typ den alle verstehen ist besser als ein komplexer Typ den niemand anfassen will.
 
 ---
 

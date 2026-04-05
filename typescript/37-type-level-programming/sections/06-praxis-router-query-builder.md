@@ -73,6 +73,13 @@ type T3 = RouteParams<"/about">;
 > muss der inferierte Typ sowohl A als auch B erfuellen — also
 > `A & B`. Dieser Trick wurde 2018 von jcalz auf StackOverflow
 > entdeckt und ist seitdem in jeder Type-Level-Bibliothek zu finden.
+>
+> Warum brauchen wir das im Router? Weil `ParsePath` fuer jeden
+> Parameter ein separates Objekt-Typ erzeugt, diese dann als Union
+> zusammengesammelt werden, und erst `UnionToIntersection` daraus
+> ein einziges Objekt macht: `{ userId: string } | { postId: string }`
+> wird zu `{ userId: string } & { postId: string }` — und das ist
+> das, was der Entwickler als `params` sehen will.
 
 ### Der vollstaendige Router
 
@@ -162,12 +169,20 @@ const result = query()
   .limit(10);
 ```
 
+Das Besondere: Der Wert-Typ im `where()`-Aufruf haengt direkt von der
+Spalte ab. `where("active", "=", true)` ist erlaubt weil `active` ein
+`boolean` ist. `where("id", "=", "abc")` waere ein Fehler weil `id` ein
+`number` ist. Diese Art von Korrelation zwischen Argumenten ist mit
+einfachen Generics nicht erreichbar — erst Step-Interfaces machen es
+moeglich.
+
 > 🧠 **Erklaere dir selbst:** Warum ist der Type-Level Query Builder
 > sicherer als ein String-basierter Query Builder wie Knex.js?
 > Was kann der Typ-Level-Ansatz verhindern was Knex nicht kann?
-> **Kernpunkte:** Spalten-Namen werden geprueft | Wert-Typen passen
-> zur Spalte | SQL-Injection-Risiko durch Typen reduziert | Knex
-> prueft Spalten nur zur Laufzeit (oder gar nicht)
+> **Kernpunkte:** Spalten-Namen werden zur Compilezeit geprueft |
+> Wert-Typen passen zur Spalte (boolean fuer boolean-Spalten) |
+> Tippfehler in Spaltennamen sind Compile-Fehler statt Laufzeitfehler |
+> Knex prueft Spalten erst wenn die Query ausgefuehrt wird
 
 > 💭 **Denkfrage:** Wuerdest du in einem realen Projekt den gesamten
 > Query Builder auf Type-Level implementieren? Wo ist die Grenze
@@ -249,12 +264,57 @@ type RouteConfig<
 
 ---
 
+## Die echte Welt: Libraries die das nutzen
+
+Es ist eine Sache, diese Techniken in einem Lernkontext zu verstehen.
+Es ist eine andere, zu sehen dass professionelle Libraries dasselbe
+tun. Hier ein kurzer Ueberblick:
+
+| Library | Type-Level-Technik | Zweck |
+|---|---|---|
+| **tRPC** | Template Literal Types | Prozedur-Namen parsen (`"user.getById"`) |
+| **Zod** | Inferred Output Types | Schema zu TypeScript-Typ |
+| **Drizzle ORM** | Step-Interfaces + Schemas | SQL-Query typisieren |
+| **Prisma** | Code-Generation + Types | DB-Schema zu TypeScript |
+| **React Hook Form** | PathOf-aehnliches Pattern | Formular-Pfade typisieren |
+| **type-fest** | Utility-Types Collection | DeepReadonly, PathOf etc. |
+
+Das Wichtige: Alle diese Libraries verstecken die Komplexitaet
+hinter einfachen APIs. Der Nutzer sieht `query().from("users")`,
+nicht die 50 Zeilen Step-Interface-Typen dahinter. Das ist gutes
+Type-Level Design: **Die Komplexitaet traegt die Library, nicht der Nutzer.**
+
+> ⚡ **Framework-Bezug Angular (Standalone):** In modernen Angular-Apps
+> mit Standalone-Komponenten wirst du oft `inject()` mit
+> Service-Tokens kombinieren. Mit Type-Level-Typen koenntest du
+> einen typsicheren Dependency-Injection-Container bauen:
+>
+> ```typescript
+> // Konzept: Typsicherer DI-Container
+> type TokenMap = {
+>   "http": HttpClient;
+>   "router": Router;
+>   "auth": AuthService;
+> };
+>
+> declare function injectByName<K extends keyof TokenMap>(
+>   name: K
+> ): TokenMap[K];
+>
+> const http = injectByName("http");    // HttpClient
+> const auth = injectByName("auth");    // AuthService
+> // injectByName("foo");               // FEHLER: "foo" ∉ keyof TokenMap
+> ```
+
+---
+
 ## Was du gelernt hast
 
 - Ein **Type-safe Router** der URL-Parameter zur Compilezeit extrahiert — in Produktion nutzbar
 - Ein **SQL Query Builder** der Tabellen, Spalten und Wert-Typen zur Compilezeit prueft
 - **UnionToIntersection** — der wichtigste Utility-Typ fuer Type-Level-Bibliotheken
 - Die **Checkliste** fuer die Balance zwischen Typsicherheit und Komplexitaet
+- Echte Libraries (tRPC, Drizzle, Zod, React Hook Form) nutzen dieselben Techniken produktiv
 - Type-Level Programming ist am wertvollsten an **Schnittstellen** (APIs, Router, ORMs)
 
 > 🧠 **Erklaere dir selbst:** Du hast jetzt alle Werkzeuge des
@@ -262,11 +322,11 @@ type RouteConfig<
 > Pattern Matching, Rekursion, Praxis-Projekte. Welches einzelne
 > Werkzeug wuerdest du in deinem Angular-Projekt als erstes einsetzen?
 > **Kernpunkte:** Route-Parameter-Typen sind sofort nutzbar |
-> PathOf fuer tief verschachtelte Configs | Query Builder fuer
-> Datenbankzugriffe | Am wenigsten Risiko: Utility-Types wie
-> DeepReadonly
+> PathOf fuer tief verschachtelte Config-Objekte | DeepReadonly
+> fuer unveraenderliche State-Objekte | Am einfachsten zu starten:
+> Utility-Types wie DeepReadonly die keine API-Aenderungen erfordern
 
-**Kernkonzept der gesamten Lektion:** Type-Level Programming ist eine Sprache in der Sprache. Nutze sie gezielt fuer Schnittstellen und Bibliotheken — dort ist der ROI am hoechsten. Fuer Business-Logik bleib bei einfachen Typen.
+**Kernkonzept der gesamten Lektion:** Type-Level Programming ist eine Sprache in der Sprache. Nutze sie gezielt fuer Schnittstellen und Bibliotheken — dort ist der ROI am hoechsten. Fuer Business-Logik bleib bei einfachen Typen. Die besten Type-Level-Systeme verstecken ihre Komplexitaet — der Nutzer sieht nur einfache, typsichere APIs.
 
 ---
 

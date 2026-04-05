@@ -16,6 +16,27 @@
 
 ---
 
+> 📖 **Hintergrund: Warum TypeScript Inference so gut ist**
+>
+> Als TypeScript 2012 entstand, mussten Entwickler in Java und C# Generics
+> **immer** explizit angeben: `List<String> names = new ArrayList<String>()`.
+> Das war laestig. Java 7 (2011) fuehrte den Diamond-Operator ein: `new ArrayList<>()` —
+> TypeScript-Entwickler lachen darueber, weil TypeScript von Anfang an viel
+> weiter geht.
+>
+> TypeScript's Typ-Inferenz bei Generics basiert auf einem Algorithmus namens
+> **Hindley-Milner** (entwickelt 1969/1978 unabhaengig von Roger Hindley und
+> Robin Milner). Dieser Algorithmus kann Typen in beide Richtungen ableiten —
+> aus Argumenten, aus Rueckgabetypen, aus Callbacks. TypeScript's Implementierung
+> ist eine pragmatische Variante davon: schnell genug fuer IDEs, praezise genug
+> fuer komplexe Code-Basen.
+>
+> Das Ergebnis: Du schreibst `map(numbers, n => String(n))` und TypeScript
+> weiss ohne jede Annotation, dass das Ergebnis `string[]` ist. Das ist
+> kein Trick — das ist formale Typentheorie, die fuer dich arbeitet.
+
+---
+
 ## Die Grundsyntax
 
 ```typescript annotated
@@ -182,6 +203,27 @@ const data = parseJSON<{ name: string }>(jsonString);
 
 ---
 
+> 💭 **Denkfrage:** Du siehst diesen Code:
+>
+> ```typescript
+> function transform<T, U>(value: T, fn: (input: T) => U): U {
+>   return fn(value);
+> }
+> ```
+>
+> Wie viele Typparameter hat diese Funktion, und **warum braucht sie zwei?**
+> Koennte man das mit einem auskommen?
+>
+> **Denk einen Moment nach, bevor du weiterliest.**
+>
+> `T` beschreibt den Eingabetyp, `U` beschreibt den Ausgabetyp nach der
+> Transformation. Sie sind **unabhaengig** voneinander: `transform("hallo", s => s.length)`
+> hat `T = string` und `U = number`. Ein einzelner Typparameter koennte
+> nicht ausdruecken, dass Input und Output unterschiedliche Typen sein koennen.
+> Merke: Jeder Typparameter repraesentiert eine **unbekannte, aber konsistente** Groesse.
+
+---
+
 ## Haeufiger Fehler: Unnoetige Typparameter
 
 Nicht jedes `<T>` ist sinnvoll:
@@ -204,6 +246,98 @@ function good<T>(arr: T[]): T | undefined {
 > **Faustregel:** Ein Typparameter sollte mindestens **zweimal** vorkommen.
 > Einmal im Parameter UND einmal im Rueckgabetyp (oder in einem
 > anderen Parameter). Sonst ist er ueberfluessig.
+
+---
+
+## In deinem Angular-Projekt: Generische Funktionen ueberall
+
+Du schreibst tagtaeglich generische Funktionen, ohne es zu merken:
+
+```typescript annotated
+// Angular Service mit generischer Hilfsfunktion:
+@Injectable({ providedIn: 'root' })
+class DataService {
+  // Eine Funktion fuer alle API-Endpunkte:
+  fetch<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(endpoint);
+    // ^ T wird vom Aufrufer bestimmt — Inference funktioniert hier NICHT
+    //   weil TypeScript nicht in den HTTP-Response schauen kann
+  }
+
+  // Mit Transformation:
+  fetchAndTransform<TRaw, TModel>(
+    endpoint: string,
+    transform: (raw: TRaw) => TModel
+  ): Observable<TModel> {
+    return this.http.get<TRaw>(endpoint).pipe(
+      map(transform)
+      // ^ map() ist selbst generisch: map<TRaw, TModel>
+    );
+  }
+}
+
+// Verwendung — TypeScript inferiert TModel:
+service.fetchAndTransform<UserDTO, User>(
+  '/api/users/1',
+  dto => ({ id: dto.userId, name: dto.fullName })
+);
+// ^ TRaw = UserDTO (explizit), TModel = User (inferiert aus transform)
+```
+
+**In React:**
+
+```typescript
+// Eine generische Fetch-Hook fuer alle API-Calls:
+function useFetch<T>(url: string): { data: T | null; loading: boolean } {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  // ...Fetch-Logik...
+  return { data, loading };
+}
+
+// Verwendung:
+const { data: users } = useFetch<User[]>('/api/users');
+// users ist User[] | null — volle IDE-Unterstuetzung
+```
+
+---
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> // Baue eine pipe()-Funktion fuer zwei Schritte:
+> function pipe<A, B, C>(
+>   value: A,
+>   fn1: (a: A) => B,
+>   fn2: (b: B) => C
+> ): C {
+>   return fn2(fn1(value));
+> }
+>
+> // Teste diese Aufrufe:
+> const result1 = pipe("hallo", s => s.length, n => n > 3);
+> const result2 = pipe(42, n => String(n), s => s.split(""));
+>
+> // Hovere ueber result1 und result2 — was sind ihre Typen?
+> // Aendere dann fn1 so dass sie einen falschen Typ zurueckgibt:
+> const broken = pipe("hallo", s => s.length, (s: string) => s.toUpperCase());
+> // Was sagt TypeScript? Warum genau dort?
+> ```
+>
+> Beobachte wie TypeScript **genau die Stelle** markiert, wo die Typen
+> nicht passen — nicht in der `pipe`-Definition, sondern beim Aufruf.
+
+---
+
+## Was du gelernt hast
+
+- Die Grundsyntax `function name<T>(arg: T): T` — Typparameter in spitzen Klammern vor den Parametern
+- TypeScript inferiert Typparameter automatisch aus den uebergebenen Argumenten (Hindley-Milner)
+- Mehrere Typparameter `<T, U>` fuer Funktionen die verschiedene Input- und Output-Typen haben
+- Arrow Functions benoetigen in `.tsx`-Dateien ein Trailing Comma: `<T,>`
+- Ein Typparameter der nur einmal vorkommt ist meistens ueberfluessig — Generics verbinden Input und Output
+
+**Kernkonzept:** Typparameter-Inference ist der "Zauber" von TypeScript-Generics — du schreibst typsicheren Code, ohne den Typ staendig explizit angeben zu muessen. Der Compiler erledigt das.
 
 ---
 

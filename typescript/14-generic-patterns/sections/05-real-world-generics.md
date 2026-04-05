@@ -9,10 +9,33 @@
 
 ## Was du hier lernst
 
-- API Client\<T\> fuer typsichere HTTP-Aufrufe
-- Repository Pattern fuer generisches CRUD
+- API Client\<T\> fuer typsichere HTTP-Aufrufe — kein `any` mehr
+- Repository Pattern fuer generisches CRUD: einmal schreiben, ueberall nutzen
 - EventEmitter\<Events\> mit typsicheren Event-Payloads
-- DI Container mit generischem `resolve<T>()`
+- DI Container mit generischem `resolve<T>()` — das Herzstuck moderner Frameworks
+
+---
+
+## Hintergrund: Wie React Hook Form Generics popularisiert hat
+
+Im Jahr 2019 loeste React Hook Form ein altes Problem: Formular-Bibliotheken
+wie Formik oder Redux Form waren entweder untypsicher oder erforderten
+erschreckend viel Boilerplate. React Hook Form brachte eine radikale Loesung:
+
+```typescript
+const { register, handleSubmit } = useForm<LoginForm>();
+```
+
+Ein einziges Generic `<LoginForm>` und plotzlich wusste TypeScript, dass
+`register("email")` gueltig ist, aber `register("typo")` ein Compile-Fehler.
+`handleSubmit` gab einen vollstaendig typisierten Callback zurueck. Das war
+2019 ein Augenblick, in dem viele Entwickler die Macht von Generics "spuerten"
+statt nur verstanden.
+
+Das Muster dahinter kennst du jetzt: ein Generic-Parameter wird einmal am
+"Einstiegspunkt" (dem Hook) angegeben und fliesst dann durch ALLE Operationen.
+Die vier Patterns in dieser Sektion funktionieren nach demselben Prinzip —
+ein Typ-Parameter, ueberall typsicher.
 
 ---
 
@@ -94,6 +117,35 @@ const users = await client.get("/users");
 > dem einfachen `get<T>()` Pattern?
 > **Kernpunkte:** Route-Map: Typ wird automatisch aus dem Pfad abgeleitet | Kein manuelles Angeben von T noetig | Falsche Kombinationen werden beim Kompilieren erkannt
 
+> ⚡ **Angular-Bezug:** Angular `HttpClient` implementiert exakt dieses Pattern.
+> `this.http.get<User[]>('/api/users')` ist `ApiClient.get<User[]>` —
+> du gibst den Typ explizit an, und `HttpClient` gibt `Observable<User[]>`
+> zurueck. Der Unterschied zur Route-Map: HttpClient ist generisch ohne
+> Route-Map-Constraints, weil Angular-Apps oft dynamische URLs verwenden.
+> Mit NestJS-Clients oder tRPC bekommst du die Route-Map-Variante.
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> interface Routes {
+>   "/ping": { response: { status: "ok" }; body: never };
+>   "/echo": { response: { message: string }; body: { message: string } };
+> }
+>
+> async function request<P extends keyof Routes>(
+>   path: P,
+>   body: Routes[P]["body"] extends never ? undefined : Routes[P]["body"]
+> ): Promise<Routes[P]["response"]> {
+>   // Hier wuerde der echte fetch-Call stehen
+>   return null as any;
+> }
+>
+> // Was inferiert TypeScript fuer den Rueckgabetyp?
+> const ping = await request("/ping", undefined);
+> const echo = await request("/echo", { message: "hallo" });
+>
+> // Was passiert wenn du versuchst: request("/ping", { message: "x" })?
+> ```
+
 ---
 
 ## Repository Pattern — Generisches CRUD
@@ -167,6 +219,23 @@ await userRepo.update(user.id, { name: "Maximilian" });
 // Nur User-Properties — nicht Product-Properties!
 ```
 
+> 📖 **Hintergrund: Das Repository Pattern in Angular und NestJS**
+>
+> Das Repository Pattern kommt aus Eric Evans' "Domain-Driven Design" (2003).
+> In Angular-Projekten wird es typischerweise ueber Services implementiert:
+> `UserService` kapselt alle HTTP-Calls zu `/api/users`, `ProductService`
+> die zu `/api/products`. Mit Generics kannst du eine `BaseService<T extends
+> Entity>` schreiben, die das gesamte CRUD-Interface implementiert — und nur
+> noch die API-URL in der konkreten Klasse ueberschreiben. TypeORM und Prisma
+> (fuer NestJS) verwenden dasselbe Pattern intern.
+
+> 💭 **Denkfrage:** `InMemoryRepository<T>` funktioniert fuer Tests und
+> Prototypen. Fuer Produktion brauchst du eine `HttpRepository<T>` oder
+> `DatabaseRepository<T>`. Beide koennen `Repository<T>` implementieren.
+> Welchen Vorteil hat es, in Angular-Services das `Repository<T>`-Interface
+> statt der konkreten Klasse als Typ zu verwenden? Und wie haengt das mit
+> `InjectionToken<T>` zusammen?
+
 ---
 
 ## EventEmitter\<Events\> — Typsichere Events
@@ -230,6 +299,13 @@ emitter.emit("user:login", {
 // Error! { wrong: boolean } ist nicht { userId: string; timestamp: Date }
 ```
 
+> ⚡ **React-Bezug:** React selbst verwendet typsichere Events durch die
+> `SyntheticEvent<T>` Hierarchie. `onChange` in einem `<input>` gibt
+> `React.ChangeEvent<HTMLInputElement>` zurueck — keine manuelle Typ-Annotation
+> noetig. Custom Event-Systeme (z.B. mit `useReducer` und Action-Types) folgen
+> exakt dem `TypedEventEmitter`-Pattern: Der `dispatch`-Typ ist eine
+> typsichere Version von `emit`.
+
 ---
 
 ## DI Container — Dependency Injection mit Generics
@@ -289,26 +365,48 @@ logger.log("App started");
 > `Token<DatabaseService>` und `Token<LoggerService>` sind verschiedene Typen.
 > Beim `resolve()` leitet TypeScript `T` aus dem Token ab — kein Cast noetig.
 
+> ⚡ **Angular-Bezug:** Angulars `InjectionToken<T>` ist exakt dieses Pattern.
+> ```typescript
+> const API_URL = new InjectionToken<string>('api-url');
+> // ^ Token<string> — traegt string als Phantom-Typ
+>
+> // Im Provider:
+> { provide: API_URL, useValue: 'https://api.example.com' }
+>
+> // Im Service:
+> constructor(@Inject(API_URL) private apiUrl: string) {}
+> // ^ TypeScript weiss: apiUrl ist string — abgeleitet vom Token
+> ```
+> Angular's gesamtes DI-System ist eine hochentwickelte Version des
+> `Container`-Patterns oben. Das `@Inject()`-Decorator ersetzt `resolve()`,
+> aber das Typ-Tracking durch den Token ist identisch.
+
 ---
 
-## Zusammenfassung
+## Was du gelernt hast
 
-| Pattern | Einsatz | Generics-Nutzen |
-|---------|---------|-----------------|
-| ApiClient\<T\> | HTTP-Aufrufe | Rueckgabetyp = erwartete Daten |
-| Repository\<T\> | CRUD-Operationen | Einmal schreiben, fuer jede Entity nutzen |
-| EventEmitter\<E\> | Event-System | Event-Name und Payload-Typ verknuepft |
-| DI Container | Dependency Injection | Token\<T\> traegt den Service-Typ |
+- `ApiClient<T>` gibt dem Compiler exakt den Typ der HTTP-Antwort — nicht `unknown` oder `any`
+- Eine Route-Map verknuepft Pfad-String und Payload-Typ: ein falscher Pfad ist ein Compile-Fehler
+- Das Repository Pattern schreibt CRUD-Logik einmal und nutzt sie fuer jede Entity
+- `TypedEventEmitter<Events>` macht es unmoeglich, den falschen Payload zu emittieren
+- DI Container nutzen `Token<T>` als Phantom-Typen: `resolve()` gibt genau den richtigen Typ zurueck
+
+**Kernkonzept:** Real-World Generics sind kein Selbstzweck — sie verschieben
+Fehler von der Laufzeit zur Compilezeit. Eine falsche API-Response, ein
+falscher Event-Payload, ein nicht registrierter Service: Mit Generics sind
+das Compile-Fehler statt Runtime-Crashes. Das ist der Hauptwert von Generics
+in produktivem Code.
+
+> 🧠 **Erklaere dir selbst:** Alle vier Patterns (ApiClient, Repository,
+> EventEmitter, DI Container) haben gemeinsam, dass ein Typ-Parameter "einmal
+> angegeben, ueberall verwendet" wird. Warum ist das besser als den Typ
+> an jeder Verwendungsstelle neu anzugeben?
+> **Kernpunkte:** Einmal angeben = eine Fehlerquelle | Konsistenz durch den Compiler erzwungen | Aenderungen am Typ muessen nur an einer Stelle gemacht werden
 
 ---
 
-## Lektionsende
-
-Du hast alle fuenf Sektionen abgeschlossen. Generics sind nicht mehr nur
-Typparameter — du hast gesehen, wie sie ganze Architektur-Patterns
-typsicher machen.
-
-> **Naechster Schritt:** Arbeite die Examples (`examples/`) durch, loese die
-> Exercises (`exercises/`) und teste dein Wissen mit `npx tsx quiz.ts`.
+> **Pausenpunkt** — Du hast alle fuenf Sektionen abgeschlossen. Generics
+> sind nicht mehr nur Typparameter — du hast gesehen, wie sie ganze
+> Architektur-Patterns typsicher machen.
 >
 > **Naechste Lektion:** 15 — Utility Types Deep Dive

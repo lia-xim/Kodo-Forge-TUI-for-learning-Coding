@@ -281,18 +281,83 @@ const doubledAge = mapResult(ageResult, age => age * 2);
 // Result<number, string> — Fehler wird durchgereicht!
 ```
 
+> **Experiment:** Probiere das Result-Pattern direkt aus — ohne externe Bibliothek, alles inline:
+>
+> ```typescript
+> type Result<T, E> =
+>   | { ok: true; value: T }
+>   | { ok: false; error: E };
+>
+> function divide(a: number, b: number): Result<number, string> {
+>   if (b === 0) return { ok: false, error: "Division durch null!" };
+>   return { ok: true, value: a / b };
+> }
+>
+> const result = divide(10, 0);
+>
+> // Versuche: result.value ohne if-Pruefung zu verwenden.
+> // Was sagt TypeScript?
+> if (result.ok) {
+>   console.log(result.value); // Hier sicher!
+> } else {
+>   console.log(result.error); // Hier sicher!
+> }
+> ```
+>
+> Versuche nun `divide(10, 2)` und `divide(10, 0)` — was wird jeweils ausgegeben? Was waere mit einem `try/catch`-Ansatz anders?
+
 ---
 
-## Zusammenfassung Sektion 3
+**In deinem Angular-Projekt:** Das Result-Pattern eignet sich hervorragend fuer HTTP-Calls. Statt try/catch in jedem Component kannst du einen zentralen Service schreiben, der `Result<T, ApiError>` zurueckgibt:
 
-| Konzept | Erklaerung |
-|---------|-----------|
-| **Product Type** | UND-Verknuepfung (Interface/Object) — alle Felder gleichzeitig |
-| **Sum Type** | ODER-Verknuepfung (Discriminated Union) — genau eine Variante |
-| **ADT** | Algebraischer Datentyp — Kombination aus Sum + Product |
-| **Option\<T\>** | Some(value) \| None — typsichere null-Alternative |
-| **Result\<T, E\>** | Ok(value) \| Err(error) — typsichere Exception-Alternative |
-| **Herkunft** | ML (1973) -> Haskell -> Rust -> TypeScript |
+```typescript
+type ApiError =
+  | { kind: "network"; message: string }
+  | { kind: "unauthorized" }
+  | { kind: "not_found"; resource: string }
+  | { kind: "server_error"; statusCode: number };
+
+@Injectable({ providedIn: 'root' })
+class ApiService {
+  constructor(private http: HttpClient) {}
+
+  getUser(id: string): Observable<Result<User, ApiError>> {
+    return this.http.get<User>(`/api/users/${id}`).pipe(
+      map(user => ({ ok: true as const, value: user })),
+      catchError(err => {
+        if (err.status === 401) return of({ ok: false as const, error: { kind: "unauthorized" as const } });
+        if (err.status === 404) return of({ ok: false as const, error: { kind: "not_found" as const, resource: "User" } });
+        return of({ ok: false as const, error: { kind: "server_error" as const, statusCode: err.status } });
+      })
+    );
+  }
+}
+
+// Im Component: kein try/catch, kein isError-Boolean — klare Fallunterscheidung:
+this.apiService.getUser("123").subscribe(result => {
+  if (result.ok) {
+    this.user = result.value; // User
+  } else if (result.error.kind === "unauthorized") {
+    this.router.navigate(['/login']);
+  } else {
+    this.errorMessage = `Fehler: ${result.error.kind}`;
+  }
+});
+```
+
+**In React:** Dasselbe Pattern funktioniert in einem `useQuery`-aehnlichen Hook — der Rueckgabewert ist `Result<T, ApiError>` statt die ueblichen `{ data, error, isLoading }`-Properties.
+
+---
+
+## Was du gelernt hast
+
+- **Algebraische Datentypen (ADTs)** kommen aus ML (1973) und durchziehen Haskell, Rust und TypeScript — ein jahrzehnteraltes, bewaehrtes Konzept
+- **Product Types** (Interfaces/Objects) kombinieren Werte mit UND — alle Felder sind gleichzeitig vorhanden
+- **Sum Types** (Discriminated Unions) kombinieren Varianten mit ODER — genau eine ist aktiv
+- Das **Option-Pattern** (`Some<T> | None`) ersetzt `null`/`undefined` typsicher und erzwingt die Behandlung beider Faelle
+- Das **Result-Pattern** (`Ok<T> | Err<E>`) macht Fehlerfaelle sichtbar in der Typsignatur — kein verstecktes `throw` mehr
+
+**Kernkonzept:** Sum Types machen das Unmoegliche unrepresentierbar — wenn eine Funktion `Result<T, E>` zurueckgibt, ist der Fehlerfall nicht mehr versteckt oder optional, sondern ein expliziter Teil des Typs.
 
 ---
 

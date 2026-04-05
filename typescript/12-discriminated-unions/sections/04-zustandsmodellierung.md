@@ -47,6 +47,10 @@ const impossible1: DataState = {
 > *"Make impossible states impossible."*
 > Wenn der Typ unmoegliche Zustaende erlaubt, werden Bugs entstehen.
 
+> 💭 **Denkfrage:** Wie viele verschiedene Zustaende kann der `DataState`-Typ mit vier Booleans/Nullables theoretisch annehmen? Wie viele davon sind tatsaechlich sinnvoll? Was sagt das ueber den Qualitaet des Typen aus?
+>
+> **Antwort:** `boolean * boolean * (T | null) * (string | null)` ergibt `2 * 2 * 2 * 2 = 16` moegliche Kombinationen — aber nur 4 sind sinnvoll (idle, loading, error, success). Du schreibst also Code, der 12 unsinnige Zustaende aktiv erlaubt und defensiv behandeln muss.
+
 ---
 
 ## Die Loesung: State als Discriminated Union
@@ -296,17 +300,53 @@ function renderNew(state: AsyncState<string[]>) {
 }
 ```
 
+> **Experiment:** Versuche direkt im TypeScript Playground den unmoelichen Zustand zu erzeugen:
+>
+> ```typescript
+> // VORHER: Flache Booleans
+> type OldState = {
+>   isLoading: boolean;
+>   isError: boolean;
+>   data: string[] | null;
+>   error: string | null;
+> };
+>
+> // Probiere: Kannst du TypeScript dazu bringen, diesen Wert abzulehnen?
+> const impossibleOld: OldState = {
+>   isLoading: true,
+>   isError: true,
+>   data: ["a", "b"],
+>   error: "Oh nein",
+> };
+>
+> // NACHHER: Discriminated Union
+> type NewState =
+>   | { status: "idle" }
+>   | { status: "loading" }
+>   | { status: "error"; error: string }
+>   | { status: "success"; data: string[] };
+>
+> // Versuche den gleichen unmoelichen Zustand zu erstellen:
+> const impossibleNew: NewState = {
+>   status: "loading",
+>   // error: "Oh nein", // <- Was sagt TypeScript dazu?
+>   // data: ["a", "b"], // <- Und hierzu?
+> };
+> ```
+>
+> Was ist der fundamentale Unterschied in den TypeScript-Fehlermeldungen?
+
 ---
 
-## Zusammenfassung Sektion 4
+## Was du gelernt hast
 
-| Konzept | Erklaerung |
-|---------|-----------|
-| **Unmoegliche Zustaende** | Flache Booleans erlauben sinnlose Kombinationen |
-| **State als DU** | Jeder Zustand = eigene Variante mit passenden Daten |
-| **State Machine** | Zustaende + Uebergaenge als Typen und Funktionen |
-| **AsyncState\<T\>** | Generisches Loading/Error/Success-Pattern |
-| **Framework-agnostisch** | Derselbe Typ fuer React, Angular, Vue, etc. |
+- **Unmoegliche Zustaende** entstehen durch flache Boolean-Flags — bei `n` Flags gibt es `2^n` theoretische Kombinationen, von denen die meisten Bugs sind
+- **Discriminated Unions als State** modellieren jeden Zustand als eigene Variante mit genau den Daten, die in diesem Zustand sinnvoll sind
+- **State Machines** lassen sich als Typen und Uebergangs-Funktionen ausdruecken — `Extract<Union, Bedingung>` stellt sicher, dass nur gueltige Ausgangszustaende akzeptiert werden
+- Das **AsyncState\<T\>**-Pattern (idle/loading/error/success) ist framework-agnostisch und funktioniert identisch in React, Angular, Vue und purem TypeScript
+- Der `mapAsyncState`-Helfer erlaubt elegante Transformation des Erfolgs-Werts ohne Boilerplate
+
+**Kernkonzept:** "Make impossible states impossible" — wenn dein Typ unmoegliche Zustaende repraesentieren kann, werden sie irgendwann auftreten. Discriminated Unions eliminieren ganze Klassen von Bugs, indem sie den Zustandsraum exakt auf die gueltigen Kombinationen reduzieren.
 
 ---
 

@@ -138,11 +138,31 @@ const numberCache: Cache<string, number> = { /* ... */ } as any;
 > `function f(a = 1, b)` — bei `f(5)` ist unklar ob 5 fuer a oder b ist.
 > Deshalb: Defaults immer am Ende, damit die Zuordnung eindeutig bleibt.
 
-> 🔬 **Experiment:** Oeffne `examples/05-default-typparameter.ts` und
-> aendere die Reihenfolge der Typparameter — setze einen Default-Parameter
-> **vor** einen ohne Default. Was sagt TypeScript? Die Fehlermeldung ist
-> sehr aufschlussreich: *"Required type parameters may not follow
-> optional type parameters."*
+> 🔬 **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> interface Response<T = string, E = Error> {
+>   data: T | null;
+>   error: E | null;
+>   status: number;
+> }
+>
+> // Ohne Typargumente:
+> const r1: Response = { data: "hallo", error: null, status: 200 };
+>
+> // Nur ersten Default ueberschreiben:
+> const r2: Response<number> = { data: 42, error: null, status: 200 };
+>
+> // Beide ueberschreiben:
+> const r3: Response<User, string> = { data: null, error: "Not found", status: 404 };
+>
+> // Jetzt: Versuche die Reihenfolge umzukehren:
+> interface Broken<T = string, U> { value: T; key: U; }
+> // Was sagt TypeScript? Lies die Fehlermeldung genau.
+> ```
+>
+> Die Fehlermeldung *"Required type parameters may not follow optional type
+> parameters"* erklaert genau das Mehrdeutigkeitsproblem aus der Denkfrage.
 
 Bei mehreren Defaults koennen alle am Ende stehen:
 
@@ -233,6 +253,66 @@ typedEmitter.emit("user:login", { userId: "123", timestamp: new Date() }); // OK
 
 ---
 
+## In deinem Angular-Projekt: Default-Typparameter
+
+Default-Typen sind ein wichtiges API-Design-Werkzeug in Angular-Bibliotheken
+und in grossen Projekten mit vielen generischen Services:
+
+```typescript annotated
+// Ein generischer State-Store mit sinnvollen Defaults:
+interface StoreConfig<
+  TState = Record<string, unknown>,
+  TActions = Record<string, (...args: unknown[]) => void>,
+> {
+  initialState: TState;
+  actions: TActions;
+  persistKey?: string;
+}
+
+// Einfachster Fall — kein Typargument noetig:
+const simpleStore: StoreConfig = {
+  initialState: { count: 0 },
+  actions: { increment: () => {} },
+};
+
+// Getypter Store:
+interface CounterState { count: number; step: number; }
+const typedStore: StoreConfig<CounterState> = {
+  initialState: { count: 0, step: 1 },
+  actions: { increment: () => {} },
+};
+
+// Angular HttpClient intern nutzt aehnliche Defaults:
+// get<T = Object>(url: string): Observable<T>
+// ^ Default ist Object wenn kein Typ angegeben — besser explizit sein!
+this.http.get('/api/users');           // Observable<Object>   — schlecht
+this.http.get<User[]>('/api/users');   // Observable<User[]>   — gut
+```
+
+**In React — generische Hooks mit Defaults:**
+
+```typescript
+// Ein Cache-Hook mit Default-Typ:
+function useLocalStorage<T = string>(key: string, defaultValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  });
+  // ...
+  return [value, setValue] as const;
+}
+
+// Ohne Typangabe: T = string (Default)
+const [name, setName] = useLocalStorage("username", "Anonym");
+// name ist string
+
+// Mit Typangabe: Default wird ueberschrieben
+const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
+// theme ist "light" | "dark"
+```
+
+---
+
 ## Wann sind Defaults sinnvoll?
 
 | Situation | Default sinnvoll? | Beispiel |
@@ -245,6 +325,18 @@ typedEmitter.emit("user:login", { userId: "123", timestamp: new Date() }); // OK
 > **Faustregel:** Defaults sind fuer **API-Design**. Wenn du eine
 > Bibliothek oder ein wiederverwendbares System baust, machen Defaults
 > das einfache Szenario einfach und das komplexe weiterhin moeglich.
+
+---
+
+## Was du gelernt hast
+
+- `<T = DefaultType>` gibt einem Typparameter einen Fallback — genau wie Default-Parameter bei Funktionen
+- Default + Constraint: `<T extends X = Y>` — der Default muss den Constraint erfuellen
+- Reihenfolge-Regel: Defaults muessen am Ende stehen (sonst ist die Zuordnung mehrdeutig)
+- Default-Typen sind ein **API-Design-Werkzeug** — sie machen den Normalfall bequem ohne Flexibilitaet zu opfern
+- Angular's `http.get()` hat intern `T = Object` als Default — explizite Angabe ist aber immer besser
+
+**Kernkonzept:** Default-Typparameter sind die Bruecke zwischen "einfach" und "moeglich". Eine Bibliothek mit `Container<T = string>` kann fuer den Standardfall einfach `Container` schreiben, aber fortgeschrittene Nutzer koennen `Container<CustomType>` verwenden.
 
 ---
 

@@ -12,8 +12,26 @@
 - Was Higher-Order Functions (HOFs) mit Generics noch maechtiger macht
 - `pipe()` — Funktionen typsicher verketten
 - `compose()` — die Ausfuehrungsreihenfolge umdrehen
-- Generisches map/filter/reduce fuer eigene Strukturen
-- Currying und Partial Application mit Generics
+- Generisches map/filter fuer eigene Strukturen jenseits von Arrays
+- Currying und Partial Application mit vollstaendiger Typinferenz
+
+---
+
+## Hintergrund: Wie RxJS Generics und HOFs verheiratet hat
+
+2015 brachte RxJS 5 eine der elegantesten Generic-HOF-Implementierungen in
+die JavaScript-Welt. Jeder RxJS-Operator — `map`, `filter`, `switchMap`,
+`catchError` — ist eine Higher-Order Function, die eine Funktion entgegennimmt
+und eine transformierte `Observable<T>` zurueckgibt.
+
+Das Geniale daran: TypeScript verfolgt den Typ durch JEDE Transformation.
+`observable.pipe(map(x => x.toString()))` weiss, dass wenn `x` eine `number`
+ist, der Output ein `string` ist — ohne eine einzige explizite Typ-Annotation.
+Das war 2015 revolutionaer und ist heute der Standard.
+
+Was du in dieser Sektion lernst, ist exakt das Fundament von RxJS, Redux
+Middleware und allen modernen React HOCs: Funktionen, die Funktionen
+transformieren, und dabei den Typ vollstaendig erhalten.
 
 ---
 
@@ -82,6 +100,14 @@ const result = pipe(
 > Liste fuer Typ-Inferenz nutzen?
 > **Kernpunkte:** Jeder Schritt hat einen ANDEREN Typ | TypeScript kann nicht beliebig viele Typparameter aus Rest-Parametern ableiten | Overloads sind der Workaround fuer variabel viele Typuebergaenge
 
+> ⚡ **Angular-Bezug:** Das `pipe()`-Pattern kennst du als RxJS
+> `observable.pipe(operator1, operator2, ...)`. Jeder RxJS-Operator ist eine
+> HOF: er nimmt `Observable<T>` und gibt `Observable<U>` zurueck. TypeScript
+> verfolgt `T` -> `U` -> `V` durch die gesamte Kette — exakt wie die
+> Overloads hier. Wenn du `http.get<User[]>('/api').pipe(map(users =>
+> users.length))` schreibst, inferiert TypeScript den Endt-Typ `number`
+> automatisch.
+
 ---
 
 ## compose() — Umgekehrte Reihenfolge
@@ -117,6 +143,23 @@ console.log(processName("  alice  ")); // "ALICE"
 > **Pipe vs Compose:** `pipe` liest sich wie ein Datenstrom (oben nach unten).
 > `compose` liest sich mathematisch (innen nach aussen). Beide sind funktional
 > gleichwertig — waehle was in deinem Kontext lesbarer ist.
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function pipe<A, B, C>(v: A, f1: (a: A) => B, f2: (b: B) => C): C {
+>   return f2(f1(v));
+> }
+>
+> const result = pipe(
+>   42,
+>   (n) => n.toString(),    // number -> string
+>   (s) => s.length         // string -> number
+> );
+> // Hover ueber result — welchen Typ erkennt TypeScript?
+> // Was passiert wenn du die Reihenfolge der Funktionen vertauschst?
+> // Probiere: pipe("hallo", (s) => s.length, (n) => n * 2)
+> // Kannst du eine Kette bauen, die immer den Eingangstyp zurueckgibt?
+> ```
 
 ---
 
@@ -172,6 +215,24 @@ const ageResult = flatMap(
 // ^ Typ: Result<number, Error>
 ```
 
+> 📖 **Hintergrund: Result-Typen kommen aus Rust und Haskell**
+>
+> Das `Result<T, E>` Pattern ist direkt von Rust (wo es `Result<T, E>` heisst)
+> und Haskell (wo es `Either` heisst) inspiriert. Die Grundidee: Statt
+> Exceptions (die unsichtbar durch den Call Stack blasen) explizit
+> Fehler als Wert zurueckgeben. `mapResult` und `flatMap` entsprechen den
+> Funktor- und Monad-Operationen aus der funktionalen Programmierung — aber
+> du brauchst diese Begriffe nicht, um das Pattern zu nutzen.
+>
+> In Angular-Projekten wirst du oft `catchError` in RxJS sehen — das ist
+> konzeptuell dasselbe: Fehler als Wert behandeln, nicht als Ausnahme.
+
+> 💭 **Denkfrage:** Ein `Result<T, E>` zwingt den Aufrufer, den Fehlerfall
+> zu behandeln. Eine Exception "explodiert" und kann ueberall gefangen werden.
+> In deinem Angular-Projekt hast du HTTP-Calls mit `catchError`. Welchen
+> Typ haette der Observable, wenn du stattdessen `Result<User, HttpError>`
+> zurueckgeben wuerdest? Was wuerde das fuer Template-Bindings bedeuten?
+
 ---
 
 ## Currying mit Generics
@@ -211,21 +272,30 @@ console.log(logError("Disk full"));  // "[ERROR] Disk full"
 console.log(logInfo("Server up"));   // "[INFO] Server up"
 ```
 
----
-
-## Zusammenfassung
-
-| HOF | Zweck | Generics-Rolle |
-|-----|-------|----------------|
-| pipe() | Wert durch Kette leiten | Verbindet Output -> Input Typen |
-| compose() | Pipeline erstellen | Umgekehrte Typverkettung |
-| mapResult() | Erfolgsfall transformieren | T -> U im Result-Kontext |
-| flatMap() | Verkettete Operationen | Result\<T\> -> Result\<U\> |
-| curry() | Partial Application | A, B, C separat typisiert |
+> ⚡ **React-Bezug:** Currying findest du ueberall in React-Projekten.
+> `useCallback((id: string) => (event: MouseEvent) => handleClick(id, event), [...])`
+> ist ein gecurrter Event-Handler. Das erste Argument fixiert `id`, das zweite
+> nimmt das Event entgegen. TypeScript verfolgt beide Typ-Parameter vollstaendig —
+> inklusive des konkreten Event-Typs `MouseEvent`.
 
 ---
 
-> **Pause moeglich!** Du hast die funktionalen Generic-Patterns gemeistert.
+## Was du gelernt hast
+
+- Higher-Order Functions werden mit Generics vollstaendig typsicher — der Compiler verfolgt jeden Typuebergang
+- `pipe()` leitet Werte durch Funktionsketten und verbindet Output zu Input
+- `compose()` erstellt wiederverwendbare Pipelines in umgekehrter Reihenfolge
+- `mapResult()` und `flatMap()` zeigen, dass HOFs auf jede Datenstruktur anwendbar sind
+- `curry()` verwandelt Mehrfach-Parameter-Funktionen in typsichere partielle Anwendungen
+
+**Kernkonzept:** Eine Generic HOF gibt den Typ nicht nur durch eine Funktion
+weiter — sie verknuepft den Output-Typ einer Funktion mit dem Input-Typ der
+naechsten. Das ist der Grund, warum TypeScript in RxJS und Redux Typfehler
+finden kann, noch bevor der Code ausgefuehrt wird.
+
+---
+
+> **Pausenpunkt** — Du hast die funktionalen Generic-Patterns gemeistert.
 > Weiter geht es mit Advanced Constraints.
 >
-> Naechste Sektion: [04 - Advanced Constraints](./04-generic-constraints-advanced.md)
+> Weiter geht es mit: [Sektion 04 — Advanced Generic Constraints](./04-generic-constraints-advanced.md)

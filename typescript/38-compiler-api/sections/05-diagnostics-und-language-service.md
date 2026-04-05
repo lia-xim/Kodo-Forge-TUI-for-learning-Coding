@@ -50,16 +50,31 @@ for (const diag of allDiagnostics) {
 }
 ```
 
-> 📖 **Hintergrund: TypeScript-Fehlercodes**
+> 📖 **Hintergrund: TypeScript-Fehlercodes und warum sie stabil sind**
 >
 > Jeder TypeScript-Fehler hat einen eindeutigen Code: TS2322 (Type
 > not assignable), TS2345 (Argument not assignable), TS7006 (Parameter
 > implicitly has 'any' type). Diese Codes sind stabil ueber Releases
 > hinweg — du kannst sie in `tsconfig.json` mit `--skipLibCheck` oder
-> in Kommentaren mit `// @ts-expect-error` referenzieren. Die Codes
-> sind nicht zufaellig: 1xxx = Syntax-Fehler, 2xxx = Semantik-Fehler,
-> 5xxx = Compiler-Optionen, 6xxx = Nachricht/Info. Das TypeScript-
-> Wiki auf GitHub hat eine vollstaendige Liste.
+> in Kommentaren mit `// @ts-expect-error` referenzieren.
+>
+> Die Codes sind nicht zufaellig vergeben:
+> - **1xxx**: Syntax-Fehler (Code kann nicht geparst werden)
+> - **2xxx**: Semantik-Fehler (Code ist syntaktisch korrekt, aber Typen passen nicht)
+> - **4xxx**: Deklarationsdatei-Fehler (.d.ts Probleme)
+> - **5xxx**: Compiler-Options-Fehler (unbekannte tsconfig-Option)
+> - **6xxx**: Nachrichten und Informationen (kein Fehler)
+> - **7xxx**: `noImplicitAny`-Fehler
+>
+> Das Diagnostics-System ist bewusst programmatisch — weil Tools wie
+> ESLint, VS Code und CI-Pipelines Fehler verarbeiten muessen, nicht
+> nur anzeigen. Der strukturierte Zugang erlaubt es dir zum Beispiel,
+> nur bestimmte Fehlerkategorien zu filtern, Fehler in andere Formate
+> zu exportieren (z.B. SARIF fuer GitHub Code Scanning), oder eigene
+> Fehlercodes mit demselben Anzeige-System zu verwenden.
+>
+> Das TypeScript-Wiki auf GitHub hat eine vollstaendige Liste aller
+> Fehlercodes mit Erklaerungen.
 
 ---
 
@@ -100,9 +115,32 @@ function checkNoConsoleLog(sourceFile: ts.SourceFile): ts.Diagnostic[] {
 > obwohl ESLint-Regeln das Gleiche koennen? Was ist der Vorteil?
 > **Kernpunkte:** Custom Diagnostics haben Zugang zum Type Checker |
 > ESLint-Regeln auch (mit @typescript-eslint) | Vorteil von
-> Diagnostics: Gleiche Fehlerdarstellung wie echte Compiler-Fehler |
-> Nachteil: Kein Plugin-System wie ESLint | In der Praxis: ESLint
-> fuer Standard-Regeln, Custom Diagnostics fuer Typ-basierte Checks
+> Diagnostics: Gleiche Fehlerdarstellung wie echte Compiler-Fehler —
+> VS Code zeigt sie als rote Wellenlinien, genau wie TS2322 |
+> Nachteil: Kein Plugin-System wie ESLint, kein Auto-Fix-Mechanismus |
+> In der Praxis: ESLint fuer Standard-Regeln, Custom Diagnostics fuer
+> Typ-basierte Checks die in den Build-Prozess integriert werden sollen
+
+### Diagnostics in der Praxis: Drei Kategorien
+
+```typescript annotated
+// Kategorie 1: Syntax-Diagnostics (Parser-Fehler)
+const syntaxDiags = program.getSyntacticDiagnostics(sourceFile);
+// ^ Schnell — keine Typ-Analyse noetig. Nur Parser-Fehler.
+// ^ Beispiel: TS1005 "')' expected"
+
+// Kategorie 2: Semantik-Diagnostics (Typ-Fehler)
+const semanticDiags = program.getSemanticDiagnostics(sourceFile);
+// ^ Teuer — Type Checker muss alle Typen aufloesen
+// ^ Beispiel: TS2322 "Type 'string' is not assignable to type 'number'"
+
+// Kategorie 3: Vorschlaege (nicht-Fehler)
+const suggestionDiags = program.getSuggestionDiagnostics(sourceFile);
+// ^ Informativ — z.B. "Dieser Code kann vereinfacht werden"
+
+// Alles zusammen (das brauchst du meistens):
+const allDiags = ts.getPreEmitDiagnostics(program, sourceFile);
+```
 
 ---
 
@@ -171,13 +209,28 @@ const renameLocations = service.findRenameLocations(
 // ^ Alle Stellen die umbenannt werden muessen
 ```
 
-> ⚡ **Framework-Bezug:** VS Code startet pro Projekt einen
-> TypeScript Language Service (tsserver). Jeder Tastendruck loest
-> Language-Service-Aufrufe aus: `getCompletionsAtPosition` fuer
-> Autocomplete, `getQuickInfoAtPosition` fuer Hover, etc. Angular's
-> Language Service Plugin (`@angular/language-service`) erweitert
-> den TypeScript Language Service um Template-spezifische Features:
-> Autocomplete in HTML-Templates, Typ-Pruefung fuer Bindings.
+> ⚡ **Framework-Bezug: VS Code und der Language Service**
+>
+> VS Code startet pro Projekt einen TypeScript Language Service
+> (`tsserver`) als separaten Prozess. Kommunikation laeuft per IPC
+> (Inter-Process Communication). Jeder Tastendruck in einer `.ts`-
+> Datei loest einen Language-Service-Aufruf aus:
+>
+> - Tippst du einen Buchstaben: `getCompletionsAtPosition`
+> - Hooverst du ueber einen Namen: `getQuickInfoAtPosition`
+> - Drueckst du F12: `getDefinitionAtPosition`
+> - Aenderst du eine Datei: Inkrementelles Re-Parsing
+>
+> Angular's Language Service Plugin (`@angular/language-service`)
+> erweitert den TypeScript Language Service um Template-spezifische
+> Features. Es registriert sich als TypeScript Language Service Plugin
+> und "hoert" auf `.html`-Dateien und Template-Strings in `@Component`.
+> Autocomplete in `{{ user.` zeigt dann Angular-spezifische Vorschlaege.
+>
+> Du kannst selbst Language Service Plugins schreiben — das erfordert
+> ein `typescript.plugins`-Eintrag in `tsconfig.json`. Grosse
+> Libraries wie Prisma nutzen das um Query-Autocomplete direkt in
+> VS Code zu integrieren.
 
 > 💭 **Denkfrage:** Der Language Service muss bei jedem Tastendruck
 > antworten — meist in unter 100ms. Wie schafft er das bei grossen

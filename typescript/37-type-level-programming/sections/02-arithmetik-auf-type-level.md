@@ -22,7 +22,12 @@ Auf Werteebene rechnest du: `3 + 4 = 7`. Auf Type-Level kannst du
 das nicht — TypeScript hat keinen `+`-Operator fuer Typen. Aber es
 gibt einen Trick: **Tuple-Laengen**.
 
-> 📖 **Hintergrund: Der Tuple-Length-Trick**
+Denk daran wie ein Kind zaehlen lernt: Es legt Steine auf einen Haufen
+und zaehlt sie. Jeder Stein ist ein `unknown` im Tuple, der Haufen ist
+das Array, und die Anzahl der Steine ist `["length"]`. Das Typsystem
+rechnet nicht mit Symbolen — es **zaehlt konkrete Objekte**.
+
+> 📖 **Hintergrund: Der Tuple-Length-Trick und Peano-Arithmetik**
 >
 > Dieser Trick stammt aus der funktionalen Programmierung und ist
 > aehnlich zur **Peano-Arithmetik** — einem Zahlensystem das nur
@@ -33,6 +38,13 @@ gibt einen Trick: **Tuple-Laengen**.
 > Giuseppe Peano formulierte dieses System 1889, und es ist bis
 > heute die Basis fuer Typ-Level-Arithmetik in vielen Sprachen
 > (Haskell, Idris, TypeScript).
+>
+> In **Idris** und **Agda** (dependently typed languages) ist
+> laengen-typisierte Arithmetik ein Standardwerkzeug: Vektoren der
+> Laenge N, Matrizen der Dimension MxN. TypeScript erreicht dasselbe
+> ohne Sprachunterstuetzung — nur mit dem Tuple-Trick. Das ist
+> bemerkenswert, weil TypeScript nicht als Dependently-Typed-Sprache
+> designed wurde. Die Community hat das nachtraeglich erzwungen.
 
 ### Das Grundprinzip
 
@@ -112,6 +124,21 @@ type GreaterThan<A extends number, B extends number> =
 type GT1 = GreaterThan<5, 3>;  // true
 type GT2 = GreaterThan<3, 3>;  // false
 type GT3 = GreaterThan<2, 3>;  // false
+
+// Gleichheit ist noch einfacher — beide Seiten pruefen:
+type Equal<A extends number, B extends number> =
+  A extends B ? (B extends A ? true : false) : false;
+
+type EQ1 = Equal<5, 5>;  // true
+type EQ2 = Equal<3, 5>;  // false
+
+// LessOrEqual = NOT GreaterThan:
+type LessOrEqual<A extends number, B extends number> =
+  GreaterThan<A, B> extends true ? false : true;
+
+type LE1 = LessOrEqual<3, 5>;  // true
+type LE2 = LessOrEqual<5, 5>;  // true
+type LE3 = LessOrEqual<7, 5>;  // false
 ```
 
 > 💭 **Denkfrage:** Die Tuple-Length-Arithmetik hat eine Obergrenze
@@ -124,6 +151,12 @@ type GT3 = GreaterThan<2, 3>;  // false
 > String-Laengen-Limits (max. 255 Zeichen), API-Paginierung.
 > Fuer echte Berechnungen nutzt man die Werteebene — das Typsystem
 > stellt nur sicher, dass die Dimensionen stimmen.
+
+> 🧠 **Erklaere dir selbst:** Warum genuegt fuer `Equal<A, B>` nicht
+> einfach `A extends B ? true : false`? Was fehlt da?
+> **Kernpunkte:** `5 extends number` ist `true`, aber `5 !== number` |
+> Bidirektionale Pruefung schliesst Subtypbeziehungen aus |
+> `A extends B` und `B extends A` gemeinsam ergibt echte Gleichheit
 
 ---
 
@@ -156,13 +189,42 @@ cross([1, 2, 3], [4, 5, 6]);    // OK
 // cross([1, 2], [4, 5, 6]);     // FEHLER: [number, number] ≠ Vector3
 ```
 
-> ⚡ **Framework-Bezug:** In Angular-Projekten begegnest du
+> ⚡ **Framework-Bezug Angular:** In Angular-Projekten begegnest du
 > laengen-typisierten Arrays bei Matrix-Transformationen in
 > Animationen (`transform: matrix(a, b, c, d, tx, ty)` — genau
-> 6 Parameter). In React-Projekten mit Three.js oder Canvas-APIs
-> sind `Vector3` und `Matrix4` (4x4 = 16 Werte) alltaeglich.
-> Ohne NTuple akzeptiert `number[]` versehentlich `[1, 2]` wo
-> `[1, 2, 3]` erwartet wird.
+> 6 Parameter) oder bei CSS-Variablen-Werten fuer Farb-Kanäle.
+>
+> ```typescript
+> // Typ-sichere CSS-Matrix-Funktion:
+> type Matrix6 = NTuple<number, 6>;
+> function cssMatrix(...values: Matrix6): string {
+>   return `matrix(${values.join(", ")})`;
+> }
+> cssMatrix(1, 0, 0, 1, 0, 0);    // OK
+> // cssMatrix(1, 0, 0, 1);        // FEHLER: 4 Argumente ≠ 6
+> ```
+
+> ⚡ **Framework-Bezug React:** In React-Projekten mit Three.js oder
+> Canvas-APIs sind `Vector3` (3D-Koordinaten) und `Matrix4` (4x4 = 16
+> Werte fuer 3D-Transformationen) alltaeglich. Mit `NTuple` ist die
+> Dimension in den Typen codiert:
+>
+> ```typescript
+> type Matrix4Flat = NTuple<number, 16>;  // Spalten-major
+>
+> function applyTransform(
+>   mesh: Mesh,
+>   matrix: Matrix4Flat
+> ): void { /* ... */ }
+>
+> // applyTransform(mesh, new Array(9).fill(0));  // FEHLER!
+> // applyTransform(mesh, new Array(16).fill(0)); // Immer noch Fehler!
+> // ^ NTuple ist ein Tuple-Typ, kein Array-Typ
+> ```
+>
+> Ohne `NTuple` akzeptiert `number[]` versehentlich `[1, 2]` wo
+> `[1, 2, 3]` erwartet wird — ein stiller Fehler der erst zur
+> Laufzeit sichtbar wird.
 
 ---
 
@@ -199,13 +261,60 @@ implementieren? Was passiert bei `IsEven<0>`?
 
 ---
 
+## Die Grenzen kennen: Wo Tuple-Arithmetik aufhoert
+
+Bevor wir abschliessen, ein ehrlicher Blick auf die Grenzen:
+
+```typescript
+// Funktioniert gut (kleine Zahlen):
+type Sum1 = Add<10, 20>;    // 30 ✓
+type Sum2 = Add<50, 50>;    // 100 ✓
+type Sum3 = Add<200, 200>;  // 400 ✓
+
+// Wird langsam aber funktioniert:
+type Sum4 = Add<400, 400>;  // 800 ✓ (aber tsserver haengt kurz)
+
+// Schlaegt fehl:
+// type Sum5 = Add<500, 500>;  // "Type instantiation is excessively deep"
+// ^ TypeScript gibt auf bei ~1000 Rekursionen
+
+// Die Loesung fuer grosse Zahlen: Laufzeit-Validierung kombinieren
+function exactLength<N extends number>(
+  arr: unknown[],
+  expected: N
+): arr is NTuple<unknown, N> {
+  return arr.length === expected;
+}
+
+// Type-Level fuer Schnittstelle, Laufzeit fuer Validierung:
+function processVector(data: unknown[]): void {
+  if (!exactLength(data, 3)) throw new Error("Expected 3 elements");
+  const vec: NTuple<number, 3> = data as NTuple<number, 3>;
+  // ^ Jetzt sicher
+}
+```
+
+> 💭 **Denkfrage:** Wann wuerdest du den Tuple-Arithmetik-Ansatz
+> einem Kollegen empfehlen? Und wann wuerdest du sagen "hier reicht
+> ein einfaches `number[]`"?
+>
+> **Antwort:** Empfehlen wenn die Laenge semantisch bedeutsam ist
+> und vom Aufrufer kontrollierbar (RGB immer 3, Matrix immer 16).
+> Nicht empfehlen wenn die Laenge variabel ist oder erst zur Laufzeit
+> bekannt (API-Responses, Benutzereingaben). Die Faustregel:
+> Fixe Laenge ist Kandidat fuer Type-Level; variable Laenge gehoert
+> zur Laufzeit.
+
+---
+
 ## Was du gelernt hast
 
 - Zahlen auf Type-Level werden durch **Tuple-Laengen** repraesentiert (Peano-Arithmetik)
 - **Addition** = Tuples zusammenfuegen, **Subtraktion** = Elemente per `infer` entfernen
-- **Vergleiche** funktionieren ueber Pattern-Matching auf Tuple-Laengen
+- **Vergleiche und Gleichheit** funktionieren ueber Pattern-Matching auf Tuple-Laengen
 - **NTuple<T, N>** erzeugt Arrays mit exakter Laenge — praktisch fuer Vektoren, Matrizen, RGB-Werte
 - Die Obergrenze liegt bei ca. 999 durch TypeScript's Rekursionslimit
+- Fuer Zahlen > 999: Laufzeit-Validierung kombinieren statt Type-Level erzwingen
 
 > 🧠 **Erklaere dir selbst:** Warum ist `[unknown, unknown, unknown]["length"]`
 > der Typ `3` und nicht `number`? Was muesste sich aendern, damit es
@@ -215,7 +324,7 @@ implementieren? Was passiert bei `IsEven<0>`?
 > als Laenge weil sie variabel sind | Das ist der entscheidende
 > Unterschied zwischen Tuple und Array auf Type-Level
 
-**Kernkonzept zum Merken:** Der Tuple-Length-Trick uebersetzt Zahlen in Datenstrukturen. Statt "berechne 3+4" sagst du "fuege zwei Gruppen zusammen und zaehle". Das ist das Fundament aller Type-Level-Arithmetik.
+**Kernkonzept zum Merken:** Der Tuple-Length-Trick uebersetzt Zahlen in Datenstrukturen. Statt "berechne 3+4" sagst du "fuege zwei Gruppen zusammen und zaehle". Das ist das Fundament aller Type-Level-Arithmetik. Nutze es wenn die Dimension des Datentyps semantisch bedeutsam ist.
 
 ---
 

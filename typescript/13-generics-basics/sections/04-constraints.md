@@ -67,12 +67,27 @@ getLength({ length: 10 }); // OK — Objekt hat .length
 mindestens eine Property `length: number` hat." TypeScript prueft das
 bei jedem Aufruf.
 
-> 🔬 **Experiment:** Oeffne `examples/04-constraints.ts` und entferne
-> den `extends { length: number }`-Constraint aus der `getLength`-Funktion.
-> Was sagt TypeScript dir? Beobachte die Fehlermeldung genau — sie erklaert
-> **praezise** warum der Zugriff auf `.length` unsicher waere. Fuege den
-> Constraint dann wieder hinzu und rufe `getLength(42)` auf — jetzt
-> beschwert sich TypeScript an der **Aufrufstelle** statt in der Funktion.
+> 🔬 **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> // Schritt 1: Ohne Constraint — beobachte den Fehler
+> function getLengthBroken<T>(arg: T): number {
+>   return arg.length; // Fehler hier — warum genau?
+> }
+>
+> // Schritt 2: Mit Constraint — der Fehler wandert zur Aufrufstelle
+> function getLength<T extends { length: number }>(arg: T): number {
+>   return arg.length; // Jetzt OK!
+> }
+>
+> getLength("hallo");    // OK
+> getLength([1, 2, 3]);  // OK
+> getLength(42);          // Fehler — hier, an der Aufrufstelle
+> ```
+>
+> Beobachte: Wo erscheint der Fehler **ohne** Constraint (in der Funktion)?
+> Wo mit Constraint (beim Aufruf)? Das ist der Unterschied zwischen
+> "Fehler spaet entdecken" und "Fehler frueh entdecken".
 
 > 🔍 **Tieferes Wissen: Constraints in TypeScript vs. Bounds in Java**
 >
@@ -313,6 +328,18 @@ function sortByKey<T extends Record<string, number>>(
 }
 // Hier bewahrt T den vollen Typ der Objekte
 ```
+
+---
+
+## Was du gelernt hast
+
+- Ohne Constraints ist `T` wie `unknown` — du kannst keine Properties lesen, keine Methoden aufrufen
+- `T extends { length: number }` bedeutet: T muss **mindestens** diese Struktur haben (Mindestanforderung, nicht exakte Form)
+- `K extends keyof T` + `T[K]` ist der Grundbaustein fuer typsichere Property-Zugriffe — der Rueckgabetyp ist praezise
+- Constraints koennen kombiniert werden: `T extends A & B` erzwingt mehrere Mindestanforderungen
+- Das Muster `<T extends { id: number }>` ist in Angular-Pipes und React-Hooks allgegenwaertig
+
+**Kernkonzept:** Constraints sind die Balance zwischen "zu allgemein" (uneingeschraenktes T kann nichts) und "zu spezifisch" (konkreter Typ verliert Wiederverwendbarkeit). `T extends { length: number }` heisst: "Egal welcher Typ — Hauptsache er hat `.length`."
 
 ---
 

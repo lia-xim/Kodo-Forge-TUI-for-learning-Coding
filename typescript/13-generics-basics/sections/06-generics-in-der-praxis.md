@@ -337,6 +337,55 @@ Framework-APIs bis zu deinem eigenen Code. Deshalb sind sie das Herzstuck.
 
 ---
 
+> **Experiment:** Probiere folgendes im TypeScript Playground aus —
+> eine generische Util-Funktion die du sofort in echten Projekten nutzen kannst:
+>
+> ```typescript
+> // memoize<T> — Caching mit automatischer Typsicherheit:
+> function memoize<TArgs extends unknown[], TReturn>(
+>   fn: (...args: TArgs) => TReturn
+> ): (...args: TArgs) => TReturn {
+>   const cache = new Map<string, TReturn>();
+>   return (...args: TArgs) => {
+>     const key = JSON.stringify(args);
+>     if (!cache.has(key)) {
+>       cache.set(key, fn(...args));
+>     }
+>     return cache.get(key)!;
+>   };
+> }
+>
+> // Teste mit verschiedenen Funktionen:
+> const memoFib = memoize((n: number): number =>
+>   n <= 1 ? n : memoFib(n - 1) + memoFib(n - 2)
+> );
+>
+> const memoFormat = memoize((name: string, age: number): string =>
+>   `${name} ist ${age} Jahre alt`
+> );
+>
+> // Hovere ueber memoFib und memoFormat — welche Typen inferiert TypeScript?
+> ```
+>
+> Beobachte: TypeScript inferiert den Rueckgabetyp beider Funktionen korrekt,
+> ohne dass du einen Typ angeben musstest. `TArgs` faengt alle Parameter-Typen
+> ein, `TReturn` den Rueckgabetyp.
+
+---
+
+## Was du gelernt hast
+
+- `useState<T>` in React und `HttpClient.get<T>()` in Angular sind generische Funktionen — jetzt verstehst du warum
+- Bei HTTP-Aufrufen muss man `T` **explizit** angeben — TypeScript kann nicht in die API schauen
+- `Promise<T>` muss generisch sein, weil `then()` den Typ transformiert: `Promise<User>` → `Promise<string>`
+- `Map<K, V>` und `Set<T>` sind generische Collections — die Typsicherheit kommt von Generics
+- Eigene Utility-Funktionen (`groupBy`, `retry`, `memoize`) profitieren direkt von Generics
+- Generics durchziehen alle Ebenen: Standardbibliothek → Framework-APIs → dein eigener Code
+
+**Kernkonzept:** Generics sind die Bruecke zwischen Framework-Code und deinem Domain-Modell. Angular und React koennten keine typsicheren APIs anbieten ohne Generics — und jetzt kannst du dasselbe in deinem eigenen Code tun.
+
+---
+
 ## Zusammenfassung: Wann welches Pattern
 
 | Situation | Pattern | Beispiel |
@@ -356,10 +405,14 @@ Framework-APIs bis zu deinem eigenen Code. Deshalb sind sie das Herzstuck.
 
 ---
 
-> **Lektion abgeschlossen!** Zurueck zur [Uebersicht](../README.md)
+> **Lektion abgeschlossen!** Du hast alle 6 Sektionen zu Generics Basics durchgearbeitet.
 >
-> **Naechste Schritte:**
-> 1. Examples in `examples/` durcharbeiten
-> 2. Exercises in `exercises/` loesen
-> 3. Quiz mit `npx tsx quiz.ts` testen
-> 4. Cheatsheet als Schnellreferenz behalten
+> **Was du mitgenommen hast:**
+> - Das "Warum" hinter Generics (Sektion 1)
+> - Generische Funktionen und Inference (Sektion 2)
+> - Generische Interfaces und Type Aliases (Sektion 3)
+> - Constraints mit `extends` und `keyof` (Sektion 4)
+> - Default-Typparameter fuer API-Design (Sektion 5)
+> - Generics in React, Angular und eigenen Utilities (Sektion 6)
+>
+> **Weiter geht es mit:** Quiz und Cheatsheet dieser Lektion

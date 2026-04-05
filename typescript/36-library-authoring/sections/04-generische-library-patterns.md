@@ -30,11 +30,26 @@
 > sie muessen sich auch gut ANFUEHLEN. Autocomplete soll die richtigen
 > Vorschlaege machen, Fehlermeldungen sollen verstaendlich sein, und
 > der Konsument soll so wenig wie moeglich annotieren muessen.
+>
+> Vor Zod war der Standard: Typ manuell definieren, dann Validator
+> schreiben, dann sicherstellen dass beide synchron bleiben. Drei
+> Artefakte fuer eine Sache. Zod machte daraus: Schema definieren,
+> Typ daraus ableiten. Zwei Artefakte werden eins. Das ist die Magie
+> von TypeScript-First Design — und das Prinzip hinter tRPC, Prisma
+> und vielen anderen modernen Libraries.
 
 Gute Library-Typen haben drei Eigenschaften:
 1. **Inferenz:** Der Konsument annotiert so wenig wie moeglich
 2. **Praezision:** Rueckgabetypen sind so spezifisch wie moeglich
 3. **Ergonomie:** Fehlermeldungen sind verstaendlich
+
+Warum ist das so wichtig? Weil schlechte Typen Konsumenten in die
+Verzweiflung treiben. Ein Rueckgabetyp von `any` zwingt den Konsumenten
+zur manuellen Annotation — die Typsicherheit ist eine Illusion.
+Ein zu breiter Union-Typ erfordert unnoetige Typ-Guards. Verwirrende
+Fehlermeldungen kosten Stunden. Gute Library-Typen "verschwinden" —
+der Konsument denkt gar nicht mehr ueber Typen nach, weil alles einfach
+funktioniert.
 
 ---
 
@@ -187,7 +202,14 @@ const result = await query.execute();
 > ```
 >
 > Jeder Operator in der Pipe verfeinert den Typ. Das ist dasselbe
-> Prinzip wie der Builder oben.
+> Prinzip wie der Builder oben. Der Typ "fliesst" durch die Kette und
+> jeder Schritt macht ihn praeziser — nie breiter, immer spezifischer.
+>
+> In einer eigenen Angular-Library koenntest du dasselbe Muster
+> verwenden um zum Beispiel einen typsicheren State-Manager zu bauen:
+> `.select("users")` gibt `Observable<User[]>` zurueck, nicht
+> `Observable<unknown>`. Das ist kein Zufall — es ist Builder mit
+> Typ-Akkumulation in Aktion.
 
 ---
 

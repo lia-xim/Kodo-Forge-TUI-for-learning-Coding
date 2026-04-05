@@ -9,10 +9,29 @@
 
 ## Was du hier lernst
 
-- Wie Factory Functions mit Generics beliebige Instanzen erzeugen
+- Wie Factory Functions mit Generics beliebige Instanzen typsicher erzeugen
 - Das `createInstance<T>` Pattern und seine Varianten
-- Wie der Builder Pattern von Generics profitiert
-- Warum Generics in Factories Type Inference ermoeglichen
+- Wie der Builder Pattern vom Compiler begleitet wird — Schritt fuer Schritt
+- Warum Generics in Factories Type Inference ermoeglichen statt erzwingen
+
+---
+
+## Hintergrund: Wie Lodash TypeScript aufgeweckt hat
+
+Im Jahr 2014 hatte Lodash ein Problem. Die Bibliothek war das meistbenutzte
+JavaScript-Utility-Toolkit der Welt — aber ihre Typdefinitionen waren katastrophal.
+`_.map(collection, iteratee)` gab `any[]` zurueck. `_.groupBy()` ebenfalls.
+Jeder Rueckgabewert war ein Ratespiel.
+
+2016 begann Boris Yankov das `DefinitelyTyped`-Projekt, das Lodash-Typen zu
+reimplementieren — diesmal mit Generics. Plotzlich wusste der Compiler, dass
+`_.map([1, 2, 3], n => n.toString())` ein `string[]` zurueckgibt. Das war
+eine kleine Revolution: Es bewies, dass Generics nicht "akademisch" sind,
+sondern direkt die Entwicklererfahrung verbessern.
+
+Heute ist das Grundprinzip ueberall: React Hooks, Angular Services, RxJS
+Operators — sie alle benutzen Generic Factories. Du schreibst gerade an den
+Grundlagen davon.
 
 ---
 
@@ -123,9 +142,20 @@ const db = createInstance(Database, "localhost", 5432);
 // db.host -> "localhost", db.port -> 5432
 ```
 
-> **Hintergrund:** Das `{ new (...args: Args): T }` Pattern ist ein
-> "Construct Signature". Es beschreibt alles, was mit `new` aufgerufen werden
-> kann. In JavaScript sind das Klassen und Constructor-Functions.
+> 📖 **Hintergrund: Construct Signatures in TypeScript**
+>
+> Das `{ new (...args: Args): T }` Pattern ist eine sogenannte "Construct
+> Signature". Sie beschreibt alles, was mit `new` aufgerufen werden kann:
+> Klassen und klassische Constructor-Functions. Anders als in Java oder C#,
+> wo Klassen und Interfaces klar getrennt sind, ist TypeScript strukturell —
+> eine Klasse ist "nur" ein Objekt mit einer Construct Signature. Das ermoeglicht
+> dieses Pattern und macht Dependency-Injection-Container (wie in Angular)
+> mit vollem Typsupport moeglich.
+
+> 💭 **Denkfrage:** Eine `createInstance`-Funktion kennt den Typ `T` nur zur
+> Compilezeit. Zur Laufzeit gibt es kein `T`. Wie kann sie trotzdem die
+> richtige Klasse instanziieren? Was passiert wirklich im JavaScript, das
+> entsteht?
 
 ---
 
@@ -163,6 +193,29 @@ const dangerBtn = createButton({ variant: "danger", label: "Delete" });
 
 Das ist das **Partial Factory Pattern**: Die aeussere Funktion fixiert die
 Defaults, die innere nimmt nur die Aenderungen entgegen.
+
+> ⚡ **Angular-Bezug:** Genau dieses Pattern liegt `InjectionToken` mit
+> Default-Werten zugrunde. Wenn du in Angular `new InjectionToken('myToken',
+> { providedIn: 'root', factory: () => defaultValue })` schreibst, ist das
+> eine Generic Factory, die einen typsicheren Token erzeugt. Der Token traegt
+> seinen Typ `T` zur Compilezeit — und Angular loest ihn zur Laufzeit auf.
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function createWithDefaults<T>(defaults: T) {
+>   return (overrides: Partial<T>): T => ({ ...defaults, ...overrides });
+> }
+> interface Theme { primary: string; secondary: string; radius: number }
+> const createTheme = createWithDefaults<Theme>({
+>   primary: "#3b82f6",
+>   secondary: "#64748b",
+>   radius: 4,
+> });
+> const darkTheme = createTheme({ primary: "#1e40af" });
+> // Hover ueber darkTheme — welchen Typ zeigt der Editor?
+> // Versuche: createTheme({ unknown: "x" }) — was sagt TypeScript?
+> ```
+> Was passiert wenn du `Partial<T>` durch `T` ersetzt? Probiere es aus.
 
 ---
 
@@ -249,21 +302,34 @@ const product = registry.create("product");
 // ^ Typ: { title: string; price: number }
 ```
 
----
-
-## Zusammenfassung
-
-| Pattern | Wann verwenden | Vorteil |
-|---------|----------------|---------|
-| `createInstance<T>(data: T)` | Einfaches Kopieren/Wrapping | Inference, Zero-Config |
-| Constructor Factory | Klassen instanziieren | Typ bleibt erhalten |
-| Partial Factory | Objekte mit Defaults | Minimaler Aufrufer-Code |
-| Generic Builder | Schrittweiser Aufbau | Wachsender Typ |
-| Registry | Named Factories | Zentralisierte Erzeugung |
+> ⚡ **React-Bezug:** Das Registry Pattern findest du im React-Oekosystem
+> ueberall. `React.createContext<T>()` ist eine Generic Factory, die einen
+> typsicheren Context-Token erzeugt. `createSlice` in Redux Toolkit registriert
+> typsichere Action-Creator-Factories. Das Muster ist immer dasselbe: ein
+> generischer Schluessels verbindet Registrierung und Aufruf.
 
 ---
 
-> **Pause moeglich!** Du hast jetzt das Fundament fuer Generic Factories.
-> Weiter geht es mit typsicheren Datenstrukturen.
+## Was du gelernt hast
+
+- Generic Factories erhalten den Typ des erzeugten Objekts durch den Typ-Parameter `T`
+- Constructor Signatures (`{ new (): T }`) beschreiben alles, was mit `new` aufgerufen werden kann
+- Das Partial Factory Pattern kombiniert Defaults mit optionalen Overrides
+- Der immutable Builder Pattern erweitert den Typ bei jedem `.set()`-Aufruf
+- Das Registry Pattern verknuepft Factory-Namen typsicher mit ihren Rueckgabetypen
+
+**Kernkonzept:** Eine Generic Factory gibt den Typ des erzeugten Objekts nicht
+auf — sie traegt ihn als Typ-Parameter durch den gesamten Erstellungsprozess
+und liefert ihn am Ende vollstaendig an den Aufrufer zurueck.
+
+> 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen einer Generic
+> Factory und einer gewoehnlichen Funktion mit `any` als Rueckgabetyp? Warum
+> ist das eine nicht ein einfacher Ersatz fuer das andere?
+> **Kernpunkte:** any deaktiviert Typsicherheit komplett | Generic Factory gibt den exakten Typ zurueck | Mit any verliert man Autovervollstaendigung und Fehlerhinweise beim Aufrufer
+
+---
+
+> **Pausenpunkt** — Du hast jetzt das Fundament fuer Generic Factories.
+> Die Muster hier tauchen in jedem grossen TypeScript-Projekt auf.
 >
-> Naechste Sektion: [02 - Generic Collections](./02-generic-collections.md)
+> Weiter geht es mit: [Sektion 02 — Generic Collections](./02-generic-collections.md)

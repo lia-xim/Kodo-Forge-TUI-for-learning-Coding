@@ -17,6 +17,12 @@
 
 ---
 
+> 💭 **Denkfrage:** Du baust eine API-Client-Bibliothek. Ein Aufrufer bekommt eine `fetch()`-Antwort — wie wuerdes du den Rueckgabetyp gestalten, damit der Aufrufer *gezwungen* ist, sowohl Erfolg als auch alle Fehlertypen zu behandeln? Welche Varianten wuerden dich wirklich absichern?
+>
+> **Antwort:** Eine typisierte `ApiResponse<T>`-Union mit expliziten Varianten fuer jeden HTTP-Fehlerbereich (400er, 401/403, 404, 500er) — der Aufrufer kann `response.data` nur nach dem `type === "success"`-Check lesen. try/catch kann er vergessen, aber eine Union-Variante nicht.
+
+---
+
 ## Pattern 1: API Responses
 
 APIs liefern verschiedene Antworten — Erfolg, verschiedene Fehlertypen,
@@ -364,18 +370,74 @@ function handleFileEvent(event: FileEvent) {
 }
 ```
 
+> **Experiment:** Teste den `Extract`-Utility-Type mit einer echten Union:
+>
+> ```typescript
+> type AppEvent =
+>   | { type: "user:login"; userId: string }
+>   | { type: "user:logout"; userId: string }
+>   | { type: "page:view"; path: string }
+>   | { type: "error"; message: string };
+>
+> // Extract zieht eine einzelne Variante heraus:
+> type LoginEvent = Extract<AppEvent, { type: "user:login" }>;
+> // { type: "user:login"; userId: string }
+>
+> // Exclude schliesst Varianten aus:
+> type NonUserEvent = Exclude<AppEvent, { type: `user:${string}` }>;
+> // { type: "page:view"; path: string } | { type: "error"; message: string }
+>
+> // Alle moeglichen type-Werte als Union:
+> type EventType = AppEvent["type"];
+> // "user:login" | "user:logout" | "page:view" | "error"
+>
+> // Schreibe eine Funktion, die nur user:login verarbeitet:
+> function handleLogin(event: Extract<AppEvent, { type: "user:login" }>): void {
+>   console.log(`User ${event.userId} hat sich eingeloggt`);
+>   // event.path ist hier nicht verfuegbar — was passiert wenn du es tippst?
+> }
+> ```
+>
+> Fuelle `AppEvent` mit einer weiteren Variante `{ type: "user:signup"; email: string }`. Welche Stellen im Code werden davon automatisch beeinflusst?
+
 ---
 
-## Zusammenfassung Sektion 5
+**In deinem Angular-Projekt:** NgRx Actions sind der perfekte Ort fuer das Action-Types-Pattern. Statt jeder Action eine separate Interface-Definition zu geben, definierst du eine Union — und der Reducer mit Exhaustive Check stellt sicher, dass du keine Action verpasst:
 
-| Pattern | Anwendungsfall |
-|---------|---------------|
-| **API Responses** | Verschiedene Antworttypen typsicher verarbeiten |
-| **Action Types** | Redux/NgRx Reducer mit exhaustive Checks |
-| **Event Systeme** | Typsichere Publish/Subscribe mit Extract |
-| **Error-Hierarchien** | Differenzierte Fehlerbehandlung nach Kategorie |
-| **Extract/Exclude** | Einzelne Varianten aus der Union extrahieren/ausschliessen |
-| **Tagged Helper** | Generischer Builder fuer kompakte Union-Definitionen |
+```typescript
+// Zentraler Action-Typ als Discriminated Union:
+type ProductAction =
+  | { type: "[Product] Load" }
+  | { type: "[Product] Load Success"; products: Product[] }
+  | { type: "[Product] Load Failure"; error: string }
+  | { type: "[Product] Select"; productId: string }
+  | { type: "[Product] Clear Selection" };
+
+// Typ aller gueltigen Action-type-Strings:
+type ProductActionType = ProductAction["type"];
+// "[Product] Load" | "[Product] Load Success" | ...
+
+// Spezialisierter Handler nur fuer Failure:
+type FailureAction = Extract<ProductAction, { type: "[Product] Load Failure" }>;
+
+function logFailure(action: FailureAction): void {
+  console.error(`Ladefehler: ${action.error}`);
+}
+```
+
+**In React:** `useReducer` nimmt eine `(state, action) => state`-Funktion — genau ein Reducer-Pattern. Definiere deine Action als Discriminated Union und nutze switch/case mit assertNever — identisches Muster zu NgRx, ohne Bibliothek.
+
+---
+
+## Was du gelernt hast
+
+- Das **API Response Pattern** macht alle Fehlertypen explizit sichtbar im Typ — kein verstecktes `catch (e: unknown)` mehr
+- **Action Types** in Redux/NgRx sind Discriminated Unions — der `type`-String ist der Diskriminator, der Reducer nutzt switch/case mit Exhaustive Check
+- **Event Systeme** profitieren von `Extract<Union, { type: T }>` — Handler bekommen automatisch den korrekten Typ fuer ihr Event
+- **Error-Hierarchien** ermoeglichen differenzierte Fehlerbehandlung: Netzwerkfehler, Validierungsfehler und Auth-Fehler haben verschiedene Payloads
+- **Extract und Exclude** sind die Schere fuer Union Types — ziehe genau die Varianten heraus, die du brauchst
+
+**Kernkonzept:** Discriminated Unions sind kein akademisches Konstrukt — sie sind das Rueckgrat von NgRx Actions, Redux Reducers, typsicheren API-Clients und Event-Systemen. Sobald du dieses Muster erkennst, siehst du es ueberall in professionellen TypeScript-Codebasen.
 
 ---
 

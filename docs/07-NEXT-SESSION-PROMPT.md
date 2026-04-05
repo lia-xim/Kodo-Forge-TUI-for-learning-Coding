@@ -16,21 +16,20 @@ Ich arbeite an einer Multi-Kurs-Lernplattform im Terminal (TUI). Das Projekt lie
 5. `docs/03-DIDACTIC-FOUNDATIONS.md` — 12 Lerntheorien mit Studien
 6. `docs/05-FEATURES.md` — Alle 25 Features im Detail
 7. `docs/08-CURRICULUM-PLANS.md` — Alle Kurs-Curricula
-8. `docs/09-DIDACTIC-FORMATS.md` — Alle Uebungsformate
-9. `docs/10-ADAPTIVE-SYSTEM.md` — Geplantes adaptives Tiefensystem
-10. `docs/11-FRAMEWORK-DIDACTICS.md` — Framework-spezifische Lernmethoden
+8. `docs/09-DIDACTIC-FORMATS.md` — Alle Uebungsformate inkl. neues Quiz-Format-System
 
 **Technische Referenz:**
-11. `platform/platform.json` — Kurs-Registry
-12. `typescript/CURRICULUM.md` — TypeScript-Lernpfad
-13. `typescript/02-primitive-types/` — Referenz-Lektion (beste Qualitaet, als Vorlage verwenden!)
+9. `platform/platform.json` — Kurs-Registry
+10. `typescript/CURRICULUM.md` — TypeScript-Lernpfad
+11. `typescript/02-primitive-types/` — Referenz-Lektion (beste Qualitaet, als Vorlage verwenden!)
 
 ## Aktueller Stand (2026-04-05)
 
-- **TypeScript:** 25 von 40 Lektionen fertig (Phase 1-2 komplett + L21-L25, ~935+ Dateien)
+- **TypeScript:** **40 von 40 Lektionen fertig** (alle 4 Phasen komplett)
 - **Angular/React/Next.js:** Nur Curricula, keine Lektionen
-- **TUI:** 39 Module, 15.385 Zeilen, 25 Features, modularisiert
+- **TUI:** 39 Module, ~15.000+ Zeilen, 25 Features, modularisiert
 - **Plattform:** 4 Kurse registriert, Lock-System, dynamische Statistiken
+- **Quiz-System:** 4 Fragetypen (MC, short-answer, predict-output, explain-why) vollstaendig im TUI integriert
 
 ## Lern-Philosophie (WICHTIG — vor allem anderen lesen!)
 
@@ -38,35 +37,69 @@ Der Lernende ist ein **theoretischer Lerner** der viel in kurzer Zeit aufnehmen 
 
 - **Kern = Lesen + Quizzes.** Reichhaltige Sektionen und starke Quiz-Fragen sind das Hauptprodukt.
 - **Kein Wechsel zu IDE/Editor.** Code-Beispiele gehoeren inline in die Sektionen, NICHT als separate Dateien.
-- **Keine Aufgaben-Pflicht.** Optionale Formate (Misconceptions, Completion, Debugging etc.) nur erstellen wenn sie fuer das Thema echten Mehrwert bringen — nicht als Checkliste abarbeiten.
+- **Keine Aufgaben-Pflicht.** Optionale Formate (Misconceptions, Completion, Debugging etc.) nur erstellen wenn sie fuer das Thema echten Mehrwert bringen.
 - **Eigenverantwortlich.** Der Lernende entscheidet selbst wann er tiefer eintauchen will.
 - **80% der Arbeit** in grossartige Sektionen und Quizzes investieren.
 
 ## Was als naechstes zu tun ist (Prioritaetsreihenfolge)
 
-### 1. TypeScript Phase 3 fertigstellen (L26-L30)
+### KRITISCH: L17, L18, L19 komplett neu schreiben
 
-Lektionen:
-- L26: Advanced Patterns (Builder, State Machine, Phantom Types)
-- L27: Declaration Merging (Module augmentation, global)
-- L28: Decorators (Legacy & Stage 3)
-- L29: tsconfig Deep Dive (Alle compiler flags)
-- L30: Review Challenge Phase 3
+Diese 3 Lektionen haben eine schwere Qualitaets-Regression. Audit-Ergebnis: Note C.
+- Sektionen nur **83-127 Zeilen** statt Ziel 280-320
+- Fast **alle didaktischen Elemente fehlen** (kein Geschichte, kein Self-Explanation, kein Denkfrage, kein Experiment, kein annotierter Code, kein Framework-Bezug, kein "Was du gelernt hast")
+- Sektionen lesen sich wie Referenzkarten/Cheatsheets, nicht wie Lernsektionen
 
-**Qualitaets-Checkliste — Kern-Flow (PFLICHT):**
+**Vorgehen:** Max. 3 Lektionen pro Agent-Run. Jede Sektion MUSS 280-320 Zeilen haben. Qualitaets-Checkliste unten beachten.
 
-Jede Sektion MUSS haben (siehe `docs/04-QUALITY-PROCESS.md` fuer Details und Beispiele):
+**L17: Conditional Types** (`typescript/17-conditional-types/sections/`)
+**L18: Template Literal Types** (`typescript/18-template-literal-types/sections/`)
+**L19: Modules & Declarations** (`typescript/19-modules-und-declarations/sections/`)
+
+### HOCH: L12, L13, L14 aufwerten
+
+Audit-Ergebnis: B bis B-. Hauptprobleme:
+- **L12 Discriminated Unions:** Kein Experiment, kein Framework-Bezug, kein "Was du gelernt hast" (nur Tabelle), keine Denkfrage
+- **L13 Generics Basics:** S01 fehlen Geschichte, Experiment, Framework, Denkfrage, "Was du gelernt hast"
+- **L14 Generic Patterns:** Keine Geschichten, keine Experimente, keine Framework-Bezuege, keine Denkfragen
+
+Ansatz: Sektionen ergaenzen (nicht komplett neu schreiben). Fehlende Elemente hinzufuegen.
+
+### HOCH: L35-L39 Sektionen verlaengern
+
+Audit-Ergebnis: A- bis B. Alle didaktischen Elemente vorhanden, aber Sektionen zu kurz:
+- L35: 237-258 Zeilen
+- L36: 266-273 Zeilen
+- L37: 226-245 Zeilen (deutlich unter Ziel)
+- L38: 238-275 Zeilen
+- L39: 214-232 Zeilen (kuerzeste im ganzen Kurs!)
+
+### MITTEL: L01-L09 extern→inline Experiment-Referenzen
+
+Mehrere fruehe Lektionen haben Experiment-Boxen die auf `examples/`-Dateien verweisen.
+Das widerspricht der neuen Philosophie (Code inline, kein Datei-Wechsel).
+Betroffen: L02, L03, L06, L07, L09 (und teils L05, L11, L12, L13, L15, L16, L25)
+
+### NIEDRIG: Angular-Kurs starten
+
+Wenn TypeScript-Qualitaets-Fixes abgeschlossen: Angular-Kurs beginnen (40 Lektionen).
+Curriculum in `angular/CURRICULUM.md`. Lernende kennt Angular beruflich — hoeheres Startniveau.
+
+## Qualitaets-Checkliste (PFLICHT fuer neue/ueberarbeitete Sektionen)
+
+### Jede Sektion MUSS haben:
 - [ ] "Was du hier lernst" (3-4 konkrete Bullet Points mit Lernzielen)
 - [ ] Mindestens 1 Hintergrundgeschichte oder Feature Origin Story
 - [ ] Mindestens 1 Self-Explanation Prompt ("Erklaere dir selbst: ..." mit Kernpunkten)
 - [ ] Mindestens 1 Denkfrage ("Denkfrage: ..." mit Nachdenk-Pause)
-- [ ] Mindestens 1 Experiment-Box — Code INLINE zeigen, NICHT auf externe Dateien verweisen!
+- [ ] Mindestens 1 Experiment-Box — Code **INLINE** zeigen, NICHT auf externe Dateien verweisen!
 - [ ] Mindestens 1 annotierter Code-Block (```typescript annotated)
 - [ ] Mindestens 1 Framework-Bezug ("In deinem Angular-Projekt..." / "In React...")
-- [ ] "Was du gelernt hast" + Kernkonzept am Ende
+- [ ] "Was du gelernt hast" + Kernkonzept am Ende (Bullets, kein Tabellen-Ersatz!)
 - [ ] Pausenpunkt + Link zur naechsten Sektion
+- [ ] **Sektionslaenge: 280-320 Zeilen** (Kernregel!)
 
-Jede Lektion MUSS haben:
+### Jede Lektion MUSS haben:
 - [ ] 5-7 Sektionen (je ~10 Min, 280-320 Zeilen) — **DAS ist das Hauptprodukt!**
 - [ ] 15+ Quiz-Fragen im **Format-Mix** (NICHT nur Multiple Choice!):
   - 6-8 Multiple Choice (correct-Indizes gleichmaessig, Antwortlaengen gleichmaessig!)
@@ -83,34 +116,8 @@ Jede Lektion MUSS haben:
 - ~~examples/*.ts~~ — Code inline in Sektionen
 - ~~hints.json~~ — nicht noetig
 
-**Optional (nur wenn didaktisch sinnvoll fuer das spezifische Thema):**
-- misconceptions.ts, completion-problems.ts, debugging-data.ts, parsons-data.ts, tracing-data.ts, transfer-data.ts
-
-**Referenz:** Lies `typescript/02-primitive-types/sections/01-das-typsystem-ueberblick.md` als Qualitaets-Massstab. Deine Sektionen muessen MINDESTENS so reichhaltig sein (aber mit inline Code statt Datei-Verweisen).
-
-### 2. Adaptives Tiefensystem implementieren
-
-Design in `docs/10-ADAPTIVE-SYSTEM.md`. Kernidee:
-- Markdown-Marker: `<!-- section:summary -->`, `<!-- depth:standard -->`, `<!-- depth:vollstaendig -->`
-- `filterByDepth()` Funktion in `markdown-renderer.ts`
-- Pre-Test auf Lektionsebene statt Sektionsebene (effizienter)
-- Integration in `tui-section-reader.ts`
-
-### 3. Abwechslungsformate in Sektionen einbauen
-
-Formate die direkt in die Sektions-Markdown eingebettet werden (Details in `docs/09-DIDACTIC-FORMATS.md`):
-- POE-Bloecke (Predict-Observe-Explain)
-- Kontrastive Paare
-- Feature Origin Stories
-- Finde-den-Bug inline
-- "In deinem Projekt"-Bezuege
-- "Callback to Earlier"-Vernetzung
-- Mehr Mermaid-Diagramme
-- Aha-Moment-Demonstrationen
-
-### 4. Nach TypeScript Phase 3+4: Framework-Kurse starten
-
-Angular (40L), React (40L), Next.js (20M). Curricula in den jeweiligen Ordnern.
+**Referenz:** `typescript/02-primitive-types/sections/01-das-typsystem-ueberblick.md` als Qualitaets-Massstab.
+Deine Sektionen muessen MINDESTENS so reichhaltig sein (aber mit inline Code statt Datei-Verweisen).
 
 ## Wichtige Regeln
 
@@ -126,12 +133,13 @@ Angular (40L), React (40L), Next.js (20M). Curricula in den jeweiligen Ordnern.
 
 ## Bekannte Probleme und Warnungen
 
-1. **Qualitaets-Regression:** Ab L13 sinkt die Qualitaet. IMMER gegen L02 als Referenz pruefen.
-2. **Quiz-Bias (Index):** correct-Indizes MUESSEN gleichmaessig verteilt sein (4/4/4/3). In L06-L16 waren 93% aller Antworten `correct: 1` — gefixt, aber bei neuen Lektionen darauf achten!
-3. **Quiz-Bias (Laenge):** Die laengste/komplexeste Antwort darf NICHT systematisch die richtige sein. Antwortlaengen gleichmaessig verteilen!
-4. **Pretest-Bias:** Gleiche Bias-Gefahr bei pretest-data.ts — noch nicht systematisch geprueft.
-5. **TS 5.5 Inferred Type Predicates:** `arr.filter(x => x !== null)` gibt seit TS 5.5 `T[]` statt `(T | null)[]` zurueck.
-6. **Sektionen-Laenge:** Sektionen MUESSEN 280-320 Zeilen haben, nicht 150. Kuerzere Sektionen = weniger Tiefe = Qualitaetsregression.
-7. **Circular Dependencies:** `tui-state.ts` darf NICHTS von Screen-Modulen importieren! Nur umgekehrt.
+1. **L17/L18/L19 kritisch:** Sektionen 83-127 Zeilen, alle didaktischen Elemente fehlen. Komplett-Rewrite noetig!
+2. **L12-L14 lueckenhaft:** Mehrere fehlende Qualitaetselemente (Experimente, Framework, Denkfragen, "Was du gelernt hast")
+3. **L35-L39 zu kurz:** 214-258 Zeilen statt 280-320 Ziel. Sektionen ausbauen.
+4. **Quiz-Bias (Index):** correct-Indizes MUESSEN gleichmaessig verteilt sein (4/4/4/3).
+5. **Quiz-Bias (Laenge):** Die laengste/komplexeste Antwort darf NICHT systematisch die richtige sein.
+6. **Pretest-Bias:** Gleiche Bias-Gefahr bei pretest-data.ts — noch nicht systematisch geprueft.
+7. **TS 5.5 Inferred Type Predicates:** `arr.filter(x => x !== null)` gibt seit TS 5.5 `T[]` statt `(T | null)[]` zurueck.
+8. **Circular Dependencies:** `tui-state.ts` darf NICHTS von Screen-Modulen importieren! Nur umgekehrt.
 
 ---

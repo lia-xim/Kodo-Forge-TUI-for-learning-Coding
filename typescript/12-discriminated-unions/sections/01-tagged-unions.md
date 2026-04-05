@@ -162,6 +162,12 @@ TypeScript nutzt den Literal-Wert als **Entscheidungskriterium**.
 
 ---
 
+> 💭 **Denkfrage:** Stell dir vor, du hast eine Chat-App mit Textnachrichten, Bildnachrichten und Sprachnachrichten. Wie viele Properties brauchst du, um alle drei Typen mit `in`-Operator zu unterscheiden — und wie viele mit einer Discriminated Union?
+>
+> **Antwort:** Mit `in` pruefst du auf spezifische Properties wie `imageUrl` oder `audioDuration` — fragil, weil sich Properties jederzeit aendern koennen. Mit einer Discriminated Union genuegt **ein** Tag-Property `kind: "text" | "image" | "audio"` — stabil und selbstdokumentierend.
+
+---
+
 ## Welche Werte sind als Diskriminator gueltig?
 
 Der Diskriminator muss ein **Literal Type** sein. Das heisst:
@@ -212,17 +218,62 @@ function handle(res: ApiResponse) {
 }
 ```
 
+> **Experiment:** Probiere folgendes direkt im TypeScript Playground (typescriptlang.org/play) aus:
+>
+> ```typescript
+> type TextMessage = { kind: "text"; content: string };
+> type ImageMessage = { kind: "image"; imageUrl: string; width: number };
+> type Message = TextMessage | ImageMessage;
+>
+> function show(msg: Message) {
+>   if (msg.kind === "text") {
+>     console.log(msg.content);
+>     // Was passiert wenn du hier msg.imageUrl tippst?
+>   }
+> }
+> ```
+>
+> Aendere `kind: "text"` zu `kind: string` in `TextMessage`. Was passiert mit dem Narrowing? Warum?
+
 ---
 
-## Zusammenfassung Sektion 1
+**In deinem Angular-Projekt:** NgRx Actions sind nichts anderes als Discriminated Unions — der `type`-String ist der Diskriminator. Du hast das schon die ganze Zeit benutzt, ohne es so zu nennen:
 
-| Konzept | Erklaerung |
-|---------|-----------|
-| **Discriminated Union** | Union Type mit einem gemeinsamen Tag-Property |
-| **Diskriminator/Tag** | Property mit unterschiedlichen Literal-Werten pro Typ |
-| **Drei Zutaten** | (1) Gemeinsames Tag, (2) Union Type, (3) Narrowing |
-| **Gueltige Tags** | String/Number/Boolean Literals — NICHT string/number/boolean |
-| **Best Practice** | String Literals als Tags verwenden |
+```typescript
+// NgRx Actions — eine Discriminated Union:
+type UserAction =
+  | { type: "[User] Load Users" }
+  | { type: "[User] Load Users Success"; users: User[] }
+  | { type: "[User] Load Users Failure"; error: string };
+
+// Der Reducer nutzt switch/case auf den Diskriminator:
+function userReducer(state: UserState, action: UserAction): UserState {
+  switch (action.type) {
+    case "[User] Load Users":
+      return { ...state, loading: true };
+    case "[User] Load Users Success":
+      // action.users ist hier sicher verfuegbar!
+      return { ...state, loading: false, users: action.users };
+    case "[User] Load Users Failure":
+      // action.error ist hier sicher verfuegbar!
+      return { ...state, loading: false, error: action.error };
+  }
+}
+```
+
+NgRx hat das Muster popularisiert — jetzt verstehst du die Typentheorie dahinter.
+
+---
+
+## Was du gelernt hast
+
+- **Discriminated Unions** brauchen drei Zutaten: ein gemeinsames Tag-Property, eine Union Type-Definition, und Narrowing durch den Diskriminator
+- Der **Diskriminator** muss ein Literal Type sein (String, Number oder Boolean) — nicht der breite `string`-Typ
+- TypeScript narrowt **automatisch** den Typ, wenn du den Diskriminator pruefst — das ist Control Flow Analysis in Aktion
+- **String Literals** als Tags sind Best Practice: lesbar, eindeutig, selbstdokumentierend
+- Du kannst **mehrere Diskriminatoren** kombinieren fuer noch feinere Unterscheidung
+
+**Kernkonzept:** Eine Discriminated Union macht den Typ einer Variante explizit im Wert sichtbar — der Diskriminator ist die Bruecke zwischen Laufzeit-Pruefung und Compilezeit-Sicherheit.
 
 ---
 

@@ -24,6 +24,22 @@ Basisfall, rekursiver Schritt, Terminierung. Aber es gibt Unterschiede:
 1. **Kein Stack im traditionellen Sinn** — der Compiler baut einen Typ-Baum
 2. **Rekursionslimit bei ~1000** (seit TS 4.5 fuer Tail-Recursive Types, vorher ~50)
 3. **Keine Fehlermeldungen** bei Endlos-Rekursion — nur "Type instantiation is excessively deep"
+4. **Kein Debugging** — du kannst keinen Breakpoint setzen; nur Hover-Types im Editor
+
+Jede rekursive Typ-Implementation folgt diesem Grundgeruest:
+
+```typescript annotated
+// Template fuer rekursive Typen:
+type MyRecursive<Input, Acc = DefaultAcc> =
+  /* Basisfall: */ Input extends BaseCase
+    ? Acc            // Abbruchbedingung erreicht → Ergebnis
+    /* Rekursiver Schritt: */
+    : MyRecursive<
+        ReducedInput,   // Input verkleinern
+        UpdatedAcc      // Accumulator aktualisieren
+      >;
+// ^ Tail-recursive wenn MyRecursive das letzte ist (kein Wrapper drum herum)
+```
 
 > 📖 **Hintergrund: TypeScript's Rekursionsrevolution (TS 4.5)**
 >
@@ -36,6 +52,12 @@ Basisfall, rekursiver Schritt, Terminierung. Aber es gibt Unterschiede:
 > Erlang. Dadurch stieg die Tiefe auf ca. 1000. Der Accumulator-
 > Pattern, den du bei `BuildTuple` gesehen hast, ist genau diese
 > Technik.
+>
+> Vor TS 4.5 mussten Library-Autoren mit `Lookup`-Arrays arbeiten —
+> vordefinierte Tuples aller moeglichen Laengen bis 50, dann mit
+> Conditional Type den richtigen auswaehlen. Das war unpraktisch.
+> Die Tail-Call-Optimierung war eine der groessten Verbesserungen
+> fuer Type-Level-Programmierung in der Geschichte von TypeScript.
 
 ---
 
@@ -106,6 +128,15 @@ type F2 = DeepFlatten<[[["deep"]], "flat"]>;
 // ^ ["deep", "flat"]
 ```
 
+> 🧠 **Erklaere dir selbst:** `DeepFlatten` ist NICHT tail-recursive —
+> beide Zweige spreaden das Ergebnis: `[...DeepFlatten<First>, ...]`.
+> Was bedeutet das fuer die Rekursionstiefe? Wann wuerde das
+> ein Problem werden?
+> **Kernpunkte:** Nicht-TCO = Limit ~50 | Bei sehr tief
+> verschachtelten Arrays schlimmstenfalls Compiler-Fehler |
+> Fuer echte Produktions-Anwendungen: Tiefe begrenzen oder
+> Accumulator-Pattern verwenden
+
 ---
 
 ## Challenge 3: PathOf — Alle Pfade eines Objekts
@@ -171,13 +202,32 @@ const max = get(config, "db.pool.max");    // number
 // get(config, "server.foo");              // FEHLER: nicht in PathOf
 ```
 
-> ⚡ **Framework-Bezug:** Angular's `FormGroup.get('address.street')`
+> ⚡ **Framework-Bezug Angular:** Angular's `FormGroup.get('address.street')`
 > verwendet ein aehnliches Pfad-Pattern. Leider sind Angular's
-> Formulare nicht so tief typisiert — `get()` gibt `AbstractControl
-> | null` zurueck statt den spezifischen Typ. Mit dem PathOf-Pattern
-> koenntest du eine typsichere Alternative bauen. React Hook Form
-> nutzt tatsaechlich ein PathOf-aehnliches Pattern fuer
-> `register('address.street')`.
+> Formulare nicht so tief typisiert — `get()` gibt `AbstractControl | null`
+> zurueck statt den spezifischen Typ. Mit dem PathOf-Pattern koenntest
+> du eine typsichere Wrapper-Funktion bauen:
+>
+> ```typescript
+> // Hypothetische typsichere FormGroup-Hilfsfunktion:
+> function getControl<
+>   F extends Record<string, AbstractControl>,
+>   P extends PathOf<F>
+> >(form: FormGroup<F>, path: P): GetByPath<F, P> | null {
+>   return form.get(path) as any;
+> }
+>
+> // Dann statt:
+> const ctrl = this.form.get('user.address.street');  // AbstractControl | null
+> // So:
+> const ctrl = getControl(this.form, 'user.address.street');  // vollstaendig typisiert
+> ```
+
+> ⚡ **Framework-Bezug React Hook Form:** Das Library nutzt tatsaechlich
+> ein PathOf-aehnliches Pattern fuer `register('address.street')` und
+> `useWatch({ name: 'address.street' })`. Wenn du einen React Hook Form
+> `useForm<MyFormSchema>()` definierst, sind alle Pfad-Strings
+> typisiert — Tippfehler sind Compile-Fehler, nicht Laufzeitprobleme.
 
 > 💭 **Denkfrage:** PathOf erzeugt bei tief verschachtelten Objekten
 > sehr grosse Union Types. Ab welcher Tiefe wird das zum Problem
@@ -243,6 +293,43 @@ type SP = SimplePick<AppConfig, "server.host">;
 
 ---
 
+## Rekursion diagnostizieren und debuggen
+
+Da du keinen Debugger fuer Type-Level-Code hast, brauchst du
+andere Strategien um Probleme zu finden:
+
+```typescript
+// Technik 1: Zwischentypen anlegen und hovern
+type Step1 = BuildTuple<5>;
+//   ^ Hover: [unknown, unknown, unknown, unknown, unknown]  ✓
+
+type Step2 = [...BuildTuple<3>, ...BuildTuple<4>];
+//   ^ Hover: [unknown, unknown, unknown, unknown, unknown, unknown, unknown]  ✓
+
+type FinalResult = Add<3, 4>;
+//   ^ Hover: 7  ✓
+
+// Technik 2: Mit einfachen Typen testen bevor komplexe Eingaben
+type Test1 = PathOf<{ a: string }>;
+//   ^ Hover: "a"  ✓ (einfacher Fall zuerst)
+
+type Test2 = PathOf<{ a: { b: string } }>;
+//   ^ Hover: "a" | "a.b"  ✓ (eine Ebene tiefer)
+
+// Wenn Test1 falsch ist, liegt der Bug in der Basis-Logik.
+// Wenn Test2 falsch ist, liegt der Bug in der Rekursion.
+
+// Technik 3: never als "Haltepunkt" nutzen
+type DebugPathOf<T> =
+  T extends object
+    ? keyof T extends string  // Was sind die Keys?
+      ? keyof T               // Pause hier: sieh was rauskommt
+      : never
+    : never;
+```
+
+---
+
 ## Was du gelernt hast
 
 - **DeepReadonly, DeepFlatten** — rekursive Typen die alle Ebenen verarbeiten
@@ -250,6 +337,7 @@ type SP = SimplePick<AppConfig, "server.host">;
 - **GetByPath** ermittelt den Typ an einem bestimmten Pfad — Grundlage fuer `get(obj, "a.b.c")`
 - **Accumulator-Pattern** fuer Tail-Call-Optimierung auf Type-Level (Rekursionstiefe ~1000)
 - Tiefe Rekursion hat Grenzen — in der Praxis begrenzt man die Tiefe explizit
+- **Debugging-Strategie**: Zwischentypen anlegen, einfache Eingaben zuerst testen, `never` als Haltepunkt
 
 > 🧠 **Erklaere dir selbst:** Warum ist der Accumulator-Pattern
 > nicht nur fuer Performance wichtig, sondern auch fuer die
@@ -257,9 +345,11 @@ type SP = SimplePick<AppConfig, "server.host">;
 > Rekursionslimit stoesst?
 > **Kernpunkte:** Ohne TCO bricht der Compiler bei ~50 ab |
 > Mit Accumulator sind ~1000 moeglich | Bei Abbruch: "Type
-> instantiation is excessively deep" — der Typ wird `any`
+> instantiation is excessively deep" — der Typ wird zu `any`
+> degradiert | Das ist gefaehrlich weil keine Fehlermeldung
+> kommt — der Code kompiliert, aber mit falschen Typen
 
-**Kernkonzept zum Merken:** Rekursive Typen sind das Aequivalent zu Schleifen. Der Accumulator-Pattern ist das Aequivalent zu tail-call-optimierten Funktionen. Beides zusammen ermoeglicht tiefe Typ-Berechnungen.
+**Kernkonzept zum Merken:** Rekursive Typen sind das Aequivalent zu Schleifen. Der Accumulator-Pattern ist das Aequivalent zu tail-call-optimierten Funktionen. Beides zusammen ermoeglicht tiefe Typ-Berechnungen. Und Zwischentypen sind dein einziges Debugging-Werkzeug — nutze sie grosszuegig.
 
 ---
 

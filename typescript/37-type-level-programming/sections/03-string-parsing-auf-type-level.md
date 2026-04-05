@@ -23,6 +23,24 @@ manipulieren koennen. Jetzt gehen wir weiter: Wir **parsen** Strings.
 Das heisst, wir zerlegen einen String in seine Bestandteile — alles
 zur Compilezeit.
 
+Wenn du an einem Backend-Projekt arbeitest, hast du bestimmt schon
+Code geschrieben wie:
+
+```typescript
+// Ohne Type-Level-Parsing:
+router.get('/users/:id', (req, res) => {
+  const id = req.params.id;  // string — aber TypeScript weiss nicht ob "id" existiert
+});
+
+// Der Entwickler muss wissen welche Parameter vorhanden sind.
+// Tippfehler? → Laufzeitfehler. Kein Autocomplete. Kein Compile-Fehler.
+```
+
+Type-Level-String-Parsing loest genau dieses Problem: Der Pfad-String
+`"/users/:id"` wird zur Compilezeit analysiert und daraus wird
+automatisch `{ id: string }` abgeleitet. Der String **beschreibt**
+den Typ.
+
 > 📖 **Hintergrund: Template Literal Types — die unterschaetzte Revolution**
 >
 > Template Literal Types wurden in TypeScript 4.1 (November 2020)
@@ -31,8 +49,14 @@ zur Compilezeit.
 > Sie machen Strings auf Type-Level **strukturiert**. Vorher war
 > `"GET /users/:id"` einfach ein `string`. Jetzt kann TypeScript
 > `:id` extrahieren und daraus `{ id: string }` ableiten. Das ist
-> die Grundlage fuer typsichere Router in Express, Next.js und
-> tRPC.
+> die Grundlage fuer typsichere Router in Express, Next.js und tRPC.
+>
+> Der Durchbruch kam mit **tRPC** (2021, Alex Johansson): Das Framework
+> nutzt Template Literal Types um Prozedur-Namen wie `"user.getById"`
+> zur Compilezeit zu parsen — der Dot-Trenner wird extrahiert, der
+> Namespace `"user"` und der Name `"getById"` werden getrennt.
+> Dadurch sind alle tRPC-Aufrufe vollstaendig typsicher ohne
+> Code-Generierung.
 
 ### Die Grundbausteine
 
@@ -85,6 +109,22 @@ type R2 = ReplaceAll<"a-b-c-d", "-", "_">;
 // ^ "a_b_c_d"
 ```
 
+### Join: Strings zusammenfuegen
+
+```typescript annotated
+// Join: Array von Strings mit Trennzeichen verbinden
+type Join<Parts extends string[], Sep extends string> =
+  Parts extends [infer First extends string, ...infer Rest extends string[]]
+    ? Rest extends []
+      ? First                          // Letztes Element: kein Separator
+      : `${First}${Sep}${Join<Rest, Sep>}`  // Separator + Rest rekursiv
+    : "";                              // Leeres Array → leerer String
+
+type J1 = Join<["users", "posts", "comments"], "/">;  // "users/posts/comments"
+type J2 = Join<["a", "b", "c"], "-">;                  // "a-b-c"
+type J3 = Join<["hello"], " ">;                        // "hello" (kein Sep noetig)
+```
+
 ### Trim: Leerzeichen entfernen
 
 ```typescript annotated
@@ -103,7 +143,15 @@ type TrimRight<S extends string> =
 // Kombiniert:
 type Trim<S extends string> = TrimLeft<TrimRight<S>>;
 
-type T1 = Trim<"  hello  ">;  // "hello"
+type T1 = Trim<"  hello  ">;           // "hello"
+type T2 = Trim<"   spaces   ">;        // "spaces"
+type T3 = Trim<"no-spaces">;           // "no-spaces" (unveraendert)
+
+// Praxis: CSV-Parsing mit Trim
+type ParseCSVField<S extends string> = Trim<S>;
+type CSVFields = Split<"  Alice  ,  Bob  ,  Charlie  ", ",">;
+// ^ ["  Alice  ", "  Bob  ", "  Charlie  "]
+// Dann: { [K in CSVFields[number]]: ParseCSVField<K> }
 ```
 
 > 🧠 **Erklaere dir selbst:** Warum muss `TrimLeft` rekursiv sein?
@@ -165,12 +213,40 @@ createRoute("/users/:userId/posts/:postId", (params) => {
 });
 ```
 
-> ⚡ **Framework-Bezug:** Genau dieses Pattern nutzt Next.js fuer
-> File-System-basiertes Routing: `pages/users/[id].tsx` extrahiert
-> `{ id: string }`. Angular's Router nutzt einen aehnlichen Ansatz
-> mit `ActivatedRoute.params`. Der Unterschied: Mit Type-Level
-> Parsing wird der Typ automatisch aus dem Pfad-String abgeleitet —
-> keine manuelle Interface-Definition noetig.
+> ⚡ **Framework-Bezug Next.js:** Das App Router-System von Next.js
+> verwendet genau dieses Pattern. Eine Datei `app/users/[id]/page.tsx`
+> erzeugt automatisch den Typ `{ params: { id: string } }`:
+>
+> ```typescript
+> // Next.js App Router — generiert automatisch durch das Framework:
+> interface PageProps {
+>   params: ExtractParams<"/users/[id]">;  // { id: string }
+>   // Intern nutzt Next.js dieselbe Logik (mit "[]" statt ":")
+> }
+>
+> export default function UserPage({ params }: PageProps) {
+>   params.id;  // string — typsicher und mit Autocomplete!
+> }
+> ```
+
+> ⚡ **Framework-Bezug Angular:** Angular's Router hat `ActivatedRoute.params`
+> als `Observable<ParamMap>`. Das Problem: `paramMap.get('userId')` gibt
+> `string | null` zurueck — ohne Compiler-Garantie dass `userId` im
+> Pfad ueberhaupt definiert ist. Mit Type-Level-Parsing koenntest du
+> eine typsichere Alternative bauen:
+>
+> ```typescript
+> // Hypothetisch — wie es aussehen koennte:
+> type AngularRoute<Path extends string> = {
+>   params: ExtractParams<Path>;
+> };
+>
+> // Dann im Komponenten-Code:
+> // this.route.snapshot.params // wuerde { userId: string } sein, nicht ParamMap
+> ```
+>
+> Der Unterschied: Mit Type-Level-Parsing wird der Typ automatisch aus
+> dem Pfad-String abgeleitet — keine manuelle Interface-Definition noetig.
 
 > 💭 **Denkfrage:** Was passiert wenn ein URL-Pfad optionale Parameter
 > hat, z.B. `/users/:id?`? Wie wuerdest du das auf Type-Level
@@ -219,22 +295,57 @@ type Query = ParseQuery<"name=Max&age=30&city=Berlin">;
 
 ---
 
+## Fallstricke beim String-Parsing
+
+Bevor du diese Techniken einsetzt, ein wichtiger Hinweis zu Grenzen:
+
+```typescript
+// PROBLEM 1: Distributivitaet bei Unions
+type TestSplit = Split<"a/b" | "c/d", "/">;
+// ^ ["a", "b"] | ["c", "d"]  — Gut, funktioniert!
+
+// PROBLEM 2: Leere Strings
+type EmptySplit = Split<"", "/">;
+// ^ [""]  — Nicht [], weil der leere String noch ein Element ist
+
+// PROBLEM 3: Trennzeichen am Anfang/Ende
+type SlashSplit = Split<"/users/", "/">;
+// ^ ["", "users", ""]  — Leere Strings an Enden!
+
+// Loesung: FilterEmpty kombinieren
+type FilterEmpty<T extends string[]> = {
+  [K in keyof T]: T[K] extends "" ? never : T[K]
+}[number];
+
+// PROBLEM 4: Verschachtelte Parameter
+type Weird = ExtractParams<"/:a/:a">;
+// ^ { a: string } — Duplikat wird ueberschrieben, kein Fehler!
+```
+
+Diese Faelle sind der Grund, warum Production-Libraries wie `path-to-regexp`
+zusaetzliche Validierungslogik haben. Type-Level-Parsing deckt den
+"happy path" ab — Kantenfall-Handling gehoert zur Laufzeit.
+
+---
+
 ## Was du gelernt hast
 
 - **Template Literal Types + `infer`** ermoeglichen String-Parsing zur Compilezeit
-- **Split, Replace, Trim** — klassische String-Operationen als reine Typ-Operationen
+- **Split, Join, Replace, Trim** — klassische String-Operationen als reine Typ-Operationen
 - **URL-Path-Parser**: Extrahiert Parameter-Namen aus Pfaden und erzeugt typisierte Objekte
 - **Query-String-Parser**: Zerlegt Key-Value-Paare in ein typisiertes Objekt
-- Dieses Pattern ist die Grundlage fuer typsichere Router und API-Definitionen
+- Grenzen: Leere Strings, Duplikate und Kantenfall-Handling brauchen zusaetzliche Typen oder Laufzeit-Validierung
+- Dieses Pattern ist die Grundlage fuer typsichere Router in Next.js, tRPC und Express
 
 > 🧠 **Erklaere dir selbst:** Warum ist String-Parsing auf Type-Level
 > so viel wertvoller als ein generisches `Record<string, string>` fuer
 > Route-Parameter? Was gewinnt der Entwickler konkret?
 > **Kernpunkte:** Autocomplete fuer Parameter-Namen | Compile-Fehler
 > bei Tippfehlern | Kein manuelles Typ-Mapping noetig | Typ und
-> Definition sind immer synchron
+> Definition sind immer synchron | Ein Refactoring des Pfad-Strings
+> aktualisiert automatisch alle abhaengigen Typen
 
-**Kernkonzept zum Merken:** String-Parsing auf Type-Level verwandelt unstrukturierte Strings in strukturierte Typen. Ein Pfad-String wie `"/users/:id"` wird zu `{ id: string }` — automatisch, sicher und ohne Runtime-Overhead.
+**Kernkonzept zum Merken:** String-Parsing auf Type-Level verwandelt unstrukturierte Strings in strukturierte Typen. Ein Pfad-String wie `"/users/:id"` wird zu `{ id: string }` — automatisch, sicher und ohne Runtime-Overhead. Der String ist die einzige Quelle der Wahrheit.
 
 ---
 

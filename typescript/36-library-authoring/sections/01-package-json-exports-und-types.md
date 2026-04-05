@@ -33,6 +33,14 @@
 > erweiterares System das ALLE Anwendungsfaelle abdeckt. Heute ist
 > `exports` der empfohlene Weg — und TypeScript 4.7+ versteht es.
 
+Stell dir vor, du bist Verleger eines Fachbuches. Die package.json ist
+dein Buchruecken — sie sagt Bibliotheken (Tools) und Lesern (Konsumenten)
+exakt was sie erwarten koennen: Welche Kapitel gibt es? Welche Sprache
+ist verfuegbar? Fuer welches Lesegeraet (Browser, Node.js) ist das Buch
+gedacht? Ein unklarer Buchruecken bedeutet, dass niemand das Buch findet.
+Eine schlecht konfigurierte package.json bedeutet, dass niemand deine
+Library korrekt importieren kann.
+
 Als Library-Autor ist die package.json deine **Schnittstelle zur Welt**.
 Sie bestimmt, was Konsumenten importieren koennen, welche Dateien sie
 bekommen, und wie TypeScript die Typen findet.
@@ -160,6 +168,25 @@ Fuer maximale Kompatibilitaet brauchst du oft beides:
 > und `@angular/common/testing` als separate Entrypoints zu definieren.
 > Das ermoeglicht Tree-Shaking: Wenn du nur `@angular/common/http` importierst,
 > wird der Rest von `@angular/common` nicht in dein Bundle aufgenommen.
+>
+> In deinem eigenen Angular-Workspace kannst du dasselbe Muster einsetzen.
+> Wenn du eine Shared-Library mit `ng generate library my-lib` erzeugst,
+> kannst du sekundaere Entrypoints anlegen:
+>
+> ```typescript
+> // libs/my-lib/package.json — Haupt-Entrypoint
+> { "exports": { ".": { "types": "./index.d.ts", "default": "./index.js" } } }
+>
+> // libs/my-lib/testing/package.json — Sekundaer-Entrypoint
+> { "exports": { ".": { "types": "./index.d.ts", "default": "./index.js" } } }
+>
+> // Konsumenten:
+> import { MyService } from 'my-lib';            // Produktion
+> import { MockMyService } from 'my-lib/testing'; // Nur in Tests
+> ```
+>
+> Test-Helpers landen so NIE im Produktions-Bundle — sie sind physisch
+> getrennt und werden nur geladen wenn explizit importiert.
 
 ---
 
@@ -254,8 +281,10 @@ Wie findet TypeScript die Typen deiner Library? Es haengt von
 - **Legacy-Felder** (main, module, types) fuer Kompatibilitaet mit aelteren Tools beibehalten
 - **Subpath Exports** ermoeglichen mehrere Entrypoints (`"./hooks"`, `"./components"`)
 - **moduleResolution: "bundler"** oder **"node16"** ist noetig um exports zu verstehen
+- **Wildcard Exports** sind bequem aber riskant — explizite Exports sind sicherer
+- **Angular Secondary Entrypoints** nutzen dasselbe Prinzip: `@angular/common/http` ist ein eigener Subpath Export
 
-**Kernkonzept zum Merken:** Die package.json ist der Vertrag zwischen deiner Library und der Welt. Das exports-Feld ist der moderne Standard — es definiert praezise was importierbar ist, ermoeglicht Dual CJS/ESM, und fuehrt TypeScript zu den richtigen .d.ts-Dateien. Setze "types" IMMER an erste Stelle.
+**Kernkonzept zum Merken:** Die package.json ist der Vertrag zwischen deiner Library und der Welt. Das exports-Feld ist der moderne Standard — es definiert praezise was importierbar ist, ermoeglicht Dual CJS/ESM, und fuehrt TypeScript zu den richtigen .d.ts-Dateien. Setze "types" IMMER an erste Stelle. Denke dabei wie ein Verleger: Was soll der Leser sehen koennen — und was soll hinter der Kulisse bleiben?
 
 ---
 

@@ -31,6 +31,13 @@
 > Tools wie Jest verwenden je nach Konfiguration CJS oder ESM. Wenn deine
 > Library nur eines der Formate liefert, schliesst du die andere Haelfte aus.
 
+Denk an das Dual Package wie an einen internationalen Reiseadapter. Du
+reist mit deinen Geraeten nach England, Japan und die USA — und jedes
+Land hat andere Steckdosen. Dein Adapter hat ALLE Stecker integriert.
+Genau so muss deine Library ALLE Modul-Formate "mitbringen", damit sie
+in jeder Umgebung einfach funktioniert. Der Konsument steckt ein und
+es funktioniert — ohne Konfiguration.
+
 Die Realitaet 2024+: Du musst beide Formate liefern. Das nennt sich
 "Dual Package" — ein Paket das sowohl CJS als auch ESM unterstuetzt.
 
@@ -197,11 +204,20 @@ export default defineConfig({
 >   dts: true,
 >   external: ["react", "react-dom"],
 >   // ^ React als peerDependency — NICHT bundlen!
+>   jsx: "react-jsx",
+>   // ^ JSX-Transform ohne expliziten React-Import
 > });
 > ```
 >
 > React, ReactDOM und andere peerDependencies muessen als `external`
 > markiert werden, damit sie nicht ins Bundle aufgenommen werden.
+> Der Grund: Jede React-App installiert React bereits. Wenn deine Library
+> React **einbundelt**, landet React ZWEIMAL in der App — zwei verschiedene
+> Instanzen, und Hooks brechen mit "Invalid hook call" weil sie auf
+> unterschiedliche React-Kontexte zugreifen. `external` verhindert das.
+>
+> Das gilt genauso fuer Angular: `@angular/core`, `@angular/common` usw.
+> sind peerDependencies und muessen als external markiert werden.
 
 ---
 
@@ -257,12 +273,14 @@ Wenn deine Zielgruppe es erlaubt (moderne Browser, Node.js 18+):
 ## Was du gelernt hast
 
 - **Dual Packages** liefern CJS (.cjs) und ESM (.js) im selben npm-Paket
-- Das **Dual Package Hazard** entsteht wenn CJS und ESM verschiedene Instanzen laden
+- Das **Dual Package Hazard** entsteht wenn CJS und ESM verschiedene Instanzen laden — stateless Libraries sind sicher
 - **tsup** ist das empfohlene Tool — erzeugt beide Formate + .d.ts automatisch
 - **ESM-only** ist die einfachste Option wenn die Zielgruppe es erlaubt
-- **peerDependencies** (React, Angular) muessen als `external` markiert werden
+- **peerDependencies** (React, Angular) muessen als `external` markiert werden, sonst doppelte Instanzen
+- **.cjs und .d.cts** sind die Dateiendungen fuer CommonJS — nicht mit .js/.d.ts verwechseln
+- Die Analogie: Dual Package ist wie ein Reiseadapter — alle Stecker dabei, jede Umgebung funktioniert
 
-**Kernkonzept zum Merken:** Das JavaScript-Oekosystem ist im Uebergang von CJS zu ESM. Als Library-Autor musst du beide Welten bedienen — aber nicht fuer immer. Dual Package mit tsup ist der pragmatische Weg. ESM-only ist die Zukunft.
+**Kernkonzept zum Merken:** Das JavaScript-Oekosystem ist im Uebergang von CJS zu ESM. Als Library-Autor musst du beide Welten bedienen — aber nicht fuer immer. Dual Package mit tsup ist der pragmatische Weg. ESM-only ist die Zukunft. Und: externe Frameworks wie React und Angular gehoeren als peerDependencies NICHT ins Bundle.
 
 ---
 
