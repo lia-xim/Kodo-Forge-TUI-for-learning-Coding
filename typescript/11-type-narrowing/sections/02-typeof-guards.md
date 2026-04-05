@@ -188,10 +188,22 @@ x instanceof Date             // fuer Klasse-Instanzen (Sektion 03)
 "prop" in x                   // fuer Property-Checks (Sektion 03)
 ```
 
-> ⚡ **Experiment:** Oeffne `examples/02-typeof-guards.ts` und aendere
-> den Union Type der Parameter. Fuege `null` hinzu und beobachte, wie
-> sich die typeof-Checks verhalten. Kommentiere den null-Check aus und
-> schau, welche Fehler TypeScript meldet.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function sicher(wert: string | object | null) {
+>   if (wert === null) {
+>     console.log("null erkannt");
+>     return;
+>   }
+>   // wert: string | object — null ist weg!
+>   if (typeof wert === "object") {
+>     console.log(`Objekt mit Schluesseln: ${Object.keys(wert).join(", ")}`);
+>   } else {
+>     console.log(`String: "${wert}"`);
+>   }
+> }
+> ```
+> Kommentiere den null-Check aus (`if (wert === null) return;`) und beobachte, welche Fehler TypeScript bei `typeof wert === "object"` meldet. Fuege dann `undefined` zum Union-Typ hinzu.
 
 ---
 

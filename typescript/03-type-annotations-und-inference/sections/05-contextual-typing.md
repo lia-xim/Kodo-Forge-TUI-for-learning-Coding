@@ -349,7 +349,6 @@ function handleResult(result: Result) {
   }
 }
 ```
-```
 
 > **Hintergrund:** Discriminated Unions sind eines der wichtigsten Patterns in TypeScript -- und sie stammen konzeptionell aus funktionalen Sprachen wie Haskell ("Algebraic Data Types" oder "Tagged Unions"). In Angular nutzt du sie staendig, z.B. fuer NgRx-Actions:
 > ```typescript
@@ -457,12 +456,43 @@ function renderField(field: FormField) {
 
 ## Experiment-Box: Control Flow live beobachten
 
-> **Experiment:** Oeffne `examples/05-control-flow-analysis.ts` und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus und hovere an den markierten Stellen:
 >
-> 1. Schreibe eine Funktion mit Parameter `value: string | number | null`. Hovere ueber `value` an verschiedenen Stellen: vor dem `if`, innerhalb des `if`, im `else`.
-> 2. Ersetze den `typeof`-Check durch einen Truthiness-Check (`if (value)`). Was passiert mit `0` und `""`? Hovere!
-> 3. Erstelle eine Discriminated Union mit `type: "a" | "b" | "c"`. Schreibe einen Switch und vergiss bewusst einen Case. Wo erscheint der Fehler?
-> 4. **Bonus:** Definiere einen Callback separat (`const handler = (event) => ...`) und uebergib ihn an `addEventListener`. Hovere ueber `event` -- was siehst du? Dann schreibe ihn inline. Was aendert sich?
+> ```typescript
+> // Schritt 1: Typ verengt sich durch if-Checks
+> function process(value: string | number | null) {
+>   // Hovere hier: value ist string | number | null
+>   if (value === null) return;
+>   // Hovere hier: null ist ausgeschlossen
+>   if (typeof value === "string") {
+>     // Hovere hier: value ist string
+>     console.log(value.toUpperCase());
+>   } else {
+>     // Hovere hier: value ist number
+>     console.log(value.toFixed(2));
+>   }
+> }
+>
+> // Schritt 2: Truthiness-Falle
+> function tricky(count: number | null) {
+>   if (count) {
+>     // Ist 0 hier erlaubt? Hovere ueber count!
+>   }
+>   if (count !== null) {
+>     // Ist 0 jetzt erlaubt?
+>   }
+> }
+>
+> // Schritt 3: Contextual Typing -- inline vs. separat
+> const nums = [1, 2, 3];
+>
+> // Inline: Contextual Typing funktioniert
+> nums.map(n => n * 2);  // Hovere ueber 'n' -- welcher Typ?
+>
+> // Separat: Kein Kontext!
+> const fn = (n) => n * 2;  // Hovere ueber 'n' -- was passiert?
+> nums.map(fn);
+> ```
 
 ---
 

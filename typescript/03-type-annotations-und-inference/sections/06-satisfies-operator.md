@@ -345,13 +345,41 @@ const BAD_LABELS = {
 
 ## Experiment-Box: satisfies in Aktion
 
-> **Experiment:** Oeffne `examples/06-satisfies-deep-dive.ts` und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus und vergleiche die Typen:
 >
-> 1. Erstelle ein Objekt mit Annotation: `const x: Record<string, number> = { a: 1, b: 2 };` -- hovere ueber `x.a`. Welcher Typ?
-> 2. Ersetze die Annotation durch `satisfies`: `const x = { a: 1, b: 2 } satisfies Record<string, number>;` -- was aendert sich?
-> 3. Fuege absichtlich einen falschen Wert ein: `{ a: 1, b: "oops" } satisfies Record<string, number>` -- was passiert?
-> 4. Kombiniere: `{ a: 1, b: 2 } as const satisfies Record<string, number>` -- hovere ueber die Properties. Was faellt auf?
-> 5. **Denk-Experiment:** Fuege ein Extra-Property hinzu, das NICHT im Schema ist. Wird es erkannt? (Stichwort: Excess Property Checking)
+> ```typescript
+> type ColorMap = Record<string, [number, number, number] | string>;
+>
+> // Schritt 1: Annotation -- Typ wird "verbreitert"
+> const palette1: ColorMap = {
+>   red: [255, 0, 0],
+>   green: "#00ff00",
+> };
+> // Hovere ueber 'palette1.red' -- welcher Typ? Zu breit?
+>
+> // Schritt 2: satisfies -- praezise Typen bleiben erhalten
+> const palette2 = {
+>   red: [255, 0, 0],
+>   green: "#00ff00",
+> } satisfies ColorMap;
+> // Hovere ueber 'palette2.red' -- was hat sich geaendert?
+>
+> // Schritt 3: Falscher Wert einbauen
+> const palette3 = {
+>   red: [255, 0, 0],
+>   green: 12345,  // Falscher Typ!
+> } satisfies ColorMap;
+> // Was passiert? Wird der Fehler erkannt?
+>
+> // Schritt 4: as const satisfies
+> const palette4 = {
+>   red: [255, 0, 0],
+>   green: "#00ff00",
+> } as const satisfies ColorMap;
+> // Hovere ueber 'palette4.red' -- was ist jetzt anders?
+> ```
+>
+> Beantworte: Was passiert mit dem Typ von `palette1.red` vs. `palette2.red`? Warum ist das praktisch relevant?
 
 ---
 

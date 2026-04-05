@@ -239,10 +239,43 @@ addEventListener("keydown", (e) => {
 - Overloads sind nur sinnvoll, wenn der **Return-Typ vom Argument-Wert** abhaengt
 - Bei gleichem Return-Typ sind **Union-Typen besser** als Overloads
 
-> **Experiment:** Oeffne `examples/03-function-overloads.ts` und fuege
-> einen neuen Overload fuer `createElement("canvas")` hinzu, der
-> `HTMLCanvasElement` zurueckgibt. Wo genau musst du die Signatur
-> einfuegen und warum?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> function createElement(tag: "img"): HTMLImageElement;
+> function createElement(tag: "input"): HTMLInputElement;
+> function createElement(tag: "div"): HTMLDivElement;
+> function createElement(tag: string): HTMLElement {
+>   return document.createElement(tag);
+> }
+>
+> // Fuege jetzt HIER einen neuen Overload ein:
+> // function createElement(tag: "canvas"): HTMLCanvasElement;
+> ```
+>
+> Fuege die `canvas`-Signatur ein — **vor** der Implementation Signature.
+> Was passiert, wenn du sie **nach** der Implementation einfuegst?
+> TypeScript meldet einen Fehler: Overload-Signaturen muessen immer
+> **vor** der Implementation stehen. Reihenfolge innerhalb der Overloads:
+> spezifische zuerst, breite zuletzt.
+
+**In deinem Angular-Projekt:** Angular's `Router.navigate()` nutzt intern exakt
+dieses Overload-Muster. Je nachdem ob du ein relativen oder absoluten Pfad
+uebergibst, variiert die Signatur. Auch Angular's `HttpClient` hat Overloads:
+
+```typescript
+// HttpClient.get() ist ueberlaeden — Return-Typ haengt vom Typ-Parameter ab:
+http.get("/api/users")                    // → Observable<Object>
+http.get<User[]>("/api/users")            // → Observable<User[]>
+http.get("/api/file", { responseType: "blob" })  // → Observable<Blob>
+
+// Das ist kein Trick — es sind echte Overloads in der Angular-Typdefinition.
+// In React siehst du dasselbe bei useRef():
+// useRef<HTMLInputElement>(null)  → RefObject<HTMLInputElement>
+// useRef(initialValue)            → MutableRefObject<T>
+```
+
+---
 
 **Kernkonzept zum Merken:** Overloads verknuepfen Input und Output praeziser als Union-Typen. Aber: Nur verwenden, wenn ein Union nicht reicht.
 

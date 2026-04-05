@@ -20,7 +20,13 @@
 
 In L31 haben wir gesehen, dass `HttpClient.get<User[]>()` ein
 "Trust me, Compiler" ist. Dieses Problem existiert in jedem HTTP-Client
-— Angular, React, Node.js. Die Netzwerkgrenze ist eine **Typen-Luecke**:
+— Angular, React, Node.js. Die Netzwerkgrenze ist eine **Typen-Luecke**.
+
+Stell dir vor, zwei Firmen schliessen einen Vertrag auf Deutsch ab —
+aber die eine Firma schickt alle Dokumente auf Englisch. Der Vertrag
+existiert, aber niemand prueft ob die Dokumente dazu passen. Genau das
+passiert an der Netzwerkgrenze: Dein TypeScript-Typ ist der Vertrag,
+aber JSON-Daten koennen alles sein:
 
 ```typescript
 // DAS passiert wirklich:
@@ -260,7 +266,9 @@ type P2 = ExtractParams<"/api/users/:userId/posts/:postId">;
 
 ## Das Shared-Types Pattern
 
-In Monorepos koennest du Typen zwischen Frontend und Backend teilen:
+Shared Types in Monorepos sind wie ein gemeinsamer Bauplan zwischen
+Architekt und Bauarbeiter: Beide Seiten — Frontend und Backend — arbeiten
+nach dem gleichen Dokument. Aendert sich ein Typ, merken es alle sofort.
 
 ```typescript
 // packages/shared-types/src/user.ts
@@ -304,7 +312,7 @@ import type { User, CreateUserRequest } from '@myapp/shared-types';
 - Template Literal Types koennen Path-Parameter automatisch extrahieren
 - Shared Types in Monorepos synchronisieren Frontend- und Backend-Typen
 
-**Kernkonzept zum Merken:** Typen allein reichen nicht. Sie sind ein Vertrag — aber ein Vertrag ist nur so gut wie seine Durchsetzung. Die naechste Sektion zeigt, wie Runtime-Validierung den Vertrag durchsetzt.
+**Kernkonzept zum Merken:** Typen allein reichen nicht. Sie sind ein Vertrag — aber ein Vertrag ist nur so gut wie seine Durchsetzung. Ohne Runtime-Validierung ist es wie ein Telefonspiel: Irgendwo zwischen Server und deinem Code kann die Bedeutung verloren gehen, und erst zur Laufzeit merkst du es. Die naechste Sektion zeigt, wie Runtime-Validierung den Vertrag wirklich durchsetzt.
 
 ---
 

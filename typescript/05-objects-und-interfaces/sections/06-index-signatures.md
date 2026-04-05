@@ -29,17 +29,33 @@ const translations = {
 
 Dafuer gibt es **Index Signatures**:
 
-```typescript
+```typescript annotated
 interface StringDictionary {
-  [key: string]: string;  // Jeder string-Key mappt auf einen string-Wert
+  [key: string]: string;
+// ^^^^^^^^^^^^^ Das ist die Index Signature: eckige Klammern mit Typ-Annotation
+// 'key' ist nur ein Bezeichner (du kannst ihn umbenennen) -- der Typ 'string' zaehlt
+// Der Wert-Typ nach dem Doppelpunkt: jeder Zugriff gibt 'string' zurueck
 }
+// Bedeutung: Dieses Objekt hat beliebig viele Properties --
+//            alle Keys sind strings, alle Werte sind strings
 
 const translations: StringDictionary = {
-  hello: "hallo",
-  goodbye: "tschuess",
-  thanks: "danke",
+  hello: "hallo",    // string-Key -> string-Wert ✓
+  goodbye: "tschuess",  // string-Key -> string-Wert ✓
+  thanks: "danke",   // string-Key -> string-Wert ✓
+  // Beliebig viele weitere Eintraege erlaubt
 };
 ```
+
+> 🧠 **Erklaere dir selbst:** Wann brauchst du eine Index Signature statt eines
+> normalen Interface? Warum ist `Record<string, string>` oft besser als eine
+> Index Signature? Und was ist die Gefahr, wenn TypeScript standardmaessig
+> einen Wert zurueckgibt, der zur Laufzeit `undefined` sein koennte?
+>
+> **Kernpunkte:** Index Signatures fuer unbekannte/dynamische Keys | Record<K,V>
+> sauberer und lesbarer fuer reine Dictionaries | Standardmaessig sagt TypeScript
+> der Typ ist T -- aber zur Laufzeit koennte undefined zurueckkommen | Loesung:
+> noUncheckedIndexedAccess in tsconfig aktivieren
 
 > **Analogie:** Eine Index Signature ist wie ein **Bibliothekskatalog**. Du weisst
 > nicht im Voraus, welche Buecher (Keys) es gibt, aber du weisst, dass jeder Eintrag

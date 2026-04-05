@@ -59,24 +59,30 @@ console.log(getCount()); // 5
 
 ## Pattern 3: Error-Handling (Go-Style)
 
-```typescript
+```typescript annotated
 type Result<T> = [data: T, error: null] | [data: null, error: Error];
+// ← Discriminated Union: entweder Daten ODER Fehler — nie beides
 
 function parseJSON(json: string): Result<unknown> {
   try {
-    return [JSON.parse(json), null];
+    return [JSON.parse(json), null]; // ← Erfolg: Daten + kein Fehler
   } catch (e) {
-    return [null, e as Error];
+    return [null, e as Error];       // ← Fehler: keine Daten + Error-Objekt
   }
 }
 
 const [data, error] = parseJSON('{"valid": true}');
 if (error) {
-  console.error(error.message);
+  console.error(error.message); // ← TypeScript weiss: error ist Error (nicht null)
 } else {
-  console.log(data); // TypeScript weiss: data ist nicht null
+  console.log(data);            // ← TypeScript weiss: data ist nicht null
 }
 ```
+
+**Erklaere dir selbst:** Warum gibt Pattern 3 ein Tuple statt ein Object mit `{ data, error }` zurueck — und wann ist ein Tuple die bessere Wahl als ein Object?
+- Tuples erzwingen beim Destructuring eine **freie Benennung**: `const [inhalt, fehler]` statt `const { data: inhalt, error: fehler }`
+- Tuples eignen sich fuer **2-3 Positionen mit klarer Reihenfolge** — der erste Wert ist immer das Ergebnis, der zweite der Fehler (wie in Go)
+- Ab 4+ Feldern oder wenn die Reihenfolge nicht offensichtlich ist, wird ein Object mit benannten Properties lesbarer
 
 > **Hintergrund:** Go gibt Fehler als zweiten Rueckgabewert zurueck:
 > `data, err := parseJSON(...)`. Dieses Pattern ist in TypeScript mit

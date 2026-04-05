@@ -332,12 +332,37 @@ Control Flow Analysis wird in Sektion 5 ausfuehrlich behandelt, weil es eng mit 
 
 ## Experiment-Box: Regeln in Aktion beobachten
 
-> **Experiment:** Oeffne `examples/02-type-inference.ts` und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus und benenne die Regel, die jeweils greift:
 >
-> 1. Schreibe `const items = [1, "hello", null];` und hovere. Welche Regel greift? (Best Common Type)
-> 2. Schreibe eine Funktion mit zwei Return-Pfaden und hovere ueber den Funktionsnamen. Stimmt die Union?
-> 3. Schreibe `[1,2,3].map(n => n.toString())` und hovere ueber `n` -- woher kommt der Typ? (Contextual Typing)
-> 4. Schreibe `function id<T>(x: T) { return x; }` und rufe `id("hello")` auf -- was wird `T`?
+> ```typescript
+> // Regel 2: Best Common Type -- was wird der Typ?
+> const items = [1, "hello", null];
+> // Hovere ueber 'items' -- welche Regel greift?
+>
+> // Regel 3: Return Type Inference
+> function transform(x: number) {
+>   if (x > 0) return x.toString();
+>   if (x === 0) return null;
+>   return undefined;
+> }
+> // Hovere ueber 'transform' -- was ist der Return-Typ?
+>
+> // Regel 4: Contextual Typing
+> [1, 2, 3].map(n => n.toString());
+> // Hovere ueber 'n' -- woher kommt sein Typ?
+>
+> // Regel 5: Generic Inference
+> function id<T>(x: T) { return x; }
+> const result = id("hello");
+> // Was wird T? Hovere ueber 'result'.
+>
+> // Bonus: Klassen-Hierarchie vs. Union
+> class Animal { name = ""; }
+> class Dog extends Animal { bark() {} }
+> class Cat extends Animal { meow() {} }
+> const pets = [new Dog(), new Cat()];
+> // Erwartung: Animal[] oder (Dog | Cat)[]? Warum?
+> ```
 
 ---
 

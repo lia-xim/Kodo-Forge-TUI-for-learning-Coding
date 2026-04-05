@@ -239,9 +239,19 @@ const nurStrings = werte.filter(x => typeof x === "string");
 > 3. Die Funktion ihren Parameter nicht mutiert
 > 4. Die Funktion einen Narrowing-Ausdruck zurueckgibt
 
-> ⚡ **Experiment:** Oeffne `examples/05-type-predicates.ts` und pruefe
-> mit `npx tsx` ob dein TypeScript-Version 5.5+ ist. Teste die
-> automatischen Type Predicates mit verschiedenen filter()-Callbacks.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus (TypeScript 5.5+ aktivieren):
+> ```typescript
+> const gemischt: (string | null)[] = ["hallo", null, "welt", null, "!"];
+>
+> // Ab TS 5.5 — filter narrowt AUTOMATISCH:
+> const nurStrings = gemischt.filter(x => x !== null);
+> // Typ: string[]  (hovere ueber nurStrings um es zu bestaetigen!)
+>
+> const werte: (string | number | null)[] = ["a", 1, null, "b", 2];
+> const nurZahlen = werte.filter(x => typeof x === "number");
+> // Typ: number[]  (TS 5.5 inferiert den Type Predicate)
+> ```
+> Hovere ueber `nurStrings` und `nurZahlen` — zeigt die IDE `string[]` und `number[]`? Aendere `5.5` auf `5.4` in den Playground-Einstellungen und beobachte den Typ-Unterschied.
 
 ---
 

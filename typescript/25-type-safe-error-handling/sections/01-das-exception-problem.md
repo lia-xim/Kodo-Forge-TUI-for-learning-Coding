@@ -159,10 +159,45 @@ try {
 }
 ```
 
-> **Experiment:** Öffne `examples/01-exception-problem.ts` und versuche:
-> 1. Schreibe eine Funktion `fetchUserData(url: string): Promise<User>`.
-> 2. Rufe sie auf ohne try/catch.
-> 3. Beobachte: TypeScript gibt keinen Compile-Error — auch wenn fetch wirft!
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> type User = { id: string; name: string };
+>
+> // Funktion die werfen KANN — Typ zeigt es nicht!
+> function parseUserFromJson(jsonString: string): User {
+>   const data = JSON.parse(jsonString) as Record<string, unknown>;
+>   if (!data['id'] || !data['name']) throw new Error('Fehlende Felder');
+>   return { id: String(data['id']), name: String(data['name']) };
+> }
+>
+> // Caller ohne try/catch — kein Compile-Error!
+> function loadUser(json: string): void {
+>   const user = parseUserFromJson(json); // Kann werfen — TypeScript schweigt
+>   console.log(`Hallo, ${user.name}`);
+> }
+>
+> // Jetzt mit Result-Typ — Fehler sichtbar im Typ:
+> type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
+>
+> function parseUserSafe(jsonString: string): Result<User> {
+>   try {
+>     const data = JSON.parse(jsonString) as Record<string, unknown>;
+>     if (!data['id'] || !data['name']) return { ok: false, error: 'Fehlende Felder' };
+>     return { ok: true, value: { id: String(data['id']), name: String(data['name']) } };
+>   } catch {
+>     return { ok: false, error: 'Ungültiges JSON' };
+>   }
+> }
+>
+> const r1 = parseUserSafe('{"id":"1","name":"Max"}');
+> const r2 = parseUserSafe('{invalid}');
+> if (r1.ok) console.log(`User: ${r1.value.name}`);   // Max
+> if (!r2.ok) console.log(`Fehler: ${r2.error}`);     // Ungültiges JSON
+> ```
+>
+> Was passiert wenn du `parseUserSafe` aufrufst und das `if (r1.ok)`-Check weglässt?
+> TypeScript zeigt sofort: `r1.value` ist nicht zugänglich ohne die `ok`-Prüfung.
 
 ---
 

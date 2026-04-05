@@ -52,6 +52,15 @@ if (isUser(JSON.parse(data))) {
 > In TypeScript mit `as` wird er versteckt — der Compiler zeigt
 > keine Warnung, und der Bug zeigt sich erst in Produktion.
 
+Das passiert in realen Projekten so: Ein Backend-Team benennt ein
+Feld von `user_name` zu `username` um. Das Frontend hat
+`response as User` — kein Compile-Fehler, weil `as` nicht prueft.
+`user.username` ist `undefined`, `user.user_name` existiert. Drei
+Tage spaeter meldet ein Nutzer dass sein Name ueberall als "undefined"
+angezeigt wird. Haette das Frontend `isUser(response)` verwendet,
+haette der Type Guard den Fehler sofort geworfen: "Expected username:
+string, got undefined."
+
 ---
 
 ## Type Assertions: Wann sie akzeptabel sind
@@ -151,7 +160,8 @@ function assertUser(data: unknown): asserts data is User {
     throw new Error("Expected object");
   }
   if (!("name" in data) || typeof (data as any).name !== "string") {
-    throw new Error("Expected name: string");
+    throw new Error("Expected name: string, got " + typeof (data as any).name);
+    // ^ Gute Fehlermeldungen sind entscheidend — zeige WAS erwartet und WAS kam
   }
 }
 
@@ -161,13 +171,36 @@ assertUser(data);
 data.name;  // TypeScript weiss: data ist User
 ```
 
+**Wann `is` vs `asserts`?**
+
+```typescript annotated
+// is: Optional — "Koennte ein User sein, pruefe es"
+function isUser(v: unknown): v is User { /* ... */ }
+
+if (isUser(response)) {
+  // User-spezifischer Pfad
+} else {
+  // Nicht-User-Pfad
+}
+
+// asserts: Erzwungen — "MUSS ein User sein, sonst throw"
+function assertUser(v: unknown): asserts v is User { /* ... oder throw */ }
+
+// Gut fuer Initialisierungs-Code wo falsche Daten ein fataler Fehler sind:
+const config: unknown = loadConfig();
+assertUser(config);  // Wirft wenn config kein User ist
+// Ab hier: config ist User — kein if noetig
+setupApp(config);
+```
+
 > 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen
 > `value is User` und `asserts value is User`? Wann wuerdest du
 > welches verwenden?
 > **Kernpunkte:** `is` gibt boolean zurueck — fuer if/else |
 > `asserts` wirft bei Fehler — fuer "fail fast" | `is` ist fuer
 > optionales Narrowing, `asserts` fuer erzwungenes Narrowing |
-> `asserts` braucht kein if — der Typ gilt nach dem Aufruf
+> `asserts` braucht kein if — der Typ gilt nach dem Aufruf |
+> In Angular: `asserts` in Resolver/Guard-Code, `is` in Template-Logik
 
 ---
 
@@ -185,11 +218,33 @@ data.name;  // TypeScript weiss: data ist User
 | Typ-System-Grenze | `as` (mit Kommentar) | `x as unknown as Y` |
 | Discriminated Unions | Switch auf Diskriminator | `switch(x.kind)` |
 
-> ⚡ **Framework-Bezug:** Angular's Template-Syntax hat eingebautes
-> Narrowing: `@if (user) { user.name }`. React braucht manuelles
-> Narrowing in JSX: `{user && <span>{user.name}</span>}`. In beiden
-> Frameworks gilt: Custom Type Guards in Services/Hooks kapseln,
-> nicht in Templates/Components verstreuen.
+> ⚡ **Angular-Bezug:** Angular's Template-Syntax hat eingebautes
+> Narrowing: `@if (user) { user.name }`. Aber fuer komplexe Typen
+> reicht das nicht — ein `@if (isUser(data))` in Templates ist
+> schlechter Code. Besser: Type Guards in Services kapseln und den
+> Component nur mit bereits-validierten Typen versorgen.
+>
+> In Angular Resolvers ist `asserts` besonders sinnvoll:
+> ```typescript
+> // Route Resolver mit Assertion:
+> resolve(): User {
+>   const data = this.api.getUser();
+>   assertUser(data);  // Wirft wenn Backend kaputt ist
+>   return data;       // Typ: User — garantiert
+> }
+> ```
+>
+> In React mit `useEffect` und Fetch:
+> ```typescript
+> useEffect(() => {
+>   fetch("/api/user")
+>     .then(r => r.json())
+>     .then((data: unknown) => {
+>       if (isUser(data)) setUser(data);  // is-Guard fuer optionales Handling
+>       else console.error("Unexpected data:", data);
+>     });
+> }, []);
+> ```
 
 > 💭 **Denkfrage:** Ein Kollege argumentiert: "Type Guards sind
 > Runtime-Overhead — mit `as` ist der Code schneller." Was sagst du?
@@ -202,15 +257,20 @@ data.name;  // TypeScript weiss: data ist User
 
 ---
 
-## Experiment: Type Guard Library
+## Experiment: Type Guard Bibliothek aufbauen
 
-Baue eine kleine Sammlung wiederverwendbarer Type Guards:
+Baue eine kleine Sammlung wiederverwendbarer Type Guards. Der Kern-Pattern:
+je eine "is"-Funktion und eine "assert"-Funktion pro Typ:
 
 ```typescript
 // guards.ts — Wiederverwendbare Type Guards
 
 export function isString(value: unknown): value is string {
   return typeof value === "string";
+}
+
+export function assertString(value: unknown): asserts value is string {
+  if (!isString(value)) throw new TypeError(`Expected string, got ${typeof value}`);
 }
 
 export function isNumber(value: unknown): value is number {
@@ -228,9 +288,28 @@ export function hasProperty<K extends string>(
   return isObject(obj) && key in obj;
 }
 
-// Experiment: Baue einen generischen 'isArrayOf' Guard:
+// Aufgabe 1: Baue isArrayOf<T>
 // function isArrayOf<T>(arr: unknown, guard: (v: unknown) => v is T): arr is T[]
-// Nutze ihn: isArrayOf(data, isString) → data is string[]
+// Test: isArrayOf(["a", "b"], isString) → true
+// Test: isArrayOf(["a", 1], isString) → false (1 ist kein string)
+
+// Aufgabe 2: Baue hasProperties (mehrere Properties gleichzeitig pruefen)
+// function hasProperties<K extends string>(obj: unknown, ...keys: K[]): obj is Record<K, unknown>
+// Test: hasProperties(data, "name", "email", "age") → data is { name: unknown; email: unknown; age: unknown }
+
+// Aufgabe 3: Kombiniere beide zu einem User-Guard:
+interface User { name: string; email: string; age: number; }
+
+function isUser(data: unknown): data is User {
+  return (
+    hasProperties(data, "name", "email", "age") &&
+    isString(data.name) &&
+    isString(data.email) &&
+    isNumber(data.age)
+  );
+}
+// Dieser Guard ist jetzt kompositionell — er baut auf primitiven Guards auf.
+// Aendert sich User, aendert sich nur der isUser-Guard, nicht die Primitiven.
 ```
 
 ---
@@ -238,10 +317,13 @@ export function hasProperty<K extends string>(
 ## Was du gelernt hast
 
 - **Type Assertions** (`as`) = "Trust me" — keine Runtime-Pruefung, unsicher bei externen Daten
+- API-Feldumbenennung + `as` = stiller Bug der erst in Production auftaucht
 - **Type Guards** = "Prove it" — Runtime-Pruefung, sicher
 - `as` ist akzeptabel in **Tests**, bei **DOM-Zugriff** und an **Typ-System-Grenzen**
 - **Custom Type Guards** (`is`) fuer optionales Narrowing, **Assertion Functions** (`asserts`) fuer erzwungenes
 - Die **Entscheidungsmatrix** gibt fuer jede Situation die richtige Methode
+- Type Guards sind kompositionell: Primitive Guards bauen komplexe Guards auf
+- In Angular: `asserts` in Resolvers, `is` in Template-Logik; immer Guards in Services kapseln
 
 > 🧠 **Erklaere dir selbst:** Warum sind Type Guards "teurer" als
 > Assertions (Runtime-Overhead), aber trotzdem die bessere Wahl
@@ -249,9 +331,11 @@ export function hasProperty<K extends string>(
 > **Kernpunkte:** Type Guards sind Runtime-Checks — sie kosten
 > CPU-Zeit | Aber: Sie fangen Fehler die sonst Crashes waeren |
 > Ein typeof-Check: ~1ns | Ein Production-Bug: Stunden/Tage |
-> Assertions verschieben den Fehler nur — Guards verhindern ihn
+> Assertions verschieben den Fehler nur — Guards verhindern ihn |
+> Ein typeof-Check kostet weniger als die Kaffeepause die ein
+> Production-Debugging-Session erfordert
 
-**Kernkonzept zum Merken:** Type Assertions sind ein Vertrag den du mit dem Compiler schliesst. Type Guards sind ein Beweis den du dem Compiler lieferst. Vertraege koennen gebrochen werden — Beweise nicht.
+**Kernkonzept zum Merken:** Type Assertions sind ein Vertrag den du mit dem Compiler schliesst. Type Guards sind ein Beweis den du dem Compiler lieferst. Vertraege koennen gebrochen werden — Beweise nicht. Und wenn das Backend seine Daten aendert, ist ein Beweis durch Guards unschaeetzbar wertvoll.
 
 ---
 

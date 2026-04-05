@@ -238,10 +238,42 @@ const result = applyTwice(x => x * 2, 5);
 console.log(result); // 20
 ```
 
-> **Experiment:** Oeffne `examples/01-funktionstypen-basics.ts` und
-> aendere den Return-Typ von `addiere` zu `string`. Welche Fehlermeldung
-> gibt TypeScript? Aendere dann den Funktionskoerper, damit er zum neuen
-> Return-Typ passt. Beobachte, wie der Vertrag durchgesetzt wird.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> function addiere(a: number, b: number): string {
+>   return a + b;
+> }
+> ```
+>
+> TypeScript meldet sofort: *"Type 'number' is not assignable to type 'string'."*
+> Aendere jetzt den Funktionskoerper, damit er passt: `return String(a + b);`
+> Beobachte, wie der Vertrag auf **beiden Seiten** durchgesetzt wird — sowohl
+> die Implementation als auch alle Aufrufer muessen sich anpassen.
+
+---
+
+**In deinem Angular-Projekt:** Angular nutzt Function Type Expressions ueberall.
+Ein `EventEmitter<T>` nimmt Callbacks entgegen, die exakt diesem Muster folgen:
+
+```typescript
+// Angular EventEmitter mit typisiertem Callback
+import { EventEmitter } from '@angular/core';
+
+export class ButtonComponent {
+  clicked = new EventEmitter<{ x: number; y: number }>();
+
+  // Der Handler im Parent muss die Function Type Expression erfullen:
+  // (event: { x: number; y: number }) => void
+  onParentClick(event: { x: number; y: number }): void {
+    console.log(`Klick bei ${event.x}, ${event.y}`);
+  }
+}
+```
+
+Auch RxJS-Operatoren wie `map` und `filter` sind Function Type Expressions:
+`map((user: User) => user.name)` — TypeScript inferiert den Output-Typ `string`
+automatisch aus dem Return-Typ des Callbacks.
 
 ---
 

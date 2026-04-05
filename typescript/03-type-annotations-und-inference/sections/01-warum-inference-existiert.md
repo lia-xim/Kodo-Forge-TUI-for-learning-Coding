@@ -49,6 +49,13 @@ Beide Varianten sind **exakt gleich sicher**. TypeScript kennt in beiden Faellen
 
 > **Merke**: Inference ist kein "weniger sicher". Der Compiler nutzt intern denselben Typ, egal ob du ihn hingeschrieben hast oder nicht. `let x = 5` ist genauso strikt `number` wie `let x: number = 5`.
 
+> 🧠 **Erklaere dir selbst:** Warum ist `const name = "Matthias"` genauso sicher wie `const name: string = "Matthias"` -- und in einem wichtigen Punkt sogar besser?
+> **Kernpunkte:**
+> - Der Compiler kennt in beiden Faellen den Typ `string` intern
+> - Ohne Annotation inferiert TS sogar den praeziseren Literal-Typ `"Matthias"` (nicht nur `string`)
+> - Inference und explizite Annotation erzeugen denselben Compile-Zeit-Schutz
+> - Annotation ist nur Dokumentation fuer den menschlichen Leser -- TypeScript braucht sie nicht
+
 ---
 
 ## Die Analogie: Inference als Detektiv
@@ -161,18 +168,85 @@ Eine Funktions-Signatur dokumentiert die **Intention** des Autors, nicht die akt
 
 **An den Grenzen annotieren, innen inferieren lassen.** Das ist die Kurzformel, die alle weiteren Sektionen konkretisieren werden.
 
+```typescript annotated
+// Das Prinzip "annotate at boundaries, infer inside" in der Praxis:
+// (Order und Summary wuerden in einer separaten Datei definiert)
+
+interface Order { price: number; name: string; }
+interface Summary { total: number; count: number; labels: string[]; }
+
+function processOrders(orders: Order[], taxRate: number): Summary {
+// ^ Parameter: IMMER annotieren -------^              ^-- und Return-Typ
+  const total = orders.reduce((sum, o) => sum + o.price, 0);
+  // ^ Lokale Variable: NICHT annotieren -- TS inferiert `number`
+
+  const withTax = total * (1 + taxRate);
+  // ^ Zwischenergebnis: NICHT annotieren -- TS inferiert `number`
+
+  const labels = orders.map(o => o.name);
+  // ^ Callback-Parameter 'o': NICHT annotieren (Contextual Typing)
+  // ^ 'labels': NICHT annotieren -- TS inferiert `string[]`
+
+  return { total: withTax, count: orders.length, labels };
+  // ^ Return: TS prueft, ob das Objekt dem Return-Typ `Summary` entspricht
+}
+```
+
+---
+
+## In deinem Angular-Projekt: Wo du dieses Prinzip jeden Tag siehst
+
+Angular-Services demonstrieren das Prinzip perfekt:
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ProductService {
+  // Grenze: Konstruktor-Parameter annotiert (Dependency Injection benoetigt das)
+  constructor(private http: HttpClient) {}
+
+  // Grenze: Return-Typ annotiert -- der Konsument soll wissen, was er bekommt
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>('/api/products').pipe(
+      // Innen: Callback-Parameter 'products' -- NICHT annotieren!
+      // Angular's HttpClient + RxJS kennen den Typ (Contextual Typing)
+      map(products => products.filter(p => p.active)),
+      // 'p' ist automatisch Product -- keine Annotation noetig
+    );
+  }
+}
+```
+
+Der `HttpClient`-Generic `<Product[]>` ist die Grenze: Hier sagst du TypeScript, welcher Typ aus der API kommen soll. Alles danach in der `.pipe()`-Kette inferiert TS automatisch.
+
 ---
 
 ## Experiment-Box: Probiere es selbst aus
 
-> **Experiment:** Oeffne `examples/02-type-inference.ts` und probiere folgendes:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus (typescriptlang.org/play):
 >
-> 1. Schreibe `const x = 42;` und hovere ueber `x`. Was zeigt die IDE?
-> 2. Aendere es zu `let x = 42;` -- was aendert sich am Typ?
-> 3. Schreibe `const fn = (a: number, b: number) => a + b;` -- hovere ueber `fn`. Welchen Return-Typ inferiert TS?
-> 4. Entferne die Parameter-Annotationen: `const fn = (a, b) => a + b;` -- was passiert?
+> ```typescript
+> // Schritt 1: const vs. let -- hovere ueber die Variablen
+> const x = 42;       // Was ist der Typ?
+> let y = 42;         // Was ist der Typ?
 >
-> Diese vier Schritte demonstrieren das Kernprinzip: Inneres wird inferiert, Grenzen muessen annotiert werden.
+> // Schritt 2: Funktionen mit Parametern
+> const fn = (a: number, b: number) => a + b;
+> // Hovere ueber 'fn' -- welchen Return-Typ inferiert TS automatisch?
+>
+> // Schritt 3: Entferne die Parameter-Annotationen
+> const fn2 = (a, b) => a + b;
+> // Was passiert jetzt? Warum?
+>
+> // Schritt 4: Inference innerhalb der Funktion
+> function calculate(price: number, tax: number) {
+>   const total = price + tax;       // Kein Typ noetig -- TS inferiert
+>   const label = `Gesamt: ${total}`; // Auch inferiert
+>   return { total, label };          // Return-Typ wird inferiert
+> }
+> // Hovere ueber 'calculate' -- was ist der Return-Typ?
+> ```
+>
+> Diese vier Schritte demonstrieren das Kernprinzip: An den Grenzen (Parameter) musst du annotieren, innen (lokale Variablen, Returns) inferiert TS automatisch.
 
 ---
 

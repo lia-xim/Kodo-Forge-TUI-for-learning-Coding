@@ -177,10 +177,64 @@ console.log(getOrElse(result, 'Unbekannt')); // 'Max'
 console.log(getOrElse(flatMapMaybe(findUser('x'), _ => none), 'Unbekannt')); // 'Unbekannt'
 ```
 
-> **Experiment:** Öffne `examples/03-option-maybe.ts` und:
-> 1. Implementiere `filterMaybe<T>(maybe, predicate)` — gibt `none` wenn Prädikat false.
-> 2. Implementiere `fromNullable<T>(value: T | null): Maybe<T>` — konvertiert null zu none.
-> 3. Kette: `fromNullable(nullableUser)` → `filterMaybe(u => u.age >= 18)` → `mapMaybe(u => u.name)`
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> type Some<T> = { readonly kind: 'some'; readonly value: T };
+> type None    = { readonly kind: 'none' };
+> type Maybe<T> = Some<T> | None;
+>
+> const some = <T>(value: T): Some<T> => ({ kind: 'some', value });
+> const none: None = { kind: 'none' };
+>
+> function mapMaybe<T, U>(maybe: Maybe<T>, fn: (v: T) => U): Maybe<U> {
+>   return maybe.kind === 'none' ? none : some(fn(maybe.value));
+> }
+>
+> function flatMapMaybe<T, U>(maybe: Maybe<T>, fn: (v: T) => Maybe<U>): Maybe<U> {
+>   return maybe.kind === 'none' ? none : fn(maybe.value);
+> }
+>
+> function getOrElse<T>(maybe: Maybe<T>, def: T): T {
+>   return maybe.kind === 'some' ? maybe.value : def;
+> }
+>
+> // Implementiere diese beiden selbst:
+> function fromNullable<T>(value: T | null | undefined): Maybe<T> {
+>   return value != null ? some(value) : none;
+> }
+>
+> function filterMaybe<T>(maybe: Maybe<T>, pred: (v: T) => boolean): Maybe<T> {
+>   if (maybe.kind === 'none') return none;
+>   return pred(maybe.value) ? maybe : none;
+> }
+>
+> // Testdaten:
+> const users = new Map([
+>   ['u1', { name: 'Max', age: 30 }],
+>   ['u2', { name: 'Anna', age: 16 }],
+> ]);
+>
+> function findUser(id: string): Maybe<{ name: string; age: number }> {
+>   return fromNullable(users.get(id));
+> }
+>
+> // Kette: find → filterMaybe (nur Erwachsene) → mapMaybe (nur Name)
+> const name = getOrElse(
+>   mapMaybe(filterMaybe(findUser('u1'), u => u.age >= 18), u => u.name),
+>   'Minderjährig oder nicht gefunden'
+> );
+> console.log(name); // 'Max'
+>
+> const minor = getOrElse(
+>   mapMaybe(filterMaybe(findUser('u2'), u => u.age >= 18), u => u.name),
+>   'Minderjährig oder nicht gefunden'
+> );
+> console.log(minor); // 'Minderjährig oder nicht gefunden'
+> ```
+>
+> Was passiert wenn du `u.age >= 18` durch `u.age >= 30` ersetzt?
+> Was gibt `findUser('unbekannt')` nach dem Filter zurück?
 
 ---
 

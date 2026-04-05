@@ -291,6 +291,52 @@ formatUsd(1234.56);   // "$1,234.56"
 > und teste ihn mit einem Array: `[1, null, 2, null, 3].filter(isNonNull)`.
 > Was ist der Typ des gefilterten Arrays?
 
+**In deinem Angular-Projekt:** Type Guards und Factory Functions sind
+zentrales Handwerkszeug fuer API-Integration und Dependency Injection:
+
+```typescript
+// Type Guard fuer API-Antworten — sichert HTTP-Daten zur Laufzeit
+interface ApiUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function isApiUser(value: unknown): value is ApiUser {
+  return (
+    typeof value === "object" && value !== null &&
+    typeof (value as ApiUser).id === "number" &&
+    typeof (value as ApiUser).name === "string" &&
+    typeof (value as ApiUser).email === "string"
+  );
+}
+
+// Im Angular Service:
+@Injectable({ providedIn: "root" })
+export class UserService {
+  constructor(private http: HttpClient) {}
+
+  getUser(id: number): Observable<ApiUser> {
+    return this.http.get<unknown>(`/api/users/${id}`).pipe(
+      map(data => {
+        if (!isApiUser(data)) throw new Error("Ungueltige API-Antwort");
+        return data;  // Ab hier: Typ ist ApiUser, nicht unknown
+      })
+    );
+  }
+}
+
+// Currying im Angular-Kontext: Konfigurierbarer Formatter-Service
+function createCurrencyFormatter(locale: string, currency: string) {
+  const fmt = new Intl.NumberFormat(locale, { style: "currency", currency });
+  return (amount: number) => fmt.format(amount);
+}
+
+export const formatEuro = createCurrencyFormatter("de-DE", "EUR");
+export const formatUsd = createCurrencyFormatter("en-US", "USD");
+// Ueberall im Template nutzbar: {{ formatEuro(price) }}
+```
+
 **Kernkonzept zum Merken:** Type Guards und Assertion Functions sind dein Werkzeug, um TypeScript's Type Narrowing zu erweitern. Sie bauen die Bruecke zwischen Laufzeit-Pruefung und Compilezeit-Wissen.
 
 ---
@@ -300,9 +346,8 @@ formatUsd(1234.56);   // "$1,234.56"
 Du hast alle 6 Sektionen der Functions-Lektion geschafft. Hier ist
 dein naechster Schritt:
 
-1. Arbeite die **Examples** in `examples/` durch
-2. Loese die **Exercises** in `exercises/`
-3. Teste dein Wissen mit dem **Quiz** (`npx tsx quiz.ts`)
-4. Behalte das **Cheatsheet** als Referenz
+1. Teste dein Wissen mit dem **Quiz** (im TUI: `q` druecken)
+2. Behalte das **Cheatsheet** als kompakte Referenz
+3. Weiter geht es mit Lektion 07: Union- und Intersection-Typen
 
 > **Zurueck zum Start:** [README.md](../README.md)

@@ -290,9 +290,24 @@ console.log(timestamped.createdAt);  // OK
 
 **Kernkonzept zum Merken:** Intersection Types sind die **Schnittmenge** aller beteiligten Typen. Die Menge der gueltigen Werte wird KLEINER (restriktiver), aber jeder Wert hat MEHR Properties.
 
-> **Experiment:** Oeffne `examples/04-intersection-types.ts` und
-> erstelle einen Typ `Admin = User & { role: "admin" }`. Was passiert
-> wenn du `{ name: "Alice", role: "user" }` zuweist?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> interface User {
+>   name: string;
+>   email: string;
+> }
+>
+> type Admin = User & { role: "admin" };
+>
+> // Was passiert hier?
+> const a: Admin = { name: "Alice", email: "a@x.com", role: "admin" };  // OK
+> const b: Admin = { name: "Bob",   email: "b@x.com", role: "user" };   // ???
+>
+> // Bonus: Was ist der Typ von "role" in Admin?
+> // Hover ueber "role" in der Admin-Definition.
+> ```
+> Welche Fehlermeldung zeigt TypeScript bei `role: "user"`?
+> Was wuerde passieren, wenn du `role: string` (breit) statt `role: "admin"` (Literal) nimmst?
 
 ---
 

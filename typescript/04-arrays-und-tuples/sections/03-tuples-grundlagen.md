@@ -44,13 +44,22 @@ Ein Tuple ist **kein Array mit eingeschraenkter Laenge**. Es ist konzeptuell
 etwas voellig anderes: Ein Tuple ist eine **positional typisierte Struktur** —
 aehnlich wie ein Object, aber mit numerischen Indizes statt benannten Keys.
 
-```typescript
+```typescript annotated
 // Tuple und Object druecken aehnliche Dinge aus:
-type PersonTuple = [string, number, boolean];  // [name, alter, aktiv]
-type PersonObject = { name: string; alter: number; aktiv: boolean };
+type PersonTuple = [string, number, boolean];  // ← Typ pro Position (Index 0, 1, 2)
+type PersonObject = { name: string; alter: number; aktiv: boolean }; // ← Typ pro benanntem Key
 
-// Der Unterschied: Tuple-Elemente haben keine semantischen Namen (nur Positionen).
+// Tuple-Zugriff ist positionsbasiert:
+const p: PersonTuple = ["Alice", 30, true];
+const name: string = p[0];   // ← Position 0 ist immer string
+const alter: number = p[1];  // ← Position 1 ist immer number — kein Raten noetig
+// p[3];                      // ← FEHLER: Index 3 existiert nicht im Tuple
 ```
+
+**Erklaere dir selbst:** Was ist der konzeptuelle Unterschied zwischen einem Tuple und einem Array — auch wenn beide zur Laufzeit JavaScript-Arrays sind?
+- Ein Array ist eine **homogene Liste**: beliebige Laenge, alle Elemente gleichen Typs
+- Ein Tuple ist eine **positional typisierte Struktur**: feste Laenge, jede Position hat ihren eigenen Typ
+- TypeScript erzwingt den Tuple-Typ nur zur Compile-Zeit — zur Laufzeit ist beides ein normales JavaScript-Array
 
 ### Tuple vs Array — der entscheidende Unterschied
 

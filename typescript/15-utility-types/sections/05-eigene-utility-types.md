@@ -110,10 +110,19 @@ type DeepPartial<T> = T extends (infer U)[]
 > ohne diesen Check, wenn T ein `string[]` ist?
 > **Kernpunkte:** Ohne Array-Check wird das Array wie ein Objekt behandelt | keyof string[] gibt "length", "push", "pop" etc. | Man will aber die ELEMENTE optional machen, nicht die Methoden | infer U extrahiert den Element-Typ
 
-> 🔬 **Experiment:** Oeffne `examples/05-eigene-utility-types.ts` und
-> teste `DeepPartial` mit einem Typ der ein Array enthaelt:
-> `type Test = DeepPartial<{ users: { name: string }[] }>`.
-> Ist `users` optional? Sind die Elemente im Array auch partial?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type DeepPartial<T> = T extends (infer U)[]
+>   ? DeepPartial<U>[]
+>   : T extends object
+>     ? { [P in keyof T]?: DeepPartial<T[P]> }
+>     : T;
+>
+> type Test = DeepPartial<{ users: { name: string; age: number }[] }>;
+> // Hovere ueber Test — ist users optional?
+> // Sind die Elemente im Array auch partial?
+> ```
+> Vergleiche mit der einfacheren Version ohne Array-Check: `type SimpleDeepPartial<T> = { [P in keyof T]?: T extends object ? SimpleDeepPartial<T[P]> : T[P] }`. Was passiert bei einem `string[]`?
 
 ---
 
@@ -303,8 +312,17 @@ Diese vier Bausteine reichen fuer fast jeden eigenen Utility Type.
 
 **Kernkonzept zum Merken:** Eigene Utility Types folgen dem Muster "Mapped Type + Bedingung + Rekursion". Die eingebauten Types sind die flachen Varianten — du baust die tiefen.
 
-> **Experiment:** Oeffne `examples/05-eigene-utility-types.ts` und baue
-> einen `DeepRequired<T>` — das Gegenteil von DeepPartial.
+> **Experiment:** Baue im TypeScript Playground einen `DeepRequired<T>` —
+> das Gegenteil von DeepPartial:
+> ```typescript
+> type DeepRequired<T> = T extends (infer U)[]
+>   ? DeepRequired<U>[]
+>   : T extends object
+>     ? { [P in keyof T]-?: DeepRequired<T[P]> }
+>     : T;
+> ```
+> Teste ihn mit `{ host?: string; ssl?: { cert?: string; key?: string } }`.
+> Sind alle Properties — auch verschachtelte — jetzt required?
 
 ---
 

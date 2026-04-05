@@ -249,11 +249,15 @@ type UserData = Awaited<ReturnType<typeof fetchUserData>>;
 > Implementierung von `Promise.all`, `Promise.race` und `Promise.allSettled`
 > deutlich einfacher und korrekter.
 
-> 🔬 **Experiment:** Oeffne `examples/04-returntype-parameters-awaited.ts`
-> und schreibe: `type Test = Awaited<Promise<Promise<Promise<string>>>>`.
-> Hovere ueber `Test` — wie viele Schichten werden entpackt? Vergleiche
-> mit `type Manual = Promise<Promise<Promise<string>>> extends Promise<infer U> ? U : never`
-> — wie viele Schichten packt das manuelle Pattern aus?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type Test = Awaited<Promise<Promise<Promise<string>>>>;
+> // Hovere ueber Test — wie viele Schichten werden entpackt?
+>
+> type Manual = Promise<Promise<Promise<string>>> extends Promise<infer U> ? U : never;
+> // Hovere ueber Manual — wie viele Schichten packt das manuelle Pattern aus?
+> ```
+> Was ist der Unterschied zwischen `Awaited` (rekursiv) und dem manuellen `infer`-Pattern (nur eine Ebene)?
 
 ---
 
@@ -302,8 +306,17 @@ type Products = Awaited<ReturnType<typeof getProducts>>;
 
 **Kernkonzept zum Merken:** ReturnType und Parameters extrahieren Informationen aus Funktionstypen. Awaited entpackt Promises. Zusammen bilden sie das Werkzeug fuer "Ich will den Typ, den diese Funktion zurueckgibt".
 
-> **Experiment:** Oeffne `examples/04-returntype-parameters-awaited.ts` und
-> experimentiere mit verschachtelten Promises und Awaited.
+> **Experiment:** Teste im TypeScript Playground:
+> ```typescript
+> async function getData() { return { id: 1, name: "Max" }; }
+>
+> type WithPromise = ReturnType<typeof getData>;
+> // ^ Promise<{ id: number; name: string }>
+>
+> type WithoutPromise = Awaited<ReturnType<typeof getData>>;
+> // ^ { id: number; name: string }
+> ```
+> Das Pattern `Awaited<ReturnType<typeof fn>>` ist in realen Projekten sehr haeufig.
 
 ---
 

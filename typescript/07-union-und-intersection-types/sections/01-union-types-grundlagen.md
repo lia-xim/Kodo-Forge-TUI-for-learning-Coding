@@ -235,9 +235,19 @@ function isValidRole(input: string): input is Role {
 }
 ```
 
-> **Experiment:** Oeffne `examples/01-union-types.ts` und probiere
-> folgendes aus: Entferne `as const` von der ROLES-Deklaration.
-> Was passiert mit dem Typ `Role`? Warum?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> const ROLES = ["admin", "editor", "viewer"] as const;
+> type Role = typeof ROLES[number];
+> // ^ Hover: "admin" | "editor" | "viewer"
+>
+> // Jetzt entferne "as const":
+> const ROLES2 = ["admin", "editor", "viewer"];
+> type Role2 = typeof ROLES2[number];
+> // ^ Hover: string — zu breit! Warum?
+> ```
+> Was passiert mit dem Typ `Role2` ohne `as const`? Warum inferiert
+> TypeScript dann `string` statt der konkreten Werte?
 
 ---
 
@@ -286,9 +296,22 @@ const s: string | number = "hallo";
 
 **Kernkonzept zum Merken:** Ein Union Type ist die **Vereinigungsmenge** aller beteiligten Typen. TypeScript erlaubt nur Operationen, die fuer ALLE Mitglieder gelten — alles andere braucht Type Narrowing.
 
-> **Experiment:** Oeffne `examples/01-union-types.ts` und erstelle einen
-> Union Type `TrafficLight = "red" | "yellow" | "green"`. Versuche dann
-> einem `TrafficLight`-Wert den String `"blue"` zuzuweisen. Was passiert?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type TrafficLight = "red" | "yellow" | "green";
+>
+> let signal: TrafficLight = "red";   // OK
+> signal = "green";                    // OK
+> signal = "blue";                     // Was passiert hier?
+>
+> // Bonusfrage: Was ergibt dieser Union aus Unions?
+> type ReadMethod = "GET" | "HEAD";
+> type WriteMethod = "POST" | "PUT" | "DELETE";
+> type HttpMethod = ReadMethod | WriteMethod;
+> // Hover ueber HttpMethod — wie viele Mitglieder hat er?
+> ```
+> Welche Fehlermeldung zeigt TypeScript bei `"blue"`? Und warum ist
+> das Zusammensetzen von Unions so praktisch?
 
 ---
 

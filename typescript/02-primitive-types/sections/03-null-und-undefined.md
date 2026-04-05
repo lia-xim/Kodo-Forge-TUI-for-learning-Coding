@@ -343,13 +343,25 @@ if (x === undefined) { /* x ist nur undefined, nicht null */ }
 
 **Kernkonzept zum Merken:** `strictNullChecks` macht `null` und `undefined` zu eigenstaendigen Typen. Ohne diese Option ist TypeScript's Typsystem nur halb so wertvoll.
 
-> **Experiment:** Oeffne `examples/02-null-und-undefined.ts` und
-> probiere folgendes:
-> 1. Oeffne die `tsconfig.json` und setze `"strictNullChecks": false`
->    (oder kommentiere `"strict": true` aus). Welche roten Unterstreichungen
->    verschwinden? Welche Sicherheit verlierst du dadurch?
-> 2. Mache die Aenderung rueckgaengig und versuche stattdessen,
->    `??` durch `||` zu ersetzen. Was passiert bei `port = 0`?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // strictNullChecks ist standardmaessig aktiv (mit "strict": true)
+> function gibLaenge(text: string): number {
+>   return text.length;
+> }
+> // gibLaenge(null);  // Fehler mit strictNullChecks — entferne // und schau!
+>
+> // ?? vs || bei falsy-Werten
+> const port1 = 0 || 3000;   // Was ist das Ergebnis? 3000 — 0 ist "falsy"!
+> const port2 = 0 ?? 3000;   // Was ist das Ergebnis? 0 — ?? prueft nur null/undefined
+>
+> const text1 = "" || "default";  // "default"
+> const text2 = "" ?? "default";  // ""
+> ```
+> Schalte im Playground unter "TS Config" die Option `strictNullChecks` aus.
+> Welche Fehlermeldungen verschwinden, wenn du `gibLaenge(null)` aufrufst?
+> Ersetze dann in der zweiten Haelfte `??` durch `||` bei `port2` —
+> warum ist das bei einem Port-Default gefaehrlich?
 
 ---
 

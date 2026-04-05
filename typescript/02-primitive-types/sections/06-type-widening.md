@@ -317,17 +317,36 @@ type Status = typeof STATUS[number];
 
 **Kernkonzept zum Merken:** Widening ist TypeScript's Kompromiss zwischen Sicherheit und Flexibilitaet. `const` gibt dir Sicherheit (Literal Types), `let` gibt dir Flexibilitaet (breite Typen), und `as const` gibt dir Sicherheit fuer Objekte und Arrays.
 
-> **Experiment:** Oeffne `examples/06-type-widening-und-literal-types.ts`
-> und probiere folgendes:
-> 1. Hovere in deiner IDE ueber die `config`-Variable VOR und NACH dem
->    Hinzufuegen von `as const`. Beobachte wie sich der angezeigte Typ
->    veraendert.
-> 2. Aendere `const farben = ["rot", "gruen", "blau"] as const` zu
->    `const farben = ["rot", "gruen", "blau"]` (ohne `as const`).
->    Versuche dann `type Farbe = typeof farben[number]` — was ist der
->    Typ jetzt? (`string` statt `"rot" | "gruen" | "blau"`)
-> 3. Schreibe `const obj = { x: 10, y: 20 } satisfies { x: number; y: number }`
->    und hovere ueber `obj.x` — ist es `number` oder `10`?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // as const: Vor und nach dem Hinzufuegen vergleichen
+> const config = {
+>   method: "GET",
+>   retries: 3,
+> };
+> // Hover ueber config.method: Typ ist "string" (breit)
+>
+> const configConst = {
+>   method: "GET",
+>   retries: 3,
+> } as const;
+> // Hover ueber configConst.method: Typ ist "GET" (Literal!)
+>
+> // Array: mit und ohne as const
+> const farben = ["rot", "gruen", "blau"] as const;
+> type Farbe = typeof farben[number]; // "rot" | "gruen" | "blau"
+>
+> const farbenBreit = ["rot", "gruen", "blau"];
+> type FarbeBreit = typeof farbenBreit[number]; // string — viel zu weit!
+>
+> // satisfies: Typ pruefen ohne Literal Types zu verlieren
+> const obj = { x: 10, y: 20 } satisfies { x: number; y: number };
+> // Hover ueber obj.x: ist es number oder 10?
+> ```
+> Hovere ueber `config.method` vs. `configConst.method` — siehst du den
+> Unterschied zwischen `string` und dem Literal Type `"GET"`?
+> Entferne `as const` bei `farben` und schau was `Farbe` dann ist.
+> Bei `satisfies`: ist `obj.x` der Typ `number` oder `10`?
 
 ---
 
@@ -351,12 +370,11 @@ type Status = typeof STATUS[number];
 
 ## Naechste Schritte
 
-Du hast alle sechs Sektionen abgeschlossen. Jetzt wird es praktisch:
+Du hast alle sechs Sektionen abgeschlossen. Jetzt festigen wir das Wissen:
 
-1. **Examples** in `examples/` durcharbeiten — ausfuehren und experimentieren
-   (besonders `06-type-widening-und-literal-types.ts`)
-2. **Exercises** in `exercises/` loesen — die TODO-Aufgaben bearbeiten
-3. **Quiz** mit `npx tsx quiz.ts` testen
+1. **Quiz** starten — teste dein Verstaendnis mit den 15+ Fragen dieser Lektion
+2. **Cheatsheet** oeffnen — kompakte Referenz aller Primitive Types auf einen Blick
+3. **Naechste Lektion**: L03 — Objekte, Interfaces und Type Aliases
 4. **Loesungen** in `solutions/` vergleichen
 5. **Cheatsheet** (`cheatsheet.md`) als Schnellreferenz behalten
 

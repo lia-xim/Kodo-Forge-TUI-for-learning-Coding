@@ -328,8 +328,7 @@ type UserEvents = EventMap<UserProfile>;
 > - **Sektion 5:** Praxis-Patterns (Forms, APIs, Events, Accessors)
 >
 > Naechste Schritte:
-> 1. Exercises in `exercises/` durcharbeiten
-> 2. Quiz mit `npx tsx quiz.ts` testen
-> 3. Cheatsheet als Referenz behalten
+> 1. Quiz durcharbeiten
+> 2. Cheatsheet als Referenz behalten
 >
 > **Naechste Lektion:** [17 - Conditional Types](../../17-conditional-types/README.md)

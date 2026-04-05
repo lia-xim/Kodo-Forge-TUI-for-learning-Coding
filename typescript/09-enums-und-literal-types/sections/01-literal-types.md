@@ -237,9 +237,57 @@ const multi = getUserV2(1, true);
 
 **Kernkonzept zum Merken:** Literal Types sind die Grundlage fuer fast alles in TypeScript — Union Types, Discriminated Unions, Template Literal Types, und Exhaustive Checks bauen alle darauf auf.
 
-> **Experiment:** Oeffne `examples/01-literal-types.ts` und experimentiere
-> mit `as const`. Was passiert, wenn du `as const` von einem Objekt entfernst?
-> Hover ueber die Variablen und beobachte, wie sich die Typen aendern.
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // Component Input mit Literal Types — praeziser als string:
+> @Component({ selector: 'app-button', template: '...' })
+> export class ButtonComponent {
+>   @Input() variant: "primary" | "secondary" | "danger" = "primary";
+>   @Input() size: "sm" | "md" | "lg" = "md";
+> }
+>
+> // Route-Konfiguration mit as const:
+> const ROUTES = [
+>   { path: "dashboard", title: "Dashboard" },
+>   { path: "settings",  title: "Einstellungen" },
+>   { path: "profile",   title: "Profil" },
+> ] as const;
+>
+> type AppPath = typeof ROUTES[number]["path"];
+> // ^ "dashboard" | "settings" | "profile"
+> // Tippfehler in RouterLink werden sofort erkannt!
+> ```
+>
+> In React gilt das gleiche Prinzip fuer Props:
+> `<Button variant="primary">` statt `<Button variant="irgendwas">`.
+> Die Literal Types machen Props selbst-dokumentierend.
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Mit as const: Alles wird fixiert
+> const config = {
+>   apiUrl: "https://api.example.com",
+>   retries: 3,
+>   method: "GET",
+> } as const;
+> // Hover ueber config.method — was ist der Typ?
+>
+> // Ohne as const: Properties werden breit inferiert
+> const config2 = {
+>   apiUrl: "https://api.example.com",
+>   retries: 3,
+>   method: "GET",
+> };
+> // Hover ueber config2.method — was ist der Typ jetzt?
+>
+> // Union Type aus as const ableiten:
+> const METHODS = ["GET", "POST", "PUT", "DELETE"] as const;
+> type HttpMethod = typeof METHODS[number];
+> // Hover ueber HttpMethod — was ergibt sich?
+> ```
+> Erklaere den Unterschied zwischen `config.method` (mit `as const`)
+> und `config2.method` (ohne). Warum ist `"GET"` praeziser als `string`?
 
 ---
 

@@ -251,13 +251,20 @@ type UpdateUser = TransformType<User, "id", "name" | "email" | "role", "avatar" 
 > `InferGetServerSidePropsType` (ein Awaited+ReturnType-Kombination)
 > automatisch an die Page-Component weitergegeben.
 
-> 🔬 **Experiment:** Oeffne `examples/06-utility-types-kombinieren.ts`
-> und baue einen `FormType<T, RequiredFields, OptionalFields>` der
-> folgendes kann:
-> 1. RequiredFields werden zu Pflichtfeldern
-> 2. OptionalFields werden optional
-> 3. Felder die in keiner Gruppe sind werden entfernt
-> Teste ihn mit dem `User`-Interface.
+> **Experiment:** Baue im TypeScript Playground einen `FormType<T, RequiredFields, OptionalFields>`:
+> ```typescript
+> type FormType<
+>   T,
+>   R extends keyof T,
+>   O extends keyof T
+> > = Required<Pick<T, R>> & Partial<Pick<T, O>>;
+>
+> interface User { id: number; name: string; email: string; bio?: string; role: "admin" | "user" }
+>
+> type LoginForm = FormType<User, "email", "name">;
+> // email: string (required), name?: string (optional), alles andere fehlt
+> ```
+> Teste verschiedene Key-Kombinationen. Was passiert wenn ein Key in R und O gleichzeitig vorkommt?
 
 > 💭 **Denkfrage:** Was passiert, wenn in `TransformType<T, R, O, X>` ein
 > Key gleichzeitig in R und O vorkommt? Ist das ein Fehler?
@@ -296,17 +303,16 @@ type UpdateUser = TransformType<User, "id", "name" | "email" | "role", "avatar" 
 
 **Kernkonzept zum Merken:** Die wahre Kraft der Utility Types liegt nicht in den einzelnen Types, sondern in ihrer Komposition. Denke in Transformationsketten: Basis-Typ -> Pick/Omit -> Partial/Required -> Readonly.
 
-> **Experiment:** Oeffne `examples/06-utility-types-kombinieren.ts` und
-> baue einen `FormType<T, RequiredFields, OptionalFields>` der alle
-> drei Concerns vereint.
+> **Experiment:** Teste im TypeScript Playground das `TransformType`-Pattern
+> mit einem eigenen Interface — z.B. einem `Article`-Typ aus deinem Angular-Projekt.
+> Welche abgeleiteten Typen (Create, Update, View) kannst du daraus generieren?
 
 ---
 
 > **Ende der Lektion** — Du beherrschst jetzt TypeScripts Utility Types!
 >
 > Naechste Schritte:
-> 1. Exercises in `exercises/` durcharbeiten
-> 2. Quiz mit `npx tsx quiz.ts` testen
-> 3. Cheatsheet als Referenz behalten
+> 1. Quiz durcharbeiten
+> 2. Cheatsheet als Referenz behalten
 >
 > **Naechste Lektion:** 16 — Mapped Types & Conditional Types

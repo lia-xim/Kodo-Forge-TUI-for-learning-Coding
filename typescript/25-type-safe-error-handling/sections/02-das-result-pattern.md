@@ -207,10 +207,52 @@ function processInput(raw: string): Result<number, string> {
 }
 ```
 
-> **Experiment:** Öffne `examples/02-result-pattern.ts` und:
-> 1. Schreibe `mapResult` und `flatMapResult` selbst.
-> 2. Kette drei Schritte: `parseEmail → mapToUserId → validateUserExists`.
-> 3. Beobachte: Fehler aus jedem Schritt werden automatisch durchgeleitet!
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> type Ok<T>  = { readonly ok: true;  readonly value: T };
+> type Err<E> = { readonly ok: false; readonly error: E };
+> type Result<T, E = string> = Ok<T> | Err<E>;
+>
+> function ok<T>(value: T): Ok<T>  { return { ok: true,  value }; }
+> function err<E>(e: E):   Err<E>  { return { ok: false, error: e }; }
+>
+> type Email = string & { readonly __brand: 'Email' };
+>
+> function parseEmail(raw: string): Result<Email> {
+>   const normalized = raw.trim().toLowerCase();
+>   if (!normalized) return err('E-Mail leer');
+>   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+>   if (!regex.test(normalized)) return err(`Ungültiges Format: ${raw}`);
+>   return ok(normalized as Email);
+> }
+>
+> function mapResult<T, U, E>(r: Result<T, E>, fn: (v: T) => U): Result<U, E> {
+>   return r.ok ? ok(fn(r.value)) : r;
+> }
+>
+> function flatMapResult<T, U, E>(r: Result<T, E>, fn: (v: T) => Result<U, E>): Result<U, E> {
+>   return r.ok ? fn(r.value) : r;
+> }
+>
+> // Kette: parseEmail → Längenpruefung → Grossbuchstaben
+> const result = flatMapResult(
+>   parseEmail('max@example.com'),
+>   email => email.length > 5 ? ok(email) : err('E-Mail zu kurz')
+> );
+> const final = mapResult(result, e => e.toUpperCase());
+> console.log(final); // { ok: true, value: 'MAX@EXAMPLE.COM' }
+>
+> // Fehler-Durchleitung testen:
+> const error = flatMapResult(
+>   parseEmail(''),  // schlaegt fehl
+>   email => ok(email.toUpperCase())  // wird nie aufgerufen
+> );
+> console.log(error); // { ok: false, error: 'E-Mail leer' }
+> ```
+>
+> Was passiert wenn du die leere Eingabe durch `'x@y.z'` ersetzt (5 Zeichen)?
+> Beobachte: Fehler aus jedem Schritt werden automatisch durchgeleitet!
 
 ---
 

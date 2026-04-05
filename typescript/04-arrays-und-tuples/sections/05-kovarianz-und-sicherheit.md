@@ -284,20 +284,20 @@ In `tsconfig.json`:
 ```
 
 Jetzt:
-```typescript
+```typescript annotated
 const namen: string[] = ["Alice", "Bob"];
-const dritter = namen[2]; // Typ: string | undefined  <-- korrekt!
+const dritter = namen[2]; // ← Typ: string | undefined — korrekt! (ohne Option: string)
 
 // Du musst jetzt pruefen:
 if (dritter !== undefined) {
-  dritter.toUpperCase(); // ok, TypeScript weiss es ist string
+  dritter.toUpperCase(); // ← ok: TypeScript weiss hier: dritter ist string
 }
 
 // Oder mit Optional Chaining:
-dritter?.toUpperCase();
+dritter?.toUpperCase();  // ← Kurzform: nur aufrufen wenn dritter nicht undefined
 
 // Oder mit Non-null Assertion (wenn du dir sicher bist):
-dritter!.toUpperCase(); // Vorsicht: umgeht die Pruefung!
+dritter!.toUpperCase(); // ← Vorsicht: umgeht die Pruefung — du uebernimmst Verantwortung
 ```
 
 ### Auswirkung auf Tuples

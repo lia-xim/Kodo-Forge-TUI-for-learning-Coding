@@ -341,13 +341,39 @@ const THEMES = ["light", "dark"] as const;  // Sinnvoll: readonly ["light", "dar
 
 ## Experiment-Box: Inference-Grenzen austesten
 
-> **Experiment:** Erstelle eine neue Datei oder nutze die REPL (`npx tsx`) und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus und beobachte, wo Inference aufgibt:
 >
-> 1. `const items = [];` -- was sagt `typeof items`? Dann `items.push("hello"); items.push(42);` -- beides erlaubt? Warum?
-> 2. `const keys = Object.keys({ name: "Max", age: 30 });` -- hovere ueber `keys`. Ist es `("name" | "age")[]`?
-> 3. `const data = JSON.parse('{"x": 1}');` -- hovere ueber `data`. Was kannst du mit `data.x` machen?
-> 4. Definiere einen Callback separat und uebergib ihn an `.map()`: `const fn = (n) => n * 2; [1,2,3].map(fn);` -- hat `n` einen Typ?
-> 5. Schreibe `async function f() { return (await fetch("/")).json(); }` -- was ist der Return-Typ?
+> ```typescript
+> // Fall 1: Leeres Array
+> const items = [];
+> items.push("hello");
+> items.push(42);
+> // Werden beide push()-Aufrufe erlaubt? Warum?
+>
+> // Fall 2: Object.keys()
+> const user = { name: "Max", age: 30 };
+> const keys = Object.keys(user);
+> // Hovere ueber 'keys' -- ist es ("name" | "age")[] oder string[]?
+>
+> // Fall 3: JSON.parse
+> const data = JSON.parse('{"x": 1}');
+> // Hovere ueber 'data' -- welcher Typ? Was kannst du mit 'data.x' machen?
+>
+> // Fall 4: Separater Callback ohne Kontext
+> const fn = (n) => n * 2;
+> [1, 2, 3].map(fn);
+> // Hovere ueber 'n' in der Callback-Definition -- hat 'n' einen Typ?
+>
+> // Fall 5: Promise-Chain ohne Annotation
+> async function loadData() {
+>   const response = await fetch("/api/users");
+>   const data = await response.json();
+>   return data;
+> }
+> // Hovere ueber 'loadData' -- was ist der Return-Typ? Was fehlt?
+> ```
+>
+> Benenne fuer jeden Fall den Grund, warum Inference versagt -- aus welchem der sechs systematischen Faelle stammt er?
 
 ---
 
@@ -366,24 +392,6 @@ Besonders wichtig:
 
 Du hast jetzt das vollstaendige Bild zu Type Annotations und Inference. Um dein Wissen zu festigen:
 
-1. Oeffne die **Examples** (`examples/`) und experimentiere -- hovere ueber Variablen und ueberpruefe deine Vorhersagen
-2. Mache die **Exercises** (`exercises/`) selbststaendig
-3. Vergleiche mit den **Solutions** (`solutions/`)
-4. Absolviere das **Quiz**: `npx tsx 03-type-annotations-und-inference/quiz.ts`
-5. Behalte das **Cheatsheet** (`cheatsheet.md`) als Referenz
-
-| Datei | Beschreibung |
-|-------|-------------|
-| `examples/01-explizite-annotationen.ts` | Alle Annotations-Syntax-Varianten |
-| `examples/02-type-inference.ts` | Inference in Aktion mit Hover-Uebungen |
-| `examples/03-widening-und-const.ts` | Widening, `let` vs `const`, `as const`, `satisfies` |
-| `examples/04-contextual-typing.ts` | Contextual Typing bei Callbacks und mehr |
-| `examples/05-control-flow-analysis.ts` | Control Flow Narrowing und Inference |
-| `examples/06-satisfies-deep-dive.ts` | `satisfies` vs Annotation vs Inference |
-| `exercises/01-annotieren-oder-infern.ts` | 15 Szenarien: Annotation noetig oder nicht? |
-| `exercises/02-inference-vorhersagen.ts` | 15 Typ-Vorhersagen mit Type-Level-Tests |
-| `exercises/03-satisfies-und-control-flow.ts` | satisfies anwenden, Control Flow nutzen |
-| `exercises/04-predict-the-type.ts` | 12 ueberraschende Inference-Faelle vorhersagen |
-| `exercises/05-fehlermeldungen-lesen.ts` | 6 Fehlermeldungen richtig interpretieren |
-| `quiz.ts` | 15 interaktive Fragen |
-| `cheatsheet.md` | Schnellreferenz |
+1. Absolviere das **Quiz** -- es bringt die wichtigsten Konzepte nochmal auf den Punkt
+2. Nutze das **Cheatsheet** als Schnellreferenz in deinen naechsten Projekten
+3. Beobachte dein naechstes Angular- oder React-Projekt mit neuen Augen: Wo annotierst du an Grenzen? Wo laesst du TypeScript inferieren?

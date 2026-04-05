@@ -300,12 +300,24 @@ Verwendung von Wrapper-Typen. Wenn du `@typescript-eslint` verwendest
 
 **Kernkonzept zum Merken:** `number` hat eine sichere Grenze bei 2^53 - 1. Alles darueber verliert Praezision. Geld immer in der kleinsten Einheit (Cent) speichern.
 
-> **Experiment:** Oeffne `examples/01-string-number-boolean.ts` und
-> versuche folgendes:
-> 1. Aendere `const name = "Max"` zu `let name = "Max"` — hovere in deiner
->    IDE ueber `name` und beobachte wie sich der Typ aendert (von `"Max"` zu `string`).
-> 2. Schreibe `const preis: Number = 19.99` (Grossbuchstabe!) — was sagt der Compiler?
-> 3. Tippe `console.log(0.1 + 0.2 === 0.3)` und fuehre es aus. Ueberrascht?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // 1. const vs let: Wie aendert sich der inferierte Typ?
+> const name1 = "Max";   // Hover: Typ ist "Max" (Literal Type)
+> let name2 = "Max";     // Hover: Typ ist string (breiter Typ)
+>
+> // 2. Wrapper-Objekt vs Primitiv: Was sagt der Compiler?
+> const preis1: number = 19.99;  // OK
+> const preis2: Number = 19.99;  // Compiler-Warnung — gross N ist das Wrapper-Objekt!
+>
+> // 3. Die klassische Gleitkomma-Falle
+> console.log(0.1 + 0.2 === 0.3);  // false! IEEE 754 Praezision
+> console.log(0.1 + 0.2);           // 0.30000000000000004
+> ```
+> Hovere in der IDE ueber `name1` und `name2` — siehst du den Unterschied
+> zwischen Literal Type `"Max"` und breitem Typ `string`? Was passiert, wenn du
+> `preis2` einer Funktion uebergibst, die `number` erwartet? Und: Warum liefert
+> `0.1 + 0.2 === 0.3` den Wert `false`?
 
 ---
 

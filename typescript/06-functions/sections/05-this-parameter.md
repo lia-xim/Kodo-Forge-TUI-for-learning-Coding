@@ -258,9 +258,69 @@ type GreetFn = OmitThisParameter<typeof greet>;
 - `ThisParameterType<T>` und `OmitThisParameter<T>` sind Utility-Typen fuer this-Manipulation
 - Arrow Functions als **Class Properties** sichern `this`, kosten aber Performance bei vielen Instanzen
 
-> **Experiment:** Oeffne `examples/01-funktionstypen-basics.ts` und
-> versuche, eine Methode mit `this`-Parameter zu schreiben. Rufe
-> sie mit `.call()` auf und beobachte, wie TypeScript den this-Typ prueft.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> interface Counter {
+>   count: number;
+>   label: string;
+> }
+>
+> function increment(this: Counter, step: number = 1): string {
+>   this.count += step;
+>   return `${this.label}: ${this.count}`;
+> }
+>
+> const myCounter: Counter = { count: 0, label: "Klicks" };
+>
+> // Mit .call() — this wird explizit gesetzt:
+> increment.call(myCounter, 5);    // OK! this ist Counter
+>
+> // Direkter Aufruf ohne this:
+> increment(5);  // Error! Der this-Kontext 'void' ist kein Counter
+>
+> // Was passiert wenn du ein Objekt uebergibst, das NICHT Counter ist?
+> increment.call({ count: 0 }, 5);  // Error! 'label' fehlt
+> ```
+>
+> Aendere den `this`-Parameter auf `this: { count: number }` (ohne `label`).
+> Welche Auswirkung hat das auf die Methode? Beobachte wie TypeScript
+> den this-Vertrag auf der Aufruferseite durchsetzt.
+
+**In deinem Angular-Projekt:** Das `this`-Problem trifft dich direkt bei
+Event-Bindings und Services. Angular-Components sind Klassen — und genau
+deshalb empfiehlt Angular Arrow Functions fuer alle Callbacks:
+
+```typescript
+@Component({ ... })
+export class UserListComponent {
+  users: User[] = [];
+
+  // PROBLEM: Regulaere Methode als setTimeout-Callback verliert this
+  loadUsersBroken() {
+    setTimeout(function() {
+      this.users = [];  // Error zur Laufzeit: this ist undefined!
+    }, 100);
+  }
+
+  // LOESUNG 1: Arrow Function erbt this vom Component-Scope
+  loadUsers() {
+    setTimeout(() => {
+      this.users = [];  // OK — Arrow Function haelt this-Binding
+    }, 100);
+  }
+
+  // LOESUNG 2: Arrow als Class Property (bei Event-Handlern)
+  onDelete = (userId: number) => {
+    this.users = this.users.filter(u => u.id !== userId);
+    // this ist immer die Component-Instanz — auch wenn als Callback uebergeben
+  };
+}
+```
+
+In React ist `this` kein Thema mehr (Hooks + funktionale Components) —
+aber du siehst denselben Effekt bei `useCallback`: Es "einfriert" eine
+Funktion mit dem aktuellen Scope, aehnlich wie `.bind(this)`.
 
 **Kernkonzept zum Merken:** `this` ist in JavaScript dynamisch, aber TypeScript kann es zur Compilezeit pruefen. Arrow Functions loesen das Problem elegant — der `this`-Parameter ist fuer die Faelle, wo du es explizit kontrollieren musst.
 

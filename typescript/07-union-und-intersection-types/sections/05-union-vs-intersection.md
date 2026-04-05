@@ -249,9 +249,24 @@ type D = string & never;    // = never (never macht alles unmoeglich)
 
 **Kernkonzept zum Merken:** Union und Intersection sind **duale Operatoren**. Verstehst du einen, verstehst du den anderen — sie verhalten sich spiegelbildlich, wie Addition und Multiplikation.
 
-> **Experiment:** Oeffne `examples/05-union-vs-intersection.ts` und
-> experimentiere mit dem Verteilungsgesetz. Erstelle
-> `type Test = (string | number) & ("hello" | 42)` — was ergibt sich?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Verteilungsgesetz in Aktion:
+> type Test = (string | number) & ("hello" | 42);
+> // Aufloesung Schritt fuer Schritt:
+> // = (string & "hello") | (string & 42) | (number & "hello") | (number & 42)
+> // = "hello"            | never         | never              | 42
+> // = "hello" | 42
+>
+> // Hover ueber Test — stimmt das Ergebnis mit deiner Erwartung ueberein?
+>
+> // Bonus: Was ergibt das?
+> type Test2 = (string | number) & string;
+> type Test3 = never | string;
+> type Test4 = unknown & string;
+> ```
+> Hover ueber `Test`, `Test2`, `Test3` und `Test4`. Erklaere jeweils
+> das Ergebnis mit dem Verteilungsgesetz oder den Identitaetselementen.
 
 ---
 

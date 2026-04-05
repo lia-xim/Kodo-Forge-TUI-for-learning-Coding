@@ -149,24 +149,41 @@ const port = process.env.PORT ?? "3000";
 // Das verhindert Tippfehler in Environment-Variablen-Namen!
 ```
 
-> **Experiment:** Erstelle eine Datei `types/env.d.ts` in einem
-> Node.js-Projekt und definiere deine Environment-Variablen:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
-> export {};
+> // Schritt 1: Ohne Augmentation — process.env ist weitgehend unbekannt
+> const dbUrl1 = process.env.DATABASE_URL;
+> // Typ: string | undefined — kein Unterschied zu irgendeiner anderen Variable
+>
+> // Schritt 2: Global Augmentation hinzufuegen
+> export {}; // Macht diese Datei zum Modul
+>
 > declare global {
 >   namespace NodeJS {
 >     interface ProcessEnv {
 >       NODE_ENV: "development" | "production";
->       API_KEY: string;
+>       DATABASE_URL: string;    // Pflichtfeld — kein undefined!
+>       API_KEY?: string;        // Optional
 >     }
 >   }
 > }
+>
+> // Schritt 3: Jetzt ist process.env typsicher
+> const dbUrl2 = process.env.DATABASE_URL;
+> // Typ: string (nicht string | undefined — Pflichtfeld!)
+>
+> const apiKey = process.env.API_KEY ?? "default";
+> // Typ: string — optional, aber mit Fallback abgesichert
+>
+> // Compile-Error:
+> // const typo = process.env.DATBASE_URL; // ← Tippfehler → sofort erkannt!
 > ```
 >
-> Tippe dann `process.env.` — nur `NODE_ENV` und `API_KEY` erscheinen
-> im Autocomplete (plus die Standard-Node.js-Variablen). Probiere
-> `process.env.DOES_NOT_EXIST` — Compile-Error!
+> Beachte: In einem echten Projekt wuerde dieser Block in einer eigenen Datei
+> (z.B. `types/env.d.ts`) leben — die Augmentation wirkt dann projektWeit.
+> Im Playground kannst du alles in eine Datei schreiben, weil `export {}`
+> die Datei zum Modul macht und `declare global` dann greift.
 
 ---
 

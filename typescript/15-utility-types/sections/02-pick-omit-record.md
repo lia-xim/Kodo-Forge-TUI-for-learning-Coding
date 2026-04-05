@@ -211,10 +211,20 @@ const methodConfigs: Record<HttpMethod, MethodConfig> = {
 // ^ Falscher Key? Compile-Error!
 ```
 
-> 🔬 **Experiment:** Oeffne `examples/02-pick-omit-record.ts` und entferne
-> eine Zeile aus der `methodConfigs`-Definition (z.B. DELETE). Was sagt
-> der Compiler? Fuege dann einen ungueltigen Key hinzu (z.B. "PATCH").
-> Beobachte wie `Record<HttpMethod, ...>` in beide Richtungen schuetzt.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+>
+> interface MethodConfig { hasBody: boolean; idempotent: boolean; }
+>
+> const methodConfigs: Record<HttpMethod, MethodConfig> = {
+>   GET:    { hasBody: false, idempotent: true },
+>   POST:   { hasBody: true,  idempotent: false },
+>   PUT:    { hasBody: true,  idempotent: true },
+>   DELETE: { hasBody: false, idempotent: true },
+> };
+> ```
+> Entferne `DELETE` aus dem Objekt. Was meldet der Compiler? Fuege dann `PATCH: { ... }` hinzu. Wie schuetzt `Record<HttpMethod, ...>` in beide Richtungen?
 
 > 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen
 > `Record<string, T>` und `Map<string, T>`?
@@ -275,9 +285,15 @@ type ProductPreview = Omit<Product, "stock" | "description">;
 
 **Kernkonzept zum Merken:** Pick und Omit sind wie SELECT und EXCEPT in SQL — sie waehlen Spalten (Properties) aus einer Tabelle (Typ) aus.
 
-> **Experiment:** Oeffne `examples/02-pick-omit-record.ts` und probiere
-> aus, was passiert wenn du bei Omit einen nicht-existierenden Key angibst.
-> Vergleiche es dann mit StrictOmit.
+> **Experiment:** Teste im TypeScript Playground:
+> ```typescript
+> interface User { id: number; name: string; password: string; }
+> type StrictOmit<T, K extends keyof T> = Omit<T, K>;
+>
+> type A = Omit<User, "passwort">;      // Tippfehler — kein Fehler!
+> type B = StrictOmit<User, "passwort">; // Fehler! "passwort" ist kein Key
+> ```
+> Warum meldet das Standard-`Omit` keinen Fehler beim Tippfehler?
 
 ---
 

@@ -321,9 +321,25 @@ function getDescription(shape: Shape): string {
 }
 ```
 
-> **Experiment:** Oeffne `examples/02-type-guards.ts` und fuege
-> `"pentagon"` zum Shape-Typ hinzu. Was passiert? Wie hilft der
-> `never`-Typ im `default`-Fall? (Mehr dazu in Sektion 3)
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type Shape = "circle" | "square" | "triangle";
+>
+> function getDescription(shape: Shape): string {
+>   switch (shape) {
+>     case "circle":   return "Ein runder Kreis";
+>     case "square":   return "Ein eckiges Quadrat";
+>     case "triangle": return "Ein spitzes Dreieck";
+>   }
+> }
+>
+> // Fuege jetzt "pentagon" zum Typ hinzu:
+> // type Shape = "circle" | "square" | "triangle" | "pentagon";
+> // Was passiert? TypeScript weiss, dass getDescription()
+> // fuer "pentagon" keinen Rueckgabewert hat.
+> ```
+> Welchen Fehler zeigt TypeScript nach dem Hinzufuegen von `"pentagon"`?
+> Wie wuerde ein `default`-Zweig mit `const _x: never = shape` helfen?
 
 ---
 

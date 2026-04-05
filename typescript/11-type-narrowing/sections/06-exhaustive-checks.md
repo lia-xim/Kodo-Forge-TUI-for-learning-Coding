@@ -218,10 +218,27 @@ function rendere(zustand: AppZustand): string {
 }
 ```
 
-> ⚡ **Experiment:** Oeffne `examples/06-exhaustive-checks.ts` und fuege
-> einen neuen Zustand zum Union hinzu (z.B. `{ typ: "leer" }`). Beobachte
-> den Compile-Fehler im default-Zweig — er sagt dir genau, welchen
-> Fall du vergessen hast.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function assertNever(wert: never): never {
+>   throw new Error(`Unbehandelter Fall: ${JSON.stringify(wert)}`);
+> }
+>
+> type AppZustand =
+>   | { typ: "laden" }
+>   | { typ: "erfolg"; daten: string[] }
+>   | { typ: "fehler"; nachricht: string };
+>
+> function rendere(zustand: AppZustand): string {
+>   switch (zustand.typ) {
+>     case "laden": return "<Spinner />";
+>     case "erfolg": return `<Liste items={${zustand.daten.length}} />`;
+>     case "fehler": return `<Fehler: ${zustand.nachricht} />`;
+>     default: return assertNever(zustand);
+>   }
+> }
+> ```
+> Fuege einen neuen Zustand hinzu: `| { typ: "leer" }`. Welcher Fehler erscheint im `default`-Zweig und wie lautet die genaue TypeScript-Fehlermeldung?
 
 ---
 
@@ -297,10 +314,8 @@ einfachen typeof-Check bis zum exhaustive assertNever. Narrowing ist die
 Bruecke zwischen allgemeinen Typen und konkreten, sicheren Operationen.
 
 **Naechste Schritte:**
-1. Arbeite die Examples durch (`examples/01-06`)
-2. Loese die Exercises (`exercises/01-06`)
-3. Teste dich mit dem Quiz (`npx tsx quiz.ts`)
-4. Nutze das Cheatsheet als Referenz
+1. Teste dich mit dem Quiz
+2. Nutze das Cheatsheet als Referenz
 
 > **Naechste Lektion:** 12 - Generics — Wie schreibst du Funktionen und Typen,
 > die mit JEDEM Typ funktionieren, ohne die Typsicherheit zu verlieren?

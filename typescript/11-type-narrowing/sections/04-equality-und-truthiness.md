@@ -168,9 +168,23 @@ function verarbeiteLaengeSicher(laenge: number | null): string {
 }
 ```
 
-> ⚡ **Experiment:** Oeffne `examples/04-equality-und-truthiness.ts` und
-> teste verschiedene Werte mit dem Truthiness-Check. Beobachte, welche
-> Werte unerwartet ausgeschlossen werden (0, "", false).
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function truthinessDemo(wert: string | number | null | undefined) {
+>   if (wert) {
+>     console.log(`Truthy: ${JSON.stringify(wert)}`);
+>   } else {
+>     console.log(`Falsy: ${JSON.stringify(wert)}`);
+>   }
+> }
+>
+> truthinessDemo("hallo");  // Truthy
+> truthinessDemo("");       // Falsy — ACHTUNG!
+> truthinessDemo(0);        // Falsy — ACHTUNG!
+> truthinessDemo(null);     // Falsy
+> truthinessDemo(42);       // Truthy
+> ```
+> Welche Werte landen unerwartet im Falsy-Zweig? Ersetze `if (wert)` durch `if (wert != null)` — was aendert sich?
 
 ---
 

@@ -17,15 +17,28 @@
 Mit `readonly` markierst du Properties, die nach der Erstellung nicht mehr geaendert
 werden duerfen:
 
-```typescript
+```typescript annotated
 interface Point {
   readonly x: number;
+// ^^^^^^^^ 'readonly' Modifier: Diese Property kann nach Erstellung nicht geaendert werden
   readonly y: number;
+// ^^^^^^^^ Gilt fuer die Referenz (Zuweisung), nicht fuer das referenzierte Objekt!
 }
 
 const p: Point = { x: 10, y: 20 };
-// p.x = 30;  // FEHLER! Cannot assign to 'x' because it is a read-only property.
+// p.x = 30;
+// ^^^^^^^ FEHLER: Cannot assign to 'x' because it is a read-only property.
+// Wichtig: 'readonly' ist ein reines TYPSYSTEM-Konzept -- zur Laufzeit kein Unterschied!
 ```
+
+> 🧠 **Erklaere dir selbst:** Was genau schuetzt `readonly`? Ist eine Property mit
+> `readonly` tief unveraenderlich -- oder nur oberflaelich? Was passiert zur Laufzeit
+> mit `readonly`?
+>
+> **Kernpunkte:** readonly schuetzt nur die direkte Zuweisung (p.x = ...) | Nicht
+> das Innere verschachtelter Objekte (shallow!) | Zur Laufzeit gibt es kein readonly --
+> reines Typsystem-Konstrukt | Object.freeze() fuer Laufzeit-Immutabilitaet noetig |
+> Bekannte Soundness-Luecke: readonly-Objekte koennen mutablen Typen zugewiesen werden
 
 > **Analogie:** `readonly` ist wie **laminiertes Papier**. Du kannst den Text lesen,
 > aber nicht ueberschreiben. Allerdings -- und das ist der entscheidende Punkt --

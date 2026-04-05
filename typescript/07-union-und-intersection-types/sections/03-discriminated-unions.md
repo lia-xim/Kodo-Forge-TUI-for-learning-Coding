@@ -291,9 +291,34 @@ Faelle explizit behandeln willst. Verwende `if`, wenn du nur
 
 **Kernkonzept zum Merken:** Discriminated Unions + Exhaustive Check = Compiler-garantierte Vollstaendigkeit. Wenn du einen neuen Fall hinzufuegst, zeigt TypeScript dir JEDE Stelle, die aktualisiert werden muss.
 
-> **Experiment:** Oeffne `examples/03-discriminated-unions.ts` und fuege
-> einen vierten Shape-Typ `Pentagon` hinzu. Beobachte, wo TypeScript
-> ueberall Fehler meldet — das sind die Stellen, die du aktualisieren musst.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function assertNever(value: never): never {
+>   throw new Error(`Unerwarteter Wert: ${JSON.stringify(value)}`);
+> }
+>
+> interface Circle    { kind: "circle";    radius: number; }
+> interface Rectangle { kind: "rectangle"; width: number; height: number; }
+> interface Triangle  { kind: "triangle";  base: number; height: number; }
+>
+> type Shape = Circle | Rectangle | Triangle;
+>
+> function area(shape: Shape): number {
+>   switch (shape.kind) {
+>     case "circle":    return Math.PI * shape.radius ** 2;
+>     case "rectangle": return shape.width * shape.height;
+>     case "triangle":  return (shape.base * shape.height) / 2;
+>     default:          return assertNever(shape);
+>   }
+> }
+>
+> // Fuege jetzt Pentagon hinzu:
+> // interface Pentagon { kind: "pentagon"; sideLength: number; }
+> // type Shape = Circle | Rectangle | Triangle | Pentagon;
+> // Beobachte: TypeScript meldet sofort im default-Zweig einen Fehler!
+> ```
+> An welcher Stelle im Code meldet TypeScript einen Fehler, nachdem du
+> `Pentagon` hinzugefuegt hast? Warum ist das der `default`-Zweig?
 
 ---
 

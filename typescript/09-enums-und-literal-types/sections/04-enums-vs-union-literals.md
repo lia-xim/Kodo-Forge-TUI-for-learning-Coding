@@ -224,9 +224,56 @@ Brauchst du Laufzeit-Werte (Iteration, Logging)?
 
 **Kernkonzept zum Merken:** In den meisten Faellen brauchst du kein Enum. Union Literal Types decken 80% der Anwendungsfaelle ab, `as const` Objects decken weitere 15% ab, und echte Enums sind nur fuer die restlichen 5% noetig.
 
-> **Experiment:** Oeffne `examples/04-as-const-objects.ts` und
-> implementiere ein `as const` Object fuer HTTP-Methoden. Versuche
-> dann, den Union Type daraus abzuleiten.
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // Das as const Pattern fuer Angular Route Guards und HTTP-Interceptors:
+> const UserStatus = {
+>   Active:    "active",
+>   Suspended: "suspended",
+>   Pending:   "pending",
+> } as const;
+> type UserStatus = typeof UserStatus[keyof typeof UserStatus];
+>
+> @Injectable({ providedIn: "root" })
+> export class AuthGuard implements CanActivate {
+>   canActivate(): boolean {
+>     const status: UserStatus = this.authService.getStatus();
+>     // Exhaustive Check funktioniert mit Union Types UND as const Objects:
+>     return status === UserStatus.Active;
+>   }
+> }
+>
+> // In React: Props mit as const fuer Design System Komponenten
+> const ButtonVariants = { primary: "primary", secondary: "secondary", danger: "danger" } as const;
+> type ButtonVariant = typeof ButtonVariants[keyof typeof ButtonVariants];
+> // <Button variant="primary"> — direkter String funktioniert!
+> ```
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Variante 1: String Enum
+> enum StatusEnum { Active = "ACTIVE", Inactive = "INACTIVE" }
+>
+> // Variante 2: Union Literal Type
+> type StatusUnion = "ACTIVE" | "INACTIVE";
+>
+> // Variante 3: as const Object
+> const Status = { Active: "ACTIVE", Inactive: "INACTIVE" } as const;
+> type StatusConst = typeof Status[keyof typeof Status];
+>
+> // Test der Kompatibilitaet:
+> function setStatusEnum(s: StatusEnum) { console.log(s); }
+> function setStatusConst(s: StatusConst) { console.log(s); }
+>
+> // Was funktioniert, was nicht?
+> setStatusEnum("ACTIVE");         // ???
+> setStatusConst("ACTIVE");        // ???
+> setStatusConst(Status.Active);   // ???
+> ```
+> Erklaere den Unterschied: Warum schlaegt `setStatusEnum("ACTIVE")` fehl,
+> aber `setStatusConst("ACTIVE")` funktioniert?
+> Das ist der Unterschied zwischen **nominaler** und **struktureller** Typisierung.
 
 ---
 

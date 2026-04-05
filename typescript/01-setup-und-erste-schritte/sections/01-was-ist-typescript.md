@@ -97,6 +97,29 @@ graph TB
 
 TypeScript fuegt **ausschliesslich** Dinge *hinzu*. Es entfernt nichts aus JavaScript. Und -- das ist der Clou -- alles, was TypeScript hinzufuegt, existiert **nur zur Compile-Zeit**. Zur Laufzeit ist alles wieder pures JavaScript. Dieses Prinzip heisst **Type Erasure** und ist so wichtig, dass wir ihm in Sektion 2 einen eigenen Abschnitt widmen.
 
+```typescript annotated
+// --- JavaScript (gueltig in BEIDEN Sprachen) ---
+const greet = (name) => {    // plain JS function -- valid TypeScript too
+  return "Hallo " + name;    // no types needed, JS logic stays unchanged
+};
+
+// --- TypeScript-Erweiterungen (nur zur Compile-Zeit) ---
+interface Person {           // ← existiert ONLY at compile time, removed in JS output
+  name: string;              // ← type annotation -- erased before runtime
+  age: number;               // ← erased before runtime
+}
+
+const greetTyped = (person: Person): string => {  // ← ": Person" and ": string" are erased
+  return "Hallo " + person.name;                  // ← this line survives into JS unchanged
+};
+// After compilation: const greetTyped = (person) => { return "Hallo " + person.name; };
+```
+
+> **Erklaere dir selbst:** Was genau ist der Unterschied zwischen dem, was TypeScript zur Compile-Zeit weiss, und dem, was zur Laufzeit uebrig bleibt?
+> - Typ-Annotationen (`: string`, `: Person`) existieren nur im `.ts`-Quellcode und werden vollstaendig entfernt
+> - Interfaces verschwinden komplett aus dem JavaScript-Output -- kein einziges Byte bleibt uebrig
+> - Der eigentliche Logik-Code (Variablen, Funktionen, Rueckgabewerte) bleibt unveraendert erhalten
+
 > **Denkfrage:** Wenn TypeScript ein Superset von JavaScript ist, bedeutet das, dass jede `.js`-Datei auch eine gueltige `.ts`-Datei ist? Und wenn ja -- warum gibt es dann ueberhaupt eine Unterscheidung zwischen den Dateiendungen?
 
 Die Antwort: Ja, jede `.js`-Datei ist syntaktisch gueltiges TypeScript. Aber der Compiler behandelt `.ts`-Dateien strenger -- z.B. darf in einer `.ts`-Datei kein implizites `any` auftreten (wenn `noImplicitAny` aktiv ist). Die Dateiendung signalisiert dem Compiler, welche Regeln er anwenden soll.

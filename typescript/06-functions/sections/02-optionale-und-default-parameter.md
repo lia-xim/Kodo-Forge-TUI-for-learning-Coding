@@ -249,10 +249,58 @@ fetchData({ url: "https://api.example.com/users" });
 fetchData({ url: "https://api.example.com/users", method: "POST", timeout: 10000 });
 ```
 
-> **Experiment:** Oeffne `examples/02-optionale-und-default-parameter.ts`
-> und entferne den Default-Wert von `method`. Was passiert mit dem Typ
-> von `method` innerhalb der Funktion? Warum braucht man jetzt ploetzlich
-> einen `undefined`-Check?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> interface FetchOptions {
+>   url: string;
+>   method?: "GET" | "POST";
+>   timeout?: number;
+> }
+>
+> function fetchData({
+>   url,
+>   method = "GET",  // <-- entferne diesen Default-Wert
+>   timeout = 5000,
+> }: FetchOptions): void {
+>   console.log(`${method.toUpperCase()} ${url}`);
+>   //              ^^^^^^ Was passiert hier wenn kein Default?
+> }
+> ```
+>
+> Ohne den Default-Wert ist `method` innerhalb der Funktion vom Typ
+> `"GET" | "POST" | undefined`. TypeScript erzwingt jetzt einen
+> `undefined`-Check bevor du `.toUpperCase()` aufrufen kannst —
+> der Compiler faengt den potenziellen Laufzeit-Fehler ab.
+
+---
+
+**In deinem Angular-Projekt:** Das Options-Objekt-Pattern ist das Standard-Pattern
+fuer Angular-Services und Konfiguration. Ein typischer Angular HTTP-Aufruf sieht
+fast genauso aus:
+
+```typescript
+// Angular HttpClient nutzt intern dasselbe Muster
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+interface ApiOptions {
+  headers?: HttpHeaders;
+  params?: Record<string, string>;
+  reportProgress?: boolean;
+}
+
+// In deinem Service:
+getUserData(id: number, options: ApiOptions = {}): Observable<User> {
+  return this.http.get<User>(`/api/users/${id}`, options);
+}
+
+// Aufrufer gibt nur an was er braucht:
+this.getUserData(42, { reportProgress: true });
+this.getUserData(42);  // headers und params haben Defaults
+```
+
+Rest-Parameter begegnen dir in Angular beim Logging-Service oder wenn du
+mehrere Argumente an `console.log` weiterleitest: `logger.log("DB", "query", sql)`.
 
 ---
 

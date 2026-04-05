@@ -107,12 +107,17 @@ oder eine React Hook-Rueckgabe `[state, setState]`).
 Ein Array ist eine geordnete Sammlung von Werten **gleichen Typs** (oder
 eines Union-Typs). Die Laenge ist variabel.
 
-```typescript
+```typescript annotated
 // Einfache Arrays
-const namen: string[] = ["Alice", "Bob", "Charlie"];
-const zahlen: number[] = [1, 2, 3, 4, 5];
-const flags: boolean[] = [true, false, true];
+const namen: string[] = ["Alice", "Bob", "Charlie"];  // ← T[]: Kurzform fuer Array<T>
+const zahlen: number[] = [1, 2, 3, 4, 5];             // ← Alle Elemente gleichen Typs
+const flags: boolean[] = [true, false, true];          // ← Laenge variabel, Typ fix
 ```
+
+**Erklaere dir selbst:** Warum bietet TypeScript zwei Schreibweisen (`T[]` und `Array<T>`) fuer dasselbe Konzept — und in welcher Situation ist welche besser?
+- `T[]` ist syntaktischer Zucker: kompakt und fuer einfache Typen bevorzugt
+- `Array<T>` ist der eigentliche generische Typ aus der Standardbibliothek — wird bei komplexen Union-Typen wie `Array<string | number>` klarer als `(string | number)[]`
+- Beide erzeugen exakt denselben Typ — der Unterschied ist rein stilistisch
 
 **Warum "gleichen Typs"?** Weil ein Array eine **homogene Sammlung** darstellt.
 Wenn du `string[]` schreibst, sagst du: "Jedes Element ist ein String, egal

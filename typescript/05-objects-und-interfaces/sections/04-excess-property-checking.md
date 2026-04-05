@@ -17,17 +17,32 @@
 In der letzten Sektion hast du gelernt: TypeScript prueft die Struktur, und Extra-Properties
 sind erlaubt. **Ausser** in einem speziellen Fall:
 
-```typescript
+```typescript annotated
 interface HasName {
   name: string;
 }
 
 // FEHLER! Object literal may only specify known properties.
 const named: HasName = {
+// ^^^^^^^^^^^^^^^^^^^^^ Das ist ein FRISCHES Object Literal -- direkt zugewiesen
   name: "Max",
-  age: 30,        // Error: 'age' does not exist in type 'HasName'
+// ^^^^^^^^^^^^ OK: 'name' kennt HasName
+  age: 30,
+// ^^^^^^^ FEHLER! 'age' existiert nicht in HasName -- Excess Property!
+  // TypeScript fragt: "Wenn du 'age' tippst, hast du dich vielleicht
+  //  bei 'name' vertippt? Das klingt nach einem Bug."
 };
 ```
+
+> 🧠 **Erklaere dir selbst:** Warum erlaubt TypeScript Extra-Properties bei Variablen
+> (Structural Typing), aber verbietet sie bei frischen Object Literals?
+> Was ist der pragmatische Grund fuer diesen Sonderfall?
+>
+> **Kernpunkte:** Structural Typing braucht Extra-Properties fuer Subtyping (Dog mit
+> extra Methode als Animal) | Aber in frischen Literals sind Extra-Properties fast
+> immer Tippfehler | TypeScript fuehrt gezielten Excess Check nur bei Literals durch |
+> Historisch: TS 1.6 als nachtraegliche Sicherheitsmassnahme | Design-Prinzip:
+> Chirurgisch eingreifen, Rest des Systems nicht veraendern
 
 Warte -- wir haben gerade gesagt, Extra-Properties sind OK? Was ist passiert?
 

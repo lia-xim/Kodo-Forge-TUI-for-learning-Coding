@@ -19,6 +19,11 @@
 ## OpenAPI: Das REST-Schema
 
 OpenAPI (frueher Swagger) ist der Standard fuer REST API-Dokumentation.
+Eine OpenAPI-Spec ist wie ein detaillierter Stadtplan: REST-APIs ohne
+Spec sind wie eine Stadt ohne Karte — du findest dich irgendwie
+zurecht, aber es kostet Zeit und Irrtümer. Mit der Spec weiss jedes
+Tool genau wo was ist.
+
 Anders als GraphQL ist OpenAPI **optional** — viele REST APIs haben
 keine Spec. Aber wenn eine existiert, ist sie Gold wert:
 
@@ -166,8 +171,9 @@ const { data: newUser } = await client.POST('/api/users', {
 > Was passiert wenn sich die API aendert aber du vergisst die Typen
 > neu zu generieren? Wie kannst du das verhindern?
 >
-> **Antwort:** Die Typen werden stale — dein Code kompiliert, aber
-> stimmt nicht mehr mit der API ueberein. Loesung: (1) Typ-Generierung
+> **Antwort:** Die Typen werden stale — wie eine Landkarte von 1990
+> in einer Stadt die seitdem gebaut hat. Dein Code kompiliert, aber
+> stimmt nicht mehr mit der Realitaet ueberein. Loesung: (1) Typ-Generierung
 > in die CI/CD-Pipeline einbauen, (2) Pre-Commit-Hook der die Typen
 > generiert, (3) OpenAPI-Spec als Git-Artefakt versionieren, (4)
 > Runtime-Validierung als zusaetzliche Sicherheit (Zod aus Sektion 02).

@@ -256,9 +256,49 @@ enum FileAccess {
 
 **Kernkonzept zum Merken:** Numerische Enums sind maechtig, aber auch die fehleranfaelligste Enum-Variante. In den meisten Faellen sind String Enums oder Union Literal Types die bessere Wahl.
 
-> **Experiment:** Oeffne `examples/02-numerische-enums.ts` und pruefe
-> was `Object.keys()` und `Object.values()` bei einem numerischen Enum
-> zurueckgeben. Versuche dann, einem Enum eine ungueltige Zahl zuzuweisen.
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // Bitwise Flags — einer der wenigen legitimen Anwendungsfaelle
+> // fuer numerische Enums in Angular:
+> enum UserRole {
+>   None    = 0,
+>   Reader  = 1 << 0,  // 1
+>   Editor  = 1 << 1,  // 2
+>   Admin   = 1 << 2,  // 4
+>   All     = Reader | Editor | Admin,  // 7
+> }
+>
+> // Route Guards koennen Bitwise-Rollen pruefen:
+> function canActivate(userRole: number): boolean {
+>   return (userRole & UserRole.Admin) !== 0;
+> }
+>
+> // ACHTUNG: Fuer Status-Felder sind numerische Enums UNGEEIGNET.
+> // status: 2 in einer API-Response ist unleserlich!
+> // Nutze String Enums oder Union Literals fuer Status.
+> ```
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> enum Direction {
+>   Up,     // 0
+>   Down,   // 1
+>   Left,   // 2
+>   Right,  // 3
+> }
+>
+> // Fuehre das mental aus — was gibt jede Zeile zurueck?
+> console.log(Object.keys(Direction));    // ???
+> console.log(Object.values(Direction));  // ???
+> console.log(Direction[0]);              // ???
+> console.log(Direction["Up"]);           // ???
+>
+> // Das Soundness-Loch:
+> const d: Direction = 42;  // Kompiliert das ohne Fehler?
+> ```
+> Ueberraschung: `Object.keys()` gibt 8 Eintraege zurueck, nicht 4.
+> Warum? Und warum ist `const d: Direction = 42` kein Fehler?
 
 ---
 

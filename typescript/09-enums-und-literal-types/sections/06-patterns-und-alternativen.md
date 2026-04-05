@@ -255,9 +255,66 @@ transferSafe(sender, receiver, betrag);  // OK
 ihren Platz, aber der wird kleiner — und `const enum` sollte man in neuen
 Projekten komplett vermeiden.
 
-> **Experiment:** Refactore ein String Enum in deinem eigenen Code (oder
-> in `examples/03-string-enums.ts`) zu einem `as const` Object.
-> Welche Stellen im Code aendern sich? Welche bleiben gleich?
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // Branded Types fuer typsichere IDs — verhindert Verwechslungen:
+> type UserId   = string & { readonly __brand: "UserId" };
+> type ProductId = string & { readonly __brand: "ProductId" };
+>
+> function userId(id: string): UserId     { return id as UserId; }
+> function productId(id: string): ProductId { return id as ProductId; }
+>
+> // Angular Service mit Branded Types:
+> @Injectable({ providedIn: "root" })
+> export class UserService {
+>   getUser(id: UserId): Observable<User> {
+>     return this.http.get<User>(`/api/users/${id}`);
+>   }
+> }
+>
+> const uid = userId("usr-123");
+> const pid = productId("prod-456");
+>
+> userService.getUser(uid);  // OK
+> userService.getUser(pid);  // Error! ProductId ist nicht UserId!
+> // Kein versehentliches Verwechseln von IDs mehr.
+>
+> // In React: Gleiche Technik fuer Props die zwar beide string sind,
+> // aber semantisch unterschiedlich (z.B. SlugId vs DisplayName).
+> ```
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Refactoring: String Enum → as const Object
+>
+> // VORHER: String Enum
+> enum ThemeEnum {
+>   Light = "LIGHT",
+>   Dark  = "DARK",
+> }
+>
+> function applyEnum(theme: ThemeEnum) {
+>   console.log(theme);
+> }
+> applyEnum(ThemeEnum.Light);
+> // applyEnum("LIGHT");  // Error! Nicht moeglich
+>
+> // NACHHER: as const Object
+> const Theme = { Light: "LIGHT", Dark: "DARK" } as const;
+> type Theme = typeof Theme[keyof typeof Theme];
+>
+> function applyConst(theme: Theme) {
+>   console.log(theme);
+> }
+> applyConst(Theme.Light);   // Gleiche Syntax wie beim Enum
+> applyConst("LIGHT");        // Bonus: Direkte Strings funktionieren jetzt!
+>
+> // Welche Aenderungen brauchst du beim Refactoring?
+> ```
+> Vergleiche beide Varianten: Welche Zeilen musst du beim Refactoring
+> aendern, welche bleiben identisch? Welcher Vorteil des `as const`
+> Patterns war dir vorher nicht bewusst?
 
 ---
 

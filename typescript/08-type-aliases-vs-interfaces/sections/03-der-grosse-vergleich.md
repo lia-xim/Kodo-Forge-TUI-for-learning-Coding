@@ -51,7 +51,7 @@
 Dies ist einer der weniger bekannten aber **praktisch relevanten** Unterschiede.
 Das TypeScript-Team hat dies in der offiziellen Performance-Wiki dokumentiert:
 
-```typescript
+```typescript annotated
 // LANGSAMER: Intersection mit &
 type UserWithTimestamps = User & {
   createdAt: Date;
@@ -168,6 +168,38 @@ interface ComplexI extends Base, WithName, WithAge {}
 > Bei komplexen Type Aliases zeigt er oft den **aufgeloesten Typ**
 > (die volle Struktur). Das kann bei grossen Typen unuebersichtlich werden.
 > Interfaces behalten ihren Namen in Tooltips.
+
+> **Experiment:** Kopiere folgendes in den TypeScript Playground und hovere
+> mit der Maus ueber die Variablen `a` und `b` — achte auf den Tooltip-Unterschied:
+>
+> ```typescript
+> // Fall 1: Interface ist klar besser — Library-Erweiterung
+> interface RequestBase { url: string; method: string }
+> interface AuthRequest extends RequestBase { token: string }
+> // Hier ist interface die einzige sinnvolle Wahl, weil:
+> // - Andere Module koennen AuthRequest per Declaration Merging erweitern
+> // - Der Tooltip zeigt sauber "AuthRequest", nicht die ganze Struktur
+>
+> const a: AuthRequest = { url: "/api", method: "GET", token: "abc" };
+>
+> // Fall 2: Type ist klar besser — Discriminated Union
+> type ApiResult =
+>   | { status: "ok"; data: string }
+>   | { status: "err"; message: string };
+> // Hier ist type die einzige Wahl — interface kann keine Unions.
+>
+> function handle(r: ApiResult) {
+>   if (r.status === "ok") console.log(r.data);
+>   //                                    ^ TypeScript kennt 'data' hier
+>   else console.error(r.message);
+>   //                   ^ TypeScript kennt 'message' hier
+> }
+>
+> const b: ApiResult = { status: "ok", data: "Ergebnis" };
+> ```
+>
+> Wechsle dann den `type ApiResult` zu `interface ApiResult` und beobachte
+> den Compiler-Fehler — so siehst du den Unterschied in Echtzeit.
 
 ---
 

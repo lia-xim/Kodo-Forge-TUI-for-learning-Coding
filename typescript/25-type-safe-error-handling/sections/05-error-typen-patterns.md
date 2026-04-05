@@ -234,10 +234,38 @@ async function withErrorBoundary<T, E>(
 // );
 ```
 
-> **Experiment:** Öffne `examples/05-error-types.ts`:
-> 1. Schreibe eine `FormError`-Union: `REQUIRED | MIN_LENGTH | MAX_LENGTH | PATTERN`.
-> 2. Schreibe `handleFormError(err: FormError): string` mit exhaustiver switch.
-> 3. Füge `EMAIL_FORMAT` hinzu — beobachte wo der Compile-Error erscheint.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> function assertNever(x: never): never { throw new Error(`Unhandled: ${JSON.stringify(x)}`); }
+>
+> type FormError =
+>   | { type: 'REQUIRED';    field: string }
+>   | { type: 'MIN_LENGTH';  field: string; min: number }
+>   | { type: 'MAX_LENGTH';  field: string; max: number }
+>   | { type: 'PATTERN';     field: string; pattern: string };
+>
+> function handleFormError(e: FormError): string {
+>   switch (e.type) {
+>     case 'REQUIRED':   return `${e.field} ist Pflichtfeld`;
+>     case 'MIN_LENGTH': return `${e.field}: mind. ${e.min} Zeichen`;
+>     case 'MAX_LENGTH': return `${e.field}: max. ${e.max} Zeichen`;
+>     case 'PATTERN':    return `${e.field}: Format ${e.pattern} erwartet`;
+>     default:           return assertNever(e);
+>   }
+> }
+>
+> const errors: FormError[] = [
+>   { type: 'REQUIRED',   field: 'email' },
+>   { type: 'MIN_LENGTH', field: 'password', min: 8 },
+>   { type: 'PATTERN',    field: 'phone', pattern: '+49...' },
+> ];
+> errors.forEach(e => console.log(handleFormError(e)));
+> ```
+>
+> Füge jetzt `| { type: 'EMAIL_FORMAT'; field: string }` zur `FormError`-Union hinzu.
+> Beobachte: Der Compile-Error erscheint im `default`-Branch von `handleFormError` —
+> genau dort wo du vergessen hast, den neuen Fall zu behandeln!
 
 ---
 

@@ -227,9 +227,55 @@ if (isEventHandler(key)) {
 
 **Kernkonzept zum Merken:** Template Literal Types sind String-Algebra auf Type-Level. Sie machen TypeScript's Typsystem maechtiger als das jeder anderen typisierten Sprache — und verbessern gleichzeitig die Developer Experience durch Autocomplete.
 
-> **Experiment:** Oeffne `examples/05-template-literal-types.ts` und
-> erstelle einen Typ fuer CSS Custom Properties (`--variable-name`).
-> Beobachte, wie die IDE Vorschlaege macht.
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // Typsichere i18n-Schluessel mit Template Literal Types:
+> type Locale = "de" | "en" | "fr";
+> type Section = "auth" | "dashboard" | "settings";
+> type I18nKey = `${Section}.${string}`;
+>
+> // Angular TranslateService wird typsicher:
+> @Injectable({ providedIn: "root" })
+> export class TypedTranslateService {
+>   get(key: I18nKey): string {
+>     return this.translate.instant(key);
+>   }
+> }
+>
+> // Nutzung: Nur gueltige Key-Prefixe werden akzeptiert
+> this.typedTranslate.get("auth.login");        // OK
+> this.typedTranslate.get("dashboard.title");   // OK
+> this.typedTranslate.get("unknown.key");       // Error!
+>
+> // In React: Event-Handler-Typen fuer Custom Hooks
+> type FormEvent = "change" | "blur" | "focus";
+> type FormHandler = `on${Capitalize<FormEvent>}`;
+> // ^ "onChange" | "onBlur" | "onFocus" — perfekt fuer Props-Typen!
+> ```
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // CSS Custom Properties — nur gueltige Namen erlaubt:
+> type CSSCustomProperty = `--${string}`;
+>
+> function setCSSVar(property: CSSCustomProperty, value: string) {
+>   document.documentElement.style.setProperty(property, value);
+> }
+>
+> setCSSVar("--primary-color", "#3498db");   // OK
+> setCSSVar("--font-size-lg", "1.25rem");    // OK
+> setCSSVar("primary-color", "#3498db");     // Error! Fehlendes "--"
+>
+> // Kombinatorik mit Union Types:
+> type Color = "primary" | "secondary" | "danger";
+> type CSSColorVar = `--color-${Color}`;
+> // ^ "--color-primary" | "--color-secondary" | "--color-danger"
+>
+> // Hover ueber CSSColorVar — wie viele Varianten gibt es?
+> ```
+> Erstelle zusaetzlich `type CSSSpacingVar = \`--spacing-${"xs" | "sm" | "md" | "lg" | "xl"}\``.
+> Wie viele gueltige Werte hat dieser Typ?
 
 ---
 

@@ -261,9 +261,49 @@ const logger: Middleware = (req, _res, next) => {
 - **Generische Callbacks** (`Mapper<T, U>`) machen Callback-Typen wiederverwendbar
 - Die haeufigstenPatterns: Error-First, Event-Listener, Middleware
 
-> **Experiment:** Oeffne `examples/04-callback-typen.ts` und schreibe
-> einen Callback-Typ `Predicate<T>` der ein `T` entgegennimmt und
-> `boolean` zurueckgibt. Nutze ihn in einer `filter`-Funktion.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> type Predicate<T> = (item: T) => boolean;
+>
+> function filterArray<T>(items: T[], predicate: Predicate<T>): T[] {
+>   return items.filter(predicate);
+> }
+>
+> // Teste es:
+> const zahlen = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+> const gerade = filterArray(zahlen, n => n % 2 === 0);
+> console.log(gerade);  // [2, 4, 6, 8, 10]
+>
+> // Was ist der Typ von 'gerade'? Warum inferiert TypeScript number[]
+> // und nicht (number | undefined)[] ?
+> ```
+>
+> TypeScript inferiert `T = number` aus dem ersten Argument und weiss
+> daher, dass `filterArray` ein `number[]` zurueckgibt. Der `Predicate<T>`-Typ
+> traegt keine Informationen ueber den Return-Typ — nur ueber den Input.
+
+**In deinem Angular-Projekt:** RxJS-Operatoren sind komplett aus generischen
+Callbacks aufgebaut. Jedes Mal wenn du `pipe()` verwendest, arbeitest du mit
+denselben Mustern:
+
+```typescript
+import { map, filter } from 'rxjs/operators';
+
+// map() ist intern ein generischer Callback-Typ: Mapper<T, U>
+this.users$.pipe(
+  filter((user: User) => user.active),   // Predicate<User>
+  map((user: User) => user.name),        // Mapper<User, string>
+).subscribe((name: string) => {          // VoidCallback mit string
+  console.log(name);
+});
+
+// TypeScript inferiert den gesamten Typ-Fluss:
+// Observable<User> → filter → Observable<User> → map → Observable<string>
+```
+
+In React siehst du dasselbe bei `Array.prototype`-Methoden auf State:
+`users.filter(u => u.active).map(u => u.name)` — alle Typen fliessen durch.
 
 **Kernkonzept zum Merken:** void in Callbacks bedeutet "der Rueckgabewert ist mir egal" — nicht "es darf kein Rueckgabewert existieren".
 

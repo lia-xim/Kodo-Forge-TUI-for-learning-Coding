@@ -287,12 +287,29 @@ const UserList: React.FC<UserListProps> = ({ initialFilter, onSelect }) => {
 
 ## Experiment-Box: Annotation vs. Inference im Vergleich
 
-> **Experiment:** Oeffne `examples/01-explizite-annotationen.ts` und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
-> 1. Schreibe `const status: string = "active";` -- hovere ueber `status`. Welcher Typ?
-> 2. Entferne die Annotation: `const status = "active";` -- was zeigt die IDE jetzt?
-> 3. Welche Version ist **praeziser**? Warum?
-> 4. Schreibe eine Funktion mit Callback: `[1,2,3].map((n: number): number => n * 2);` -- entferne die Callback-Annotationen. Kompiliert es noch? Was sagt dir das ueber Contextual Typing?
+> ```typescript
+> // Schritt 1: Annotation macht den Typ breiter!
+> const status: string = "active";
+> // Hovere ueber 'status' -- welcher Typ? ("active" oder string?)
+>
+> // Schritt 2: Ohne Annotation -- praeziser!
+> const status2 = "active";
+> // Hovere ueber 'status2' -- was zeigt die IDE jetzt? Warum ist das besser?
+>
+> // Schritt 3: Callback-Annotationen sind Rauschen
+> const doubled1 = [1, 2, 3].map((n: number): number => n * 2);
+> const doubled2 = [1, 2, 3].map(n => n * 2);
+> // Kompilieren beide? Hovere ueber 'n' in beiden Versionen.
+> // Ist der Typ von 'n' in doubled2 trotzdem korrekt?
+>
+> // Schritt 4: Wann Annotation unverzichtbar ist
+> const items = [];          // Was ist der Typ? Warum ist das gefaehrlich?
+> const items2: string[] = []; // Besser -- warum?
+> ```
+>
+> Was passiert wenn du `items.push("hello")` und dann `items.push(42)` schreibst? Bei `items2`?
 
 ---
 

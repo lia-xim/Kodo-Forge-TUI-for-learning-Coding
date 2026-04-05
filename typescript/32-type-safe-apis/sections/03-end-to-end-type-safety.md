@@ -18,6 +18,12 @@
 
 ## Was ist End-to-End Type Safety?
 
+Stell dir vor, du telefonierst mit jemandem ueber eine wichtige
+Vereinbarung — aber das Gespraech wird durch drei Uebersetzer
+weitergereicht. Am Ende kommt etwas völlig anderes an als du gesagt hast.
+Genau so funktioniert traditionelle REST-Typisierung: Die Typen existieren
+auf beiden Seiten, aber die Verbindung dazwischen ist manuell und fragil.
+
 Bei traditionellen REST APIs gibt es drei Typ-Welten:
 
 ```
@@ -124,6 +130,11 @@ const newUser = await client.createUser.mutate({
 ---
 
 ## Das Typ-Inferenz-Magie im Detail
+
+Wie funktioniert das? Denk an ein Spiegelsystem in einem Periskop:
+Der TypeScript-Compiler liest den Server-Code und "spiegelt" die
+Typ-Information zum Client — kein Runtime-Code reist mit, nur die
+Form. `import type` ist dieser Spiegel: kein Gewicht, nur Kontur.
 
 Die Magie von tRPC basiert auf TypeScript-Inferenz:
 

@@ -147,10 +147,23 @@ function demo(x: string | number | boolean | null) {
 }
 ```
 
-> ⚡ **Experiment:** Oeffne `examples/01-narrowing-basics.ts` und kommentiere
-> einzelne if-Checks aus. Beobachte, wie sich der TypeScript-Typ von `x`
-> aendert (hovere ueber `x` in deinem Editor). Jeder fehlende Check macht
-> den Typ breiter.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> function demo(x: string | number | boolean | null) {
+>   if (x === null) return;
+>   // x: string | number | boolean (null eliminiert)
+>
+>   if (typeof x === "boolean") return;
+>   // x: string | number (boolean eliminiert)
+>
+>   if (typeof x === "string") {
+>     console.log(x.toUpperCase()); // x: string
+>   } else {
+>     console.log(x.toFixed(2)); // x: number
+>   }
+> }
+> ```
+> Kommentiere einzelne if-Checks aus und hovere ueber `x`. Jeder fehlende Check macht den Typ breiter.
 
 ---
 

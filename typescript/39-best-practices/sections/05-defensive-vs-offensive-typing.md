@@ -34,6 +34,13 @@ function calculateTotal(items: CartItem[]): number {
 }
 ```
 
+Defensives Typing schleicht sich in internen Code ein wenn Entwickler
+dem Typsystem nicht vertrauen — oder wenn das Typsystem tatsaechlich
+keine Garantien geben kann (externe Daten). Das Problem: In internem
+Code ist defensives Typing Signal-Rauschen. Es sagt dem Leser:
+"Ich vertraue den Typen nicht." Das ist eine falsche Botschaft und
+macht den Code schwerer zu lesen.
+
 ### Offensive Typing: Vertraue dem Typsystem
 
 ```typescript annotated
@@ -47,8 +54,14 @@ function calculateTotal(items: readonly CartItem[]): number {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   // ^ Offensiv: Kein Runtime-Check noetig — der Typ garantiert Korrektheit
   // ^ Wenn jemand falschen Input gibt → Compile-Error, nicht Runtime-Error
+  // ^ readonly: Signalisiert dass calculateTotal die Items nicht mutiert
 }
 ```
+
+Offensives Typing sagt dem Leser: "Die Typen sind der Vertrag.
+Halte den Vertrag ein und der Code funktioniert." Das ist der Kern
+von TypeScript's Versprechen. Die Typen sind nicht nur Dokumentation —
+sie sind ausgewiesene Invarianten.
 
 > 📖 **Hintergrund: Parse, Don't Validate (Alexis King, 2019)**
 >
@@ -109,12 +122,12 @@ type CreateUserInput = z.infer<typeof CreateUserSchema>;
 
 async function handleCreateUser(req: Request): Promise<Response> {
   const body: unknown = await req.json();
-  // ^ unknown: Wir vertrauen dem Request NICHT
+  // ^ unknown: Wir vertrauen dem Request NICHT — er kommt von aussen
   const parsed = CreateUserSchema.safeParse(body);
   if (!parsed.success) {
     return new Response(JSON.stringify(parsed.error), { status: 400 });
   }
-  // Ab hier: parsed.data ist CreateUserInput — BEWIESEN
+  // Ab hier: parsed.data ist CreateUserInput — BEWIESEN durch Zod
   const user = await userService.create(parsed.data);
   return new Response(JSON.stringify(user), { status: 201 });
 }
@@ -123,7 +136,7 @@ async function handleCreateUser(req: Request): Promise<Response> {
 class UserService {
   async create(input: CreateUserInput): Promise<User> {
     // Keine Validierung noetig — der Typ GARANTIERT korrekte Daten
-    // Die Schale hat bereits validiert
+    // Die Schale hat bereits validiert — hier koennen wir vertrauen
     return this.db.users.insert({
       name: input.name,
       email: input.email,
@@ -132,6 +145,12 @@ class UserService {
   }
 }
 ```
+
+**Der entscheidende Punkt:** `CreateUserInput` ist kein gewoehnliches
+Interface das jeder erstellen kann. Es ist ein **geparster Typ** —
+ein Typ den man nur durch `CreateUserSchema.safeParse()` erhaelt.
+Das ist "Parse, Don't Validate" in Aktion: Wer `create(input)` aufruft,
+hat bewiesen dass `input` valide ist. Der Beweis steckt im Typ.
 
 > 🧠 **Erklaere dir selbst:** Warum ist es falsch, im `UserService`
 > nochmal zu pruefen ob `input.name` ein String ist? Was waere der
@@ -165,6 +184,23 @@ OFFENSIV (Typsystem reicht):
 └── Alles was zur Compilezeit bekannt ist
 ```
 
+Die Grenze ist nicht immer klar. Ein paar Grenzfaelle:
+
+- **`localStorage.getItem`**: Defensiv — der Nutzer koennte den
+  Storage manuell veraendert haben. `JSON.parse(localStorage.getItem("user")!) as User`
+  ist doppelt gefaehrlich: `!` fuer potenziell fehlenden Key, `as`
+  fuer unvalidiertes JSON.
+
+- **NgRx/Redux Actions**: In der Theorie offensiv (du sendest typisierte
+  Actions). In der Praxis: Reducer-Code der mit `action.type === "LOAD"`
+  prueft ist ein eingebauter Guard. Das Dispatch-System sorgt fuer
+  den defensiven Schritt.
+
+- **Angular Signals**: `signal<User | null>(null)` ist offensiv —
+  der Generic garantiert den Typ. Aber der Initialwert `null` bedeutet:
+  Beim ersten Rendering musst du defensiv pruefen. `@if (user())` ist
+  hier der eingebaute Guard.
+
 > ⚡ **Framework-Bezug:** Angular's `HttpClient.get<User>()` ist
 > ein Beispiel fuer **falsches Vertrauen** an der Systemgrenze:
 > `<User>` ist eine Assertion, keine Validierung! Die API koennte
@@ -186,10 +222,14 @@ OFFENSIV (Typsystem reicht):
 
 ## Experiment: Defensive Schale implementieren
 
-Baue eine defensive Schale fuer eine API-Route:
+Baue eine defensive Schale ohne externe Dependencies. Der Trick:
+Jede Validierungsregel gibt genau an was falsch war:
 
 ```typescript
-// Ohne externe Dependencies (kein Zod noetig):
+// Ergebnis-Typ fuer Validierung:
+type ValidationResult<T> =
+  | { success: true; data: T }
+  | { success: false; errors: string[] };
 
 // Type Guard fuer CreateUserInput:
 interface CreateUserInput {
@@ -198,19 +238,45 @@ interface CreateUserInput {
   age: number;
 }
 
-function isCreateUserInput(data: unknown): data is CreateUserInput {
-  if (typeof data !== "object" || data === null) return false;
-  const obj = data as Record<string, unknown>;
-  if (typeof obj.name !== "string" || obj.name.length === 0) return false;
-  if (typeof obj.email !== "string" || !obj.email.includes("@")) return false;
-  if (typeof obj.age !== "number" || obj.age < 0 || !Number.isInteger(obj.age)) return false;
-  return true;
+function validateCreateUserInput(
+  raw: unknown
+): ValidationResult<CreateUserInput> {
+  if (typeof raw !== "object" || raw === null) {
+    return { success: false, errors: ["Expected object, got " + typeof raw] };
+  }
+
+  const obj = raw as Record<string, unknown>;
+  const errors: string[] = [];
+
+  if (typeof obj.name !== "string") errors.push("name: expected string");
+  else if (obj.name.length === 0) errors.push("name: must not be empty");
+
+  if (typeof obj.email !== "string") errors.push("email: expected string");
+  else if (!obj.email.includes("@")) errors.push("email: must contain @");
+
+  if (typeof obj.age !== "number") errors.push("age: expected number");
+  else if (!Number.isInteger(obj.age)) errors.push("age: must be integer");
+  else if (obj.age < 0) errors.push("age: must be positive");
+
+  if (errors.length > 0) return { success: false, errors };
+  return { success: true, data: obj as CreateUserInput };
 }
 
-// Experiment: Schreibe einen generischen 'validate' Helper:
-// function validate<T>(data: unknown, guard: (d: unknown) => d is T): T
-// Der bei Fehlschlag eine sinnvolle Fehlermeldung gibt.
-// Bonus: Erweitere ihn so dass er genau sagt WELCHES Feld ungueltig ist.
+// Verwendung:
+const result = validateCreateUserInput(JSON.parse(requestBody));
+if (!result.success) {
+  console.error("Validation failed:", result.errors.join(", "));
+  // → "Validation failed: email: must contain @, age: must be integer"
+} else {
+  // result.data ist CreateUserInput — sicher
+  userService.create(result.data);
+}
+
+// Aufgabe: Baue eine generische 'validate' Funktion:
+// function validate<T>(
+//   data: unknown,
+//   validator: (d: unknown) => ValidationResult<T>
+// ): T  // wirft bei Fehler mit allen Fehlermeldungen
 ```
 
 ---
@@ -219,9 +285,12 @@ function isCreateUserInput(data: unknown): data is CreateUserInput {
 
 - **Defensive Typing** = Runtime-Checks an Systemgrenzen (API, User-Input, externe Daten)
 - **Offensive Typing** = Vertraue dem Typsystem im Kern (Services, Business-Logik)
+- Defensives Typing in internem Code ist Signal-Rauschen — es sagt "ich vertraue den Typen nicht"
 - Die **Architektur**: Defensive Schale validiert und parsed, offensiver Kern vertraut
 - **Parse, Don't Validate**: Validierung gibt `boolean`, Parsing gibt einen staerkeren Typ
 - `HttpClient.get<T>()` und `fetch()` sind **getarnte Assertions** — immer `unknown` + Validierung
+- **ValidationResult<T>** Typ liefert praezise Fehlermeldungen statt nur "ungueltig"
+- Angular Signals mit `null`-Initialwert brauchen Template-Guards (`@if`)
 
 > 🧠 **Erklaere dir selbst:** Was ist der Zusammenhang zwischen
 > "Parse, Don't Validate", Branded Types (L24) und dem
@@ -229,9 +298,43 @@ function isCreateUserInput(data: unknown): data is CreateUserInput {
 > **Kernpunkte:** Parse, Don't Validate = an der Grenze validieren
 > und in einen staerkeren Typ umwandeln | Branded Types = der
 > staerkere Typ (Email statt string) | Die Schale parsed, der
-> Kern arbeitet mit dem Branded Type | Alles haengt zusammen
+> Kern arbeitet mit dem Branded Type | Alles haengt zusammen |
+> `CreateUserInput` von Zod ist kein gewoehnliches Interface —
+> es ist ein bewiesener Typ
 
-**Kernkonzept zum Merken:** Verteidige die Grenzen deines Systems aggressiv. Innerhalb der Grenzen vertraue dem Typsystem komplett. Das ist die effizienteste Balance zwischen Sicherheit und Einfachheit.
+---
+
+## Das grosse Bild: Die drei Schichten
+
+Das defensive/offensive Modell passt in ein groesseres Architektur-Bild:
+
+```
+Schicht 1: AUSSENWELT (immer defensiv)
+  HTTP, localStorage, URL-Params, Events
+  → Typ: unknown
+  → Action: Validieren, parsen, Type Guard
+
+Schicht 2: GRENZE (einmalig defensiv, dann offensiv)
+  Route Handler, API Controller, Form-Validator
+  → Typ: validierter Branded Type / geparster Interface
+  → Action: Schale um die Aussen-Daten legen
+
+Schicht 3: KERN (immer offensiv)
+  Services, Business-Logik, Pure Functions
+  → Typ: bekannte, validierte Interfaces
+  → Action: Vertraue dem Typsystem komplett
+```
+
+In Angular: Schicht 1 ist der HttpClient, Schicht 2 der Service mit
+Validierung, Schicht 3 sind Components und weitere Services. Eine
+Component sollte **niemals** `unknown` oder Validierungslogik
+enthalten — sie operiert im Kern.
+
+In React: Schicht 1 sind `fetch()` und `localStorage`, Schicht 2
+sind Custom Hooks mit Validierung, Schicht 3 sind UI-Components.
+Ein Component rendert validierte Daten — er validiert sie nicht selbst.
+
+**Kernkonzept zum Merken:** Verteidige die Grenzen deines Systems aggressiv — mit Runtime-Validierung, Type Guards und Assertion Functions. Innerhalb der Grenzen vertraue dem Typsystem komplett — keine redundanten Checks, kein defensives Rauschen. Das ist die effizienteste Balance zwischen Sicherheit und Einfachheit.
 
 ---
 

@@ -153,10 +153,20 @@ type Partial<T> = {
 > jetzt reicht es zu wissen: `[P in keyof T]` iteriert ueber alle
 > Property-Keys von T, aehnlich wie eine `for...in`-Schleife.
 
-> 🔬 **Experiment:** Oeffne `examples/01-partial-required-readonly.ts` und
-> aendere `Partial<User>` zu `Required<Partial<User>>`. Was passiert?
-> Heben sich die beiden auf? Hovere in der IDE ueber den resultierenden
-> Typ und vergleiche ihn mit dem Original `User`.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> interface User {
+>   id: number;
+>   name: string;
+>   email: string;
+>   role: "admin" | "user";
+> }
+>
+> type A = Partial<User>;
+> type B = Required<Partial<User>>;
+> type C = Readonly<Partial<User>>;
+> ```
+> Hovere ueber `A`, `B` und `C`. Heben sich `Required<Partial<...>>` gegenseitig auf? Was aendert sich bei `Readonly<Partial<...>>`?
 
 ---
 
@@ -332,9 +342,9 @@ profile.settings.theme = "light";  // KEIN Error! settings-Objekt ist NICHT read
 
 **Kernkonzept zum Merken:** Utility Types sind Type-Level-Funktionen — sie nehmen einen Typ als Input und geben einen transformierten Typ als Output zurueck.
 
-> **Experiment:** Oeffne `examples/01-partial-required-readonly.ts` und
-> experimentiere mit den drei Utility Types. Was passiert, wenn du
-> `Readonly<Partial<User>>` verwendest?
+> **Experiment:** Teste im TypeScript Playground: Was ist der Typ von
+> `Readonly<Partial<User>>`? Sind die Properties readonly UND optional?
+> Wie unterscheidet sich das von `Partial<Readonly<User>>`?
 
 ---
 

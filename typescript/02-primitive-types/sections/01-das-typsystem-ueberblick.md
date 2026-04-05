@@ -298,10 +298,25 @@ let s: string = gibNever();
 
 **Kernkonzept zum Merken:** Type Erasure ist das fundamentalste Konzept in TypeScript. Wenn du jemals verwirrt bist, frage dich: "Existiert das zur Laufzeit?" — und die Antwort klaert fast alles.
 
-> **Experiment:** Oeffne `examples/03-any-vs-unknown.ts` und aendere alle
-> `unknown`-Annotationen zu `any`. Welche Fehler verschwinden? Welche neuen
-> Gefahren entstehen dadurch? Mache die Aenderung danach rueckgaengig und
-> beobachte, wie TypeScript dich wieder schuetzt.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Sicherer Weg: unknown erzwingt Pruefungen
+> function verarbeite(wert: unknown): string {
+>   if (typeof wert === "string") {
+>     return wert.toUpperCase(); // OK — TypeScript weiss: wert ist string
+>   }
+>   return "kein String";
+> }
+>
+> // Unsicherer Weg: any deaktiviert das Typsystem
+> function verarbeiteUnsicher(wert: any): string {
+>   return wert.toUpperCase(); // Kein Fehler — aber Laufzeitcrash bei Zahlen!
+> }
+> ```
+> Aendere in `verarbeite` den Typ von `wert` von `unknown` auf `any`.
+> Welche Fehlermeldungen verschwinden? Versuch danach `wert.nichtExistent()` aufzurufen
+> — bei `any` kein Compilerfehler, bei `unknown` sofort rot. Was sagt dir das ueber
+> die Sicherheitsgarantien des Typsystems?
 
 ---
 

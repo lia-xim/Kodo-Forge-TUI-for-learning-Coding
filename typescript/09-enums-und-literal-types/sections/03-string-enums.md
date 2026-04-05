@@ -249,9 +249,57 @@ aber macht die Arbeit mit externen Strings umstaendlich.
 
 **Kernkonzept zum Merken:** String Enums loesen die groessten Probleme numerischer Enums, haben aber einen Nachteil: Sie erzeugen immer noch Laufzeit-Code und sind nicht direkt mit Strings vergleichbar.
 
-> **Experiment:** Oeffne `examples/03-string-enums.ts` und aendere
-> ein String Enum in ein numerisches. Beobachte was mit `Object.keys()`
-> und `Object.values()` passiert.
+> ⚡ **In deinem Angular-Projekt:**
+>
+> ```typescript
+> // String Enums in Angular Services — lesbare API-Kommunikation:
+> enum ApiEnvironment {
+>   Development = "https://dev.api.example.com",
+>   Staging     = "https://staging.api.example.com",
+>   Production  = "https://api.example.com",
+> }
+>
+> @Injectable({ providedIn: "root" })
+> export class ApiService {
+>   private baseUrl = ApiEnvironment.Development;
+>
+>   constructor(private http: HttpClient) {}
+>
+>   getUsers() {
+>     // this.baseUrl ist "https://dev.api.example.com" — sofort lesbar!
+>     return this.http.get(`${this.baseUrl}/users`);
+>   }
+> }
+>
+> // In React waere das ein Kontext-Wert:
+> // const ApiContext = React.createContext<ApiEnvironment>(ApiEnvironment.Development);
+> ```
+
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> enum LogLevel {
+>   Debug = "DEBUG",
+>   Info = "INFO",
+>   Warning = "WARNING",
+>   Error = "ERROR",
+> }
+>
+> // String Enum:
+> console.log(Object.keys(LogLevel));    // ["Debug", "Info", "Warning", "Error"]
+> console.log(Object.values(LogLevel));  // ["DEBUG", "INFO", "WARNING", "ERROR"]
+>
+> // Jetzt aendere es in ein numerisches Enum:
+> // enum LogLevel { Debug, Info, Warning, Error }
+>
+> // Was aendert sich bei Object.keys() und Object.values()?
+> // Kannst du immer noch LogLevel["DEBUG"] aufrufen?
+>
+> // Bonus: Warum schlaegt das fehl?
+> // const level: LogLevel = "DEBUG"; // ???
+> ```
+> Vergleiche die Ausgaben von `Object.keys()` bei String- vs. numerischem Enum.
+> Erklaere warum der direkte String-Vergleich `=== "DEBUG"` in einer
+> String-Enum-Funktion einen Fehler ergibt.
 
 ---
 

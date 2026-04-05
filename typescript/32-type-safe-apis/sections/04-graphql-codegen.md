@@ -19,7 +19,11 @@
 ## Warum GraphQL natuerlich typsicher ist
 
 GraphQL hat ein eingebautes Schema — jeder Server MUSS sein Schema
-definieren. Das macht es zum idealen Kandidaten fuer Type Safety:
+definieren. Das GraphQL-Schema ist wie die DIN-Norm fuer eine Schraube:
+Wer die Schraube baut und wer die Mutter baut, arbeiten nach der
+gleichen Spezifikation. Ob Client oder Server — beide sprechen ueber
+das gleiche Ding, mit den gleichen Feldnamen und Typen. Das macht
+GraphQL zum idealen Kandidaten fuer Type Safety:
 
 ```graphql
 # GraphQL Schema — eine formale Sprach-Definition
@@ -292,7 +296,7 @@ export default config;
 - React und Angular haben spezifische Code-Gen-Plugins fuer typsichere Hooks/Services
 - Schema-First vs Code-First: Tradeoff zwischen Vertrag und Entwicklererfahrung
 
-**Kernkonzept zum Merken:** GraphQL + Code Generation = automatische Typ-Sicherheit. Jede Aenderung am Schema wird sofort im generierten Code reflektiert. Das ist naeher an tRPC's Ideal als REST — aber mit dem Overhead einer Build-Pipeline.
+**Kernkonzept zum Merken:** GraphQL + Code Generation = automatische Typ-Sicherheit. Der Code-Generator ist dabei wie ein Dolmetscher der immer dabei ist: Jede Aenderung am GraphQL-Schema wird sofort in TypeScript uebersetzt. Das ist naeher an tRPC's Ideal als REST — aber mit dem Overhead einer Build-Pipeline.
 
 ---
 

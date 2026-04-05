@@ -333,10 +333,33 @@ Hier siehst du Union UND Intersection zusammen:
 
 **Kernkonzept zum Merken:** Die Kombination aus Union (Varianten) und Intersection (Erweiterung) ist eines der maechtigsten Werkzeuge in TypeScript. Die meisten professionellen TypeScript-Codebasen nutzen diese Patterns intensiv.
 
-> **Experiment:** Implementiere ein eigenes Result-Pattern in
-> `examples/06-praxis-patterns.ts`. Schreibe eine Funktion `divide`
-> die `Result<number, string>` zurueckgibt und bei Division durch 0
-> einen Fehler liefert statt eine Exception zu werfen.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type Result<T, E = string> =
+>   | { ok: true;  value: T }
+>   | { ok: false; error: E };
+>
+> function ok<T>(value: T): Result<T, never> {
+>   return { ok: true, value };
+> }
+> function err<E>(error: E): Result<never, E> {
+>   return { ok: false, error };
+> }
+>
+> function divide(a: number, b: number): Result<number, string> {
+>   // Implementiere hier: Fehler bei b === 0
+> }
+>
+> const r1 = divide(10, 3);
+> if (r1.ok) {
+>   console.log(r1.value.toFixed(2));  // Was ist der Typ von r1.value?
+> } else {
+>   console.log(r1.error);             // Was ist der Typ von r1.error?
+> }
+> ```
+> Implementiere `divide` so, dass sie bei `b === 0` `err("Division durch Null")`
+> zurueckgibt. Beachte: TypeScript weiss im `if (r1.ok)`-Zweig genau,
+> welche Properties verfuegbar sind!
 
 ---
 

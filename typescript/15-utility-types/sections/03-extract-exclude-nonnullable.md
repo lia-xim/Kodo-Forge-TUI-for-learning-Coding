@@ -232,10 +232,16 @@ type B = Exclude<string | null | undefined, null | undefined>;
 // Beide: string
 ```
 
-> 🔬 **Experiment:** Oeffne `examples/03-extract-exclude-nonnullable.ts` und
-> schreibe `type Test = NonNullable<0 | "" | false | null | undefined>`.
-> Welche Werte bleiben uebrig? Tipp: NonNullable entfernt nur `null` und
-> `undefined`, nicht "falsy values" wie `0` oder `""`.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> type Test = NonNullable<0 | "" | false | null | undefined>;
+> // Hovere ueber Test — welche Werte bleiben uebrig?
+>
+> type Falsy = NonNullable<false | 0 | "" | null | undefined>;
+> // Tipp: NonNullable entfernt NUR null und undefined,
+> // nicht "falsy values" wie 0, "" oder false!
+> ```
+> Was ist der Unterschied zwischen `NonNullable` und "alle falsy-Werte entfernen"?
 
 ### Typisches Pattern: Nach einer Null-Pruefung
 
@@ -290,8 +296,14 @@ type StringOrNumber = Exclude<Primitives, boolean>;
 
 **Kernkonzept zum Merken:** Pick/Omit filtern Properties, Extract/Exclude filtern Union-Mitglieder. Vier Werkzeuge, zwei Ebenen.
 
-> **Experiment:** Oeffne `examples/03-extract-exclude-nonnullable.ts` und
-> experimentiere mit verschachtelten Extract/Exclude-Aufrufen.
+> **Experiment:** Teste im TypeScript Playground verschachtelte Aufrufe:
+> ```typescript
+> type Input = string | number | boolean | null | undefined | string[];
+> type Step1 = NonNullable<Input>;                      // null/undefined weg
+> type Step2 = Extract<Step1, string | number | boolean>; // nur Primitives
+> type Step3 = Exclude<Step2, boolean>;                  // boolean weg
+> // Hovere ueber jeden Step — was ist der Typ nach jedem Schritt?
+> ```
 
 ---
 

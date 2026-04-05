@@ -74,6 +74,31 @@ function setWidth(element: HTMLElement, width: Pixels): void {
 }
 ```
 
+> **Experiment:** Kopiere folgendes in den TypeScript Playground (typescriptlang.org/play):
+>
+> ```typescript
+> // Type Alias: Einmal definiert, nie wieder veraenderbar
+> type Config = { host: string; port: number };
+>
+> // Versuch: Type Alias ein zweites Mal deklarieren
+> type Config = { database: string };
+> // ^ Was sagt der Compiler? Probiere es aus!
+>
+> // Zum Vergleich: Interface kann mehrfach deklariert werden
+> interface ConfigI { host: string; port: number }
+> interface ConfigI { database: string }
+> // ^ Kein Fehler! ConfigI hat jetzt host, port UND database.
+>
+> const cfg: ConfigI = {
+>   host: "localhost",
+>   port: 5432,
+>   database: "myapp",  // alle drei sind Pflicht
+> };
+> ```
+>
+> Declaration Merging ist das Alleinstellungsmerkmal von `interface` —
+> und genau deshalb existiert das Keyword ueberhaupt noch.
+
 > 🧠 **Erklaere dir selbst:** Warum ist `type Milliseconds = number` trotzdem
 > nuetzlich, obwohl TypeScript `Milliseconds` und `number` gleich behandelt?
 > Welche Art von "Schutz" bietet es — und welche nicht?

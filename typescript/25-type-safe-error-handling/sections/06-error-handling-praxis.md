@@ -224,14 +224,52 @@ function safeParseJson<T>(json: string): Result<T, string> {
 > Funktion ist ein Bug → throw. Die Frage: "Kann ein korrektes Programm
 > in diese Situation kommen?"
 
-> ⚡ **Experiment:** Oeffne `examples/05-error-types.ts` und baue einen
-> eigenen `safeParseJson<T>(json: string): Result<T, ParseError>` Wrapper:
-> 1. Fange den `JSON.parse`-throw ab und konvertiere ihn in ein Result
-> 2. Verwende ihn in einer `fetchUser`-Funktion die `Result<User, FetchError | ParseError>` zurueckgibt
-> 3. Beobachte: Das aeussere `throw` (JSON.parse) wird EINMAL gewrappt —
->    danach fliesst nur noch `Result` durch deine Anwendung.
-> 4. Bonus: Schreibe die gleiche Funktion mit try/catch — vergleiche
->    die Lesbarkeit und Typsicherheit.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+>
+> type ParseError = { type: 'PARSE'; message: string };
+> type FetchError =
+>   | { type: 'NOT_FOUND'; id: string }
+>   | { type: 'NETWORK';   message: string };
+>
+> // Schritt 1: JSON.parse-throw → Result
+> function safeParseJson<T>(json: string): Result<T, ParseError> {
+>   try {
+>     return { ok: true, value: JSON.parse(json) as T };
+>   } catch (e) {
+>     return { ok: false, error: { type: 'PARSE', message: (e as Error).message } };
+>   }
+> }
+>
+> // Schritt 2: fetchUser mit kombiniertem Fehlertyp
+> type User = { id: string; name: string };
+>
+> async function fetchUser(id: string): Promise<Result<User, FetchError | ParseError>> {
+>   try {
+>     const response = await fetch(`/api/users/${id}`);
+>     if (response.status === 404) {
+>       return { ok: false, error: { type: 'NOT_FOUND', id } };
+>     }
+>     const raw = await response.text();
+>     return safeParseJson<User>(raw); // ParseError fliesst als Result weiter
+>   } catch (e) {
+>     return { ok: false, error: { type: 'NETWORK', message: (e as Error).message } };
+>   }
+> }
+>
+> // Zum Testen ohne echtes fetch:
+> const validJson   = safeParseJson<User>('{"id":"1","name":"Max"}');
+> const invalidJson = safeParseJson<User>('{ ungueltig }');
+> console.log(validJson);   // { ok: true, value: { id: '1', name: 'Max' } }
+> console.log(invalidJson); // { ok: false, error: { type: 'PARSE', message: '...' } }
+> ```
+>
+> Beobachte: Das externe `throw` von `JSON.parse` wird EINMAL abgefangen —
+> danach fliesst nur noch `Result` durch deine Anwendung.
+> Bonus: Schreibe die gleiche Logik mit reinem try/catch — vergleiche
+> wo die Typsicherheit verloren geht.
 
 ---
 

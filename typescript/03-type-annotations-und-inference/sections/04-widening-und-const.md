@@ -236,13 +236,32 @@ let selectedTheme3 = "light" as const;  // Typ: "light"  -->  OK
 
 ## Experiment-Box: Widening live beobachten
 
-> **Experiment:** Oeffne `examples/03-widening-und-const.ts` und probiere:
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
-> 1. Schreibe `const obj = { x: 10 };` und hovere ueber `obj.x`. Warum ist es `number` und nicht `10`?
-> 2. Fuege `as const` hinzu: `const obj = { x: 10 } as const;` -- was aendert sich?
-> 3. Versuche `obj.x = 20;` -- was passiert mit und ohne `as const`?
-> 4. Erstelle ein Array `const arr = [1, 2, 3]` und dann `const arr2 = [1, 2, 3] as const`. Vergleiche die Typen.
-> 5. **Bonus:** Was ist der Typ von `(typeof arr2)[number]`? Was von `(typeof arr)[number]`?
+> ```typescript
+> // Schritt 1: Objekt-Properties werden immer gewidened -- auch bei const!
+> const obj = { x: 10 };
+> // Hovere ueber 'obj.x' -- warum ist es 'number' und nicht '10'?
+>
+> // Schritt 2: as const verhindert Widening
+> const objConst = { x: 10 } as const;
+> // Hovere ueber 'objConst.x' -- was aendert sich?
+>
+> // Schritt 3: Versuch einer Zuweisung
+> obj.x = 20;         // Erlaubt?
+> // objConst.x = 20; // Erlaubt?
+>
+> // Schritt 4: Arrays mit und ohne as const
+> const arr = [1, 2, 3];
+> const arrConst = [1, 2, 3] as const;
+> // Hovere -- was ist der Unterschied?
+>
+> // Bonus: Union-Typen aus Arrays ableiten
+> type ArrElement = (typeof arrConst)[number];
+> // Was ist ArrElement? Was waere es ohne as const?
+> ```
+>
+> Erklaere in einem Satz: Warum schuetzt `const` bei Objekten die Properties NICHT vor Widening?
 
 ---
 

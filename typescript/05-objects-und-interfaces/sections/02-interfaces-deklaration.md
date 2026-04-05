@@ -15,18 +15,25 @@
 
 Ein Interface gibt einer Objektstruktur einen **wiederverwendbaren Namen**:
 
-```typescript
+```typescript annotated
 interface User {
+// ^^^^^^^^^ Schluesselwort 'interface' -- eroeffnet eine benannte Objektform
   name: string;
+// ^^^^^^^^^^^^ Property 'name' ist Pflicht, Typ: string
   age: number;
+// ^^^^^^^^^^^^ Property 'age' ist Pflicht, Typ: number
   email: string;
+// ^^^^^^^^^^^^^^ Property 'email' ist Pflicht, Typ: string
 }
+// 'User' ist jetzt ein wiederverwendbarer Typ-Name
 
 const user: User = {
-  name: "Max",
-  age: 30,
-  email: "max@test.de",
+//          ^^^^ Annotation: Dieses Objekt muss der User-Form entsprechen
+  name: "Max",   // string ✓
+  age: 30,       // number ✓
+  email: "max@test.de",  // string ✓
 };
+// TypeScript prueft: Hat das Objekt alle drei Properties mit den richtigen Typen?
 ```
 
 > **Analogie:** Ein Interface ist wie eine **Stellenbeschreibung**. Die Stelle
@@ -34,6 +41,15 @@ const user: User = {
 > (HTML, CSS, JavaScript). Wer sich bewirbt, muss MINDESTENS das koennen --
 > darf aber auch mehr koennen. Genau so funktioniert ein Interface: Es beschreibt
 > die Mindestanforderungen an ein Objekt.
+
+> 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen einem Object Type Literal
+> (`let user: { name: string }`) und einem Interface (`interface User { name: string }`)
+> in der tatsaechlichen Prueflogik? Ist das Ergebnis dasselbe?
+>
+> **Kernpunkte:** Beide erzeugen denselben Typ-Check | Interface gibt dem Typ einen
+> wiederverwendbaren Namen | Object Type Literal ist anonym und nur einmalig | Interface
+> kann per `extends` erweitert werden und unterstuetzt Declaration Merging -- Type Literal
+> nicht | Semantisch sind sie bei einfachen Objektstrukturen gleichwertig
 
 ### Interface in der Praxis: Angular und React
 

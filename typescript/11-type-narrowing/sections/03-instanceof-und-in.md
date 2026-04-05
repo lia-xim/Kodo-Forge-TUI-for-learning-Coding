@@ -185,9 +185,25 @@ function zeigeZustand(zustand: Zustand) {
 }
 ```
 
-> ⚡ **Experiment:** Oeffne `examples/03-instanceof-und-in.ts` und fuege
-> der `Form`-Union einen dritten Typ hinzu (z.B. `Dreieck`). Beobachte,
-> wie sich die Narrowing-Logik aendert und welche Fehler TypeScript meldet.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> interface Kreis { art: "kreis"; radius: number; }
+> interface Rechteck { art: "rechteck"; breite: number; hoehe: number; }
+> interface Dreieck { art: "dreieck"; basis: number; hoehe: number; }
+>
+> type Form = Kreis | Rechteck | Dreieck;
+>
+> function flaeche(form: Form): number {
+>   if ("radius" in form) {
+>     return Math.PI * form.radius ** 2;
+>   } else if ("breite" in form) {
+>     return form.breite * form.hoehe;
+>   } else {
+>     return (form.basis * form.hoehe) / 2;
+>   }
+> }
+> ```
+> Fuege einen vierten Typ zum Union hinzu (z.B. `Ellipse` mit `halbachseA` und `halbachseB`). Wie aendert sich die Narrowing-Logik? Welche Fehler entstehen wenn ein `in`-Check fehlt?
 
 ---
 

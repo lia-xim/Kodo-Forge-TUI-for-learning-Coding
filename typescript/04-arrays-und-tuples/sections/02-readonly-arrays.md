@@ -70,21 +70,27 @@ obwohl der Aufrufer das nicht erwartet.
 
 ## Die Loesung: `readonly`
 
-```typescript
+```typescript annotated
 function verarbeiteSicher(namen: readonly string[]): void {
-  // namen.sort();      // FEHLER! Property 'sort' does not exist
-  // namen.push("X");   // FEHLER! Property 'push' does not exist
-  // namen[0] = "Y";    // FEHLER! Index signature is readonly
+  // namen.sort();      // ← FEHLER! 'sort' existiert nicht auf readonly
+  // namen.push("X");   // ← FEHLER! 'push' existiert nicht auf readonly
+  // namen[0] = "Y";    // ← FEHLER! Index signature ist readonly
 
   // Nur lesende Operationen erlaubt:
-  console.log(namen.length);
-  console.log(namen[0]);
-  console.log(namen.includes("Alice"));
+  console.log(namen.length);          // ← OK: Laenge lesen
+  console.log(namen[0]);              // ← OK: Element lesen
+  console.log(namen.includes("Alice")); // ← OK: Suchen erzeugt nichts Neues
 
   // Neue Arrays erzeugen ist okay:
-  const sortiert = [...namen].sort();
-  const erweitert = [...namen, "Neuer"];
+  const sortiert = [...namen].sort();    // ← OK: erst kopieren, dann sortieren
+  const erweitert = [...namen, "Neuer"]; // ← OK: neues Array erzeugen
 }
+```
+
+**Erklaere dir selbst:** Warum blockiert `readonly` genau die mutierenden Methoden, nicht aber `map()`, `filter()` oder `slice()`?
+- `readonly` schuetzt vor In-Place-Mutation — also Methoden, die das Original veraendern (`push`, `sort`, `splice`)
+- Methoden wie `map()` und `filter()` erzeugen ein **neues** Array und lassen das Original unveraendert — sie sind deshalb erlaubt
+- Das folgt dem funktionalen Paradigma: "Erzeuge neue Daten statt alte zu veraendern"
 ```
 
 > **Praxis-Tipp:** Mach dir die Gewohnheit: **Funktionsparameter, die Arrays

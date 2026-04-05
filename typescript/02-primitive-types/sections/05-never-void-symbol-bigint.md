@@ -364,14 +364,35 @@ JSON.stringify(1n, (_, v) => typeof v === "bigint" ? v.toString() : v);
 
 **Kernkonzept zum Merken:** `never` als Exhaustive Check in `switch`-Statements ist eines der wertvollsten Patterns in TypeScript. Es garantiert Compilezeit-Sicherheit wenn Union Types erweitert werden.
 
-> **Experiment:** Oeffne `examples/04-never-und-void.ts` und versuche
-> folgendes:
-> 1. Fuege bei der `Color`-Union den Wert `"gelb"` hinzu, OHNE den
->    `switch` anzupassen. Beobachte den Compile-Error im `default`-Zweig
->    — genau DAS ist die Staerke des Exhaustive Checks.
-> 2. Oeffne `examples/05-symbol-und-bigint.ts` und aendere
->    `BigInt(Number.MAX_SAFE_INTEGER) + 1n` zu `Number.MAX_SAFE_INTEGER + 1`.
->    Vergleiche die Ausgaben — siehst du den Praezisionsverlust?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Exhaustive Check mit never
+> type Farbe = "rot" | "gruen" | "blau";
+>
+> function farbeZuHex(f: Farbe): string {
+>   switch (f) {
+>     case "rot":   return "#ff0000";
+>     case "gruen": return "#00ff00";
+>     case "blau":  return "#0000ff";
+>     default:
+>       const _check: never = f; // Compile-Error wenn ein Fall fehlt!
+>       return _check;
+>   }
+> }
+>
+> // Praezisionsverlust: number vs bigint
+> const max = Number.MAX_SAFE_INTEGER; // 9007199254740991
+> console.log(max + 1);  // 9007199254740992 — OK
+> console.log(max + 2);  // 9007199254740992 — FALSCH! Gleich wie +1
+>
+> const maxBig = BigInt(Number.MAX_SAFE_INTEGER);
+> console.log(maxBig + 1n); // 9007199254740992n — korrekt!
+> console.log(maxBig + 2n); // 9007199254740993n — korrekt!
+> ```
+> Fuege `"gelb"` zur `Farbe`-Union hinzu, ohne den `switch` anzupassen.
+> Welcher Fehler erscheint im `default`-Zweig — und warum ist das wertvoller
+> als ein Laufzeitfehler? Vergleiche dann die `number`- und `bigint`-Ergebnisse:
+> ab welchem Punkt weichen sie voneinander ab?
 
 ---
 

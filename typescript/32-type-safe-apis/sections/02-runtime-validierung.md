@@ -20,7 +20,10 @@
 
 TypeScript-Typen existieren nur zur Compilezeit (Type Erasure, L02).
 Daten von aussen — APIs, LocalStorage, URL-Parameter, FormData —
-haben zur Laufzeit KEINE Typen:
+haben zur Laufzeit KEINE Typen. `as User[]` ist wie ein Schild an der
+Tuer das "Bitte nur Berechtigte eintreten" sagt — aber niemanden
+kontrolliert. Zod hingegen ist der Grenzbeamte: Prueft jeden Einreisenden,
+weist zurueck wenn die Papiere nicht stimmen:
 
 ```typescript
 // TypeScript sagt: users ist User[]
@@ -49,7 +52,10 @@ const users = await fetch('/api/users').then(r => r.json()) as User[];
 ## Zod: Schema als Source of Truth
 
 Zod's Kernidee: Du definierst ein Schema, und Zod leitet den
-TypeScript-Typ automatisch ab:
+TypeScript-Typ automatisch ab. Das Schema ist wie ein Stempel im
+Reisepass: Es definiert WAS gueltig ist — und der abgeleitete Typ
+ist einfach die TypeScript-Uebersetzung davon. Eine einzige
+Quelle, zwei Darstellungen:
 
 ```typescript annotated
 import { z } from 'zod';
@@ -208,7 +214,11 @@ v.pipe(v.string(), v.minLength(1), v.maxLength(100), v.email())  // ~1kb min (gz
 
 ## Das "Schema First"-Pattern
 
-Die beste Praxis: Schema zuerst definieren, dann Typ ableiten:
+Die beste Praxis: Schema zuerst definieren, dann Typ ableiten.
+"Schema First" ist wie zuerst den Bauplan zu zeichnen und dann daraus
+die Materialliste abzuleiten — nie umgekehrt. Wenn du den Plan aenderst,
+stimmt die Liste automatisch. Wenn du beides separat pflegst, laufen
+sie irgendwann auseinander:
 
 ```typescript annotated
 // ❌ SCHLECHT: Typ zuerst, Schema nachtraeglich

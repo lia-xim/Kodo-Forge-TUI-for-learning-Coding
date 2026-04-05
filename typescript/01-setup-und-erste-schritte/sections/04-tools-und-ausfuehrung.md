@@ -72,6 +72,19 @@ Wenn du einen Typ-Fehler in deinem Code hast, meldet `tsx` ihn NICHT. Der Code l
 
 Stell dir das so vor: `tsx` ist wie ein schneller Kurier, der dein Paket sofort ausliefert, ohne den Inhalt zu pruefen. `tsc` ist die Qualitaetskontrolle, die sicherstellt, dass das richtige Produkt im Paket liegt. Du brauchst beides.
 
+```typescript annotated
+// This file contains a deliberate type error:
+const greeting: number = "hello";   // ← ERROR: Type 'string' not assignable to type 'number'
+console.log(greeting);              // tsx runs this anyway -- output: "hello"
+
+// tsx behaviour:   strips ": number", executes as JS, prints "hello" -- no complaint
+// tsc behaviour:   reports "Type 'string' is not assignable to type 'number'" and stops
+// tsc --noEmit:    same type error, but produces no .js file -- used purely for checking
+
+// The key insight: tsx treats annotations as comments to remove,
+//                  tsc treats them as contracts to enforce.
+```
+
 > 🧠 **Erklaere dir selbst:** Warum fuehrt `tsx` KEIN Type Checking durch? Welchen Vorteil hat das -- und welches Risiko entsteht? Wie ergaenzen sich `tsx` und `tsc --noEmit` im Workflow?
 > **Kernpunkte:** tsx nutzt esbuild (nur Syntax-Entfernung) | Kein Type Checking = schneller | Risiko: Laufzeitfehler trotz Typ-Fehler | Beides zusammen: Geschwindigkeit + Sicherheit
 

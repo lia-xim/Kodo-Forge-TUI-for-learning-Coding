@@ -188,11 +188,39 @@ function handleApiError(error: ApiError): string {
 }
 ```
 
-> **Experiment:** Öffne `examples/04-exhaustive.ts`:
-> 1. Definiere `type TrafficLight = 'RED' | 'YELLOW' | 'GREEN'`.
-> 2. Schreibe `Record<TrafficLight, string>` für Aktionsbeschreibungen.
-> 3. Füge `'BLINKING'` zu TrafficLight hinzu und beobachte den Compile-Error.
-> 4. Schreibe auch die `assertNever`-Version mit switch.
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+>
+> ```typescript
+> function assertNever(x: never): never {
+>   throw new Error(`Unhandled case: ${JSON.stringify(x)}`);
+> }
+>
+> type TrafficLight = 'RED' | 'YELLOW' | 'GREEN';
+>
+> // Exhaustive mit Record — alle Keys müssen vorkommen:
+> const lightActions = {
+>   RED:    'Warten',
+>   YELLOW: 'Bremsen vorbereiten',
+>   GREEN:  'Fahren',
+> } satisfies Record<TrafficLight, string>;
+>
+> // Exhaustive mit switch + assertNever:
+> function describeLight(light: TrafficLight): string {
+>   switch (light) {
+>     case 'RED':    return lightActions.RED;
+>     case 'YELLOW': return lightActions.YELLOW;
+>     case 'GREEN':  return lightActions.GREEN;
+>     default:       return assertNever(light);
+>   }
+> }
+>
+> console.log(describeLight('RED'));   // Warten
+> console.log(describeLight('GREEN')); // Fahren
+> ```
+>
+> Füge jetzt `'BLINKING'` zu `TrafficLight` hinzu — TypeScript zeigt sofort zwei
+> Compile-Errors: einmal im `Record` (fehlender Key) und einmal im `default`-Branch
+> (`light` ist nicht mehr `never`). Beide Stellen die du anpassen musst!
 
 ---
 

@@ -102,10 +102,12 @@ export class UserService {
 > 📖 **Hintergrund: Warum validierst du auch die Response?**
 >
 > Die meisten Entwickler validieren nur den Input (was der User eingibt).
-> Aber die API-Response ist genauso unsicher: Das Backend-Team koennte
-> das Schema aendern, ein Feld umbenennen, oder null statt eines Werts
-> senden. Ohne Response-Validierung merkst du das erst, wenn ein User
-> einen `TypeError: Cannot read property 'name' of undefined` sieht.
+> Das ist wie ein Sicherheitscheck nur an der Eingangstuer eines
+> Airports — aber nicht beim Ausgang. Die API-Response ist genauso
+> unsicher wie der User-Input: Das Backend-Team koennte das Schema
+> aendern, ein Feld umbenennen, oder null statt eines Werts senden.
+> Ohne Response-Validierung merkst du das erst, wenn ein User einen
+> `TypeError: Cannot read property 'name' of undefined` sieht.
 > Mit Zod-Validierung merkst du es sofort — und kannst sinnvolle
 > Fehlermeldungen zeigen.
 
@@ -311,7 +313,7 @@ function UserList() {
 - Response-Validierung ist genauso wichtig wie Input-Validierung
 - Die Entscheidungsmatrix hilft bei der Wahl: tRPC, GraphQL, OpenAPI oder Zod direkt
 
-**Kernkonzept zum Merken:** Typsichere APIs sind ein Spektrum: Von "gar keine Typen" (fetch + any) ueber "Trust me" (HttpClient.get<T>) bis "bewiesen sicher" (Zod-validiert). Je naeher du an "bewiesen sicher" bist, desto weniger Runtime-Fehler hast du. Zod ist der pragmatischste Weg dorthin.
+**Kernkonzept zum Merken:** Typsichere APIs sind ein Spektrum — wie Sicherheitsgurte im Auto: Du kannst ohne fahren, und meistens geht es gut. Aber wenn es kracht, willst du ihn haben. Von "gar keine Typen" (fetch + any) ueber "Trust me" (HttpClient.get<T>) bis "bewiesen sicher" (Zod-validiert): Je naeher du an "bewiesen sicher" bist, desto weniger Runtime-Fehler hast du. Zod ist der pragmatischste Weg dorthin.
 
 ---
 

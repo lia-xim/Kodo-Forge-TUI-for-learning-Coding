@@ -360,16 +360,25 @@ const user = UserSchema.parse(JSON.parse(apiResponse));
 
 **Kernkonzept zum Merken:** `any` ist ein Escape-Hatch, `unknown` ist eine Loesung. Wenn du `any` schreibst, dokumentierst du: "Ich verzichte hier bewusst auf Typsicherheit."
 
-> **Experiment:** Oeffne `examples/03-any-vs-unknown.ts` und versuche
-> folgendes:
-> 1. Aendere den Typ der Variable `safe` von `unknown` auf `any`.
->    Welche Fehlermeldungen verschwinden? Welche Laufzeitfehler koenntest
->    du jetzt bekommen, ohne es zu merken?
-> 2. Nimm die Infektionskette am Ende des Examples: Aendere `response` von
->    `any` zu `unknown` und beobachte, wie TypeScript dich sofort dazu
->    zwingt, Pruefungen einzubauen.
-> 3. Frage dich: Welche Variante wuerdest du in einem Produktionsprojekt
->    verwenden und warum?
+> **Experiment:** Probiere folgendes im TypeScript Playground aus:
+> ```typescript
+> // Die Infektionskette mit any
+> let quelle: any = { name: "Max", alter: 25 };
+> let name = quelle.name;   // Typ: any (nicht string!)
+> let laenge = name.length; // Typ: any — kein Fehler, auch wenn name keine Zahl waere
+> let ergebnis = laenge + 1; // Typ: any — die Kette geht weiter
+>
+> // Dieselbe Kette mit unknown — sicher
+> let safe: unknown = { name: "Max", alter: 25 };
+> // let nameUnsafe = safe.name; // Fehler! Entferne // und schau
+> if (typeof safe === "object" && safe !== null && "name" in safe) {
+>   const nameTyped = (safe as { name: string }).name; // Jetzt OK
+> }
+> ```
+> Aendere `safe` von `unknown` auf `any`. Welche Fehlermeldungen verschwinden?
+> Schreibe dann `safe.nichtExistiert.tief.verschachtelt` — bei `any` kein
+> Compilerfehler, aber ein Laufzeitcrash. Welche Variante wuerdest du in
+> einem Produktionsprojekt fuer API-Antworten verwenden, und warum?
 
 ---
 

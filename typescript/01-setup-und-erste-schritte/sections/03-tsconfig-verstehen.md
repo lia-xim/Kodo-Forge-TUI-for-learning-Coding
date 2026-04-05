@@ -96,17 +96,20 @@ console.log(user.name);  // KEIN Compiler-Fehler!
 
 Mit `strictNullChecks` meldet TypeScript:
 
-```typescript
+```typescript annotated
 // MIT strictNullChecks -- SICHER!
 function getUser(id: number): User | undefined {
-  return database.find(u => u.id === id);  // TypeScript weiss: koennte undefined sein
+// ^ return type "User | undefined" -- compiler forces callers to handle both cases
+  return database.find(u => u.id === id);  // Array.find returns T | undefined
 }
 
-const user = getUser(999);
-console.log(user.name);  // FEHLER! Object is possibly 'undefined'
-// Du MUSST pruefen:
-if (user) {
-  console.log(user.name);  // Jetzt ist es sicher
+const user = getUser(999);     // type of "user" is now "User | undefined"
+console.log(user.name);        // ERROR: Object is possibly 'undefined'
+                               // ← compiler refuses to let you ignore the undefined case
+
+// You MUST narrow the type before accessing properties:
+if (user) {                    // ← type guard: inside this block, "user" is "User"
+  console.log(user.name);     // safe -- TypeScript knows user is defined here
 }
 ```
 
