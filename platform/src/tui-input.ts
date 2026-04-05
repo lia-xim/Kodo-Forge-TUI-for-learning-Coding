@@ -19,7 +19,7 @@ import { handleStatsInput } from "./tui-stats.ts";
 import { handleSearchInput } from "./tui-search.ts";
 import { handleBookmarksInput } from "./tui-bookmarks.ts";
 import { handleHintsInput } from "./tui-exercises.ts";
-import { handleWarmupInput, handlePretestInput, handleInterleavedInput } from "./tui-quiz.ts";
+import { handleWarmupInput, handlePretestInput, handleInterleavedInput, handleQuizInput } from "./tui-quiz.ts";
 import { handleSelfExplainInput } from "./tui-section-reader.ts";
 import { handleMisconceptionsInput, handleCompletionInput } from "./tui-challenges.ts";
 import { handleCompetenceInput } from "./tui-stats.ts";
@@ -210,6 +210,9 @@ export function handleInput(data: Buffer): void {
       break;
     case "interleaved":
       handleInterleavedInput(key);
+      break;
+    case "quiz":
+      handleQuizInput(key);
       break;
     case "competence":
       handleCompetenceInput(key);

@@ -23,6 +23,52 @@ export const questions: QuizQuestion[] = [
   { question: "Warum braucht man `string & K` in Template Literal Keys?", options: ["Performance", "keyof kann number/symbol enthalten — Template Literals brauchen string", "Nicht noetig", "Weil K immer number ist"], correct: 1, explanation: "keyof T gibt string | number | symbol. Template Literals akzeptieren nur string. Die Intersection filtert." },
   { question: "Was ist `type SemVer = \\`${number}.${number}.${number}\\``?", options: ["Ein Array", "Ein String-Typ fuer semantische Versionierung: '1.2.3'", "Ein number", "Ein Objekt"], correct: 1, explanation: "Template Literal mit number erzeugt String-Patterns wie '1.0.0', '2.3.1', etc." },
   { question: "Welches Framework-Pattern nutzt Template Literal Types am haeufigsten?", options: ["Array-Methoden", "Event-Handler-Namen: on${Capitalize<EventName>}", "For-Schleifen", "Import-Pfade"], correct: 1, explanation: "React, Vue und andere Frameworks nutzen on${Capitalize<>} fuer Event-Props: onClick, onMouseMove, etc." },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  {
+    type: "short-answer",
+    question: "Welcher eingebaute String-Utility-Type macht ALLE Buchstaben gross?",
+    expectedAnswer: "Uppercase",
+    acceptableAnswers: ["Uppercase", "Uppercase<T>", "Uppercase<>"],
+    explanation: "Uppercase<T> konvertiert alle Buchstaben zu Grossbuchstaben. Capitalize<T> macht nur den ersten Buchstaben gross — ein haeufiger Verwechslungsfehler.",
+  },
+  {
+    type: "short-answer",
+    question: "Wie nennt man das Ergebnis wenn ein Template Literal Type zwei Union-Typen kombiniert? (mathematischer Begriff)",
+    expectedAnswer: "kartesisches Produkt",
+    acceptableAnswers: ["kartesisches Produkt", "Kartesisches Produkt", "cartesian product", "cross product", "Kreuzprodukt"],
+    explanation: "Template Literal Types bilden das kartesische Produkt aller Union-Member. Bei 2 x 3 Werten entstehen 6 String-Kombinationen.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type Result = `${'get' | 'set'}${Capitalize<'name' | 'age'>}`;",
+    expectedAnswer: "'getName' | 'getAge' | 'setName' | 'setAge'",
+    acceptableAnswers: ["'getName' | 'getAge' | 'setName' | 'setAge'", "getName | getAge | setName | setAge", "'getAge' | 'getName' | 'setAge' | 'setName'"],
+    explanation: "Kartesisches Produkt: 2 Prefixe x 2 capitalized Names = 4 Kombinationen. Capitalize macht den ersten Buchstaben gross.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type ExtractPrefix<T> = T extends `${infer P}_${string}` ? P : never;\ntype Result = ExtractPrefix<'user_name' | 'user_email' | 'order_id'>;",
+    expectedAnswer: "'user' | 'order'",
+    acceptableAnswers: ["'user' | 'order'", "user | order", "'order' | 'user'"],
+    explanation: "infer P matcht alles vor dem ersten Unterstrich. Distributiv ueber den Union: 'user' (2x dedupliziert) | 'order'. Ergebnis: 'user' | 'order'.",
+  },
+  {
+    type: "short-answer",
+    question: "Welcher eingebaute Utility-Type macht nur den ERSTEN Buchstaben klein?",
+    expectedAnswer: "Uncapitalize",
+    acceptableAnswers: ["Uncapitalize", "Uncapitalize<T>", "Uncapitalize<>"],
+    explanation: "Uncapitalize<T> ist das Gegenstueck zu Capitalize<T>. Es macht nur den ersten Buchstaben klein, der Rest bleibt unveraendert.",
+  },
+  {
+    type: "explain-why",
+    question: "Warum sind Template Literal Types besonders wertvoll fuer die Typisierung von Framework-APIs wie React-Event-Handler oder Express-Routen?",
+    modelAnswer: "Template Literal Types ermoeglichen es, String-basierte APIs typsicher zu machen, die frueher nur mit 'string' typisiert werden konnten. Bei React generiert on${Capitalize<EventName>} automatisch onClick, onMouseMove etc. mit korrekten Event-Typen. Bei Express koennen Route-Parameter wie '/users/:id' statisch extrahiert werden, sodass req.params.id typsicher ist. Das eliminiert eine ganze Klasse von Laufzeitfehlern durch Tippfehler in String-basierten APIs.",
+    keyPoints: ["String-basierte APIs werden typsicher statt nur 'string'", "Automatische Generierung von Event-Handler-Namen mit korrekten Typen", "Statische Extraktion von Route-Parametern", "Tippfehler werden zur Compile-Zeit statt zur Laufzeit erkannt"],
+  },
 ];
 
 export interface ElaboratedFeedback { whyCorrect: string; commonMistake: string; }

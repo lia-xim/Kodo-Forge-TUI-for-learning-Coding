@@ -19,6 +19,7 @@ Fuer jede Lektion wird ein Audit-Agent gestartet der **ALLE** Dateien der Lektio
 **Quiz-Qualitaet:**
 - `correct`-Index stimmt mit der tatsaechlich richtigen Option ueberein (manuell geprueft!)
 - Antwort-Indizes gleichmaessig verteilt (nicht alle `correct: 1`!)
+- **Antwort-LAENGEN gleichmaessig!** Die richtige Antwort darf NICHT systematisch die laengste/komplexeste sein. Distraktoren muessen aehnlich ausfuehrlich formuliert werden. Manchmal soll die kuerzeste Antwort korrekt sein.
 - `elaboratedFeedback.whyCorrect` erklaert tatsaechlich warum die Antwort richtig ist
 - `elaboratedFeedback.commonMistake` nennt einen plausiblen haeufigen Fehler
 - Distraktoren sind plausibel (nicht offensichtlich falsch)
@@ -45,7 +46,7 @@ Fuer jede Lektion wird ein Audit-Agent gestartet der **ALLE** Dateien der Lektio
 ```
 Schritt 1: ALLE Dateien der Lektion lesen
     ├── sections/*.md (jede Sektion einzeln)
-    ├── quiz-data.ts (alle 15 Fragen)
+    ├── quiz-data.ts (alle 15+ Fragen)
     ├── pretest-data.ts (alle Fragen)
     ├── misconceptions.ts (alle 8 Misconceptions)
     ├── completion-problems.ts
@@ -53,11 +54,13 @@ Schritt 1: ALLE Dateien der Lektion lesen
     ├── parsons-data.ts
     ├── tracing-data.ts
     ├── transfer-data.ts
-    ├── exercises/*.ts
-    ├── solutions/*.ts
-    ├── examples/*.ts
-    ├── hints.json
-    └── cheatsheet.md
+    ├── cheatsheet.md
+    │
+    │   NUR bei alten Lektionen (L01-L20), NICHT bei neuen (L21+):
+    ├── exercises/*.ts (deprecated)
+    ├── solutions/*.ts (deprecated)
+    ├── examples/*.ts (deprecated)
+    └── hints.json (deprecated)
 
 Schritt 2: Faktische Korrektheit pruefen
     ├── Jedes Code-Beispiel: Wuerde es mit tsc --strict kompilieren?
@@ -315,13 +318,36 @@ Die Regression hat eine klare Ursache: Wenn ein Agent 5-10 Lektionen in einer Si
 
 #### Experiment-Box
 
-**Gutes Beispiel (L13 S4):**
+**WICHTIG:** Experiment-Boxen zeigen Code INLINE und erklaeren das Ergebnis direkt. Sie verweisen NICHT auf externe Dateien!
+
+**Gutes Beispiel (NEU):**
+```markdown
+> **Experiment:** Was passiert wenn du den Constraint entfernst?
+>
+> ```typescript
+> // MIT Constraint:
+> function longest<T extends { length: number }>(a: T, b: T): T {
+>   return a.length >= b.length ? a : b;
+> }
+>
+> // OHNE Constraint — TypeScript meldet:
+> // "Property 'length' does not exist on type 'T'"
+> function longest<T>(a: T, b: T): T {
+>   return a.length >= b.length ? a : b; // ❌ Fehler!
+> }
+> ```
+>
+> Ohne `extends { length: number }` weiss TypeScript nicht, ob T
+> ueberhaupt eine `.length`-Property hat. Der Constraint ist die
+> "Garantie" an den Compiler.
+```
+
+**Schlechtes Beispiel (VERALTET — nicht mehr verwenden!):**
 ```markdown
 > Experiment: Oeffne `examples/04-constraints.ts` und entferne den
-> `extends { length: number }`-Constraint. Was sagt TypeScript dir?
-> Beobachte die Fehlermeldung genau — sie erklaert praezise warum
-> der Zugriff auf `.length` unsicher waere.
+> `extends { length: number }`-Constraint.
 ```
+→ Verweist auf externe Datei, reisst aus dem TUI-Flow.
 
 **Schlechtes Beispiel:** Kein Experiment vorhanden.
 
@@ -337,19 +363,91 @@ Die Regression hat eine klare Ursache: Wenn ein Agent 5-10 Lektionen in einer Si
 
 **Schlechtes Beispiel:** Kein Framework-Bezug in der gesamten Sektion.
 
-### 4.2 Pro Lektion
+### 4.2 Pro Lektion — Kern vs. Vertiefung
+
+#### KERN (Pflicht — hier liegt der Fokus)
 
 | Element | Menge | Pruefpunkte |
 |---------|:-----:|-------------|
-| Quiz-Fragen | 15 | correct-Indizes: 4/4/4/3, elaboratedFeedback fuer jede Frage, Distraktoren plausibel |
-| Misconceptions | 8 | Realistisch (nicht offensichtlich), ueberraschend, concept-Tag vorhanden |
-| Completion Problems | 6 | Steigende Schwierigkeit, blanks haben sinnvolle Hinweise |
-| Debugging Challenges | 5 | Bug ist nicht trivial, Fehlerbeschreibung ist realistisch |
-| Parson's Problems | 3-4 | 1-2 Distraktoren pro Problem, Loesung ist eindeutig |
-| Code-Tracing Exercises | 4 | Schritt-fuer-Schritt-Aufloesung, erwartete Ausgabe korrekt |
-| Transfer Tasks | 2-3 | NEUER Kontext (nicht nur mehr Uebungen!), realistisches Szenario |
-| hints.json | Alle Exercises | Progressive Hints (3-4 Stufen), nicht die Loesung im ersten Hint |
-| cheatsheet.md | 1 | Kompakt, referenzierbar, alle Kernkonzepte |
+| Sektionen (sections/*.md) | 5-7 | Reichhaltig, tief, Geschichten, inline Code, alle 9 Pflichtelemente. **DAS ist das Hauptprodukt.** |
+| Quiz-Fragen (quiz-data.ts) | 15+ | **Format-Mix erforderlich** (siehe unten), elaboratedFeedback fuer alle Fragen |
+| Pre-Test (pretest-data.ts) | 3+ pro Sektion | Vorwissen pruefen, adaptive Tiefe ermoeglichen |
+| Cheatsheet (cheatsheet.md) | 1 | Kompakt, referenzierbar, alle Kernkonzepte |
+
+**Faustregel:** 80% der Arbeit in grossartige Sektionen und Quizzes investieren.
+
+#### Quiz-Format-Mix (PFLICHT fuer neue Lektionen ab L21+)
+
+Wissenschaftliche Grundlage: Reines Multiple Choice nutzt nur *Recognition* (Wiedererkennen). Fuer tiefes Lernen braucht es *Recall* (freies Abrufen) und *Generation* (eigenes Produzieren). Studien zeigen +13% Self-Efficacy bei Kurzantwort-Fragen vs. MC (PMC 2024), und der Generation Effect (Slamecka & Graf 1978) verankert Wissen staerker.
+
+| Format | Typ in quiz-data.ts | Menge | Wissenschaftliche Basis | Pruefpunkte |
+|--------|:-------------------:|:-----:|------------------------|-------------|
+| **Multiple Choice** | `type: "multiple-choice"` | 6-8 | Testing Effect (Roediger 2011) | correct-Indizes: gleichmaessig verteilt. **Antwortlaengen gleichmaessig!** Nicht immer laengste = richtig. |
+| **Kurzantwort** | `type: "short-answer"` | 3-4 | Generation Effect + staerkerer Recall als MC (Karpicke 2012) | Erwartete Antwort kurz (1-3 Woerter). Case-insensitive. Akzeptable Alternativen angeben. |
+| **Predict-the-Output** | `type: "predict-output"` | 2-3 | Generation Effect + Code Comprehension | Code-Block zeigen, Lernender tippt erwartete Ausgabe. Schritt-fuer-Schritt-Erklaerung im Feedback. |
+| **Erklaere-warum** | `type: "explain-why"` | 1-2 | Self-Explanation Effect (Chi 1989) | Offene Frage nach Quiz-Antwort. Keine Auto-Validierung, Musterantwort zum Selbstvergleich. |
+
+**Beispiele fuer neue Formate in quiz-data.ts:**
+
+```typescript
+// Kurzantwort — Lernender tippt die Antwort
+{
+  type: "short-answer",
+  question: "Was gibt `typeof null` in JavaScript zurueck?",
+  expectedAnswer: "object",
+  acceptableAnswers: ["object", "'object'", "\"object\""],
+  explanation: "typeof null === 'object' ist ein beruehter Bug aus 1995...",
+  elaboratedFeedback: {
+    whyCorrect: "typeof null gibt 'object' zurueck — ein nie gefixter Bug...",
+    commonMistake: "Viele erwarten 'null', aber typeof hat diesen Sonderfall."
+  }
+}
+
+// Predict-the-Output — Code lesen, Ausgabe vorhersagen
+{
+  type: "predict-output",
+  question: "Was gibt dieser Code aus?",
+  code: `const x: unknown = "hello";
+console.log(typeof x);
+console.log(x.toUpperCase());  // Was passiert hier?`,
+  expectedAnswer: "Compile Error",
+  acceptableAnswers: ["Compile Error", "Error", "Fehler", "Compilefehler"],
+  explanation: "unknown erfordert Type Narrowing vor dem Zugriff auf Methoden...",
+  elaboratedFeedback: {
+    whyCorrect: "Bei unknown muss erst geprueft werden welcher Typ vorliegt...",
+    commonMistake: "Mit 'any' wuerde es kompilieren, aber unknown ist sicherer."
+  }
+}
+
+// Erklaere-warum — Offene Reflexionsfrage
+{
+  type: "explain-why",
+  question: "Du hast gerade gelernt dass TypeScript-Typen zur Laufzeit verschwinden (Type Erasure). Erklaere in 1-2 Saetzen: Warum ist das ein Problem fuer JSON.parse()?",
+  modelAnswer: "JSON.parse() gibt 'any' zurueck, weil TypeScript zur Laufzeit nicht pruefen kann ob das geparste Objekt dem erwarteten Typ entspricht. Die Typ-Information existiert nur zur Compilezeit, aber JSON kommt erst zur Laufzeit.",
+  keyPoints: ["Laufzeit vs. Compilezeit", "Externe Daten sind untypisiert", "Runtime-Validierung noetig"]
+}
+```
+
+#### VERTIEFUNG (Optional — nur wenn didaktisch sinnvoll)
+
+Diese Formate existieren im TUI. Sie koennen erstellt werden, sind aber KEIN Pflichtprogramm. Der Lernende entscheidet selbst ob und wann er sie nutzt.
+
+| Element | Wann sinnvoll? |
+|---------|---------------|
+| Misconceptions | Thema hat typische Fehlvorstellungen (z.B. typeof null, Type Erasure) |
+| Completion Problems | Syntax-lastige Themen wo Luecken-Ausfuellen hilft |
+| Debugging Challenges | Fehleranfaellige Konzepte (z.B. Strict-Mode Fallstricke) |
+| Parson's Problems | Reihenfolge-kritische Patterns (z.B. Middleware-Ketten) |
+| Code-Tracing | Ausfuehrungs-Logik die man Schritt fuer Schritt nachvollziehen muss |
+| Transfer Tasks | Konzept-Transfer in neuen Kontext |
+
+**NICHT erstellen (ab L21+):**
+- ~~exercises/*.ts~~ — Code inline in Sektions-Markdown
+- ~~solutions/*.ts~~ — nicht noetig ohne separate Exercises
+- ~~examples/*.ts~~ — Code direkt in Sektionen mit annotierten Code-Bloecken
+- ~~hints.json~~ — nicht noetig ohne separate Exercises
+
+**Grund:** Der Lernende ist ein theoretischer Lerner der im TUI-Flow bleibt und selbst entscheidet wann er tiefer eintauchen will. Nicht alles muss als Aufgabe aufbereitet werden — die Plattform bietet es an, der Lernende waehlt.
 
 ### 4.3 Pretest-Bias (bekanntes Problem, noch nicht gefixt)
 

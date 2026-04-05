@@ -269,6 +269,97 @@ export const questions: QuizQuestion[] = [
       'Aenderung in der Implementierung versehentlich den oeffentlichen Typ aendert. ' +
       'Das ist das "Annotate at boundaries"-Prinzip in Aktion.',
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Neue Formate: Short-Answer, Predict-Output, Explain-Why
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // --- Frage 16: Short-Answer — Widening ---
+  {
+    type: "short-answer",
+    question: "Welchen Typ inferiert TypeScript fuer 'let x = 42'? (Gib nur den Typ-Namen an)",
+    expectedAnswer: "number",
+    acceptableAnswers: ["number"],
+    explanation:
+      "Bei let findet Type Widening statt: Der Literal-Wert 42 wird zum breiteren Typ 'number' " +
+      "erweitert, weil die Variable spaeter einen anderen Zahlenwert annehmen koennte. " +
+      "Bei 'const x = 42' waere der Typ dagegen der Literal-Typ '42'.",
+  },
+
+  // --- Frage 17: Short-Answer — satisfies ---
+  {
+    type: "short-answer",
+    question:
+      "Welches TypeScript-Keyword validiert einen Wert gegen einen Typ, " +
+      "behaelt aber den spezifischen inferierten Typ bei?",
+    expectedAnswer: "satisfies",
+    acceptableAnswers: ["satisfies"],
+    explanation:
+      "satisfies (ab TS 4.9) validiert, dass ein Wert einem Typ entspricht, " +
+      "ohne den inferierten Typ zu ueberschreiben. Bei ': Typ' (Annotation) " +
+      "wird der Typ auf den breiteren Typ gesetzt. satisfies ist ideal fuer " +
+      "Konfigurationsobjekte: Validierung + praezise Inference.",
+  },
+
+  // --- Frage 18: Predict-Output — Contextual Typing ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ inferiert TypeScript fuer den Parameter 'n'? (Gib nur den Typ-Namen an)",
+    code: `const nums: number[] = [1, 2, 3];\nnums.forEach(n => {\n  // Welcher Typ hat n?\n});`,
+    expectedAnswer: "number",
+    acceptableAnswers: ["number"],
+    explanation:
+      "Contextual Typing: TypeScript kennt den Typ von nums (number[]) und weiss, " +
+      "dass der forEach-Callback den Element-Typ als Parameter erhaelt. " +
+      "n wird automatisch als 'number' inferiert — keine Annotation noetig.",
+  },
+
+  // --- Frage 19: Predict-Output — const vs let bei Objekten ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ hat config.mode laut TypeScript? (Gib den Typ-Namen an)",
+    code: `const config = {\n  mode: "production",\n  port: 3000,\n};\n// typeof config.mode = ???`,
+    expectedAnswer: "string",
+    acceptableAnswers: ["string"],
+    explanation:
+      "Obwohl config mit const deklariert ist, findet bei Objekt-Properties " +
+      "Widening statt. config.mode koennte spaeter geaendert werden " +
+      "(config.mode = 'development'), deshalb inferiert TypeScript 'string', " +
+      "nicht den Literal-Typ 'production'. Mit 'as const' waere es 'production'.",
+  },
+
+  // --- Frage 20: Short-Answer — Leere Arrays ---
+  {
+    type: "short-answer",
+    question: "Welchen Typ inferiert TypeScript fuer ein leeres Array ohne Annotation: 'const arr = []'?",
+    expectedAnswer: "any[]",
+    acceptableAnswers: ["any[]", "Array<any>"],
+    explanation:
+      "Ein leeres Array ohne Annotation wird als any[] inferiert — einer der wenigen Faelle, " +
+      "wo Inference zu einem unsicheren Typ fuehrt. TypeScript kann nicht wissen, welche " +
+      "Elemente spaeter hinzugefuegt werden. Deshalb: leere Arrays immer annotieren!",
+  },
+
+  // --- Frage 21: Explain-Why — Annotate at Boundaries ---
+  {
+    type: "explain-why",
+    question:
+      "Warum empfehlen TypeScript-Experten, Typ-Annotationen vor allem an " +
+      "'Grenzen' (Funktions-Parameter, Return-Typen von exports) zu setzen, " +
+      "statt ueberall?",
+    modelAnswer:
+      "An Grenzen (exports, public APIs) dienen Annotationen als Vertrag zwischen Modulen. " +
+      "Sie dokumentieren die Intention, geben bessere Fehlermeldungen (der Fehler zeigt auf " +
+      "die Funktion, nicht den Aufrufer), und verhindern, dass Implementierungsaenderungen " +
+      "versehentlich den oeffentlichen Typ aendern. Intern ist Inference oft praeziser als " +
+      "manuelle Annotationen und vermeidet redundantes 'Typ-Rauschen'.",
+    keyPoints: [
+      "Grenzen-Annotationen wirken als Vertrag zwischen Modulen",
+      "Bessere Fehlermeldungen bei Return-Typ-Annotationen",
+      "Schutz vor versehentlichen API-Aenderungen durch Refactoring",
+      "Interne Inference ist oft praeziser und weniger fehleranfaellig",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

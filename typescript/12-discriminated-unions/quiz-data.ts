@@ -270,6 +270,87 @@ export const questions: QuizQuestion[] = [
       "mainstream-tauglich gemacht. TypeScript braucht keine neue Syntax — " +
       "Union Types + Literal Types + Control Flow Analysis reichen.",
   },
+
+  // ─── Zusaetzliche Frageformate ────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie nennt man das gemeinsame Property mit Literal-Werten, das die Varianten einer Discriminated Union unterscheidet?",
+    expectedAnswer: "Diskriminator",
+    acceptableAnswers: ["Diskriminator", "Discriminator", "Tag", "Tag-Property", "Discriminant"],
+    explanation:
+      "Das gemeinsame Property heisst Diskriminator (oder Tag). " +
+      "Es muss einen Literal Type haben (z.B. 'circle', 'rectangle'), " +
+      "damit TypeScript die Varianten unterscheiden und narrowen kann.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welchen Utility Type verwendet man um eine bestimmte Variante aus einer Discriminated Union zu extrahieren?",
+    expectedAnswer: "Extract",
+    acceptableAnswers: ["Extract", "Extract<T, U>"],
+    explanation:
+      "Extract<Union, { kind: 'circle' }> zieht genau die Variante heraus " +
+      "die dem Muster entspricht. Das Gegenteil ist Exclude, das die " +
+      "passenden Varianten entfernt.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie heisst das Prinzip, Zustaende so zu modellieren, dass ungueltige Kombinationen gar nicht erst moeglich sind?",
+    expectedAnswer: "Make impossible states impossible",
+    acceptableAnswers: ["Make impossible states impossible", "impossible states impossible", "Impossible States"],
+    explanation:
+      "Das Prinzip 'Make impossible states impossible' bedeutet: " +
+      "Statt boolsche Flags zu kombinieren (isLoading + isError + data) " +
+      "modelliert man nur die gueltigen Zustaende als Discriminated Union. " +
+      "Der Compiler verhindert dann unsinnige Kombinationen.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "type Shape = { kind: 'circle'; r: number } | { kind: 'rect'; w: number };\n\nfunction area(s: Shape): string {\n  switch (s.kind) {\n    case 'circle': return 'Kreis';\n    case 'rect': return 'Rechteck';\n  }\n}\n\nconsole.log(area({ kind: 'circle', r: 5 }));",
+    expectedAnswer: "Kreis",
+    acceptableAnswers: ["Kreis", "'Kreis'", "\"Kreis\""],
+    explanation:
+      "s.kind ist 'circle', also wird der erste case-Branch ausgefuehrt " +
+      "und 'Kreis' zurueckgegeben. TypeScript narrowt s im case-Branch " +
+      "automatisch zur passenden Variante.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Wie viele gueltige Zustandskombinationen hat diese flache Struktur? Gib die Zahl an.",
+    code: "interface FlatState {\n  isLoading: boolean;  // true/false\n  isError: boolean;    // true/false\n  data: string | null; // string oder null\n}\n// Wie viele Kombinationen von isLoading × isError × data gibt es?",
+    expectedAnswer: "8",
+    acceptableAnswers: ["8", "2*2*2=8", "2^3"],
+    explanation:
+      "2 (isLoading) × 2 (isError) × 2 (data: string oder null) = 8 Kombinationen. " +
+      "Die meisten davon sind unsinnig (z.B. isLoading=true UND isError=true UND data='hi'). " +
+      "Eine Discriminated Union wuerde nur die 3-4 sinnvollen Zustaende erlauben.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question: "Warum geht die Verbindung zwischen Diskriminator und Objekt verloren, wenn man den Diskriminator destrukturiert? Und was ist die Loesung?",
+    modelAnswer:
+      "Bei const { kind } = shape wird kind zu einer eigenstaendigen Variable. " +
+      "TypeScript kann die separate Variable kind nicht mehr zum Original-Objekt shape zurueckverfolgen. " +
+      "Ein Check auf kind narrowt daher NUR kind, nicht shape. " +
+      "Die Loesung: Direkt shape.kind pruefen statt zu destrukturieren.",
+    keyPoints: [
+      "Destrukturierung trennt die Variable vom Objekt",
+      "TypeScript kann die Verbindung nicht zurueckverfolgen",
+      "Loesung: shape.kind direkt pruefen",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

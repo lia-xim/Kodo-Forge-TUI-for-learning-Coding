@@ -22,7 +22,8 @@ import { openInVSCode, runChildProcess } from "./tui-utils.ts";
 import { openSection, openCheatsheet } from "./tui-section-reader.ts";
 import { renderExerciseMenu, startHints } from "./tui-exercises.ts";
 import { renderMisconceptions } from "./tui-challenges.ts";
-import { renderPretest } from "./tui-quiz.ts";
+import { renderPretest, renderQuiz } from "./tui-quiz.ts";
+import type { QuizQuestion } from "./quiz-runner.ts";
 import { getPretestQuestions } from "./pretest-engine.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { SHOW_CURSOR } from "./tui-render.ts";
@@ -415,10 +416,52 @@ function startQuiz(lessonIndex: number): void {
   const lesson = lessons[lessonIndex];
   if (!lesson) return;
 
-  const quizPath = path.join(PROJECT_ROOT, lesson.dirName, "quiz.ts");
-  runChildProcess(quizPath, [], () => {
+  // Load quiz questions from quiz-data.ts
+  const quizDataPath = path.join(PROJECT_ROOT, lesson.dirName, "quiz-data.ts");
+  if (!fs.existsSync(quizDataPath)) {
+    // Fallback: try old quiz.ts child process
+    const quizPath = path.join(PROJECT_ROOT, lesson.dirName, "quiz.ts");
+    if (fs.existsSync(quizPath)) {
+      runChildProcess(quizPath, [], () => {
+        sessionStats.quizzesTaken++;
+        setCurrentScreen({ type: "lesson", lessonIndex, selectedIndex: 0 });
+        renderLessonMenu(lessonIndex);
+      });
+    }
+    return;
+  }
+
+  // Dynamic import of quiz-data.ts
+  import(/* webpackIgnore: true */ `file://${quizDataPath}`).then((mod) => {
+    const questions: QuizQuestion[] = mod.questions || mod.default || [];
+    if (questions.length === 0) return;
+
     sessionStats.quizzesTaken++;
-    setCurrentScreen({ type: "lesson", lessonIndex, selectedIndex: 0 });
-    renderLessonMenu(lessonIndex);
+    pushHistory(currentScreen as Screen);
+    setCurrentScreen({
+      type: "quiz",
+      lessonIndex,
+      questions,
+      currentIndex: 0,
+      answers: [],
+      showingFeedback: false,
+      feedbackCorrect: false,
+      feedbackExplanation: "",
+      done: false,
+      score: 0,
+      phase: "question",
+      userInput: "",
+    });
+    renderQuiz();
+  }).catch(() => {
+    // Fallback to child process on import error
+    const quizPath = path.join(PROJECT_ROOT, lesson.dirName, "quiz.ts");
+    if (fs.existsSync(quizPath)) {
+      runChildProcess(quizPath, [], () => {
+        sessionStats.quizzesTaken++;
+        setCurrentScreen({ type: "lesson", lessonIndex, selectedIndex: 0 });
+        renderLessonMenu(lessonIndex);
+      });
+    }
   });
 }

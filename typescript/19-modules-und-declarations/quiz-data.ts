@@ -22,6 +22,52 @@ export const questions: QuizQuestion[] = [
   { question: "Was ist DefinitelyTyped?", options: ["Eine TypeScript-Version", "Das groesste Community-Repository fuer Type Definitions (@types)", "Ein Linter", "Ein Compiler-Plugin"], correct: 1, explanation: "DefinitelyTyped auf GitHub pflegt ueber 10.000 @types-Pakete fuer untypisierte Libraries." },
   { question: "Wann sollte man Barrel Files NICHT verwenden?", options: ["Nie", "Wenn Tree-Shaking wichtig ist — Barrels koennen alles importieren auch wenn nur Teile gebraucht werden", "Immer", "Bei kleinen Projekten"], correct: 1, explanation: "Barrel Files koennen Tree-Shaking beeintraechtigen weil der Bundler alle Exports laden muss um sie zu analysieren." },
   { question: "Was ist `declare module '*.css' { ... }`?", options: ["CSS importieren", "Wildcard Declaration — definiert Typen fuer alle .css Imports", "CSS-in-JS", "Styled Components"], correct: 1, explanation: "Wildcard Declarations (*) definieren Typen fuer alle Imports die dem Pattern entsprechen." },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  {
+    type: "short-answer",
+    question: "Welche Dateiendung haben TypeScript Declaration Files?",
+    expectedAnswer: ".d.ts",
+    acceptableAnswers: [".d.ts", "d.ts", ".d.ts Datei"],
+    explanation: ".d.ts Dateien enthalten nur Typ-Definitionen ohne Implementierung. Sie sind die Bruecke zwischen JavaScript-Libraries und TypeScript.",
+  },
+  {
+    type: "short-answer",
+    question: "Wie heisst das NPM-Scope unter dem Community-Typen von DefinitelyTyped veroeffentlicht werden?",
+    expectedAnswer: "@types",
+    acceptableAnswers: ["@types", "@types/", "types"],
+    explanation: "@types ist das Standard-Scope fuer DefinitelyTyped-Pakete. Installation mit npm install @types/library-name.",
+  },
+  {
+    type: "short-answer",
+    question: "Welches TypeScript-Feature ermoeglicht es, bestehende Interfaces ueber Dateigrenzen hinweg um neue Properties zu erweitern?",
+    expectedAnswer: "Interface Merging",
+    acceptableAnswers: ["Interface Merging", "Declaration Merging", "Module Augmentation", "interface merging"],
+    explanation: "Interface Merging fuegt Interfaces mit gleichem Namen automatisch zusammen. Zusammen mit Module Augmentation kann man damit externe Typen erweitern.",
+  },
+  {
+    type: "predict-output",
+    question: "Wird dieser Code kompilieren? Wenn ja, warum? Wenn nein, warum nicht?",
+    code: "// augment.d.ts\ndeclare module 'express' {\n  interface Request {\n    userId: string;\n  }\n}\n// Hinweis: Die Datei hat KEIN export {}",
+    expectedAnswer: "Nein",
+    acceptableAnswers: ["Nein", "nein", "Fehler", "funktioniert nicht", "Nein, da kein export"],
+    explanation: "Ohne export {} oder einen anderen Import/Export wird die Datei als Script behandelt. declare module funktioniert in Scripts anders — es deklariert ein Ambient Module statt eine Augmentation. Fuer Module Augmentation muss die Datei ein Modul sein (export {} hinzufuegen).",
+  },
+  {
+    type: "predict-output",
+    question: "Was passiert wenn man `import type { User } from './types'` kompiliert? Was steht im JavaScript-Output fuer diese Zeile?",
+    code: "import type { User } from './types';\n\nconst name: User['name'] = 'Max';",
+    expectedAnswer: "Nichts",
+    acceptableAnswers: ["Nichts", "nichts", "wird entfernt", "leere Zeile", "kein Output", "die Zeile verschwindet"],
+    explanation: "Type-Only Imports werden beim Compilieren komplett entfernt. Im JavaScript-Output erscheint kein import-Statement fuer User — nur const name = 'Max';.",
+  },
+  {
+    type: "explain-why",
+    question: "Warum koennen Barrel Files (index.ts mit Re-Exports) das Tree-Shaking von Bundlern negativ beeinflussen?",
+    modelAnswer: "Wenn ein Consumer nur eine einzelne Funktion aus einem Barrel File importiert, muss der Bundler trotzdem alle Re-Exports analysieren. Bei Modulen mit Side-Effects (z.B. Top-Level-Code) kann der Bundler nicht sicher entscheiden was entfernt werden darf, und laesst potenziell ungenutzten Code im Bundle. Ausserdem fuehren Barrel Files zu laengeren Import-Ketten, was die Analyse fuer den Bundler erschwert.",
+    keyPoints: ["Bundler muss alle Re-Exports laden und analysieren", "Side-Effects verhindern sicheres Entfernen", "Laengere Import-Ketten erschweren statische Analyse", "Direkte Imports umgehen das Problem"],
+  },
 ];
 
 export interface ElaboratedFeedback { whyCorrect: string; commonMistake: string; }

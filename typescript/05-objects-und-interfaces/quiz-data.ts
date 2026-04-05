@@ -306,6 +306,101 @@ list.items = ["Neu"];              // Zeile C`,
       "nicht die Referenz -- das ist erlaubt! " +
       "Fuer echten Schutz brauchst du: readonly items: readonly string[]",
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Neue Formate: Short-Answer, Predict-Output, Explain-Why
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // --- Frage 16: Short-Answer — Declaration Merging ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst das Feature, bei dem man ein Interface mehrfach deklarieren kann " +
+      "und TypeScript alle Deklarationen zusammenfuegt?",
+    expectedAnswer: "Declaration Merging",
+    acceptableAnswers: ["Declaration Merging", "declaration merging", "DeclarationMerging", "Merging", "merging"],
+    explanation:
+      "Declaration Merging ist einzigartig fuer Interfaces. Man kann dasselbe Interface " +
+      "mehrfach deklarieren und alle Properties werden zusammengefuegt. Das ist essentiell " +
+      "fuer Library-Autoren: Man kann Window, ProcessEnv oder Express-Request erweitern, " +
+      "ohne den Quellcode zu aendern. Bei 'type' gibt es einen 'Duplicate identifier'-Fehler.",
+  },
+
+  // --- Frage 17: Short-Answer — Intersection-Ergebnis ---
+  {
+    type: "short-answer",
+    question:
+      "Was ist das Ergebnis von (string | number) & (number | boolean)? " +
+      "(Gib den resultierenden Typ an)",
+    expectedAnswer: "number",
+    acceptableAnswers: ["number"],
+    explanation:
+      "Bei einer Intersection von Unions bleibt nur der gemeinsame Typ uebrig: " +
+      "Nur 'number' ist in BEIDEN Unions enthalten. string und boolean fallen raus. " +
+      "Das ist wie ein Venn-Diagramm — nur die Ueberlappung bleibt.",
+  },
+
+  // --- Frage 18: Short-Answer — Optional Property ---
+  {
+    type: "short-answer",
+    question:
+      "Ist das leere Objekt {} gueltig fuer den Typ { x?: number }? (Ja oder Nein)",
+    expectedAnswer: "Ja",
+    acceptableAnswers: ["Ja", "ja", "yes", "Yes", "true"],
+    explanation:
+      "x?: number bedeutet: Die Property x darf komplett FEHLEN oder den Wert undefined haben. " +
+      "Deshalb ist {} gueltig — x fehlt einfach. Bei x: number | undefined waere {} NICHT gueltig, " +
+      "weil die Property x vorhanden sein MUSS (der Wert darf undefined sein, aber der Key muss existieren).",
+  },
+
+  // --- Frage 19: Predict-Output — Structural Typing ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code ohne Fehler? (Ja oder Nein)",
+    code: `interface Euro { betrag: number; }\ninterface Dollar { betrag: number; }\n\nconst preis: Euro = { betrag: 100 };\nconst kosten: Dollar = preis;`,
+    expectedAnswer: "Ja",
+    acceptableAnswers: ["Ja", "ja", "yes", "Yes"],
+    explanation:
+      "TypeScript verwendet Structural Typing — der NAME des Interfaces spielt keine Rolle. " +
+      "Euro und Dollar haben die exakt gleiche Struktur { betrag: number }, also sind sie " +
+      "kompatibel. Das ist eine bekannte Schwaeche fuer Domain-Modellierung. " +
+      "Abhilfe schaffen 'Branded Types' (z.B. type Euro = number & { __brand: 'Euro' }).",
+  },
+
+  // --- Frage 20: Predict-Output — Excess Property Check ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code ohne Fehler? (Ja oder Nein)",
+    code: `interface User { name: string; }\nconst data = { name: "Max", age: 30 };\nconst user: User = data;`,
+    expectedAnswer: "Ja",
+    acceptableAnswers: ["Ja", "ja", "yes", "Yes"],
+    explanation:
+      "Ja! Der Excess Property Check greift nur bei frischen Object Literals " +
+      "(direkt zugewiesen). Hier wird data zuerst in einer Zwischenvariable gespeichert " +
+      "und dann zugewiesen — kein frisches Literal mehr. Structural Typing prueft nur: " +
+      "'Hat data ein name: string?' — Ja. Die extra Property 'age' wird ignoriert.",
+  },
+
+  // --- Frage 21: Explain-Why — Structural vs Nominal Typing ---
+  {
+    type: "explain-why",
+    question:
+      "Warum hat TypeScript sich fuer Structural Typing entschieden, " +
+      "obwohl Nominal Typing (wie in Java/C#) Verwechslungen wie Euro/Dollar verhindern wuerde?",
+    modelAnswer:
+      "TypeScript wurde als Superset von JavaScript konzipiert und musste mit dem bestehenden " +
+      "JS-Oekosystem kompatibel sein. JavaScript hat keine deklarierten Typen — Objekte werden " +
+      "nach ihrer Form verwendet ('Duck Typing'). Structural Typing bildet dieses Verhalten " +
+      "im Typsystem ab. Es erlaubt Kompatibilitaet zwischen unabhaengig entwickelten Libraries " +
+      "ohne gemeinsame Basis-Interfaces. Nominal Typing wuerde viele gaengige JS-Patterns brechen " +
+      "und die Migration von JS zu TS erheblich erschweren.",
+    keyPoints: [
+      "JavaScript nutzt Duck Typing — Structural Typing bildet das ab",
+      "Kompatibilitaet mit dem bestehenden JS-Oekosystem",
+      "Unabhaengige Libraries koennen kompatible Typen haben",
+      "Nominal Typing wuerde JS-Migration und viele Patterns brechen",
+    ],
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════

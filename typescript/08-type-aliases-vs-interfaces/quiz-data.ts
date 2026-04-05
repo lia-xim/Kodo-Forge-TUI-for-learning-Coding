@@ -247,6 +247,91 @@ export const questions: QuizQuestion[] = [
       "erzwingen, ob das Team immer type oder immer interface fuer Objekt-Typen " +
       "verwendet. Konsistenz ist wichtiger als die 'richtige' Wahl.",
   },
+
+  // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer — Declaration Merging ---
+  {
+    type: "short-answer",
+    question: "Welches Keyword unterstuetzt Declaration Merging — type oder interface?",
+    expectedAnswer: "interface",
+    acceptableAnswers: ["interface", "Interface", "interfaces"],
+    explanation:
+      "Nur Interfaces unterstuetzen Declaration Merging. Mehrere Deklarationen mit " +
+      "demselben Namen werden automatisch zusammengefuegt. Bei type wuerde eine " +
+      "doppelte Deklaration einen 'Duplicate identifier'-Fehler erzeugen.",
+  },
+
+  // --- Frage 17: Short-Answer — Property-Konflikt bei & ---
+  {
+    type: "short-answer",
+    question: "Was wird der Typ von `x` in `type AB = { x: string } & { x: number }`?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never", "string & number", "string & number = never"],
+    explanation:
+      "Bei Intersection-Konflikten wird die Property zu string & number = never. " +
+      "Das erzeugt keinen Compile-Error, macht die Property aber unbrauchbar — " +
+      "kein Wert ist gleichzeitig string UND number. Ein stiller Bug!",
+  },
+
+  // --- Frage 18: Short-Answer — ESLint-Regel ---
+  {
+    type: "short-answer",
+    question: "Wie heisst die ESLint-Regel die type vs interface Konsistenz erzwingt?",
+    expectedAnswer: "consistent-type-definitions",
+    acceptableAnswers: [
+      "consistent-type-definitions",
+      "@typescript-eslint/consistent-type-definitions",
+      "typescript-eslint/consistent-type-definitions",
+    ],
+    explanation:
+      "Die Regel @typescript-eslint/consistent-type-definitions erzwingt, ob " +
+      "das Team fuer Objekt-Typen immer type oder immer interface verwendet.",
+  },
+
+  // --- Frage 19: Predict-Output — Declaration Merging ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code fehlerfrei? Antworte mit 'ja' oder 'nein'.",
+    code: "interface Settings {\n  theme: string;\n}\ninterface Settings {\n  lang: string;\n}\nconst s: Settings = { theme: 'dark', lang: 'de' };",
+    expectedAnswer: "ja",
+    acceptableAnswers: ["ja", "Ja", "yes"],
+    explanation:
+      "Declaration Merging fuegt beide Interface-Deklarationen zusammen. " +
+      "Settings hat am Ende sowohl theme als auch lang. Das Objekt erfuellt " +
+      "beide Properties — kein Fehler.",
+  },
+
+  // --- Frage 20: Predict-Output — extends-Konflikt ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code fehlerfrei? Antworte mit 'ja' oder 'nein'.",
+    code: "interface Base {\n  id: string;\n}\ninterface Extended extends Base {\n  id: number;\n}",
+    expectedAnswer: "nein",
+    acceptableAnswers: ["nein", "Nein", "no"],
+    explanation:
+      "extends meldet Property-Konflikte direkt als Compile-Error: " +
+      "'Types of property id are incompatible'. id ist in Base string, " +
+      "aber Extended will number — das ist inkompatibel. " +
+      "Bei & wuerde id stillschweigend zu never werden.",
+  },
+
+  // --- Frage 21: Explain-Why — type vs interface ---
+  {
+    type: "explain-why",
+    question: "Warum ist Konsistenz im Team oft wichtiger als die 'richtige' Wahl zwischen type und interface?",
+    modelAnswer:
+      "Fuer die meisten Objekt-Typen sind type und interface funktional gleichwertig. " +
+      "Unterschiede (Declaration Merging, Compiler-Performance) betreffen nur Randfaelle. " +
+      "Inkonsistenter Stil im Team erzeugt unnoetige kognitive Last beim Code-Review " +
+      "und macht den Code uneinheitlich. Eine klare Team-Konvention (egal welche) " +
+      "reduziert Diskussionen und verbessert die Lesbarkeit.",
+    keyPoints: [
+      "Funktional meist gleichwertig fuer Objekt-Typen",
+      "Konsistenz reduziert kognitive Last",
+      "Team-Konvention wichtiger als technische Nuancen",
+    ],
+  },
 ];
 
 export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {

@@ -269,6 +269,84 @@ export const questions: QuizQuestion[] = [
       "curriedAdd(5) gibt (b: number) => number zurueck — eine Funktion die 5 + b " +
       "berechnet. TypeScript inferiert alle Zwischentypen automatisch.",
   },
+
+  // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer — void vs undefined ---
+  {
+    type: "short-answer",
+    question: "Welcher Return-Typ signalisiert 'der Rueckgabewert ist irrelevant' — void oder undefined?",
+    expectedAnswer: "void",
+    acceptableAnswers: ["void", "void"],
+    explanation:
+      "void bedeutet 'der Rueckgabewert ist irrelevant'. undefined ist ein konkreter Wert-Typ. " +
+      "Bei Callbacks ist void besonders wichtig, weil void-Callbacks trotzdem Werte zurueckgeben duerfen.",
+  },
+
+  // --- Frage 17: Short-Answer — Rest-Parameter ---
+  {
+    type: "short-answer",
+    question: "Welchen Typ hat `args` in `function log(...args: string[])`?",
+    expectedAnswer: "string[]",
+    acceptableAnswers: ["string[]", "Array<string>", "string array", "Array string"],
+    explanation:
+      "Rest-Parameter sammeln alle uebergebenen Argumente in ein Array. " +
+      "Die Spread-Syntax (...) ist Teil der Deklaration, nicht des Typs. " +
+      "Der tatsaechliche Typ ist ein normales string[].",
+  },
+
+  // --- Frage 18: Short-Answer — this-Parameter ---
+  {
+    type: "short-answer",
+    question: "Was passiert mit dem this-Parameter einer Funktion zur Laufzeit im kompilierten JavaScript?",
+    expectedAnswer: "Er verschwindet",
+    acceptableAnswers: ["Er verschwindet", "verschwindet", "Type Erasure", "wird entfernt", "existiert nicht", "weg"],
+    explanation:
+      "Der this-Parameter ist ein reines Compilezeit-Feature. Durch Type Erasure " +
+      "verschwindet er im kompilierten JavaScript komplett — kein Laufzeit-Overhead.",
+  },
+
+  // --- Frage 19: Predict-Output — void-Callback ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "type VoidCb = () => void;\nconst fn: VoidCb = () => 42;\nconst result = fn();\nconsole.log(typeof result);",
+    expectedAnswer: "number",
+    acceptableAnswers: ["number", "\"number\"", "'number'"],
+    explanation:
+      "Void-Callbacks duerfen Werte zurueckgeben — der Wert wird vom Typsystem ignoriert, " +
+      "existiert aber zur Laufzeit. fn() gibt 42 zurueck, typeof 42 ist 'number'. " +
+      "TypeScript sagt void, JavaScript sieht die 42.",
+  },
+
+  // --- Frage 20: Predict-Output — Currying ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function multiply(a: number) {\n  return (b: number) => a * b;\n}\nconst double = multiply(2);\nconsole.log(double(5));",
+    expectedAnswer: "10",
+    acceptableAnswers: ["10"],
+    explanation:
+      "multiply(2) gibt eine Funktion zurueck die b => 2 * b berechnet. " +
+      "double(5) berechnet 2 * 5 = 10. Das ist Currying — die aeussere Funktion " +
+      "schliesst ueber den Parameter a (Closure).",
+  },
+
+  // --- Frage 21: Explain-Why — Type Guards ---
+  {
+    type: "explain-why",
+    question: "Warum prueft TypeScript NICHT, ob ein benutzerdefinierter Type Guard korrekt implementiert ist?",
+    modelAnswer:
+      "TypeScript vertraut dem Entwickler bei Type Guards. Der Compiler kann nicht allgemein " +
+      "beweisen, dass eine beliebige Laufzeitpruefung korrekt einen Typ identifiziert. " +
+      "Type Guards sind ein Vertrag: Der Entwickler garantiert die Korrektheit, " +
+      "TypeScript nutzt die Information fuer Narrowing.",
+    keyPoints: [
+      "Compiler kann Korrektheit nicht allgemein beweisen",
+      "Vertrag zwischen Entwickler und Compiler",
+      "Verantwortung liegt beim Entwickler",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

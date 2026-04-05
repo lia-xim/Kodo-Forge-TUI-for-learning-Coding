@@ -271,6 +271,88 @@ export const questions: QuizQuestion[] = [
       "man T explizit angeben. Bei useState(0) funktioniert Inference weil " +
       "0 ein Compile-Zeit-Wert ist.",
   },
+
+  // ─── Zusaetzliche Frageformate ────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie heisst das Keyword, das einen Typparameter auf einen Mindesttyp einschraenkt (z.B. T ___ { length: number })?",
+    expectedAnswer: "extends",
+    acceptableAnswers: ["extends", "extends-Keyword"],
+    explanation:
+      "extends bei Typparametern definiert einen Constraint — eine Mindestanforderung. " +
+      "T extends { length: number } bedeutet: T muss mindestens eine length-Property " +
+      "vom Typ number haben. Alles darueber hinaus ist erlaubt.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welches Keyword erzeugt einen Union Type aller Property-Namen eines Typs T?",
+    expectedAnswer: "keyof",
+    acceptableAnswers: ["keyof", "keyof T", "keyof-Operator"],
+    explanation:
+      "keyof T erzeugt einen Union aller Keys von T. Bei { name: string; age: number } " +
+      "ergibt keyof T den Typ 'name' | 'age'. In Kombination mit extends " +
+      "(K extends keyof T) erzwingt man, dass nur gueltige Keys akzeptiert werden.",
+  },
+
+  // --- Frage 18: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function wrap<T>(value: T): { data: T } {\n  return { data: value };\n}\nconst result = wrap(42);\nconsole.log(typeof result.data);",
+    expectedAnswer: "number",
+    acceptableAnswers: ["number", "'number'", "\"number\""],
+    explanation:
+      "T wird zu number inferiert (aus dem Argument 42). wrap gibt { data: 42 } " +
+      "zurueck. typeof result.data ist 'number'. Generics bewahren den Typ — " +
+      "mit any waere typeof result.data auch 'number' zur Laufzeit, aber " +
+      "TypeScript wuesste es nicht.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function first<T>(arr: T[]): T | undefined {\n  return arr[0];\n}\nconst result = first([]);\nconsole.log(result);",
+    expectedAnswer: "undefined",
+    acceptableAnswers: ["undefined"],
+    explanation:
+      "Das Array ist leer, also gibt arr[0] undefined zurueck. " +
+      "Der Rueckgabetyp T | undefined drueckt genau das aus: " +
+      "Es koennte ein Element sein oder undefined wenn das Array leer ist.",
+  },
+
+  // --- Frage 20: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Ein Typparameter der nur EINMAL vorkommt (z.B. function log<T>(x: T): void) ist ein Anti-Pattern. Durch welchen Typ koennte man T ersetzen?",
+    expectedAnswer: "unknown",
+    acceptableAnswers: ["unknown", "any", "unknown (oder any)"],
+    explanation:
+      "Wenn T nur einmal vorkommt, stellt es keine Beziehung her. " +
+      "unknown waere genauso gut — und ehrlicher. Generics haben nur Sinn " +
+      "wenn sie mindestens ZWEIMAL vorkommen und eine Verbindung herstellen.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question: "Warum sind Generics 'typsicheres any'? Erklaere den fundamentalen Unterschied zwischen Generics und any anhand eines Beispiels.",
+    modelAnswer:
+      "Bei function identity(x: any): any geht die Typinformation verloren — " +
+      "der Rueckgabetyp ist immer any, egal was reinkommt. " +
+      "Bei function identity<T>(x: T): T wird T beim Aufruf gebunden: " +
+      "identity('hello') hat Rueckgabetyp string. " +
+      "Generics MERKEN sich den Typ und stellen sicher, dass Input und Output zusammenpassen.",
+    keyPoints: [
+      "any verliert Typinformation",
+      "Generics bewahren die Beziehung Input-Output",
+      "T wird beim Aufruf an einen konkreten Typ gebunden",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

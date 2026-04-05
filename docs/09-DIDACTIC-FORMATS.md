@@ -174,20 +174,35 @@ function add(a: number, b: number) {
 
 ---
 
-### Format 5: Quizzes mit Elaborated Feedback
+### Format 5: Quiz-System mit Format-Mix
 
-**Beschreibung:** 15 Multiple-Choice-Fragen pro Lektion mit ausfuehrlichem Feedback (whyCorrect + commonMistake) und Metacognitive Prompts (Confidence 1-4).
+**Beschreibung:** 15+ Fragen pro Lektion in vier verschiedenen Formaten: Multiple Choice, Kurzantwort, Predict-the-Output und Erklaere-warum. Jedes Format aktiviert unterschiedliche kognitive Prozesse. Metacognitive Prompts (Confidence 1-4) bei allen Formaten.
 
-**Wissenschaftliche Grundlage:** Testing Effect (Roediger & Butler 2011) — Testen IST Lernen. Elaborated Feedback (Bangert-Drowns et al. 1991) — Feedback mit Erklaerung ist 2x effektiver als nur "richtig/falsch".
+**Wissenschaftliche Grundlage:**
+- Testing Effect (Roediger & Butler 2011) — Testen IST Lernen
+- Elaborated Feedback (Bangert-Drowns et al. 1991) — Feedback mit Erklaerung ist 2x effektiver
+- Generation Effect (Slamecka & Graf 1978) — Selbst generierte Antworten werden besser behalten
+- Kurzantwort > MC fuer Recall und Self-Efficacy (+13%, PMC 2024)
+- Self-Explanation Effect (Chi et al. 1989) — Selbsterklaerungen verdoppeln Transfer
 
 **Technische Implementierung:**
-- Dateien: `quiz-data.ts` pro Lektion (15 Fragen)
-- Engine: `quiz-runner.ts` (199 Zeilen) fuer Standalone, `tui-quiz.ts` (481 Zeilen) fuer TUI
-- correct-Indizes: MUESSEN gleichmaessig verteilt sein (4/4/4/3)
+- Dateien: `quiz-data.ts` pro Lektion (15+ Fragen, Discriminated Union mit `type`-Feld)
+- Engine: `quiz-runner.ts` + `tui-quiz.ts` — erweitert fuer Free-Text-Input
+- Free-Text-Infrastruktur: Wiederverwendet von Completion Problems (tui-challenges.ts)
 
-**Beispiel:**
+**Format-Mix pro Lektion (PFLICHT ab L21+):**
+
+| Format | Menge | Kognitive Ebene | Interface-Type |
+|--------|:-----:|----------------|:---:|
+| Multiple Choice | 6-8 | Recognition (Wiedererkennen) | `"multiple-choice"` |
+| Kurzantwort | 3-4 | Recall (freies Abrufen) | `"short-answer"` |
+| Predict-the-Output | 2-3 | Generation + Code Comprehension | `"predict-output"` |
+| Erklaere-warum | 1-2 | Self-Explanation (tiefste Verarbeitung) | `"explain-why"` |
+
+**Beispiel Multiple Choice:**
 ```typescript
 {
+  type: "multiple-choice",
   question: "Was gibt typeof null zurueck?",
   options: ['"null"', '"undefined"', '"object"', '"none"'],
   correct: 2,
@@ -198,7 +213,86 @@ function add(a: number, b: number) {
 }
 ```
 
-**Einsatz:** Quiz am Ende jeder Lektion, Spaced Repetition Review.
+**Beispiel Kurzantwort:**
+```typescript
+{
+  type: "short-answer",
+  question: "Welchen Typ inferiert TypeScript fuer `const x = 42`?",
+  expectedAnswer: "42",
+  acceptableAnswers: ["42", "literal 42", "number literal 42"],
+  explanation: "Bei const inferiert TypeScript den Literal-Typ, nicht den breiten Typ.",
+  elaboratedFeedback: {
+    whyCorrect: "const-Variablen koennen nicht reassigned werden, daher...",
+    commonMistake: "Viele erwarten 'number', aber const fuehrt zu Literal-Inferenz."
+  }
+}
+```
+
+**Beispiel Predict-the-Output:**
+```typescript
+{
+  type: "predict-output",
+  question: "Was gibt dieser Code aus?",
+  code: `type Color = "rot" | "gruen" | "blau";
+const c: Color = "gelb";  // Was passiert?`,
+  expectedAnswer: "Compile Error",
+  acceptableAnswers: ["Compile Error", "Error", "Fehler", "Compilefehler", "Type Error"],
+  explanation: "'gelb' ist nicht in der Union enthalten — TypeScript verhindert das.",
+  elaboratedFeedback: {
+    whyCorrect: "Union Types sind geschlossene Mengen — nur die definierten Werte...",
+    commonMistake: "In JavaScript waere das kein Problem, aber TypeScript prueft statisch."
+  }
+}
+```
+
+**Beispiel Erklaere-warum:**
+```typescript
+{
+  type: "explain-why",
+  question: "Warum gibt typeof null 'object' zurueck, obwohl null kein Objekt ist?",
+  modelAnswer: "Das ist ein Bug aus der ersten JavaScript-Implementierung (1995). Intern wurde null als Objekt-Pointer mit dem Wert 0 gespeichert, und typeof prueft den Typ-Tag des Pointers. Da der Tag fuer Objekte 0 ist, wird null faelschlicherweise als 'object' erkannt. Der Bug wurde nie gefixt, weil zu viel Code davon abhaengt.",
+  keyPoints: ["Bug aus 1995", "Interner Typ-Tag", "Nie gefixt wegen Rueckwaertskompatibilitaet"]
+}
+```
+
+**Wie Kurzantwort im TUI aussieht:**
+```
+ Quiz — Frage 9/16 (Kurzantwort)
+ ──────────────────────────────────────────────────────
+ Welchen Typ inferiert TypeScript fuer `const x = 42`?
+
+ Deine Antwort: 42█
+
+ [Enter] Bestaetigen · [?] Keine Ahnung
+```
+
+**Wie Predict-the-Output im TUI aussieht:**
+```
+ Quiz — Frage 12/16 (Predict-the-Output)
+ ──────────────────────────────────────────────────────
+ Was gibt dieser Code aus?
+
+ │ type Color = "rot" | "gruen" | "blau";
+ │ const c: Color = "gelb";
+
+ Deine Vorhersage: █
+
+ [Enter] Bestaetigen · [?] Keine Ahnung
+```
+
+**Wie Erklaere-warum im TUI aussieht:**
+```
+ Quiz — Frage 15/16 (Erklaere-warum)
+ ──────────────────────────────────────────────────────
+ Warum gibt typeof null 'object' zurueck?
+
+ Deine Erklaerung:
+ Das ist ein historischer Bug aus der ersten JS-Version█
+
+ [Enter] Fertig · [S] Ueberspringen
+```
+
+**Einsatz:** Quiz am Ende jeder Lektion, Spaced Repetition Review. Alle vier Formate werden gemischt praesentiert.
 
 ---
 

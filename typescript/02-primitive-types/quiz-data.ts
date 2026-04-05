@@ -288,6 +288,92 @@ export const questions: QuizQuestion[] = [
       'Mit "typeof farben[number]" kann man daraus den Union Type "rot" | "gruen" | "blau" ableiten.',
     code: 'const farben = ["rot", "gruen", "blau"] as const;',
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Neue Formate: Short-Answer, Predict-Output, Explain-Why
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // --- Frage 16: Short-Answer — typeof null ---
+  {
+    type: "short-answer",
+    question: "Was gibt typeof null in JavaScript zurueck?",
+    expectedAnswer: "object",
+    acceptableAnswers: ["object", "'object'", "\"object\""],
+    explanation:
+      "typeof null === 'object' ist ein beruehmt-beruechtigter Bug aus den Anfaengen " +
+      "von JavaScript (1995). In der ersten JS-Implementierung wurden Werte als " +
+      "Typ-Tag + Wert gespeichert. null hatte das Tag 0 (wie Objekte), daher 'object'. " +
+      "Der Bug wurde nie behoben, weil zu viel existierender Code davon abhaengt.",
+  },
+
+  // --- Frage 17: Short-Answer — Bottom Type ---
+  {
+    type: "short-answer",
+    question: "Welcher TypeScript-Typ ist der Bottom Type, der jedem anderen Typ zuweisbar ist?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never", "Never"],
+    explanation:
+      "never ist der Bottom Type in TypeScript. Ein never-Wert existiert nie — " +
+      "deshalb ist er trivialerweise jedem Typ zuweisbar (du kannst nichts zuweisen, " +
+      "was es nicht gibt). never entsteht bei Funktionen die nie zurueckkehren " +
+      "(throw, Endlosschleife) und bei unmoeglich-Branches im Control Flow.",
+  },
+
+  // --- Frage 18: Short-Answer — Nullish Coalescing ---
+  {
+    type: "short-answer",
+    question: "Welcher Operator prueft NUR auf null und undefined (nicht auf andere falsy-Werte wie 0 oder '')?",
+    expectedAnswer: "??",
+    acceptableAnswers: ["??", "Nullish Coalescing", "nullish coalescing", "Nullish Coalescing Operator"],
+    explanation:
+      "Der ?? (Nullish Coalescing) Operator gibt den rechten Wert nur bei null oder undefined " +
+      "zurueck. Im Gegensatz zu || werden 0, '' und false NICHT als 'leer' behandelt. " +
+      "Deshalb: 0 ?? 42 = 0, aber 0 || 42 = 42.",
+  },
+
+  // --- Frage 19: Predict-Output — Falsy-Falle ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: `const count = 0;\nconst display = count || "keine";\nconsole.log(display);`,
+    expectedAnswer: "keine",
+    acceptableAnswers: ["keine", "'keine'", "\"keine\""],
+    explanation:
+      "Der ||-Operator prueft auf ALLE falsy-Werte. 0 ist falsy, also gibt || " +
+      "den rechten Wert zurueck: 'keine'. Das ist ein klassischer Bug — mit " +
+      "?? waere das Ergebnis 0, weil 0 weder null noch undefined ist.",
+  },
+
+  // --- Frage 20: Predict-Output — any-Ansteckung ---
+  {
+    type: "predict-output",
+    question: "Was ist der von TypeScript inferierte Typ von 'result'? (Gib den Typ-Namen an)",
+    code: `let data: any = { value: 42 };\nlet result = data.value + 1;`,
+    expectedAnswer: "any",
+    acceptableAnswers: ["any"],
+    explanation:
+      "any ist ansteckend! data ist any, also ist data.value auch any, " +
+      "und any + 1 ist wieder any. Die gesamte Kette verliert den Typschutz. " +
+      "Zur Laufzeit waere das Ergebnis 43 (number), aber TypeScript sieht nur 'any'. " +
+      "Das zeigt, warum man any vermeiden sollte — es unterwandert das gesamte Typsystem.",
+  },
+
+  // --- Frage 21: Explain-Why — string vs String ---
+  {
+    type: "explain-why",
+    question: "Warum sollte man in TypeScript 'string' (klein) statt 'String' (gross) verwenden?",
+    modelAnswer:
+      "'string' ist der primitive Typ in TypeScript/JavaScript. 'String' (gross) ist ein " +
+      "Wrapper-Objekt (new String('x')), das subtile Bugs verursacht. typeof new String('x') " +
+      "gibt 'object' zurueck, nicht 'string'. Ausserdem ist 'string' nicht zu 'String' " +
+      "zuweisbar in striktem Modus. Die gleiche Regel gilt fuer number/Number und boolean/Boolean.",
+    keyPoints: [
+      "string (klein) = primitiver Typ, String (gross) = Wrapper-Objekt",
+      "typeof new String('x') === 'object', nicht 'string'",
+      "Wrapper-Objekte verursachen subtile Vergleichs-Bugs",
+      "Gleiche Regel fuer number/Number und boolean/Boolean",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

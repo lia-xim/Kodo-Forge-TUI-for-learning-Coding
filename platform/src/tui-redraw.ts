@@ -14,7 +14,7 @@ import { renderSectionReader, loadSection, loadCheatsheet } from "./tui-section-
 import { renderStats, renderCompetenceDashboard } from "./tui-stats.ts";
 import { renderSearchScreen } from "./tui-search.ts";
 import { renderBookmarksScreen } from "./tui-bookmarks.ts";
-import { renderWarmup, renderPretest, renderInterleaved } from "./tui-quiz.ts";
+import { renderWarmup, renderPretest, renderInterleaved, renderQuiz } from "./tui-quiz.ts";
 import { renderMisconceptions, renderCompletionProblem } from "./tui-challenges.ts";
 import { renderExerciseMenu } from "./tui-exercises.ts";
 import { renderHelpOverlay } from "./tui-help.ts";
@@ -105,6 +105,9 @@ export function redraw(): void {
       break;
     case "interleaved":
       renderInterleaved();
+      break;
+    case "quiz":
+      renderQuiz();
       break;
     case "competence":
       renderCompetenceDashboard();

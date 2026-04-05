@@ -175,6 +175,52 @@ export const questions: QuizQuestion[] = [
     explanation: "EventMap<T> generiert automatisch Change-Events fuer jede Property. Template Literal Keys erzeugen die Event-Namen.",
     code: "type EventMap<T> = {\n  [K in keyof T as `${string & K}Changed`]: {\n    previousValue: T[K]; newValue: T[K];\n  };\n};",
   },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  {
+    type: "short-answer",
+    question: "Mit welchem Schluesselwort remappt man Keys in einem Mapped Type?",
+    expectedAnswer: "as",
+    acceptableAnswers: ["as", "as clause", "as-Clause", "as Clause"],
+    explanation: "Key Remapping mit 'as' wurde in TypeScript 4.1 eingefuehrt und erlaubt das Umbenennen, Transformieren oder Filtern von Keys.",
+  },
+  {
+    type: "short-answer",
+    question: "Welcher Modifier-Prefix entfernt 'optional' in einem Mapped Type? (Schreibe das Zeichen gefolgt vom Fragezeichen)",
+    expectedAnswer: "-?",
+    acceptableAnswers: ["-?", "minus ?", "-? (minus optional)"],
+    explanation: "Der Prefix '-' vor '?' entfernt den optionalen Modifier. So funktioniert Required<T> intern: { [K in keyof T]-?: T[K] }.",
+  },
+  {
+    type: "short-answer",
+    question: "Wie heisst ein Mapped Type der 'keyof T' als Source verwendet und dabei die Original-Modifier bewahrt?",
+    expectedAnswer: "homomorph",
+    acceptableAnswers: ["homomorph", "homomorphic", "homomorpher Mapped Type", "homomorphic mapped type"],
+    explanation: "Homomorphe Mapped Types verwenden keyof T und bewahren dadurch readonly und optional vom Original — es sei denn man aendert sie explizit.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type User = { name: string; age: number; active: boolean };\ntype NoStrings<T> = {\n  [K in keyof T as T[K] extends string ? never : K]: T[K];\n};\ntype Result = NoStrings<User>;",
+    expectedAnswer: "{ age: number; active: boolean }",
+    acceptableAnswers: ["{ age: number; active: boolean }", "{ age: number, active: boolean }", "age: number, active: boolean"],
+    explanation: "Key Remapping mit never filtert Keys heraus deren Wert-Typ string ist. 'name' (string) wird entfernt, 'age' (number) und 'active' (boolean) bleiben.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type Config = { host: string; port: number };\ntype Getters<T> = {\n  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];\n};\ntype Result = Getters<Config>;",
+    expectedAnswer: "{ getHost: () => string; getPort: () => number }",
+    acceptableAnswers: ["{ getHost: () => string; getPort: () => number }", "{ getHost(): string; getPort(): number }", "getHost: () => string, getPort: () => number"],
+    explanation: "Capitalize macht den ersten Buchstaben gross, das Template Literal fuegt 'get' voran. Jeder Key wird zu einer Getter-Methode mit dem originalen Rueckgabetyp.",
+  },
+  {
+    type: "explain-why",
+    question: "Warum bewahren homomorphe Mapped Types die Modifier (readonly, optional) des Originals, waehrend nicht-homomorphe das nicht tun?",
+    modelAnswer: "Homomorphe Mapped Types verwenden 'keyof T' als Source und TypeScript erkennt dieses Pattern. Der Compiler weiss dadurch, dass der neue Typ strukturell dem Original entspricht, und uebertraegt readonly/optional automatisch. Bei nicht-homomorphen Mapped Types (z.B. mit einem eigenen String-Union als Source) fehlt diese Verbindung zum Original-Typ — TypeScript kann nicht wissen welche Modifier gelten sollen.",
+    keyPoints: ["keyof T als Source stellt die Verbindung zum Original her", "Compiler erkennt das homomorphe Pattern und uebertraegt Modifier", "String-Unions als Source verlieren die Modifier-Information"],
+  },
 ];
 
 export interface ElaboratedFeedback {

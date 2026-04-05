@@ -413,4 +413,113 @@ function c(x: unknown): void { console.log(x); }`,
         "Aber ein unnoetiger Typparameter verwirrt Nutzer der API.",
     },
   },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst die Eigenschaft, wenn bei `Cat extends Animal` auch " +
+      "`Producer<Cat> extends Producer<Animal>` gilt (Subtyprichtung bleibt erhalten)?",
+    expectedAnswer: "Kovarianz",
+    acceptableAnswers: [
+      "Kovarianz", "kovarianz", "Covariance", "covariance", "kovariant",
+    ],
+    explanation:
+      "Kovarianz bedeutet: Die Subtyprichtung bleibt erhalten. " +
+      "Wenn Cat ein Subtyp von Animal ist, dann ist Producer<Cat> " +
+      "ein Subtyp von Producer<Animal>. Das gilt fuer Typen in Output-Position.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie lautet die TypeScript-Regel, dass ein Typparameter mindestens " +
+      "zwei Mal in einer Signatur vorkommen sollte, damit er sinnvoll ist?",
+    expectedAnswer: "Rule of Two",
+    acceptableAnswers: [
+      "Rule of Two", "rule of two", "Regel der Zwei", "Rule-of-Two",
+    ],
+    explanation:
+      "Die 'Rule of Two' besagt: Ein Typparameter muss mindestens zwei Mal " +
+      "auftauchen (z.B. im Parameter UND im Rueckgabetyp), damit er eine " +
+      "Korrelation herstellt. Einmalige Typparameter koennen durch 'unknown' " +
+      "ersetzt werden.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welche zwei TypeScript-Keywords (seit TS 4.7) annotieren die Varianz " +
+      "eines Typparameters explizit? Nenne beide, getrennt durch Komma.",
+    expectedAnswer: "in, out",
+    acceptableAnswers: [
+      "in, out", "in und out", "in/out", "out, in", "out und in", "in out",
+    ],
+    explanation:
+      "'in' deklariert Kontravarianz (T nur in Input-Position), " +
+      "'out' deklariert Kovarianz (T nur in Output-Position). " +
+      "TypeScript prueft die Annotation und beschleunigt dadurch Type-Checking.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ hat `result`?",
+    code:
+      "type IsString<T> = T extends string ? 'ja' : 'nein';\n" +
+      "type Result = IsString<string | number>;",
+    expectedAnswer: "'ja' | 'nein'",
+    acceptableAnswers: [
+      "'ja' | 'nein'", "\"ja\" | \"nein\"", "ja | nein",
+      "'nein' | 'ja'", "\"nein\" | \"ja\"", "nein | ja",
+    ],
+    explanation:
+      "Da T ein nackter Typparameter ist, verteilt sich der Conditional Type " +
+      "ueber die Union: IsString<string> | IsString<number> = 'ja' | 'nein'. " +
+      "Das ist Distributive Behavior.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ hat `name`?",
+    code:
+      "function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {\n" +
+      "  return obj[key];\n" +
+      "}\n" +
+      "const user = { name: 'Max', age: 30 };\n" +
+      "const name = getProperty(user, 'name');",
+    expectedAnswer: "string",
+    acceptableAnswers: ["string", "String"],
+    explanation:
+      "TypeScript inferiert K als den Literal-Typ 'name'. " +
+      "T[K] = { name: string; age: number }['name'] = string. " +
+      "Das ist die Staerke von Generics mit keyof — praezise Rueckgabetypen.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question:
+      "Warum sind Funktionsparameter kontravariant, waehrend Rueckgabewerte " +
+      "kovariant sind? Erklaere anhand eines Beispiels mit Tier-Hierarchie " +
+      "(Animal/Cat), warum die umgekehrte Richtung unsicher waere.",
+    modelAnswer:
+      "Eine Funktion (Animal) => void kann jedes Tier verarbeiten, auch Katzen. " +
+      "Deshalb ist sie sicher wo (Cat) => void erwartet wird. Umgekehrt waere " +
+      "(Cat) => void unsicher als (Animal) => void, weil sie einen Hund nicht " +
+      "verarbeiten koennte. Bei Rueckgabewerten gilt das Gegenteil: Eine Funktion " +
+      "die Cat zurueckgibt kann ueberall stehen wo Animal erwartet wird, " +
+      "weil jede Katze auch ein Tier ist.",
+    keyPoints: [
+      "Parameter: breiterer Typ ist sicherer (kontravariant)",
+      "Rueckgabe: engerer Typ ist sicherer (kovariant)",
+      "Unsicherer Fall: Cat-Handler koennte .meow() aufrufen",
+      "Liskov Substitution Principle",
+    ],
+  },
 ];

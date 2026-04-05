@@ -398,4 +398,105 @@ export const questions: QuizQuestion[] = [
         "sie bei uebertriebener Type-Level-Programmierung.",
     },
   },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst das Pattern, bei dem ein Typ sich NICHT direkt selbst referenziert, " +
+      "sondern ueber einen anderen Typ (A → B → A)?",
+    expectedAnswer: "Indirekte Rekursion",
+    acceptableAnswers: [
+      "Indirekte Rekursion", "indirekte Rekursion", "Indirect Recursion",
+      "indirect recursion", "Mutual Recursion", "mutual recursion",
+    ],
+    explanation:
+      "Bei indirekter Rekursion verweist Typ A auf Typ B, und Typ B " +
+      "verweist zurueck auf Typ A. Das klassische Beispiel ist der JSON-Typ: " +
+      "JsonValue → JsonArray → JsonValue.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie hoch ist ungefaehr das Standard-Rekursionslimit fuer TypeScript-Typen " +
+      "OHNE Tail Recursion Optimization? (Zahl angeben)",
+    expectedAnswer: "50",
+    acceptableAnswers: ["50", "~50", "ca. 50", "circa 50", "ungefaehr 50"],
+    explanation:
+      "TypeScript bricht bei ca. 50 Rekursionsebenen ab mit " +
+      "'Type instantiation is excessively deep and possibly infinite'. " +
+      "Mit Tail Recursion Optimization (TS 4.5+) steigt das auf ~1000.",
+  },
+
+  // --- Frage 18: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ ergibt `Flatten<string[][][]>`?",
+    code:
+      "type Flatten<T> = T extends (infer U)[] ? Flatten<U> : T;\n" +
+      "type Result = Flatten<string[][][]>;",
+    expectedAnswer: "string",
+    acceptableAnswers: ["string", "String"],
+    explanation:
+      "Flatten entfernt ALLE Array-Ebenen rekursiv: " +
+      "string[][][] → Flatten<string[][]> → Flatten<string[]> → " +
+      "Flatten<string> → string (kein Array mehr → Abbruchbedingung).",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code oder gibt es einen Fehler?",
+    code: "type X = X | string;",
+    expectedAnswer: "Fehler",
+    acceptableAnswers: [
+      "Fehler", "Error", "Compile Error", "Compile-Error", "Nein",
+      "Type alias circularly references itself",
+    ],
+    explanation:
+      "Direkte Zirkularitaet ohne Conditional oder Mapped Type ist verboten. " +
+      "'type X = X | string' ist kein rekursiver Typ, sondern eine ungueltige " +
+      "zirkulaere Referenz. TypeScript meldet: 'Type alias circularly references itself'.",
+  },
+
+  // --- Frage 20: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welche Zod-Funktion braucht man, um rekursive Schemas zu definieren, " +
+      "weil JavaScript-Objekte nicht lazy wie TypeScript-Typen ausgewertet werden?",
+    expectedAnswer: "z.lazy",
+    acceptableAnswers: [
+      "z.lazy", "z.lazy()", "lazy", "Lazy",
+    ],
+    explanation:
+      "z.lazy(() => schema) verzoegert die Auswertung des Schemas. " +
+      "Ohne z.lazy() wuerde das Schema sich beim Erstellen selbst referenzieren " +
+      "bevor es fertig definiert ist — eine Endlosschleife.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question:
+      "Warum fuehren Distributive Conditional Types in Kombination mit Rekursion " +
+      "zu exponentiellem Wachstum der Compile-Zeit, waehrend Mapped Types mit " +
+      "Rekursion linear bleiben?",
+    modelAnswer:
+      "Distributive Conditional Types verteilen sich ueber Union-Mitglieder: " +
+      "Jedes Mitglied wird SEPARAT rekursiert. Bei einem Objekt mit 3 Properties " +
+      "und 5 Ebenen Tiefe entstehen 3^5 = 243 separate Auswertungen. " +
+      "Mapped Types iterieren dagegen linear ueber Schluessel und erzeugen " +
+      "nur 3*5 = 15 Auswertungen, weil sie alle Keys in einem Durchgang abarbeiten.",
+    keyPoints: [
+      "Distribution spaltet Unions in separate Auswertungen",
+      "Exponentielles Wachstum durch Rekursion ueber verteilte Unions",
+      "Mapped Types iterieren linear ueber Keys",
+      "Loesung: [T] Wrapping verhindert Distribution",
+    ],
+  },
 ];

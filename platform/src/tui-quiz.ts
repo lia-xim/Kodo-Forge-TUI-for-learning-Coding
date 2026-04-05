@@ -1,5 +1,11 @@
 /**
  * tui-quiz.ts — Quiz, Warmup, Pretest, Interleaved Review Screens (inkl. Metacognitive Prompts)
+ *
+ * Ab L21+ unterstuetzt das Quiz-System vier Fragetypen:
+ *   - multiple-choice:  Klassisches A-D
+ *   - short-answer:     Lernender tippt Antwort (Generation Effect)
+ *   - predict-output:   Code lesen, Ausgabe vorhersagen
+ *   - explain-why:      Offene Reflexion, Musterantwort zum Vergleich
  */
 
 import {
@@ -17,6 +23,7 @@ import type { ParsedKey, Screen } from "./tui-types.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { renderLessonMenu } from "./tui-lesson-menu.ts";
 import { openSection } from "./tui-section-reader.ts";
+import { getQuestionType, checkFreeTextAnswer, type QuizQuestion } from "./quiz-runner.ts";
 
 // ─── Warm-Up Screen ───────────────────────────────────────────────────────
 
@@ -478,4 +485,397 @@ export function handleInterleavedInput(key: ParsedKey): void {
     renderInterleaved();
     return;
   }
+}
+
+// ─── Lesson Quiz Screen (mit Format-Mix) ─────────────────────────────────
+
+function getFormatLabel(q: QuizQuestion): string {
+  const t = getQuestionType(q);
+  if (t === "short-answer") return "Kurzantwort";
+  if (t === "predict-output") return "Predict-the-Output";
+  if (t === "explain-why") return "Erklaere-warum";
+  return "Multiple Choice";
+}
+
+function getExplanationText(q: QuizQuestion): string {
+  const t = getQuestionType(q);
+  if (t === "explain-why") return "";
+  if ("explanation" in q && q.explanation) return q.explanation;
+  return "";
+}
+
+function getElaboratedText(q: QuizQuestion, correct: boolean): string {
+  if (!("elaboratedFeedback" in q) || !q.elaboratedFeedback) return "";
+  return correct ? q.elaboratedFeedback.whyCorrect : q.elaboratedFeedback.commonMistake;
+}
+
+export function renderQuiz(): void {
+  updateTermSize();
+  const lines: string[] = [];
+  const screen = currentScreen as Extract<Screen, { type: "quiz" }>;
+  const { questions, currentIndex, showingFeedback, feedbackCorrect, feedbackExplanation, done, answers, score } = screen;
+  const w = W();
+  const h = H();
+  const lesson = lessons[screen.lessonIndex];
+  const lessonLabel = lesson ? `L${lesson.number}: ${lesson.title}` : `Lektion ${screen.lessonIndex + 1}`;
+
+  // ─── Done Screen ───
+  if (done) {
+    const correctCount = answers.filter(a => a.correct).length;
+    const pct = Math.round((correctCount / answers.length) * 100);
+    lines.push(renderHeader(` Quiz — ${truncate(lessonLabel, w - 40)}`, `${correctCount}/${answers.length} `));
+    lines.push(boxTop(w));
+    lines.push(bEmpty(w));
+    lines.push(bLine(`  ${c.bold}Quiz abgeschlossen!${c.reset}`, w));
+    lines.push(bEmpty(w));
+    lines.push(bLine(`  Ergebnis: ${c.bold}${correctCount}${c.reset}/${answers.length} richtig (${pct}%)`, w));
+    lines.push(bEmpty(w));
+    if (pct >= 90) lines.push(bLine(`  ${c.green}Hervorragend! Du beherrschst das Thema.${c.reset}`, w));
+    else if (pct >= 70) lines.push(bLine(`  ${c.yellow}Gut! Ein paar Konzepte nochmal anschauen.${c.reset}`, w));
+    else lines.push(bLine(`  ${c.red}Das Thema braucht noch Wiederholung.${c.reset}`, w));
+    lines.push(bEmpty(w));
+    const footerStart = h - 3;
+    while (lines.length < footerStart) lines.push(bEmpty(w));
+    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Zum Lektionsmenue`]));
+    flushScreen(lines);
+    return;
+  }
+
+  // ─── Question Screen ───
+  const q = questions[currentIndex];
+  const qType = getQuestionType(q);
+  const formatLabel = getFormatLabel(q);
+
+  lines.push(renderHeader(` Quiz — ${truncate(lessonLabel, w - 50)}`, `${currentIndex + 1}/${questions.length}  ${formatLabel} `));
+  lines.push(boxTop(w));
+  lines.push(bEmpty(w));
+
+  // Question text
+  const questionText = q.question;
+  for (const ql of wordWrap(questionText, w - 6)) {
+    lines.push(bLine(`  ${c.bold}${ql}${c.reset}`, w));
+  }
+  lines.push(bEmpty(w));
+
+  // Code block (if present)
+  const code = "code" in q ? q.code : undefined;
+  if (code) {
+    lines.push(bLine(`  ${c.dim}${"─".repeat(Math.min(50, w - 6))}${c.reset}`, w));
+    for (const cl of code.split("\n")) {
+      lines.push(bLine(`  ${c.cyan}  ${cl}${c.reset}`, w));
+    }
+    lines.push(bLine(`  ${c.dim}${"─".repeat(Math.min(50, w - 6))}${c.reset}`, w));
+    lines.push(bEmpty(w));
+  }
+
+  // ─── Format-specific rendering ───
+
+  if (qType === "multiple-choice" && "options" in q) {
+    const labels = ["A", "B", "C", "D", "E", "F"];
+    for (let i = 0; i < q.options.length && i < labels.length; i++) {
+      lines.push(bLine(`  ${c.bold}[${labels[i]}]${c.reset} ${truncate(q.options[i], w - 12)}`, w));
+    }
+    lines.push(bEmpty(w));
+  }
+
+  if ((qType === "short-answer" || qType === "predict-output") && screen.phase === "freetext") {
+    const input = screen.userInput || "";
+    lines.push(bLine(`  Deine Antwort: ${c.cyan}${input}\u2588${c.reset}`, w));
+    lines.push(bEmpty(w));
+  } else if ((qType === "short-answer" || qType === "predict-output") && screen.phase === "question") {
+    lines.push(bLine(`  ${c.dim}Tippe deine Antwort...${c.reset}`, w));
+    const input = screen.userInput || "";
+    lines.push(bLine(`  Deine Antwort: ${c.cyan}${input}\u2588${c.reset}`, w));
+    lines.push(bEmpty(w));
+  }
+
+  if (qType === "explain-why" && (screen.phase === "question" || screen.phase === "freetext")) {
+    lines.push(bLine(`  ${c.dim}Erklaere in eigenen Worten:${c.reset}`, w));
+    const input = screen.userInput || "";
+    const inputLines = wordWrap(input + "\u2588", w - 6);
+    for (const il of inputLines) {
+      lines.push(bLine(`  ${c.cyan}${il}${c.reset}`, w));
+    }
+    lines.push(bEmpty(w));
+  }
+
+  // ─── Confidence phase ───
+  if (screen.phase === "confidence") {
+    lines.push(bLine(`  ${c.dim}${"─".repeat(w - 6)}${c.reset}`, w));
+    lines.push(bLine(`  ${c.bold}${c.yellow}Wie sicher bist du bei deiner Antwort?${c.reset}`, w));
+    lines.push(bEmpty(w));
+    lines.push(bLine(`  ${c.bold}[1]${c.reset} Geraten`, w));
+    lines.push(bLine(`  ${c.bold}[2]${c.reset} Unsicher`, w));
+    lines.push(bLine(`  ${c.bold}[3]${c.reset} Ziemlich sicher`, w));
+    lines.push(bLine(`  ${c.bold}[4]${c.reset} Absolut sicher`, w));
+    lines.push(bEmpty(w));
+  }
+
+  // ─── Explain-why review phase ───
+  if (screen.phase === "explain-review" && qType === "explain-why" && "modelAnswer" in q) {
+    lines.push(bLine(`  ${c.dim}${"─".repeat(w - 6)}${c.reset}`, w));
+    lines.push(bLine(`  ${c.bold}${c.yellow}Deine Erklaerung:${c.reset}`, w));
+    for (const el of wordWrap(screen.userInput || "(leer)", w - 8)) {
+      lines.push(bLine(`  ${c.dim}${el}${c.reset}`, w));
+    }
+    lines.push(bEmpty(w));
+    lines.push(bLine(`  ${c.bold}${c.green}Musterantwort:${c.reset}`, w));
+    for (const ml of wordWrap(q.modelAnswer, w - 8)) {
+      lines.push(bLine(`  ${ml}`, w));
+    }
+    lines.push(bEmpty(w));
+    if (q.keyPoints && q.keyPoints.length > 0) {
+      lines.push(bLine(`  ${c.bold}Kernpunkte:${c.reset}`, w));
+      for (const kp of q.keyPoints) {
+        lines.push(bLine(`  ${c.cyan}\u2022${c.reset} ${kp}`, w));
+      }
+      lines.push(bEmpty(w));
+    }
+  }
+
+  // ─── Feedback phase ───
+  if (showingFeedback && qType !== "explain-why") {
+    lines.push(bLine(`  ${c.dim}${"─".repeat(w - 6)}${c.reset}`, w));
+    if (feedbackCorrect) {
+      lines.push(bLine(`  ${c.green}${c.bold}Richtig!${c.reset}`, w));
+    } else {
+      lines.push(bLine(`  ${c.red}${c.bold}Falsch.${c.reset}`, w));
+      // Show correct answer for free-text questions
+      if ((qType === "short-answer" || qType === "predict-output") && "expectedAnswer" in q) {
+        lines.push(bLine(`  ${c.dim}Richtige Antwort: ${c.reset}${c.green}${q.expectedAnswer}${c.reset}`, w));
+      }
+    }
+    if (feedbackExplanation) {
+      for (const el of wordWrap(feedbackExplanation, w - 8)) {
+        lines.push(bLine(`  ${c.dim}${el}${c.reset}`, w));
+      }
+    }
+    const elaborated = getElaboratedText(q, feedbackCorrect);
+    if (elaborated) {
+      lines.push(bEmpty(w));
+      for (const el of wordWrap(elaborated, w - 8)) {
+        lines.push(bLine(`  ${el}`, w));
+      }
+    }
+    if (screen.confidence !== undefined) {
+      const calibration = getConfidenceFeedback(screen.confidence >= 3, feedbackCorrect);
+      lines.push(bEmpty(w));
+      lines.push(bLine(`  ${calibration}`, w));
+    }
+    lines.push(bEmpty(w));
+  }
+
+  // ─── Footer ───
+  const footerStart = h - 3;
+  while (lines.length < footerStart) lines.push(bEmpty(w));
+
+  if (screen.phase === "confidence") {
+    lines.push(...renderFooter([`${c.bold}[1-4]${c.reset} Sicherheit waehlen`]));
+  } else if (screen.phase === "explain-review") {
+    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Naechste Frage`]));
+  } else if (showingFeedback) {
+    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Naechste Frage`]));
+  } else if (qType === "multiple-choice") {
+    const optCount = "options" in q ? q.options.length : 4;
+    const labels = ["A", "B", "C", "D", "E", "F"].slice(0, optCount);
+    lines.push(...renderFooter([`${c.bold}[${labels.join("/")}]${c.reset} Antworten`, `${c.bold}[Q]${c.reset} Abbrechen`]));
+  } else if (qType === "explain-why") {
+    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Fertig`, `${c.bold}[S]${c.reset} Ueberspringen`]));
+  } else {
+    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Bestaetigen`, `${c.bold}[?]${c.reset} Keine Ahnung`]));
+  }
+
+  flushScreen(lines);
+}
+
+export function handleQuizInput(key: ParsedKey): void {
+  const screen = currentScreen as Extract<Screen, { type: "quiz" }>;
+
+  // ─── Done ───
+  if (screen.done) {
+    if (key.name === "enter") {
+      // Save quiz result
+      const lesson = lessons[screen.lessonIndex];
+      if (lesson) {
+        const correctCount = screen.answers.filter(a => a.correct).length;
+        const existing = progress.quizzes[lesson.number];
+        if (!existing || correctCount > existing.score) {
+          progress.quizzes[lesson.number] = { score: correctCount, total: screen.answers.length, date: new Date().toISOString() };
+          // progress is saved by tui-state
+        }
+      }
+      setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: 0 });
+      renderLessonMenu(screen.lessonIndex);
+    }
+    return;
+  }
+
+  const q = screen.questions[screen.currentIndex];
+  const qType = getQuestionType(q);
+
+  // ─── Confidence phase ───
+  if (screen.phase === "confidence") {
+    const confMap: Record<string, number> = { "1": 1, "2": 2, "3": 3, "4": 4 };
+    const conf = confMap[key.raw];
+    if (conf !== undefined) {
+      screen.confidence = conf;
+      const correct = screen.pendingCorrect ?? false;
+      screen.answers.push({ correct, skipped: false });
+      screen.showingFeedback = true;
+      screen.feedbackCorrect = correct;
+      screen.feedbackExplanation = screen.pendingExplanation || "";
+      screen.phase = "feedback";
+      renderQuiz();
+    }
+    return;
+  }
+
+  // ─── Explain-why review phase ───
+  if (screen.phase === "explain-review") {
+    if (key.name === "enter") {
+      advanceQuiz(screen);
+    }
+    return;
+  }
+
+  // ─── Feedback phase ───
+  if (screen.phase === "feedback" || screen.showingFeedback) {
+    if (key.name === "enter") {
+      advanceQuiz(screen);
+    }
+    return;
+  }
+
+  // ─── Abort ───
+  if (key.name === "q" || key.name === "escape") {
+    setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: 0 });
+    renderLessonMenu(screen.lessonIndex);
+    return;
+  }
+
+  // ─── Multiple Choice input ───
+  if (qType === "multiple-choice" && "options" in q) {
+    const labels: Record<string, number> = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5 };
+    const idx = labels[key.name];
+    if (idx !== undefined && idx < q.options.length) {
+      const correct = idx === q.correct;
+      sessionStats.questionsAnswered++;
+      screen.pendingCorrect = correct;
+      screen.pendingExplanation = getExplanationText(q);
+      screen.phase = "confidence";
+      screen.confidence = undefined;
+      renderQuiz();
+    }
+    return;
+  }
+
+  // ─── Short-answer / Predict-output free-text input ───
+  if (qType === "short-answer" || qType === "predict-output") {
+    // "?" = skip / don't know
+    if (key.name === "?" || key.raw === "?") {
+      sessionStats.questionsAnswered++;
+      screen.pendingCorrect = false;
+      screen.pendingExplanation = getExplanationText(q);
+      screen.phase = "confidence";
+      screen.confidence = undefined;
+      screen.userInput = "";
+      renderQuiz();
+      return;
+    }
+
+    // Enter = submit answer
+    if (key.name === "enter" && screen.userInput.length > 0) {
+      const correct = checkFreeTextAnswer(q as any, screen.userInput);
+      sessionStats.questionsAnswered++;
+      screen.pendingCorrect = correct;
+      screen.pendingExplanation = getExplanationText(q);
+      screen.phase = "confidence";
+      screen.confidence = undefined;
+      renderQuiz();
+      return;
+    }
+
+    // Backspace
+    if (key.name === "backspace") {
+      if (screen.userInput.length > 0) {
+        screen.userInput = screen.userInput.slice(0, -1);
+        renderQuiz();
+      }
+      return;
+    }
+
+    // Regular character input
+    if (key.raw && key.raw.length === 1 && key.raw.charCodeAt(0) >= 32) {
+      screen.userInput += key.raw;
+      renderQuiz();
+      return;
+    }
+
+    // Space
+    if (key.name === "space") {
+      screen.userInput += " ";
+      renderQuiz();
+      return;
+    }
+
+    return;
+  }
+
+  // ─── Explain-why free-text input ───
+  if (qType === "explain-why") {
+    // Skip
+    if (key.name === "s") {
+      screen.answers.push({ correct: true, skipped: true });
+      advanceQuiz(screen);
+      return;
+    }
+
+    // Enter = done, show model answer
+    if (key.name === "enter") {
+      screen.phase = "explain-review";
+      screen.answers.push({ correct: true, skipped: false }); // explain-why is always "correct" (self-assessment)
+      renderQuiz();
+      return;
+    }
+
+    // Backspace
+    if (key.name === "backspace") {
+      if (screen.userInput.length > 0) {
+        screen.userInput = screen.userInput.slice(0, -1);
+        renderQuiz();
+      }
+      return;
+    }
+
+    // Regular character input
+    if (key.raw && key.raw.length === 1 && key.raw.charCodeAt(0) >= 32) {
+      screen.userInput += key.raw;
+      renderQuiz();
+      return;
+    }
+
+    // Space
+    if (key.name === "space") {
+      screen.userInput += " ";
+      renderQuiz();
+      return;
+    }
+
+    return;
+  }
+}
+
+function advanceQuiz(screen: Extract<Screen, { type: "quiz" }>): void {
+  screen.showingFeedback = false;
+  screen.phase = "question";
+  screen.confidence = undefined;
+  screen.pendingCorrect = undefined;
+  screen.pendingExplanation = undefined;
+  screen.userInput = "";
+  screen.currentIndex++;
+  if (screen.currentIndex >= screen.questions.length) {
+    screen.done = true;
+    screen.score = screen.answers.filter(a => a.correct).length;
+  }
+  renderQuiz();
 }

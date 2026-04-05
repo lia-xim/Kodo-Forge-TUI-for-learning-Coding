@@ -432,4 +432,124 @@ export const questions: QuizQuestion[] = [
         "protected = die Klasse + Subklassen. Von aussen sind beide nicht zugaenglich.",
     },
   },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welches TypeScript-Keyword macht eine Klasse nicht-instanziierbar " +
+      "und erzwingt, dass Subklassen bestimmte Methoden implementieren?",
+    expectedAnswer: "abstract",
+    acceptableAnswers: ["abstract", "Abstract", "ABSTRACT"],
+    explanation:
+      "Das 'abstract'-Keyword vor einer Klasse verhindert direkte Instanziierung " +
+      "mit 'new'. Abstrakte Methoden (ohne Body) muessen von jeder konkreten " +
+      "Subklasse implementiert werden — aehnlich wie ein Interface, aber mit " +
+      "der Moeglichkeit, auch konkreten Code zu enthalten.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst die TypeScript-Kurzschreibweise, bei der ein Modifier (public/private/protected/readonly) " +
+      "vor einem Constructor-Parameter automatisch ein Klassen-Feld erzeugt?",
+    expectedAnswer: "Parameter Properties",
+    acceptableAnswers: [
+      "Parameter Properties", "Parameter Property", "parameter properties",
+      "parameter property", "Constructor Parameter Properties",
+    ],
+    explanation:
+      "Parameter Properties erledigen drei Dinge auf einmal: " +
+      "Feld-Deklaration, Constructor-Parameter und Zuweisung. " +
+      "'constructor(private name: string)' ist identisch mit: " +
+      "Feld 'private name: string' + 'this.name = name' im Constructor.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welches Typsystem-Prinzip erlaubt es, ein einfaches Objekt-Literal " +
+      "an eine Funktion zu uebergeben, die einen Klassen-Typ erwartet?",
+    expectedAnswer: "Structural Typing",
+    acceptableAnswers: [
+      "Structural Typing", "structural typing", "Strukturelle Typisierung",
+      "Duck Typing", "duck typing",
+    ],
+    explanation:
+      "TypeScript nutzt Structural Typing: Wenn ein Objekt die gleiche Struktur " +
+      "wie eine Klasse hat (gleiche Felder und Methoden), ist es kompatibel — " +
+      "unabhaengig davon, ob es mit 'new' erzeugt wurde.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code:
+      "class Counter {\n" +
+      "  count = 0;\n" +
+      "  increment = () => { this.count++; };\n" +
+      "}\n" +
+      "const c = new Counter();\n" +
+      "const fn = c.increment;\n" +
+      "fn();\n" +
+      "fn();\n" +
+      "console.log(c.count);",
+    expectedAnswer: "2",
+    acceptableAnswers: ["2"],
+    explanation:
+      "Da 'increment' als Arrow-Function definiert ist, wird 'this' lexikalisch " +
+      "gebunden — es zeigt immer auf die Counter-Instanz. Anders als bei " +
+      "normalen Methoden geht der this-Kontext beim Extrahieren nicht verloren. " +
+      "Zwei Aufrufe von fn() erhoehen count auf 2.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code mit 'strict: true'?",
+    code:
+      "class Animal {\n" +
+      "  name: string;\n" +
+      "  sound: string;\n" +
+      "  constructor(name: string) {\n" +
+      "    this.name = name;\n" +
+      "  }\n" +
+      "}",
+    expectedAnswer: "Nein",
+    acceptableAnswers: [
+      "Nein", "nein", "Fehler", "Error", "Compile Error", "Compile-Error",
+      "TS2564", "Nein, Fehler",
+    ],
+    explanation:
+      "Mit strictPropertyInitialization (Teil von strict: true) muss JEDES Feld " +
+      "initialisiert werden. 'sound' hat weder einen Default-Wert noch wird es " +
+      "im Constructor zugewiesen und ist auch nicht optional (?) — " +
+      "daher meldet TypeScript TS2564.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question:
+      "Warum empfehlen viele TypeScript-Experten, Arrow-Functions statt " +
+      "normaler Methoden in Klassen zu verwenden, wenn die Methode als " +
+      "Callback uebergeben wird? Welchen Nachteil hat das?",
+    modelAnswer:
+      "Arrow-Functions binden 'this' lexikalisch an die Klassen-Instanz, " +
+      "sodass der Kontext auch beim Extrahieren erhalten bleibt. " +
+      "Der Nachteil: Arrow-Properties werden pro Instanz erstellt " +
+      "(nicht auf dem Prototype), was bei vielen Instanzen mehr Speicher " +
+      "verbraucht und nicht ueberschrieben werden kann.",
+    keyPoints: [
+      "Lexikalisches this-Binding",
+      "Kein Kontextverlust bei Callbacks",
+      "Pro Instanz statt auf Prototype",
+      "Mehr Speicherverbrauch",
+    ],
+  },
 ];

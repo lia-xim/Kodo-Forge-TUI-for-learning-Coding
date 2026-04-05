@@ -13,7 +13,7 @@ import * as path from "node:path";
 import * as readline from "node:readline";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import type { QuizQuestion } from "./quiz-runner.ts";
+import { getQuestionType, type QuizQuestion, type MultipleChoiceQuestion } from "./quiz-runner.ts";
 
 // ─── Pfade ──────────────────────────────────────────────────────────────────
 
@@ -59,7 +59,7 @@ interface TaggedQuestion {
   lessonId: string;
   lessonTitle: string;
   questionIndex: number;
-  question: QuizQuestion;
+  question: MultipleChoiceQuestion;
 }
 
 // ─── Terminal-Farben ────────────────────────────────────────────────────────
@@ -115,14 +115,16 @@ async function loadAllQuestions(): Promise<TaggedQuestion[]> {
     try {
       const importUrl = pathToFileURL(quizDataPath).href;
       const mod = (await import(importUrl)) as LessonModule;
-      for (let i = 0; i < mod.questions.length; i++) {
+      // Only load MC questions for standalone review runner
+      const mcQuestions = mod.questions.filter((q: QuizQuestion) => getQuestionType(q) === "multiple-choice") as MultipleChoiceQuestion[];
+      for (let i = 0; i < mcQuestions.length; i++) {
         const id = `${mod.lessonId}-${String(i + 1).padStart(2, "0")}`;
         allQuestions.push({
           id,
           lessonId: mod.lessonId,
           lessonTitle: mod.lessonTitle,
           questionIndex: i + 1,
-          question: mod.questions[i],
+          question: mcQuestions[i],
         });
       }
     } catch (err) {
@@ -273,7 +275,7 @@ function printQuestionHeader(
   console.log();
 }
 
-function printResult(isCorrect: boolean, q: QuizQuestion): void {
+function printResult(isCorrect: boolean, q: MultipleChoiceQuestion): void {
   if (isCorrect) {
     console.log(`  ${c.green}${c.bold}Richtig!${c.reset}`);
   } else {

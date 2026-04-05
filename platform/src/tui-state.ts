@@ -998,6 +998,12 @@ export function getBreadcrumb(screen: Screen): string {
       return "Tastenbelegung";
     case "history":
       return "Letzte Stellen";
+    case "quiz": {
+      const l = lessons[screen.lessonIndex];
+      return `Hauptmenue > L${l?.number ?? "?"} > Quiz`;
+    }
+    default:
+      return "";
   }
 }
 

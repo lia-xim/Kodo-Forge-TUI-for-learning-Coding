@@ -274,6 +274,94 @@ export const questions: QuizQuestion[] = [
       "'click' oder 'myOnClick' passen NICHT.",
     code: 'type EventName = `on${string}`;\nconst a: EventName = "onClick";  // OK\n// const b: EventName = "click"; // Error!',
   },
+
+  // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer — const Literal Type ---
+  {
+    type: "short-answer",
+    question: "Welcher Typ wird `const x = 'hello'` zugewiesen — string oder \"hello\"?",
+    expectedAnswer: '"hello"',
+    acceptableAnswers: ['"hello"', "'hello'", "hello", "Literal Type hello", "\"hello\" (Literal Type)"],
+    explanation:
+      "const-Variablen mit primitiven Werten bekommen einen Literal Type. " +
+      "Da sich const nie aendern kann, ist der Typ exakt \"hello\" — nicht string. " +
+      "Bei let waere der Typ string (Type Widening).",
+  },
+
+  // --- Frage 17: Short-Answer — as const Effekte ---
+  {
+    type: "short-answer",
+    question: "Nenne die drei Effekte von `as const` auf ein Array (Stichworte genuegen).",
+    expectedAnswer: "readonly, Literal Types, Tuple",
+    acceptableAnswers: [
+      "readonly, Literal Types, Tuple",
+      "readonly, literal, tuple",
+      "Tuple, readonly, Literal Types",
+      "readonly Tuple mit Literal Types",
+      "immutable, literal types, tuple",
+    ],
+    explanation:
+      "as const hat drei simultane Effekte: (1) readonly — keine Mutationen, " +
+      "(2) Literal Types — praezise Werte statt breiter Typen, " +
+      "(3) Tuple — feste Laenge statt dynamischem Array.",
+  },
+
+  // --- Frage 18: Short-Answer — Enum Soundness ---
+  {
+    type: "short-answer",
+    question: "Welche Art von Enum hat ein Soundness-Loch bei dem jede Zahl zuweisbar ist — string oder numerisch?",
+    expectedAnswer: "numerisch",
+    acceptableAnswers: ["numerisch", "numerische", "numeric", "Numerisch", "numerische Enums", "number"],
+    explanation:
+      "Numerische Enums erlauben JEDE Zahl — auch Werte die nicht im Enum definiert sind. " +
+      "Der Grund: Bitwise-Flags erzeugen Werte ausserhalb der Enum-Definition. " +
+      "String Enums sind dagegen nominal typisiert und haben dieses Problem nicht.",
+  },
+
+  // --- Frage 19: Predict-Output — Reverse Mapping ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "enum Color { Red, Green, Blue }\nconsole.log(Color[1]);",
+    expectedAnswer: "Green",
+    acceptableAnswers: ["Green", "'Green'", "\"Green\""],
+    explanation:
+      "Numerische Enums haben Reverse Mapping: Color[1] gibt den String-Namen 'Green' " +
+      "zurueck. Das generierte JavaScript-Objekt hat doppelte Eintraege — " +
+      "sowohl Name→Wert als auch Wert→Name.",
+  },
+
+  // --- Frage 20: Predict-Output — Object.keys bei numerischem Enum ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "enum Dir { Up, Down }\nconsole.log(Object.keys(Dir).length);",
+    expectedAnswer: "4",
+    acceptableAnswers: ["4"],
+    explanation:
+      "Numerische Enums haben durch Reverse Mapping doppelte Eintraege: " +
+      "Die Namen (Up, Down) UND die Zahlen (0, 1) als Keys. " +
+      "2 Mitglieder × 2 = 4 Keys: ['0', '1', 'Up', 'Down'].",
+  },
+
+  // --- Frage 21: Explain-Why — as const vs Enum ---
+  {
+    type: "explain-why",
+    question: "Warum empfehlen viele Teams `as const` Objects statt Enums? Welche Vorteile bieten sie?",
+    modelAnswer:
+      "as const Objects vermeiden die Sonderregeln von Enums: kein Reverse Mapping, " +
+      "kein Soundness-Loch bei Zahlen, kompatibel mit isolatedModules/esbuild/Vite. " +
+      "Sie erzeugen normales JavaScript das Tree-Shakeable ist. Man kann mit " +
+      "typeof obj[keyof typeof obj] den Union Type ableiten und behaelt gleichzeitig " +
+      "ein Laufzeit-Objekt fuer Iteration.",
+    keyPoints: [
+      "Kompatibel mit isolatedModules und modernen Build-Tools",
+      "Kein Soundness-Loch wie bei numerischen Enums",
+      "Tree-Shakeable, normales JavaScript",
+      "Union Type ableitbar mit typeof",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

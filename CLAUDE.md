@@ -5,7 +5,7 @@
 Multi-Kurs-Lernplattform im Terminal (TUI) fuer TypeScript, Angular, React, Next.js.
 Projektverzeichnis: `C:\Users\matth\Documents\Learning\`
 
-**Philosophie:** Wissenschaftlich fundiertes Deep Learning mit 12 Lerntheorien, 12 implementierten Uebungsformaten, adaptiver Tiefe und 0 externen Runtime-Dependencies. Alles im Terminal, keine Web-App.
+**Philosophie:** Wissenschaftlich fundiertes Deep Learning mit 12 Lerntheorien, adaptiver Tiefe und 0 externen Runtime-Dependencies. Alles im Terminal, keine Web-App. **Lese-und-Denk-Flow** statt Aufgaben-Marathon — der Lernende bleibt im TUI und wird nie rausgerissen.
 
 ## Struktur
 
@@ -57,7 +57,13 @@ cd platform && npm run watch   # Watch-Runner (Rustlings-Stil)
 ### Didaktik und Qualitaet
 - **Jede Sektion ~10 Min Lesezeit** (280-320 Zeilen)
 - **Qualitaets-Checkliste** in `docs/04-QUALITY-PROCESS.md` STRIKT beachten bei neuen Lektionen!
-- **Quiz-Antworten gleichmaessig verteilen:** correct-Indizes 4/4/4/3 bei 15 Fragen (NICHT alle correct: 1!)
+- **Quiz-Format-Mix** (15+ Fragen pro Lektion, NICHT nur Multiple Choice!):
+  - 6-8 Multiple Choice (correct-Indizes 4/4/4/3, Antwortlaengen gleichmaessig!)
+  - 3-4 Kurzantwort/Lueckentext (Lernender tippt Antwort, z.B. "Welcher Typ? ___")
+  - 2-3 Predict-the-Output (Code zeigen, Lernender tippt erwartete Ausgabe)
+  - 1-2 Erklaere-warum (freie Texteingabe, dann Musterantwort zum Vergleich)
+- **KEINE exercises/*.ts, solutions/*.ts, examples/*.ts** fuer neue Lektionen! Alles inline in Markdown oder TUI-interaktiv.
+- **Experiment-Boxen:** Code INLINE zeigen und erklaeren, NICHT auf externe Dateien verweisen ("Oeffne examples/..." ist VERBOTEN fuer neue Inhalte).
 - **Referenz-Lektion:** `typescript/02-primitive-types/` — dies ist der Qualitaets-Massstab
 - **Maximal 3 neue Lektionen pro Agent-Run** — mehr fuehrt zu Qualitaets-Regression!
 - **Nach jeder Session:** `docs/06-SESSION-LOG.md` aktualisieren
@@ -68,6 +74,10 @@ cd platform && npm run watch   # Watch-Runner (Rustlings-Stil)
 - Deutschsprachig
 - Will echte Meisterschaft, kein oberflaechliches Tutorial
 - Lernt in 10-Min-Haeppchen
+- **Theoretischer Lerner** — liest lieber ausfuehrlich, denkt mit, bleibt im TUI-Flow
+- **KEIN Wechsel zu IDE/Editor!** Externe Dateien oeffnen reisst aus dem Lernfluss
+- **Quizzes sind das effektivste Format** — regen zum Nachdenken an, Kern des Systems!
+- **Eigenverantwortlich:** Wenn er tiefer eintauchen will, entscheidet er das selbst. Nicht alles muss als Uebung aufbereitet werden.
 - **Framework-Bezuege einbauen!** ("In deinem Angular-Projekt..." / "In React...")
 
 ## Didaktik
@@ -88,22 +98,44 @@ Details: `docs/03-DIDACTIC-FOUNDATIONS.md`
 
 ## Qualitaet
 
-Jede Sektion MUSS haben:
+### Kern-Flow (PFLICHT — hier steckt 90% der Arbeit)
+
+**Jede Sektion MUSS haben:**
 1. "Was du hier lernst" (3-4 Bullet Points)
 2. Mind. 1 Hintergrundgeschichte oder Origin Story
 3. Mind. 1 Self-Explanation Prompt (Erklaere dir selbst:)
 4. Mind. 1 Denkfrage (Denkfrage:)
-5. Mind. 1 Experiment-Box (Experiment:)
+5. Mind. 1 Experiment-Box — Code INLINE zeigen, NICHT auf externe Dateien verweisen!
 6. Mind. 1 annotierter Code-Block (```typescript annotated)
 7. Mind. 1 Framework-Bezug (Angular/React)
 8. "Was du gelernt hast" + Kernkonzept am Ende
 9. Pausenpunkt + Link zur naechsten Sektion
 
-Jede Lektion MUSS haben:
-- 15 Quiz-Fragen (correct-Indizes: 4/4/4/3!) mit elaboratedFeedback
-- 8 Misconceptions, 6 Completion Problems, 5 Debugging Challenges
-- 3-4 Parson's Problems, 4 Code-Tracing, 2-3 Transfer Tasks
-- hints.json, cheatsheet.md
+**Jede Lektion MUSS haben:**
+- **Reichhaltige Sektionen** — DAS ist das Hauptprodukt. Tiefe Erklaerungen, Geschichten, Analogien, inline Code. Qualitaet > Quantitaet der Dateien.
+- **15+ Quiz-Fragen im Format-Mix** (siehe Quiz-Format-Mix oben):
+  - 6-8 Multiple Choice mit elaboratedFeedback, Antwortlaengen gleichmaessig
+  - 3-4 Kurzantwort (type: "short-answer") — Generation Effect
+  - 2-3 Predict-the-Output (type: "predict-output") — Code Comprehension
+  - 1-2 Erklaere-warum (type: "explain-why") — Self-Explanation Effect
+- **pretest-data.ts** — Pre-Test fuer adaptive Tiefe
+- **cheatsheet.md** — Kompakte Referenz
+
+### Vertiefung (OPTIONAL — nur erstellen wenn didaktisch sinnvoll)
+
+Diese Formate existieren im TUI und koennen erstellt werden, sind aber KEIN Pflichtprogramm. Der Lernende entscheidet selbst ob er sie nutzt.
+
+- Misconceptions (8) — gut wenn das Thema typische Fehlvorstellungen hat
+- Completion Problems (6) — gut fuer Syntax-lastige Themen
+- Debugging Challenges (5) — gut fuer fehleranfaellige Konzepte
+- Parson's Problems (3-4) — gut fuer Reihenfolge-kritische Patterns
+- Code-Tracing (4) — gut fuer Ausfuehrungs-Logik
+- Transfer Tasks (2-3) — gut fuer Konzept-Transfer
+
+**NICHT erstellen:**
+- exercises/*.ts, solutions/*.ts, examples/*.ts, hints.json — Code gehoert inline in die Sektionen
+
+**Faustregel fuer Agenten:** Investiere 80% der Zeit in grossartige Sektionen und Quizzes. Die optionalen Formate nur hinzufuegen wenn sie echten Mehrwert bieten, nicht als Pflichtprogramm abarbeiten.
 
 Details: `docs/04-QUALITY-PROCESS.md`
 

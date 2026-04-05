@@ -294,6 +294,96 @@ export const questions: QuizQuestion[] = [
       "Fehler findet, bevor der Text abgeschickt wird. Aber zur " +
       "Laufzeit ist kein Sicherheitsnetz mehr da.",
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Neue Formate: Short-Answer, Predict-Output, Explain-Why
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // --- Frage 13: Short-Answer — Compiler-Pipeline ---
+  {
+    type: "short-answer",
+    question:
+      "In welcher Phase der TypeScript-Compiler-Pipeline werden die Typen geprueft? " +
+      "(Parsing, Type Checking oder Emit)",
+    expectedAnswer: "Type Checking",
+    acceptableAnswers: ["Type Checking", "type checking", "typechecking", "Type Check", "type check", "Typechecking"],
+    explanation:
+      "Die Pipeline ist: Parsing (Quellcode -> AST), dann Type Checking (Typen pruefen), " +
+      "dann Emit (JavaScript erzeugen). Type Checking und Emit sind unabhaengig — " +
+      "der Emit kann auch bei Typ-Fehlern stattfinden.",
+  },
+
+  // --- Frage 14: Short-Answer — tsconfig-Option ---
+  {
+    type: "short-answer",
+    question:
+      "Welche tsconfig-Option verhindert, dass JavaScript erzeugt wird, wenn Typ-Fehler vorhanden sind?",
+    expectedAnswer: "noEmitOnError",
+    acceptableAnswers: ["noEmitOnError", "noEmitOnError: true", "\"noEmitOnError\": true", "noemitonerror"],
+    explanation:
+      "Standardmaessig erzeugt TypeScript JavaScript auch bei Typ-Fehlern (Type Checking und Emit " +
+      "sind unabhaengig). Mit 'noEmitOnError: true' in der tsconfig.json wird das unterdrueckt — " +
+      "kein Output bei Fehlern.",
+  },
+
+  // --- Frage 15: Short-Answer — Type Erasure ---
+  {
+    type: "short-answer",
+    question: "Wie heisst das Konzept, dass TypeScript-Typen bei der Kompilierung komplett entfernt werden?",
+    expectedAnswer: "Type Erasure",
+    acceptableAnswers: ["Type Erasure", "type erasure", "TypeErasure", "Erasure", "erasure"],
+    explanation:
+      "Type Erasure bedeutet, dass ALLE TypeScript-spezifischen Konstrukte (Typ-Annotationen, " +
+      "Interfaces, Type Aliases, Generics) bei der Kompilierung restlos entfernt werden. " +
+      "Zur Laufzeit existiert nur noch pures JavaScript.",
+  },
+
+  // --- Frage 16: Predict-Output — String-Verkettung ---
+  {
+    type: "predict-output",
+    question: "TypeScript kompiliert diesen Code trotz Typ-Fehler. Was gibt er zur Laufzeit aus?",
+    code: `function multiply(a: number, b: number): number {\n  return a * b;\n}\n// Zur Laufzeit mit Strings aufgerufen:\nconsole.log((multiply as any)("3", "4"));`,
+    expectedAnswer: "12",
+    acceptableAnswers: ["12", "NaN", "\"12\""],
+    explanation:
+      "JavaScript's *-Operator konvertiert Strings automatisch zu Zahlen: " +
+      "'3' * '4' = 12. Anders als +, der bei Strings verkettet, erzwingt * " +
+      "eine numerische Konvertierung. TypeScript haette den Fehler zur Compile-Zeit " +
+      "gemeldet, aber 'as any' umgeht die Pruefung.",
+  },
+
+  // --- Frage 17: Predict-Output — typeof bei Klassen ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: `interface Animal { name: string; }\nclass Dog implements Animal {\n  constructor(public name: string) {}\n}\nconst d = new Dog("Rex");\nconsole.log(typeof d);`,
+    expectedAnswer: "object",
+    acceptableAnswers: ["object", "'object'", "\"object\""],
+    explanation:
+      "typeof gibt fuer alle Objekte (inkl. Klassen-Instanzen) 'object' zurueck. " +
+      "Es gibt KEIN 'Dog' oder 'Animal' — typeof kennt nur die 7 JavaScript-Primitiv-Typen " +
+      "plus 'object' und 'function'. Fuer Klassen-Pruefungen nutzt man 'instanceof'.",
+  },
+
+  // --- Frage 18: Explain-Why — Type Erasure Konsequenzen ---
+  {
+    type: "explain-why",
+    question:
+      "Warum reicht TypeScript allein NICHT aus, um API-Daten abzusichern, " +
+      "obwohl man Interfaces fuer die API-Response definiert hat?",
+    modelAnswer:
+      "TypeScript-Interfaces existieren nur zur Compile-Zeit und werden bei der Kompilierung " +
+      "komplett entfernt (Type Erasure). Zur Laufzeit gibt es keine Typenpruefung. Wenn eine " +
+      "API andere Daten liefert als das Interface verspricht (z.B. ein Feld fehlt oder einen " +
+      "anderen Typ hat), merkt TypeScript das nicht — der Code crasht erst spaeter. " +
+      "Deshalb braucht man zusaetzlich Runtime-Validierung (z.B. Zod, io-ts oder manuelle Checks).",
+    keyPoints: [
+      "Type Erasure: Interfaces existieren zur Laufzeit nicht",
+      "Keine automatische Laufzeit-Validierung durch TypeScript",
+      "Externe Daten (APIs, User-Input) koennen vom Interface abweichen",
+      "Runtime-Validierung (Zod, io-ts) als Ergaenzung noetig",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

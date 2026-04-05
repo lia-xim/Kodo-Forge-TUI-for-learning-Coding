@@ -23,6 +23,52 @@ export const questions: QuizQuestion[] = [
   { question: "Was macht `type DeepAwaited<T> = T extends Promise<infer U> ? DeepAwaited<U> : T`?", options: ["Entpackt ein Promise", "Entpackt VERSCHACHTELTE Promises rekursiv bis kein Promise mehr uebrig ist", "Gibt Promise<T> zurueck", "Erzeugt einen Fehler"], correct: 1, explanation: "Rekursion: Promise<Promise<Promise<string>>> -> DeepAwaited<Promise<Promise<string>>> -> ... -> string." },
   { question: "Was passiert wenn ein rekursiver Typ zu tief wird?", options: ["Stack Overflow", "TypeScript gibt den Fehler 'Type instantiation is excessively deep'", "Automatisch never", "Kein Problem"], correct: 1, explanation: "TypeScript hat ein Rekursions-Limit (~50-100 Ebenen). Bei Ueberschreitung gibt es einen Compile-Fehler." },
   { question: "Was kombiniert `type Promisify<T> = { [K in keyof T]: T[K] extends (...args: infer A) => infer R ? (...args: A) => Promise<R> : T[K] }`?", options: ["Mapped Types allein", "Mapped Types + Conditional Types + infer — wandelt Methoden in async-Versionen um", "Nur Conditional Types", "Runtime-Transformation"], correct: 1, explanation: "Mapped Type iteriert, Conditional prueft ob Function, infer extrahiert Args und Return, Promise<R> wrappt den Return-Type." },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  {
+    type: "short-answer",
+    question: "Mit welchem Keyword deklariert man eine Typ-Variable innerhalb eines Conditional Types, die TypeScript per Pattern Matching fuellt?",
+    expectedAnswer: "infer",
+    acceptableAnswers: ["infer", "infer keyword", "infer-Keyword"],
+    explanation: "infer deklariert einen Platzhalter im extends-Pattern. TypeScript extrahiert den konkreten Typ durch Pattern Matching.",
+  },
+  {
+    type: "short-answer",
+    question: "Wie verhindert man die distributive Eigenschaft von Conditional Types? (Beschreibe die Technik in 1-2 Woertern)",
+    expectedAnswer: "Tuple-Wrapping",
+    acceptableAnswers: ["Tuple-Wrapping", "Tuple wrapping", "[T] extends [U]", "in Tuple packen", "Tuple", "Tupel"],
+    explanation: "[T] extends [U] packt T in ein Tuple. Tuples verteilen nicht ueber Union-Member — der Union wird als Ganzes geprueft.",
+  },
+  {
+    type: "short-answer",
+    question: "Was ist das Ergebnis von `IsString<never>` bei distributivem `type IsString<T> = T extends string ? true : false`?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never", "type never", "never (leerer Union)"],
+    explanation: "never ist der leere Union-Typ. Distribution ueber einen leeren Union ergibt immer never — eine wichtige Sonderregel, die man kennen muss.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type ExtractReturn<T> = T extends (...args: any[]) => infer R ? R : never;\ntype Result = ExtractReturn<(x: number, y: string) => boolean[]>;",
+    expectedAnswer: "boolean[]",
+    acceptableAnswers: ["boolean[]", "Array<boolean>", "boolean array"],
+    explanation: "infer R an der Return-Position extrahiert den Rueckgabetyp. Die Funktion gibt boolean[] zurueck, also ist R = boolean[].",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type Flatten<T> = T extends (infer U)[] ? U : T;\ntype Result = Flatten<string | number[]>;",
+    expectedAnswer: "string | number",
+    acceptableAnswers: ["string | number", "number | string"],
+    explanation: "Distributiv: Flatten<string> = string (kein Array, Else-Branch). Flatten<number[]> = number (Array, entpackt). Zusammen: string | number.",
+  },
+  {
+    type: "explain-why",
+    question: "Warum ist die Kombination aus Mapped Types, Conditional Types und infer so maechtig fuer die Typ-Programmierung?",
+    modelAnswer: "Die drei Konzepte ergaenzen sich: Mapped Types iterieren ueber alle Properties eines Objekts, Conditional Types ermoeglichen Verzweigungen auf Type-Level, und infer extrahiert Typ-Teile durch Pattern Matching. Zusammen kann man beliebig komplexe Typ-Transformationen ausdruecken — z.B. alle Methoden eines Objekts in async-Versionen umwandeln, Properties nach ihrem Typ filtern, oder Return-Types extrahieren und transformieren.",
+    keyPoints: ["Mapped Types fuer Iteration ueber Properties", "Conditional Types fuer Verzweigungslogik", "infer fuer Pattern Matching und Typ-Extraktion", "Kombination ermoeglicht beliebig komplexe Transformationen"],
+  },
 ];
 
 export interface ElaboratedFeedback { whyCorrect: string; commonMistake: string; }

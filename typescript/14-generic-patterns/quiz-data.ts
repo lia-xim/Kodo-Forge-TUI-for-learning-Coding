@@ -260,6 +260,88 @@ export const questions: QuizQuestion[] = [
       "INHALT repraesentiert — gleiche Argumente erzeugen den gleichen " +
       "String und treffen denselben Cache-Eintrag.",
   },
+
+  // ─── Zusaetzliche Frageformate ────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie heisst der Typ `new () => T` in TypeScript — ein Typ der beschreibt, dass etwas mit new aufgerufen werden kann?",
+    expectedAnswer: "Constructor Signature",
+    acceptableAnswers: ["Constructor Signature", "Konstruktor-Signatur", "Constructor Type", "Construct Signature"],
+    explanation:
+      "new () => T ist eine Constructor Signature. Sie beschreibt alles " +
+      "was mit dem new-Keyword aufgerufen werden kann und eine Instanz " +
+      "von T zurueckgibt. Das ist die Grundlage fuer Generic Factories.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welches TS 5.0 Feature bewirkt, dass TypeScript beim Aufruf automatisch den praezisesten Literal-Typ inferiert — ohne dass der Aufrufer 'as const' schreiben muss?",
+    expectedAnswer: "const Type Parameters",
+    acceptableAnswers: ["const Type Parameters", "const T", "<const T>", "const type parameter"],
+    explanation:
+      "<const T> verschiebt die as-const-Verantwortung vom Aufrufer zum " +
+      "API-Designer. Ohne const wird ['a', 'b'] als string[] inferiert, " +
+      "mit const als readonly ['a', 'b']. Der Aufrufer merkt nichts davon.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie heisst das Programmiermuster, bei dem f(a, b) zu f(a)(b) transformiert wird — jeder Aufruf fixiert einen Parameter?",
+    expectedAnswer: "Currying",
+    acceptableAnswers: ["Currying", "Curry", "Partial Application"],
+    explanation:
+      "Currying verwandelt eine Funktion mit mehreren Parametern in eine " +
+      "Kette von Funktionen mit je einem Parameter. curry(add)(5) gibt " +
+      "eine Funktion zurueck die 5 zu jedem Argument addiert. " +
+      "Jeder Schritt ist mit Generics voll typsicher.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "type Result<T> = T extends string ? 'text' : 'other';\ntype A = Result<'hello'>;\ntype B = Result<42>;\nconst a: A = 'text';\nconst b: B = 'other';\nconsole.log(a, b);",
+    expectedAnswer: "text other",
+    acceptableAnswers: ["text other", "'text' 'other'", "text, other"],
+    explanation:
+      "Result<'hello'>: 'hello' extends string ist true, also wird 'text' gewaehlt. " +
+      "Result<42>: 42 extends string ist false, also wird 'other' gewaehlt. " +
+      "Conditional Types sind reine Compile-Zeit-Entscheidungen.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "interface TreeNode<T> {\n  value: T;\n  children: TreeNode<T>[];\n}\nconst tree: TreeNode<string> = {\n  value: 'root',\n  children: [\n    { value: 'child1', children: [] },\n    { value: 'child2', children: [{ value: 'grandchild', children: [] }] }\n  ]\n};\nconsole.log(tree.children[1].children[0].value);",
+    expectedAnswer: "grandchild",
+    acceptableAnswers: ["grandchild", "'grandchild'", "\"grandchild\""],
+    explanation:
+      "tree.children[1] ist der zweite Kindknoten ('child2'). " +
+      "Dessen children[0] ist der Enkelknoten mit value 'grandchild'. " +
+      "Rekursive Typen wie TreeNode<T> erlauben beliebig tiefe Verschachtelung.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question: "Warum verwendet der Builder-Pattern in TypeScript Intersection Types (T & Record<K, V>) statt Union Types bei jedem .set()-Aufruf?",
+    modelAnswer:
+      "Intersection Types (&) sind additiv — sie ERWEITERN den bestehenden Typ " +
+      "um neue Properties. Bei jedem .set('name', 'Max') wird Record<'name', string> " +
+      "zum bestehenden Typ hinzugefuegt. Union Types waeren ODER-Verknuepfungen " +
+      "(eines von beiden), was nicht dem Ziel entspricht: Der Builder soll alle " +
+      "bisherigen UND die neue Property haben.",
+    keyPoints: [
+      "Intersection (&) = UND: alle Properties zusammen",
+      "Union (|) = ODER: eines von beiden",
+      "Jeder .set()-Aufruf erweitert den Typ additiv",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

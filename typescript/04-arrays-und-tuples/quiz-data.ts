@@ -298,6 +298,103 @@ export const questions: QuizQuestion[] = [
       "bleibt aenderbar. Erst 'as const' sagt TypeScript: 'Behandle das " +
       "als unveraenderbar und verwende die engstmoeglichen Typen.'",
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Neue Formate: Short-Answer, Predict-Output, Explain-Why
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // --- Frage 16: Short-Answer — readonly-Methoden ---
+  {
+    type: "short-answer",
+    question:
+      "Welche Array-Methode ist auf 'readonly string[]' erlaubt: push(), sort() oder filter()?",
+    expectedAnswer: "filter",
+    acceptableAnswers: ["filter", "filter()", ".filter()", ".filter"],
+    explanation:
+      "filter() ist auf readonly Arrays erlaubt, weil es ein NEUES Array zurueckgibt und " +
+      "das Original nicht veraendert. push() und sort() mutieren das Original und sind " +
+      "daher auf readonly Arrays blockiert. Allgemein gilt: Nur nicht-mutierende Methoden " +
+      "(filter, map, slice, concat, etc.) sind auf readonly Arrays verfuegbar.",
+  },
+
+  // --- Frage 17: Short-Answer — Tuple-Laenge ---
+  {
+    type: "short-answer",
+    question:
+      "Welchen Typ hat .length bei einem Tuple vom Typ [string, number, boolean]? " +
+      "(Gib den exakten Typ an, nicht 'number')",
+    expectedAnswer: "3",
+    acceptableAnswers: ["3", "Literal 3", "literal 3"],
+    explanation:
+      "Bei Tuples ist .length ein Literal-Typ! Da [string, number, boolean] immer genau " +
+      "3 Elemente hat, ist tup.length vom Typ 3 (nicht number). Bei einem normalen Array " +
+      "waere .length vom Typ number. Das ist ein fundamentaler Unterschied zwischen " +
+      "Arrays und Tuples.",
+  },
+
+  // --- Frage 18: Predict-Output — Spread-Verlust ---
+  {
+    type: "predict-output",
+    question:
+      "Was ist der von TypeScript inferierte Typ von 'copy'? " +
+      "(Gib den Typ an, z.B. 'string[]' oder '[string, number]')",
+    code: `const original: [string, number] = ["hello", 42];\nconst copy = [...original];`,
+    expectedAnswer: "(string | number)[]",
+    acceptableAnswers: ["(string | number)[]", "Array<string | number>", "(string|number)[]", "string | number[]"],
+    explanation:
+      "Wenn ein Tuple mit dem Spread-Operator kopiert wird, VERLIERT es den Tuple-Typ! " +
+      "TypeScript inferiert stattdessen ein normales Array mit Union-Typ: (string | number)[]. " +
+      "Die fixe Laenge und die positionsbezogenen Typen gehen verloren. " +
+      "Fuer den Tuple-Typ braucht man eine explizite Annotation.",
+  },
+
+  // --- Frage 19: Predict-Output — as const ---
+  {
+    type: "predict-output",
+    question: "Was ist der Typ von 'x[1]' laut TypeScript?",
+    code: `const x = ["hallo", 99, true] as const;\n// typeof x[1] = ???`,
+    expectedAnswer: "99",
+    acceptableAnswers: ["99", "Literal 99", "literal 99"],
+    explanation:
+      "'as const' macht das Array zu einem readonly Tuple mit Literal-Typen: " +
+      "readonly ['hallo', 99, true]. An Position 1 steht der Literal-Typ 99 " +
+      "(nicht number!). Das Verhindern von Widening ist der Kern von 'as const'.",
+  },
+
+  // --- Frage 20: Short-Answer — noUncheckedIndexedAccess ---
+  {
+    type: "short-answer",
+    question:
+      "Welche tsconfig-Option macht Array-Index-Zugriffe zu 'T | undefined' statt nur 'T'?",
+    expectedAnswer: "noUncheckedIndexedAccess",
+    acceptableAnswers: ["noUncheckedIndexedAccess", "noUncheckedIndexedAccess: true", "nouncheckedindexedaccess"],
+    explanation:
+      "Mit noUncheckedIndexedAccess wird JEDER Array-Index-Zugriff als moeglicherweise " +
+      "undefined behandelt. arr[0] hat dann den Typ T | undefined. Das ist sicherer, " +
+      "weil der Index ausserhalb der Array-Grenzen liegen koennte. " +
+      "Bei Tuples sind bekannte Positionen davon NICHT betroffen.",
+  },
+
+  // --- Frage 21: Explain-Why — Warum kein Tuple bei Array-Literalen? ---
+  {
+    type: "explain-why",
+    question:
+      "Warum inferiert TypeScript bei 'const p = [1, 2]' den Typ number[] " +
+      "statt [number, number], obwohl const verwendet wird?",
+    modelAnswer:
+      "const schuetzt nur die Variablenbindung (p kann nicht neu zugewiesen werden), " +
+      "aber nicht den Inhalt des Arrays. Man koennte p.push(3), p.pop() oder p[0] = 99 " +
+      "ausfuehren. Ein Tuple-Typ [number, number] waere zu restriktiv und wuerde viele " +
+      "gaengige Array-Operationen blockieren. TypeScript waehlt daher den flexibleren " +
+      "number[]-Typ. Erst 'as const' signalisiert: 'Behandle das als unveraenderbar " +
+      "und verwende die engstmoeglichen Typen.'",
+    keyPoints: [
+      "const schuetzt die Variable, nicht den Array-Inhalt",
+      "push(), pop(), splice() waeren auf einem Tuple-Typ blockiert",
+      "TypeScript waehlt pragmatisch den flexibleren Array-Typ",
+      "'as const' ist noetig fuer echte Tuple-Inference mit Literal-Typen",
+    ],
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -266,6 +266,84 @@ export const questions: QuizQuestion[] = [
       "Properties die im aktuellen Zustand nicht existieren und der " +
       "Exhaustive Check stellt sicher, dass ALLE Zustaende behandelt werden.",
   },
+
+  // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer — Intersection Primitives ---
+  {
+    type: "short-answer",
+    question: "Welcher Typ ergibt sich aus `string & number`?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never"],
+    explanation:
+      "Kein Wert kann gleichzeitig string UND number sein. Die Intersection " +
+      "von inkompatiblen Primitives ergibt 'never' — den leeren Typ ohne Werte.",
+  },
+
+  // --- Frage 17: Short-Answer — Union-Operationen ---
+  {
+    type: "short-answer",
+    question: "Kann man auf `string | number` direkt `.toUpperCase()` aufrufen — ja oder nein?",
+    expectedAnswer: "nein",
+    acceptableAnswers: ["nein", "Nein", "nein, man muss narrowen", "Nein, nur nach Narrowing", "no"],
+    explanation:
+      "Bei Union Types sind nur Operationen erlaubt die fuer ALLE Mitglieder sicher sind. " +
+      "toUpperCase() existiert nur auf string, nicht auf number. Man muss erst mit " +
+      "typeof narrowen.",
+  },
+
+  // --- Frage 18: Short-Answer — Distributives Gesetz ---
+  {
+    type: "short-answer",
+    question: "Wie vereinfacht sich `(A | B) & C` bei Objekt-Typen? Schreibe das Ergebnis.",
+    expectedAnswer: "(A & C) | (B & C)",
+    acceptableAnswers: ["(A & C) | (B & C)", "(A&C) | (B&C)", "(B & C) | (A & C)", "A & C | B & C"],
+    explanation:
+      "Intersection verteilt sich ueber Union — das distributive Gesetz aus der Mengenlehre. " +
+      "Jedes Union-Mitglied wird einzeln mit C kombiniert.",
+  },
+
+  // --- Frage 19: Predict-Output — typeof Narrowing ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function describe(x: string | number): string {\n  if (typeof x === 'string') {\n    return x.toUpperCase();\n  }\n  return x.toFixed(2);\n}\nconsole.log(describe(3.14159));",
+    expectedAnswer: "3.14",
+    acceptableAnswers: ["3.14", "\"3.14\"", "'3.14'"],
+    explanation:
+      "3.14159 ist eine number, also geht der Code in den else-Zweig. " +
+      "toFixed(2) rundet auf 2 Nachkommastellen und gibt den String '3.14' zurueck. " +
+      "TypeScript weiss durch typeof-Narrowing, dass x im else-Block eine number ist.",
+  },
+
+  // --- Frage 20: Predict-Output — Truthiness Narrowing ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function greet(name: string | null): string {\n  if (name) {\n    return `Hallo ${name}`;\n  }\n  return 'Hallo Gast';\n}\nconsole.log(greet(''));",
+    expectedAnswer: "Hallo Gast",
+    acceptableAnswers: ["Hallo Gast", "'Hallo Gast'", "\"Hallo Gast\""],
+    explanation:
+      "Der leere String '' ist ein falsy-Wert in JavaScript. Obwohl '' technisch ein string ist, " +
+      "wertet if (name) zu false aus. Truthiness-Narrowing filtert ALLE falsy-Werte — " +
+      "auch den leeren String. Das ist eine haeufige Fehlerquelle!",
+  },
+
+  // --- Frage 21: Explain-Why — Union vs Intersection bei Properties ---
+  {
+    type: "explain-why",
+    question: "Warum macht ein Union Type die Wertemenge GROESSER, aber die zugreifbaren Properties WENIGER?",
+    modelAnswer:
+      "Ein Union A | B akzeptiert jeden Wert der entweder A ODER B ist — also mehr Werte. " +
+      "Aber TypeScript kann nur Properties erlauben die auf ALLEN Mitgliedern sicher existieren. " +
+      "Mehr moegliche Werte bedeutet weniger Garantien ueber gemeinsame Properties. " +
+      "Intersection ist das Gegenteil: weniger Werte passen, aber mehr Properties sind garantiert.",
+    keyPoints: [
+      "Union = mehr Werte, weniger gemeinsame Properties",
+      "Nur gemeinsame Operationen sind sicher",
+      "Intersection ist das duale Gegenteil",
+    ],
+  },
 ];
 
 export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {

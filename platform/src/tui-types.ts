@@ -153,10 +153,12 @@ export type Screen =
       feedbackCorrect: boolean;
       feedbackExplanation: string;
       done: boolean;
-      phase?: "question" | "confidence" | "feedback";
+      phase?: "question" | "confidence" | "feedback" | "freetext";
       pendingCorrect?: boolean;
       pendingExplanation?: string;
       confidence?: number;
+      /** Free-text input buffer for short-answer, predict-output, explain-why */
+      userInput?: string;
     }
   | {
       type: "pretest";
@@ -218,10 +220,30 @@ export type Screen =
       feedbackCorrect: boolean;
       feedbackExplanation: string;
       done: boolean;
-      phase?: "question" | "confidence" | "feedback";
+      phase?: "question" | "confidence" | "feedback" | "freetext";
       pendingCorrect?: boolean;
       pendingExplanation?: string;
       confidence?: number;
+      /** Free-text input buffer for short-answer, predict-output, explain-why */
+      userInput?: string;
+    }
+  | {
+      type: "quiz";
+      lessonIndex: number;
+      questions: import("./quiz-runner.ts").QuizQuestion[];
+      currentIndex: number;
+      answers: { correct: boolean; skipped: boolean }[];
+      showingFeedback: boolean;
+      feedbackCorrect: boolean;
+      feedbackExplanation: string;
+      done: boolean;
+      score: number;
+      phase: "question" | "confidence" | "feedback" | "freetext" | "explain-review";
+      pendingCorrect?: boolean;
+      pendingExplanation?: string;
+      confidence?: number;
+      /** Free-text input buffer */
+      userInput: string;
     }
   | {
       type: "competence";

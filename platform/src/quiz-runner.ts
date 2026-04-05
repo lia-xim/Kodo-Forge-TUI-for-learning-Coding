@@ -12,7 +12,10 @@ import * as readline from "node:readline";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export interface QuizQuestion {
+// ─── Quiz Question Types (Discriminated Union) ─────────────────────────────
+
+export interface MultipleChoiceQuestion {
+  type?: "multiple-choice";
   /** Die Frage */
   question: string;
   /** Antwortmöglichkeiten */
@@ -23,6 +26,79 @@ export interface QuizQuestion {
   explanation: string;
   /** Optional: Codeblock der vor der Frage angezeigt wird */
   code?: string;
+  /** Optional: Elaboriertes Feedback */
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+export interface ShortAnswerQuestion {
+  type: "short-answer";
+  /** Die Frage */
+  question: string;
+  /** Erwartete Antwort (primär) */
+  expectedAnswer: string;
+  /** Akzeptierte Alternativen (case-insensitive) */
+  acceptableAnswers?: string[];
+  /** Erklärung nach Antwort */
+  explanation: string;
+  /** Optional: Codeblock */
+  code?: string;
+  /** Optional: Elaboriertes Feedback */
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+export interface PredictOutputQuestion {
+  type: "predict-output";
+  /** Frage (z.B. "Was gibt dieser Code aus?") */
+  question: string;
+  /** Code-Block zum Analysieren */
+  code: string;
+  /** Erwartete Ausgabe */
+  expectedAnswer: string;
+  /** Akzeptierte Alternativen */
+  acceptableAnswers?: string[];
+  /** Erklärung mit Schritt-für-Schritt */
+  explanation: string;
+  /** Optional: Elaboriertes Feedback */
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+export interface ExplainWhyQuestion {
+  type: "explain-why";
+  /** Offene Reflexionsfrage */
+  question: string;
+  /** Optional: Code-Kontext */
+  code?: string;
+  /** Musterantwort zum Selbstvergleich */
+  modelAnswer: string;
+  /** Kernpunkte die eine gute Antwort enthalten sollte */
+  keyPoints: string[];
+  /** Optional: Elaboriertes Feedback */
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+/** Alle Quiz-Frage-Typen — abwärtskompatibel (type ist optional bei MC) */
+export type QuizQuestion =
+  | MultipleChoiceQuestion
+  | ShortAnswerQuestion
+  | PredictOutputQuestion
+  | ExplainWhyQuestion;
+
+/** Hilfsfunktion: Fragetyp bestimmen (abwärtskompatibel) */
+export function getQuestionType(q: QuizQuestion): "multiple-choice" | "short-answer" | "predict-output" | "explain-why" {
+  if (q.type === "short-answer") return "short-answer";
+  if (q.type === "predict-output") return "predict-output";
+  if (q.type === "explain-why") return "explain-why";
+  return "multiple-choice";
+}
+
+/** Hilfsfunktion: Prüft ob Freitext-Antwort korrekt ist (case-insensitive, trimmed) */
+export function checkFreeTextAnswer(q: ShortAnswerQuestion | PredictOutputQuestion, userInput: string): boolean {
+  const normalized = userInput.trim().toLowerCase();
+  if (normalized === q.expectedAnswer.toLowerCase()) return true;
+  if (q.acceptableAnswers) {
+    return q.acceptableAnswers.some(a => normalized === a.toLowerCase());
+  }
+  return false;
 }
 
 interface QuizResult {
@@ -63,7 +139,12 @@ function printHeader(title: string): void {
   console.log(`${color.cyan}${line}${color.reset}\n`);
 }
 
-function printQuestion(index: number, total: number, q: QuizQuestion): void {
+/** Hilfsfunktion: Prüft ob Frage ein MC-Typ ist (für Standalone-Runner) */
+function isMC(q: QuizQuestion): q is MultipleChoiceQuestion {
+  return getQuestionType(q) === "multiple-choice";
+}
+
+function printQuestion(index: number, total: number, q: MultipleChoiceQuestion): void {
   console.log(
     `${color.bold}Frage ${index + 1}/${total}${color.reset}${color.dim} ─────────────────────────────────${color.reset}`
   );
@@ -87,7 +168,7 @@ function printQuestion(index: number, total: number, q: QuizQuestion): void {
   console.log();
 }
 
-function printResult(isCorrect: boolean, q: QuizQuestion): void {
+function printResult(isCorrect: boolean, q: MultipleChoiceQuestion): void {
   if (isCorrect) {
     console.log(`  ${color.green}${color.bold}✓ Richtig!${color.reset}`);
   } else {
@@ -153,9 +234,12 @@ export async function runQuiz(
   let correct = 0;
   const wrongQuestions: number[] = [];
 
-  for (let i = 0; i < questions.length; i++) {
-    const q = questions[i];
-    printQuestion(i, questions.length, q);
+  // Standalone runner only supports MC questions
+  const mcQuestions = questions.filter(isMC);
+
+  for (let i = 0; i < mcQuestions.length; i++) {
+    const q = mcQuestions[i];
+    printQuestion(i, mcQuestions.length, q);
 
     let answer = "";
     while (true) {
@@ -180,16 +264,16 @@ export async function runQuiz(
 
     printResult(isCorrect, q);
 
-    if (i < questions.length - 1) {
+    if (i < mcQuestions.length - 1) {
       await askQuestion(rl, `  ${color.dim}Drücke Enter für die nächste Frage...${color.reset}`);
     }
   }
 
   const result: QuizResult = {
-    total: questions.length,
+    total: mcQuestions.length,
     correct,
-    wrong: questions.length - correct,
-    percentage: Math.round((correct / questions.length) * 100),
+    wrong: mcQuestions.length - correct,
+    percentage: mcQuestions.length > 0 ? Math.round((correct / mcQuestions.length) * 100) : 0,
     wrongQuestions,
   };
 

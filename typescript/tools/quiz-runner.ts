@@ -12,7 +12,10 @@ import * as readline from "node:readline";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export interface QuizQuestion {
+// ─── Quiz Question Types (Discriminated Union) ─────────────────────────────
+
+export interface MultipleChoiceQuestion {
+  type?: "multiple-choice";
   /** Die Frage */
   question: string;
   /** Antwortmöglichkeiten */
@@ -23,7 +26,45 @@ export interface QuizQuestion {
   explanation: string;
   /** Optional: Codeblock der vor der Frage angezeigt wird */
   code?: string;
+  /** Optional: Elaboriertes Feedback */
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
 }
+
+export interface ShortAnswerQuestion {
+  type: "short-answer";
+  question: string;
+  expectedAnswer: string;
+  acceptableAnswers?: string[];
+  explanation: string;
+  code?: string;
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+export interface PredictOutputQuestion {
+  type: "predict-output";
+  question: string;
+  code: string;
+  expectedAnswer: string;
+  acceptableAnswers?: string[];
+  explanation: string;
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+export interface ExplainWhyQuestion {
+  type: "explain-why";
+  question: string;
+  code?: string;
+  modelAnswer: string;
+  keyPoints: string[];
+  elaboratedFeedback?: { whyCorrect: string; commonMistake: string };
+}
+
+/** Alle Quiz-Frage-Typen — abwärtskompatibel (type ist optional bei MC) */
+export type QuizQuestion =
+  | MultipleChoiceQuestion
+  | ShortAnswerQuestion
+  | PredictOutputQuestion
+  | ExplainWhyQuestion;
 
 interface QuizResult {
   total: number;
@@ -63,7 +104,11 @@ function printHeader(title: string): void {
   console.log(`${color.cyan}${line}${color.reset}\n`);
 }
 
-function printQuestion(index: number, total: number, q: QuizQuestion): void {
+function isMC(q: QuizQuestion): q is MultipleChoiceQuestion {
+  return !q.type || q.type === "multiple-choice";
+}
+
+function printQuestion(index: number, total: number, q: MultipleChoiceQuestion): void {
   console.log(
     `${color.bold}Frage ${index + 1}/${total}${color.reset}${color.dim} ─────────────────────────────────${color.reset}`
   );
@@ -87,7 +132,7 @@ function printQuestion(index: number, total: number, q: QuizQuestion): void {
   console.log();
 }
 
-function printResult(isCorrect: boolean, q: QuizQuestion): void {
+function printResult(isCorrect: boolean, q: MultipleChoiceQuestion): void {
   if (isCorrect) {
     console.log(`  ${color.green}${color.bold}✓ Richtig!${color.reset}`);
   } else {
@@ -153,9 +198,11 @@ export async function runQuiz(
   let correct = 0;
   const wrongQuestions: number[] = [];
 
-  for (let i = 0; i < questions.length; i++) {
-    const q = questions[i];
-    printQuestion(i, questions.length, q);
+  const mcQuestions = questions.filter(isMC);
+
+  for (let i = 0; i < mcQuestions.length; i++) {
+    const q = mcQuestions[i];
+    printQuestion(i, mcQuestions.length, q);
 
     let answer = "";
     while (true) {
@@ -180,16 +227,16 @@ export async function runQuiz(
 
     printResult(isCorrect, q);
 
-    if (i < questions.length - 1) {
+    if (i < mcQuestions.length - 1) {
       await askQuestion(rl, `  ${color.dim}Drücke Enter für die nächste Frage...${color.reset}`);
     }
   }
 
   const result: QuizResult = {
-    total: questions.length,
+    total: mcQuestions.length,
     correct,
-    wrong: questions.length - correct,
-    percentage: Math.round((correct / questions.length) * 100),
+    wrong: mcQuestions.length - correct,
+    percentage: mcQuestions.length > 0 ? Math.round((correct / mcQuestions.length) * 100) : 0,
     wrongQuestions,
   };
 

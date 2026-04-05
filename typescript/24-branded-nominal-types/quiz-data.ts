@@ -1,7 +1,9 @@
 // quiz-data.ts — L24: Branded/Nominal Types
 // Quiz mit 15 Fragen, correct-Index Verteilung: 4x0, 4x1, 4x2, 3x3
 
-export interface QuizQuestion {
+import type { QuizQuestion } from '../tools/quiz-runner.ts';
+
+export interface MCQuizQuestion {
   id: number;
   question: string;
   options: string[];
@@ -13,7 +15,7 @@ export interface QuizQuestion {
   };
 }
 
-export const quizData: QuizQuestion[] = [
+export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
   // correct: 0 (Frage 1, 2, 3, 4)
   {
     id: 1,
@@ -260,5 +262,115 @@ export const quizData: QuizQuestion[] = [
       whyCorrect: "Das Problem: Ein Team berechnete Schubkraft in Pound-force·seconds, das andere erwartete Newton·seconds. Mit Branded Types: `function applyThrust(thrust: NewtonSeconds): void`. Beim Übergeben von `PoundForceSeconds` → COMPILE-ERROR. Der Bug wäre im Editor sichtbar gewesen, nicht in der Marsumlaufbahn.",
       commonMistake: "Natürlich wurde die NASA-Mission nicht in TypeScript geschrieben. Aber das Prinzip — Einheiten typisieren — ist direkt auf TypeScript anwendbar. Das zeigt: Branded Types lösen eine Klasse realer Engineering-Probleme, nicht nur akademische."
     }
-  }
+  },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst das Design-Pattern, bei dem eine Funktion Roheingaben validiert " +
+      "und dann einen Brand-Typ vergibt (z.B. createEmail)?",
+    expectedAnswer: "Smart Constructor",
+    acceptableAnswers: [
+      "Smart Constructor", "smart constructor", "Smart-Constructor",
+      "SmartConstructor", "Smart Konstruktor",
+    ],
+    explanation:
+      "Ein Smart Constructor zentralisiert den 'as'-Cast an einer einzigen Stelle. " +
+      "Er validiert die Eingabe und gibt bei Erfolg den Branded Type zurueck. " +
+      "So wird sichergestellt, dass der Cast nur nach Validierung passiert.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welches Typsystem-Modell nutzt TypeScript: Structural Typing oder Nominal Typing?",
+    expectedAnswer: "Structural Typing",
+    acceptableAnswers: [
+      "Structural Typing", "structural typing", "Strukturelle Typisierung",
+      "strukturelle Typisierung", "Structural", "structural",
+    ],
+    explanation:
+      "TypeScript nutzt Structural Typing: Zwei Typen sind kompatibel wenn " +
+      "ihre Struktur uebereinstimmt, unabhaengig vom Namen. Branded Types " +
+      "sind ein Workaround, um Nominal-Typing-aehnliches Verhalten zu simulieren.",
+  },
+
+  // --- Frage 18: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code?",
+    code:
+      "type Brand<T, B> = T & { readonly __brand: B };\n" +
+      "type EUR = Brand<number, 'EUR'>;\n" +
+      "type USD = Brand<number, 'USD'>;\n" +
+      "const price: EUR = 10 as EUR;\n" +
+      "const converted: USD = price;",
+    expectedAnswer: "Nein",
+    acceptableAnswers: [
+      "Nein", "nein", "Fehler", "Error", "Compile Error", "Compile-Error",
+    ],
+    explanation:
+      "EUR und USD sind inkompatible Branded Types. EUR hat __brand: 'EUR', " +
+      "USD hat __brand: 'USD'. Die String-Literale sind verschieden, " +
+      "daher ist die Zuweisung ein Compile-Error.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code?",
+    code:
+      "type UserId = string & { readonly __brand: 'UserId' };\n" +
+      "function greet(name: string): void { console.log('Hi ' + name); }\n" +
+      "const id = 'user-42' as UserId;\n" +
+      "greet(id);",
+    expectedAnswer: "Ja",
+    acceptableAnswers: ["Ja", "ja", "Yes", "yes", "Kompiliert"],
+    explanation:
+      "UserId ist ein Subtyp von string (es hat alle string-Properties plus __brand). " +
+      "Subtypen koennen ueberall verwendet werden wo Supertypen erwartet werden. " +
+      "Ein UserId-Wert kann also als string uebergeben werden — aber nicht umgekehrt.",
+  },
+
+  // --- Frage 20: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst das Architektur-Prinzip, bei dem externe Daten am Rand der " +
+      "Anwendung validiert und in Brand-Typen konvertiert werden?",
+    expectedAnswer: "Anti-Corruption Layer",
+    acceptableAnswers: [
+      "Anti-Corruption Layer", "anti-corruption layer", "ACL",
+      "Anti Corruption Layer", "Anticorruption Layer",
+    ],
+    explanation:
+      "Das Anti-Corruption Layer Prinzip besagt: Externe Daten (API-Responses, " +
+      "Route-Parameter) werden am Eintrittspunkt validiert und in Brand-Typen " +
+      "konvertiert. Intern arbeitet die Business-Logik nur mit typisierten Brands.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question:
+      "Warum sind Branded Types noetig, obwohl TypeScript ein strukturelles " +
+      "Typsystem hat? Erklaere anhand eines konkreten Beispiels " +
+      "(z.B. UserId vs. OrderId), welches Problem sie loesen.",
+    modelAnswer:
+      "In TypeScript's Structural Typing sind 'type UserId = string' und " +
+      "'type OrderId = string' identisch — eine UserId kann versehentlich " +
+      "als OrderId verwendet werden ohne Compile-Error. Branded Types fuegen " +
+      "ein unsichtbares __brand-Property hinzu, das die Typen strukturell " +
+      "verschieden macht. So erkennt der Compiler Verwechslungen zur Compilezeit.",
+    keyPoints: [
+      "Structural Typing macht Type Aliases austauschbar",
+      "Brands erzeugen strukturelle Verschiedenheit",
+      "Verwechslungen werden zur Compilezeit erkannt",
+      "Zero Runtime Overhead durch Type Erasure",
+    ],
+  },
 ];

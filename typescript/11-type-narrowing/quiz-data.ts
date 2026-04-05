@@ -289,6 +289,85 @@ export const questions: QuizQuestion[] = [
       "Wenn das Versprechen falsch ist, crasht der Code zur Laufzeit. " +
       "Narrowing kann nie falsch sein — es ist immer sicher.",
   },
+
+  // ─── Zusaetzliche Frageformate ────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welcher Operator prueft ob eine Property auf einem Objekt existiert und damit Narrowing ausloest?",
+    expectedAnswer: "in",
+    acceptableAnswers: ["in", "in-Operator", "der in-Operator"],
+    explanation:
+      "Der in-Operator prueft ob eine Property auf einem Objekt existiert. " +
+      "TypeScript nutzt das fuer Narrowing: Wenn 'radius' in form, " +
+      "dann ist form ein Kreis (sofern nur Kreis die Property hat).",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Wie heisst der spezielle Typ in TypeScript der 'keinen moeglichen Wert' repraesentiert und bei Exhaustive Checks verwendet wird?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never", "never-Typ", "der never-Typ"],
+    explanation:
+      "never ist der Bottom Type — er hat keine moeglichen Werte. " +
+      "Wenn alle Faelle in einem switch behandelt sind, bleibt im default " +
+      "nur never uebrig. Deshalb funktioniert assertNever als Exhaustive Check.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welchen Rueckgabetyp hat eine Assertion Function (z.B. assertIsString)?",
+    expectedAnswer: "void",
+    acceptableAnswers: ["void", "asserts x is string", "asserts", "void (oder wirft)"],
+    explanation:
+      "Assertion Functions geben void zurueck oder werfen einen Error. " +
+      "Der Rueckgabetyp ist 'asserts x is Type'. Anders als Type Guards " +
+      "(die boolean zurueckgeben) narrowen sie den gesamten restlichen Scope.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "function check(x: string | number | boolean) {\n  if (typeof x === 'string') {\n    console.log('A');\n  } else if (typeof x === 'number') {\n    console.log('B');\n  } else {\n    console.log(typeof x);\n  }\n}\ncheck(true);",
+    expectedAnswer: "boolean",
+    acceptableAnswers: ["boolean", "'boolean'", "\"boolean\""],
+    explanation:
+      "Im ersten if wird string behandelt, im zweiten number. " +
+      "Im else bleibt nur boolean uebrig. typeof true gibt 'boolean' zurueck. " +
+      "Das ist kumulatives Narrowing — TypeScript eliminiert Schritt fuer Schritt.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "const items: (string | null)[] = ['a', null, 'b', null, 'c'];\nconst filtered = items.filter(x => x !== null);\nconsole.log(filtered.length);",
+    expectedAnswer: "3",
+    acceptableAnswers: ["3"],
+    explanation:
+      "filter(x => x !== null) entfernt die zwei null-Werte. " +
+      "Es bleiben 'a', 'b' und 'c' uebrig — also Laenge 3. " +
+      "Ab TS 5.5 erkennt der Compiler auch den Typ als string[] (Inferred Type Predicates).",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question: "Warum ist Narrowing mit typeof bei null-Werten eine besondere Herausforderung? Was muss man beachten?",
+    modelAnswer:
+      "typeof null gibt 'object' zurueck — ein historischer Bug aus JavaScript 1.0. " +
+      "Nach typeof x === 'object' ist der Typ daher object | null, nicht nur object. " +
+      "Man muss immer zusaetzlich auf null pruefen: if (x !== null && typeof x === 'object').",
+    keyPoints: [
+      "typeof null === 'object' (historischer Bug)",
+      "Nach typeof-Check bleibt null im Typ",
+      "Zusaetzlicher null-Check noetig",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────

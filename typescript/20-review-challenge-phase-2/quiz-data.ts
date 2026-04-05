@@ -22,6 +22,52 @@ export const questions: QuizQuestion[] = [
   { question: "Wie generiert man Event-Handler-Namen aus Properties? (L16+L18)", options: ["Manuell", "Template Literal im Key Remapping: [K in keyof T as `on${Capitalize<K>}Change`]", "Runtime-Code", "Nicht moeglich"], correct: 1, explanation: "Mapped Types + Key Remapping + Template Literal Types + Capitalize = automatische Event-Handler-Generierung." },
   { question: "Was macht DeepPartial anders als Partial? (L16)", options: ["Nichts", "Wendet sich rekursiv auf verschachtelte Objekte an — alle Ebenen optional", "Entfernt Properties", "Macht readonly"], correct: 1, explanation: "DeepPartial prueft ob T[K] ein Objekt ist und wendet sich dann rekursiv selbst an. Partial ist nur eine Ebene tief." },
   { question: "Welche drei Konzepte bilden das 'Triumvirat' des Type Systems? (L16-L18)", options: ["Generics, Interfaces, Enums", "Mapped Types, Conditional Types, Template Literal Types", "Classes, Functions, Modules", "Union, Intersection, Literal"], correct: 1, explanation: "Mapped Types + Conditional Types + Template Literal Types zusammen ermoeglichen beliebig komplexe Typ-Transformationen." },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  {
+    type: "short-answer",
+    question: "Welches gemeinsame Feld macht einen Discriminated Union exhaustive pruefbar? (L12)",
+    expectedAnswer: "Tag-Feld",
+    acceptableAnswers: ["Tag-Feld", "Tag", "Discriminant", "Diskriminator", "type-Feld", "kind", "Literal-Feld", "tag"],
+    explanation: "Ein gemeinsames Literal-Feld (z.B. type: 'circle' | type: 'rect') dient als Tag/Diskriminator. TypeScript kann damit in switch/if den exakten Typ bestimmen.",
+  },
+  {
+    type: "short-answer",
+    question: "Was ergibt `never` im Key Remapping eines Mapped Types? (L16)",
+    expectedAnswer: "Property wird entfernt",
+    acceptableAnswers: ["Property wird entfernt", "entfernt", "Property entfernt", "Key wird entfernt", "gefiltert", "herausgefiltert"],
+    explanation: "never im Key Remapping (as never) entfernt den Key komplett aus dem Typ. Im Gegensatz dazu: never als Wert-Typ laesst die Property existieren, macht sie aber unbenutzbar.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type IsString<T> = [T] extends [string] ? true : false;\ntype Result = IsString<string | number>;",
+    expectedAnswer: "false",
+    acceptableAnswers: ["false", "type false"],
+    explanation: "Durch [T] (Tuple-Wrapping) wird Distribution verhindert. string | number als Ganzes extends NICHT string, also Ergebnis: false. Ohne Tuple waere es true | false.",
+  },
+  {
+    type: "predict-output",
+    question: "Was ist der resultierende Typ?",
+    code: "type EventHandler<T> = {\n  [K in keyof T as `on${Capitalize<string & K>}Change`]: (val: T[K]) => void;\n};\ntype Result = EventHandler<{ name: string; age: number }>;",
+    expectedAnswer: "{ onNameChange: (val: string) => void; onAgeChange: (val: number) => void }",
+    acceptableAnswers: ["{ onNameChange: (val: string) => void; onAgeChange: (val: number) => void }", "onNameChange: (val: string) => void, onAgeChange: (val: number) => void"],
+    explanation: "Mapped Type + Key Remapping + Template Literal + Capitalize: Fuer jede Property wird ein Event-Handler generiert. name -> onNameChange, age -> onAgeChange.",
+  },
+  {
+    type: "short-answer",
+    question: "Wie heisst das Keyword mit dem man TypeScript ueber extern existierende Werte informiert, ohne Code zu erzeugen? (L19)",
+    expectedAnswer: "declare",
+    acceptableAnswers: ["declare", "declare keyword"],
+    explanation: "declare teilt TypeScript mit dass ein Wert woanders existiert. Es erzeugt keinen JavaScript-Output — rein fuer den Compiler.",
+  },
+  {
+    type: "explain-why",
+    question: "Warum ist die Kombination aus Discriminated Unions (L12), Generics (L13) und dem Triumvirat (L16-18) so zentral fuer professionelles TypeScript?",
+    modelAnswer: "Diese Konzepte bilden zusammen ein vollstaendiges Type-Level-Programmiersystem. Discriminated Unions modellieren sichere Zustandsmaschinen mit exhaustive Checks. Generics ermoeglichen wiederverwendbare, typsichere Abstraktionen. Mapped Types transformieren Objekttypen, Conditional Types ermoeglichen Verzweigungslogik, und Template Literal Types machen String-APIs typsicher. Zusammen kann man damit beliebig komplexe Domain-Modelle ausdruecken, die Fehler zur Compile-Zeit statt zur Laufzeit fangen.",
+    keyPoints: ["Discriminated Unions fuer sichere Zustandsmodellierung", "Generics fuer wiederverwendbare Abstraktionen", "Das Triumvirat fuer beliebig komplexe Typ-Transformationen", "Compile-Zeit-Sicherheit statt Laufzeit-Fehler"],
+  },
 ];
 
 export interface ElaboratedFeedback { whyCorrect: string; commonMistake: string; }

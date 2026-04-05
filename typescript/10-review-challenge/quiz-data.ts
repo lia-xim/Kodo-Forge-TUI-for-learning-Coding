@@ -640,4 +640,84 @@ const result = user.address?.city;`,
       "vergessene Zustaende ab. 4) Ungueltige Kombinationen sind unmoeglich. " +
       "Das ist DAS Muster das du aus Phase 1 mitnehmen solltest.",
   },
+
+  // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
+
+  // --- Frage 21: Short-Answer — Structural Typing ---
+  {
+    type: "short-answer",
+    question: "Wie heisst das Typsystem-Prinzip bei dem die FORM entscheidet und nicht der NAME? (L05)",
+    expectedAnswer: "Structural Typing",
+    acceptableAnswers: ["Structural Typing", "structural typing", "strukturelle Typisierung", "Structural"],
+    explanation:
+      "TypeScript verwendet Structural Typing (Duck Typing): Wenn ein Objekt die richtige " +
+      "Form hat (die erwarteten Properties mit kompatiblen Typen), dann passt es — " +
+      "egal wie der Typ heisst oder wo er deklariert wurde.",
+  },
+
+  // --- Frage 22: Short-Answer — readonly Tiefe ---
+  {
+    type: "short-answer",
+    question: "Ist `readonly` in TypeScript shallow (flach) oder deep (tief)?",
+    expectedAnswer: "shallow",
+    acceptableAnswers: ["shallow", "flach", "Shallow", "Flach"],
+    explanation:
+      "readonly ist SHALLOW — es schuetzt nur die direkte Property, nicht verschachtelte Objekte. " +
+      "cfg.db ist readonly (Referenz geschuetzt), aber cfg.db.name kann trotzdem geaendert werden. " +
+      "Fuer deep readonly braucht man rekursive Utility Types.",
+  },
+
+  // --- Frage 23: Short-Answer — never Verwendung ---
+  {
+    type: "short-answer",
+    question: "Welcher Typ wird im default-Case einer vollstaendig behandelten Discriminated Union erwartet?",
+    expectedAnswer: "never",
+    acceptableAnswers: ["never"],
+    explanation:
+      "Wenn alle Cases einer Discriminated Union behandelt sind, bleibt im default-Block " +
+      "der Typ 'never' uebrig — kein Wert kann diesen Punkt erreichen. " +
+      "const _: never = shape erzwingt Vollstaendigkeit zur Compile-Zeit.",
+  },
+
+  // --- Frage 24: Predict-Output — Optional Chaining ---
+  {
+    type: "predict-output",
+    question: "Was gibt dieser Code aus?",
+    code: "interface User {\n  name: string;\n  address?: { city: string };\n}\nconst u: User = { name: 'Max' };\nconsole.log(u.address?.city ?? 'unbekannt');",
+    expectedAnswer: "unbekannt",
+    acceptableAnswers: ["unbekannt", "'unbekannt'", "\"unbekannt\""],
+    explanation:
+      "u.address ist undefined (nicht gesetzt). Optional Chaining (?.) gibt undefined zurueck. " +
+      "Der Nullish Coalescing Operator (??) ersetzt undefined durch 'unbekannt'. " +
+      "Beide Operatoren arbeiten zusammen fuer sicheren Zugriff auf optionale Properties.",
+  },
+
+  // --- Frage 25: Predict-Output — Excess Property Check ---
+  {
+    type: "predict-output",
+    question: "Kompiliert dieser Code fehlerfrei? Antworte mit 'ja' oder 'nein'.",
+    code: "interface Point { x: number; y: number; }\nconst temp = { x: 1, y: 2, z: 3 };\nconst p: Point = temp;",
+    expectedAnswer: "ja",
+    acceptableAnswers: ["ja", "Ja", "yes"],
+    explanation:
+      "Der Excess Property Check greift nur bei frischen Object Literals. " +
+      "Hier wird das Objekt zuerst einer Variablen zugewiesen (temp) und dann uebergeben. " +
+      "Structural Typing erlaubt extra Properties — z existiert, stoert aber nicht.",
+  },
+
+  // --- Frage 26: Explain-Why — unknown vs any ---
+  {
+    type: "explain-why",
+    question: "Warum solltest du fuer Werte unbekannten Typs `unknown` statt `any` verwenden? (L02)",
+    modelAnswer:
+      "unknown erzwingt einen Type Check (Narrowing) bevor du Properties oder Methoden nutzen kannst. " +
+      "any deaktiviert den Compiler komplett — auch fuer unsinnige Operationen wie " +
+      "d.nonExistentMethod(). unknown ist typsicher: Du MUSST erst pruefen was du hast. " +
+      "any ist wie den Compiler abzuschalten — Fehler werden erst zur Laufzeit sichtbar.",
+    keyPoints: [
+      "unknown erzwingt Narrowing vor Nutzung",
+      "any deaktiviert alle Compiler-Checks",
+      "unknown fuer typsichere Verarbeitung unbekannter Werte",
+    ],
+  },
 ];

@@ -1,7 +1,9 @@
 // quiz-data.ts — L25: Type-safe Error Handling
 // 15 Fragen, correct-Index Verteilung: 4x0, 4x1, 4x2, 3x3
 
-export interface QuizQuestion {
+import type { QuizQuestion } from '../tools/quiz-runner.ts';
+
+export interface MCQuizQuestion {
   id: number;
   question: string;
   options: string[];
@@ -13,7 +15,7 @@ export interface QuizQuestion {
 export const lessonId = "25";
 export const lessonTitle = "Type-safe Error Handling";
 
-export const questions: QuizQuestion[] = [
+export const questions: (MCQuizQuestion | QuizQuestion)[] = [
   // correct: 0 (1-4)
   {
     id: 1,
@@ -260,5 +262,120 @@ export const questions: QuizQuestion[] = [
       whyCorrect: "Ohne flatMap: Jedes Fehler-Check führt zu tieferer Einrückung. Mit flatMap: lineare Kette. `flatMapResult(parseEmail(raw), email => flatMapResult(validateDomain(email), domain => ok(domain.toUpperCase())))` — Fehler aus jedem Step propagiert automatisch.",
       commonMistake: "Manche verwenden map statt flatMap wenn die fn-Funktion wieder ein Result zurückgibt. Das führt zu `Result<Result<T, E>, E>` statt `Result<T, E>`. flatMap 'flacht' das verschachtelte Result ein."
     }
-  }
+  },
+
+  // ─── Neue Frageformate (Short-Answer, Predict-Output, Explain-Why) ─────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst das Property in einer Discriminated Union, das TypeScript fuer " +
+      "Narrowing verwendet (z.B. 'ok: true' vs. 'ok: false' im Result-Typ)?",
+    expectedAnswer: "Discriminant",
+    acceptableAnswers: [
+      "Discriminant", "discriminant", "Diskriminant", "Tag", "tag",
+      "Discriminator", "discriminator",
+    ],
+    explanation:
+      "Der Discriminant ist ein gemeinsames Property mit Literal-Werten, " +
+      "das TypeScript fuer Narrowing nutzt. Im Result-Typ ist es 'ok: true | false'. " +
+      "Im if(result.ok)-Branch weiss TypeScript, dass value existiert.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Wie heisst die Funktion, die als Exhaustive Check dient indem sie " +
+      "einen Parameter vom Typ 'never' erwartet?",
+    expectedAnswer: "assertNever",
+    acceptableAnswers: [
+      "assertNever", "assert never", "Assert Never", "assertNever()",
+    ],
+    explanation:
+      "assertNever(x: never): never erzwingt, dass alle Union-Varianten " +
+      "behandelt wurden. Wenn ein Case fehlt, hat x noch einen echten Typ " +
+      "und passt nicht zu 'never' — Compile-Error.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question:
+      "Welche tsconfig-Option (seit TS 4.4, Teil von strict) macht catch-Variablen " +
+      "zu 'unknown' statt 'any'?",
+    expectedAnswer: "useUnknownInCatchVariables",
+    acceptableAnswers: [
+      "useUnknownInCatchVariables", "useUnknownInCatchVariables: true",
+    ],
+    explanation:
+      "useUnknownInCatchVariables erzwingt, dass catch-Variablen Typ 'unknown' " +
+      "statt implizit 'any' haben. Damit muss man Type Guards (instanceof Error) " +
+      "verwenden bevor man auf Properties zugreift.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was ist der Typ von 'value' im true-Branch?",
+    code:
+      "type Result<T, E> =\n" +
+      "  | { ok: true; value: T }\n" +
+      "  | { ok: false; error: E };\n\n" +
+      "function handle(r: Result<string, Error>) {\n" +
+      "  if (r.ok) {\n" +
+      "    const value = r.value; // Typ von value?\n" +
+      "  }\n" +
+      "}",
+    expectedAnswer: "string",
+    acceptableAnswers: ["string", "String"],
+    explanation:
+      "TypeScript narrowt im if(r.ok)-Branch: r ist { ok: true; value: string }. " +
+      "Daher ist r.value vom Typ string. Das ist die Staerke von Discriminated Unions " +
+      "mit Literal-Typen als Discriminant.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Was passiert bei diesem Code?",
+    code:
+      "type Status = 'active' | 'inactive' | 'banned';\n" +
+      "const messages: Record<Status, string> = {\n" +
+      "  active: 'Willkommen!',\n" +
+      "  inactive: 'Account deaktiviert.',\n" +
+      "};",
+    expectedAnswer: "Compile-Error",
+    acceptableAnswers: [
+      "Compile-Error", "Compile Error", "Fehler", "Error", "Nein",
+      "kompiliert nicht",
+    ],
+    explanation:
+      "Record<Status, string> erfordert ALLE Status-Werte als Keys. " +
+      "'banned' fehlt — TypeScript meldet einen Compile-Error. " +
+      "Das ist der Exhaustive-Check-Effekt von Record mit Union-Keys.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question:
+      "Warum ist Result<T, E> besser als try/catch fuer erwartbare Fehler " +
+      "(z.B. Validierung, Netzwerk), aber try/catch weiterhin richtig " +
+      "fuer Bugs und Invariant-Verletzungen?",
+    modelAnswer:
+      "Result<T, E> macht Fehler im Typsystem sichtbar: Der Caller MUSS " +
+      "den Fehlerfall behandeln, weil der Rueckgabetyp es erzwingt. " +
+      "Bei try/catch sind Fehler unsichtbar — der Compiler warnt nicht " +
+      "wenn catch fehlt. Fuer Bugs (Division durch Null, null-Pointer) " +
+      "ist throw aber richtig, weil ein korrektes Programm nie in diesen " +
+      "Zustand kommen sollte und Recovery keinen Sinn macht.",
+    keyPoints: [
+      "Result macht Fehler im Typsystem sichtbar",
+      "Caller wird zur Fehlerbehandlung gezwungen",
+      "try/catch hat keine Compile-Zeit-Sicherheit",
+      "Bugs/Invarianten: throw weil Recovery sinnlos",
+    ],
+  },
 ];

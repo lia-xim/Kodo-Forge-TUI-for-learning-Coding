@@ -263,6 +263,87 @@ export const questions: QuizQuestion[] = [
       "Das ist eines der haeufigsten Patterns in TypeScript-Projekten.",
     code: "async function fetchUser() { return { name: 'Max' }; }\ntype User = Awaited<ReturnType<typeof fetchUser>>;\n// { name: string }",
   },
+
+  // ─── Zusaetzliche Frageformate ────────────────────────────────────────────
+
+  // --- Frage 16: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welchen Utility Type verwendet man um alle Properties optional zu machen?",
+    expectedAnswer: "Partial",
+    acceptableAnswers: ["Partial", "Partial<T>"],
+    explanation:
+      "Partial<T> macht alle Properties von T optional. " +
+      "Intern: { [P in keyof T]?: T[P] }. Ideal fuer Update-Operationen " +
+      "wo nur geaenderte Felder mitgeschickt werden.",
+  },
+
+  // --- Frage 17: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Was bedeutet das Minus-Zeichen in { -readonly [P in keyof T]: T[P] }? Wie heisst der entstehende Typ?",
+    expectedAnswer: "Mutable",
+    acceptableAnswers: ["Mutable", "Mutable<T>", "entfernt readonly", "Modifier entfernen"],
+    explanation:
+      "Das Minus-Zeichen (-) ENTFERNT einen Modifier. -readonly entfernt " +
+      "readonly von allen Properties. Der entstehende Typ wird oft Mutable<T> " +
+      "genannt — das Gegenteil von Readonly<T>.",
+  },
+
+  // --- Frage 18: Short-Answer ---
+  {
+    type: "short-answer",
+    question: "Welcher Utility Type entfernt null und undefined aus einem Union Type?",
+    expectedAnswer: "NonNullable",
+    acceptableAnswers: ["NonNullable", "NonNullable<T>"],
+    explanation:
+      "NonNullable<T> ist ein Spezialfall von Exclude: Exclude<T, null | undefined>. " +
+      "Es entfernt sowohl null als auch undefined aus dem Typ. " +
+      "NonNullable<string | null | undefined> ergibt string.",
+  },
+
+  // --- Frage 19: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ hat result? Gib den praezisen Typ an.",
+    code: "type User = { name: string; age: number; email: string };\ntype Result = Pick<User, 'name' | 'email'>;\n// Was sind die Properties von Result?",
+    expectedAnswer: "{ name: string; email: string }",
+    acceptableAnswers: ["{ name: string; email: string }", "name: string, email: string", "name und email"],
+    explanation:
+      "Pick<User, 'name' | 'email'> waehlt nur die Properties 'name' und 'email' " +
+      "aus User aus. age wird nicht uebernommen. Pick ist typsicher — " +
+      "Pick<User, 'tippfehler'> waere ein Compile-Error.",
+  },
+
+  // --- Frage 20: Predict-Output ---
+  {
+    type: "predict-output",
+    question: "Welchen Typ hat X? Gib den praezisen Typ an.",
+    code: "type X = Exclude<'a' | 'b' | 'c' | 'd', 'b' | 'd'>;",
+    expectedAnswer: "'a' | 'c'",
+    acceptableAnswers: ["'a' | 'c'", "\"a\" | \"c\"", "a | c"],
+    explanation:
+      "Exclude entfernt distributiv: 'a' bleibt (nicht in 'b'|'d'), " +
+      "'b' wird entfernt, 'c' bleibt, 'd' wird entfernt. " +
+      "Ergebnis: 'a' | 'c'. Exclude arbeitet Mitglied fuer Mitglied.",
+  },
+
+  // --- Frage 21: Explain-Why ---
+  {
+    type: "explain-why",
+    question: "Warum ist Readonly<T> in TypeScript nur shallow und nicht deep? Welche Konsequenz hat das fuer verschachtelte Objekte?",
+    modelAnswer:
+      "Readonly<T> verwendet { readonly [P in keyof T]: T[P] } — es wirkt nur auf " +
+      "die direkte Ebene. Verschachtelte Objekte sind eigene Referenzen die nicht " +
+      "von Readonly erfasst werden. Das bedeutet: obj.nested.prop = 'new' ist erlaubt, " +
+      "obwohl obj readonly ist. Fuer tiefe Unveraenderlichkeit braucht man ein " +
+      "rekursives DeepReadonly<T> das sich auf jede Ebene selbst anwendet.",
+    keyPoints: [
+      "Mapped Types wirken nur auf eine Ebene",
+      "Verschachtelte Objekte bleiben mutable",
+      "DeepReadonly<T> ist noetig fuer tiefe Unveraenderlichkeit",
+    ],
+  },
 ];
 
 // ─── Elaborated Feedback ────────────────────────────────────────────────────
