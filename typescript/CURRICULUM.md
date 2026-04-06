@@ -98,10 +98,23 @@ Vom Wissen zur Anwendung. Hier wird TypeScript zur Superkraft im echten Code.
 
 ---
 
+## Phase 5: TypeScript Mastery Plus (Lektion 41–44)
+
+Vertiefungen und moderne Erweiterungen. Hier kommen die Themen, die aus einem guten TypeScript-Entwickler einen exzellenten machen.
+
+| # | Lektion | Kernkonzept | Du kannst danach... |
+|---|---------|-------------|---------------------|
+| 41 | TypeScript 5.x Features | TS 5.0–5.7, Inferred Predicates, verbatimModuleSyntax | Alle modernen TS-Features gezielt einsetzen |
+| 42 | TypeScript Security | Gefaehrliche Muster, Parse-dont-validate, JS-Fallen | TypeScript-Code sicher und defensiv schreiben |
+| 43 | TypeScript mit RxJS | Observable-Typen, Operator-Typen, Angular-Patterns | RxJS-Pipelines vollstaendig typsicher designen |
+| 44 | Design Patterns Erweitert | GoF-Patterns, SOLID, Repository, Strategy | 15+ Design Patterns typsicher implementieren |
+
+---
+
 ## Danach: Framework-Phasen
 
-Nach Abschluss aller 40 Lektionen folgen die Framework-spezifischen Vertiefungen:
+Nach Abschluss aller 44 Lektionen folgen die Framework-spezifischen Vertiefungen:
 
-- **Angular mit TypeScript** — Decorators, DI, RxJS-Typen, Template-Typsicherheit
+- **Angular mit TypeScript** — Decorators, DI, RxJS-Typen, Template-Typsicherheit, Signals
 - **React mit TypeScript** — JSX-Typen, Hooks-Typen, Component Patterns, Context
 - **Next.js mit TypeScript** — Server Components, API Routes, getServerSideProps Typen

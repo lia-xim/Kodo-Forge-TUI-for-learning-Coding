@@ -112,6 +112,8 @@ function setWidth(element: HTMLElement, width: Pixels): void {
 Hier wird `type` erst richtig maechtig. Union Types sind **nur mit type moeglich**,
 nicht mit `interface`:
 
+Du kennst Union Types bereits aus L07 — dort hast du `string | number` als Grundprinzip kennengelernt. Hier wird relevant, warum Union Types *ausschliesslich* mit `type` ausdrueckbar sind, und warum das fuer Discriminated Unions (dazu mehr in L12) entscheidend ist.
+
 ```typescript annotated
 type Status = "active" | "inactive" | "banned";
 // ^ Ein Union aus drei String-Literalen. Nur diese drei Werte sind gueltig.

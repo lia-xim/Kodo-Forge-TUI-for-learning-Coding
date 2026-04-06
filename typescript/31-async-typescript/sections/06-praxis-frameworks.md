@@ -3,7 +3,7 @@
 > Geschaetzte Lesezeit: **10 Minuten**
 >
 > Vorherige Sektion: [05 - AsyncIterable und Generators](./05-async-iterable-generators.md)
-> Naechste Sektion: — (Ende der Lektion)
+> Naechste Sektion: [07 - Das `using`-Keyword — Explicit Resource Management](./07-using-keyword-resource-management.md)
 
 ---
 
@@ -315,9 +315,6 @@ const users = await typedGet('/users');
 
 ---
 
-> **Pausenpunkt** — Du hast Lektion 31 abgeschlossen! Du verstehst jetzt,
-> wie TypeScript's Typsystem mit asynchronem Code zusammenspielt — von
-> Promise<T> ueber async/await bis hin zu AsyncGenerators und Framework-
-> Integration.
+> **Pausenpunkt** — Weiter geht es mit der letzten Sektion dieser Lektion:
 >
-> **Naechste Lektion:** [L32: Type-safe APIs](../32-type-safe-apis/sections/01-rest-api-typing.md)
+> Weiter geht es mit: [Sektion 07: Das `using`-Keyword — Explicit Resource Management](./07-using-keyword-resource-management.md)

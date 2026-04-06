@@ -185,13 +185,15 @@ const post = new BlogPost("TypeScript Decorators", "...");
 > **Experiment:** Probiere einen einfachen Logging-Decorator:
 >
 > ```typescript
-> function LogCreation(constructor: Function): void {
+> function LogCreation(constructor: Function): any {
+>   // Rückgabetyp 'any' statt 'void', da wir einen neuen Konstruktor zurückgeben
 >   const original = constructor;
 >   const newConstructor: any = function (...args: any[]) {
 >     console.log(`Erstelle ${original.name} mit:`, args);
 >     return new (original as any)(...args);
 >   };
 >   newConstructor.prototype = original.prototype;
+>   // ^ prototype-Transfer VOR dem return
 >   return newConstructor;
 > }
 >
@@ -227,12 +229,15 @@ class MyClass {}
 // "Second ausgefuehrt"    ← BOTTOM-UP! Naechster zum Code zuerst
 // "First ausgefuehrt"
 
-// Aber bei Decorator FACTORIES:
-@First()  // Evaluierung: TOP-DOWN
-@Second() // Evaluierung: TOP-DOWN
+// Aber bei Decorator FACTORIES (Funktionen die einen Decorator zurückgeben):
+function FirstFactory() { return function(constructor: Function) { console.log("First ausgefuehrt"); }; }
+function SecondFactory() { return function(constructor: Function) { console.log("Second ausgefuehrt"); }; }
+
+@FirstFactory()  // Evaluierung: TOP-DOWN
+@SecondFactory() // Evaluierung: TOP-DOWN
 class MyClass2 {}
-// Factory-Evaluierung: First() → Second()
-// Decorator-Anwendung:  Second → First (bottom-up)
+// Factory-Evaluierung: FirstFactory() → SecondFactory()
+// Decorator-Anwendung:  SecondFactory-Decorator → FirstFactory-Decorator (bottom-up)
 ```
 
 > ⚡ **In deinem Angular-Projekt** siehst du gestapelte Decorators selten

@@ -20,7 +20,7 @@
 
 Du hast 39 Lektionen TypeScript gemeistert. Von primitiven Typen (L02)
 ueber Generics (L13), Branded Types (L24), Type-Level Programming (L37)
-bis hin zu Best Practices (L39) — du hast eine Reise hinter dir die
+bis hin zu Best Practices (L39) — und von Type Aliases (L08) und Klassen (L21) bis hin zu typsicheren Tests (L33) — du hast eine Reise hinter dir die
 dich von "kann TypeScript" zu "beherrscht TypeScript" gebracht hat.
 
 In dieser letzten Lektion bauen wir ein durchgaengiges Projekt das
@@ -152,6 +152,9 @@ function parseEmail(raw: string): Result<Email, "invalid-email"> {
 | Event System | L17 (Conditional Types), L26 (Advanced Patterns) |
 | Config-Typen | L16 (Mapped Types), L29 (tsconfig) |
 | Exhaustive Checks | L12 (DU), L39 (Best Practices) |
+| type vs. interface (Design-Entscheidung) | L08 (Type Aliases vs. Interfaces) |
+| OrderService als Klasse | L21 (Classes und OOP) |
+| Testbare Architektur *(Bonus)* | L33 (Testing TypeScript) |
 
 > ⚡ **Framework-Bezug:** Diese Architektur ist direkt uebertragbar.
 > In Angular wuerde die "Schale" aus HTTP-Interceptors und Route

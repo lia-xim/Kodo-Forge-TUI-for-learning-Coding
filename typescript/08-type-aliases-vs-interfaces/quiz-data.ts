@@ -3,17 +3,14 @@
  *
  * 15 Fragen zu type vs interface, Declaration Merging,
  * extends vs &, Entscheidungsmatrix, Patterns.
+ *
+ * correct-Index-Verteilung: 0=4, 1=4, 2=4, 3=3
  */
 
 import type { QuizQuestion } from '../tools/quiz-runner.ts';
 
 export const lessonId = "08";
 export const lessonTitle = "Type Aliases vs Interfaces";
-
-export interface ElaboratedFeedback {
-  whyCorrect: string;
-  commonMistake: string;
-}
 
 export const questions: QuizQuestion[] = [
   {
@@ -29,6 +26,14 @@ export const questions: QuizQuestion[] = [
       "Ein Type Alias erstellt KEINEN neuen Typ — er gibt einem existierenden " +
       "Typ nur einen Namen. UserID IS string. Ueberall wo string erwartet wird, " +
       "kann UserID verwendet werden und umgekehrt.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Type Aliases sind Spitznamen — sie erstellen keinen strukturell neuen Typ. " +
+        "UserID und string sind identisch.",
+      commonMistake:
+        "Viele erwarten nominale Typisierung wie in Java. TypeScript ist strukturell " +
+        "typisiert — der Alias aendert nichts am Typ.",
+    },
   },
 
   {
@@ -44,6 +49,14 @@ export const questions: QuizQuestion[] = [
       "type ist das Allzweck-Werkzeug: Es kann Unions, Intersections, " +
       "Mapped Types, Conditional Types und Tuples — alles was interfaces " +
       "nicht koennen. Interfaces sind auf Objekt-Formen spezialisiert.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "type ist das Allzweck-Werkzeug. Union, Mapped, Conditional und Tuple Types " +
+        "gehen nur mit type.",
+      commonMistake:
+        "Manche denken, interface kann alles was type kann. Fuer Nicht-Objekt-Typen " +
+        "ist type Pflicht.",
+    },
   },
 
   {
@@ -60,6 +73,13 @@ export const questions: QuizQuestion[] = [
       "Declaration Merging ist ein Feature von Interfaces: Mehrere " +
       "Deklarationen mit demselben Namen werden automatisch zusammengefuegt. " +
       "Type Aliases koennen das NICHT — eine doppelte type-Deklaration ist ein Fehler.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Interfaces mit gleichem Namen werden zusammengefuehrt. Alle Properties aus " +
+        "beiden Deklarationen bilden ein Interface.",
+      commonMistake:
+        "Aus anderen Sprachen kommend erwartet man einen Fehler bei doppelter Deklaration.",
+    },
   },
 
   {
@@ -75,6 +95,13 @@ export const questions: QuizQuestion[] = [
       "Declaration Merging erlaubt es, Bibliotheks-Interfaces zu erweitern " +
       "ohne den Quellcode zu aendern. Z.B. kann man Window um eigene Properties " +
       "erweitern oder Express.Request um Custom-Felder.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Declaration Merging erweitert Bibliotheks-Typen ohne deren Quellcode zu " +
+        "aendern — Module Augmentation.",
+      commonMistake:
+        "Viele denken, es ist nur ein Versehen wenn man ein Interface zweimal deklariert.",
+    },
   },
 
   {
@@ -91,6 +118,13 @@ export const questions: QuizQuestion[] = [
       "extends ist fuer den Compiler effizienter (wird gecached) und meldet " +
       "Property-Konflikte direkt als Fehler. & erzeugt bei Konflikten " +
       "stillschweigend never-Properties. Fuer Objekt-Vererbung ist extends besser.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "extends wird gecached und meldet Konflikte. & ist flexibler aber erzeugt " +
+        "stille never-Properties.",
+      commonMistake:
+        "Viele halten extends und & fuer identisch. Der Compiler behandelt sie unterschiedlich.",
+    },
   },
 
   {
@@ -107,6 +141,13 @@ export const questions: QuizQuestion[] = [
       "extends meldet Konflikte DIREKT als Compile-Error. Das ist ein " +
       "Vorteil gegenueber &, das stillschweigend never-Properties erzeugt. " +
       "extends schuetzt dich vor versehentlichen Inkompatibilitaeten.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "extends schlaegt sofort Alarm bei inkompatiblen Properties. Das ist sicherer " +
+        "als das stille never von &.",
+      commonMistake:
+        "Manche erwarten, dass extends die Property ueberschreibt. Es erzwingt Kompatibilitaet.",
+    },
   },
 
   {
@@ -122,6 +163,12 @@ export const questions: QuizQuestion[] = [
       "Interfaces sind auf Objekt-Formen spezialisiert. Sie koennen keine " +
       "Union Types, Tuple Types oder Primitive-Aliases beschreiben. " +
       "Dafuer braucht man `type`.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Interfaces sind auf Objekt-Formen spezialisiert. Fuer alles andere braucht man type.",
+      commonMistake:
+        "Einige versuchen Union Types mit Interfaces zu simulieren. Das funktioniert nicht.",
+    },
   },
 
   {
@@ -138,6 +185,13 @@ export const questions: QuizQuestion[] = [
       "Intersection-Konflikte erzeugen KEINEN Fehler! Die Property wird " +
       "string & number = never — technisch gueltig aber kein Wert kann " +
       "je zugewiesen werden. Das ist ein stiller Bug.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Intersection-Konflikte erzeugen nie einen Fehler — nur eine never-Property. " +
+        "Still und gefaehrlich.",
+      commonMistake:
+        "Fast jeder erwartet einen Compile-Error. Das stille never ist ein haeufiger Bug.",
+    },
   },
 
   {
@@ -155,6 +209,12 @@ export const questions: QuizQuestion[] = [
       "die Klasse alle Properties und Methoden des Interfaces hat. " +
       "Es vererbt nichts — die Klasse muss alles selbst implementieren. " +
       "Uebrigens: Auch type-Aliases koennen mit implements verwendet werden.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "implements ist rein ein Compile-Zeit-Check. Es erzeugt keinen Code und vererbt nichts.",
+      commonMistake:
+        "Viele denken, implements vererbt Methoden wie extends bei Klassen.",
+    },
   },
 
   {
@@ -171,6 +231,12 @@ export const questions: QuizQuestion[] = [
       "Interfaces koennen Call Signatures haben: interface Formatter { (input: string): string; }. " +
       "Das beschreibt eine aufrufbare Funktion. In der Praxis ist " +
       "type Formatter = (input: string) => string haeufiger.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Interfaces koennen Call Signatures haben. In der Praxis ist die type-Syntax haeufiger.",
+      commonMistake:
+        "Manche denken, nur type kann Funktionen beschreiben. Interfaces koennen es auch.",
+    },
   },
 
   {
@@ -186,6 +252,12 @@ export const questions: QuizQuestion[] = [
       "Angular bevorzugt Interfaces fuer die meisten Objekt-Typen: " +
       "Service-Contracts, DTOs, Component-Inputs. Declaration Merging " +
       "ist nuetzlich fuer die erweiterbaren Anglar-Oekosystem-Typen.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Angular bevorzugt Interfaces fuer Objekt-Typen wegen Declaration Merging und extends.",
+      commonMistake:
+        "Manche denken, Angular verlangt Interfaces. Es ist eine Empfehlung, keine Pflicht.",
+    },
   },
 
   {
@@ -201,6 +273,13 @@ export const questions: QuizQuestion[] = [
       "Die React-Community bevorzugt type: Props sind oft Unions, " +
       "Discriminated Unions fuer State, und type ist flexibler fuer " +
       "die funktionale Programmier-Stil den React foerdert.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "React nutzt viel funktionale Muster: Union-Props, Discriminated States — " +
+        "type passt besser.",
+      commonMistake:
+        "Manche denken, in React muss man type verwenden. Interface funktioniert auch fuer Props.",
+    },
   },
 
   {
@@ -216,6 +295,12 @@ export const questions: QuizQuestion[] = [
       "1) Brauchst du Union/Mapped/Conditional Types → type. " +
       "2) Beschreibst du eine Objekt-Form → interface (oder type — beides OK). " +
       "3) Sei konsistent im Team — die Wahl ist weniger wichtig als Einheitlichkeit.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Die drei Regeln decken 95% der Faelle ab. Konsistenz ist das Wichtigste.",
+      commonMistake:
+        "Viele suchen die 'perfekte' Regel. In Wahrheit ist Teamkonsistenz wichtiger.",
+    },
   },
 
   {
@@ -231,6 +316,13 @@ export const questions: QuizQuestion[] = [
       "Declaration Merging ist das einzige Feature das nur Interfaces haben. " +
       "Eine doppelte type-Deklaration ist ein Fehler. Interfaces koennen " +
       "erweitert werden, ohne die urspruengliche Deklaration zu aendern.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "Declaration Merging ist das Alleinstellungsmerkmal von Interfaces. " +
+        "Type Aliases koennen das nicht.",
+      commonMistake:
+        "Einige verwechseln Declaration Merging mit Intersection. Es sind verschiedene Mechanismen.",
+    },
   },
 
   {
@@ -246,6 +338,13 @@ export const questions: QuizQuestion[] = [
       "Die ESLint-Regel @typescript-eslint/consistent-type-definitions kann " +
       "erzwingen, ob das Team immer type oder immer interface fuer Objekt-Typen " +
       "verwendet. Konsistenz ist wichtiger als die 'richtige' Wahl.",
+    elaboratedFeedback: {
+      whyCorrect:
+        "ESLint erzwingt team-weite Konsistenz. Der Compiler hat keine Meinung zu " +
+        "type vs interface.",
+      commonMistake:
+        "Manche denken, tsconfig.json kann type vs interface erzwingen. Das geht nur ueber Linting.",
+    },
   },
 
   // ─── Zusaetzliche Formate ────────────────────────────────────────────────────
@@ -333,66 +432,3 @@ export const questions: QuizQuestion[] = [
     ],
   },
 ];
-
-export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
-  0: {
-    whyCorrect: "Type Aliases sind Spitznamen — sie erstellen keinen strukturell neuen Typ. UserID und string sind identisch.",
-    commonMistake: "Viele erwarten nominale Typisierung wie in Java. TypeScript ist strukturell typisiert — der Alias aendert nichts am Typ.",
-  },
-  1: {
-    whyCorrect: "type ist das Allzweck-Werkzeug. Union, Mapped, Conditional und Tuple Types gehen nur mit type.",
-    commonMistake: "Manche denken, interface kann alles was type kann. Fuer Nicht-Objekt-Typen ist type Pflicht.",
-  },
-  2: {
-    whyCorrect: "Interfaces mit gleichem Namen werden zusammengefuehrt. Alle Properties aus beiden Deklarationen bilden ein Interface.",
-    commonMistake: "Aus anderen Sprachen kommend erwartet man einen Fehler bei doppelter Deklaration.",
-  },
-  3: {
-    whyCorrect: "Declaration Merging erweitert Bibliotheks-Typen ohne deren Quellcode zu aendern — Module Augmentation.",
-    commonMistake: "Viele denken, es ist nur ein Versehen wenn man ein Interface zweimal deklariert.",
-  },
-  4: {
-    whyCorrect: "extends wird gecached und meldet Konflikte. & ist flexibler aber erzeugt stille never-Properties.",
-    commonMistake: "Viele halten extends und & fuer identisch. Der Compiler behandelt sie unterschiedlich.",
-  },
-  5: {
-    whyCorrect: "extends schlaegt sofort Alarm bei inkompatiblen Properties. Das ist sicherer als das stille never von &.",
-    commonMistake: "Manche erwarten, dass extends die Property ueberschreibt. Es erzwingt Kompatibilitaet.",
-  },
-  6: {
-    whyCorrect: "Interfaces sind auf Objekt-Formen spezialisiert. Fuer alles andere braucht man type.",
-    commonMistake: "Einige versuchen Union Types mit Interfaces zu simulieren. Das funktioniert nicht.",
-  },
-  7: {
-    whyCorrect: "Intersection-Konflikte erzeugen nie einen Fehler — nur eine never-Property. Still und gefaehrlich.",
-    commonMistake: "Fast jeder erwartet einen Compile-Error. Das stille never ist ein haeufiger Bug.",
-  },
-  8: {
-    whyCorrect: "implements ist rein ein Compile-Zeit-Check. Es erzeugt keinen Code und vererbt nichts.",
-    commonMistake: "Viele denken, implements vererbt Methoden wie extends bei Klassen.",
-  },
-  9: {
-    whyCorrect: "Interfaces koennen Call Signatures haben. In der Praxis ist die type-Syntax haeufiger.",
-    commonMistake: "Manche denken, nur type kann Funktionen beschreiben. Interfaces koennen es auch.",
-  },
-  10: {
-    whyCorrect: "Angular bevorzugt Interfaces fuer Objekt-Typen wegen Declaration Merging und extends.",
-    commonMistake: "Manche denken, Angular verlangt Interfaces. Es ist eine Empfehlung, keine Pflicht.",
-  },
-  11: {
-    whyCorrect: "React nutzt viel funktionale Muster: Union-Props, Discriminated States — type passt besser.",
-    commonMistake: "Manche denken, in React muss man type verwenden. Interface funktioniert auch fuer Props.",
-  },
-  12: {
-    whyCorrect: "Die drei Regeln decken 95% der Faelle ab. Konsistenz ist das Wichtigste.",
-    commonMistake: "Viele suchen die 'perfekte' Regel. In Wahrheit ist Teamkonsistenz wichtiger.",
-  },
-  13: {
-    whyCorrect: "Declaration Merging ist das Alleinstellungsmerkmal von Interfaces. Type Aliases koennen das nicht.",
-    commonMistake: "Einige verwechseln Declaration Merging mit Intersection. Es sind verschiedene Mechanismen.",
-  },
-  14: {
-    whyCorrect: "ESLint erzwingt team-weite Konsistenz. Der Compiler hat keine Meinung zu type vs interface.",
-    commonMistake: "Manche denken, tsconfig.json kann type vs interface erzwingen. Das geht nur ueber Linting.",
-  },
-};

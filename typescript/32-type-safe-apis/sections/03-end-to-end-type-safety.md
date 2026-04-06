@@ -96,12 +96,13 @@ export type AppRouter = typeof appRouter;
 
 ```typescript annotated
 // === CLIENT-SEITE ===
-import { createTRPCClient } from '@trpc/client';
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
+// tRPC v11: links-Array statt url direkt
 import type { AppRouter } from '../server/router';
 // ^ Nur 'import type' — kein Server-Code im Client-Bundle!
 
 const client = createTRPCClient<AppRouter>({
-  url: 'http://localhost:3000/api/trpc',
+  links: [httpBatchLink({ url: 'http://localhost:3000/api/trpc' })],
 });
 
 // Volle Autocomplete und Typ-Sicherheit:
@@ -227,10 +228,14 @@ function UserProfile({ userId }: { userId: string }) {
 >
 > ```typescript
 > // Angular Service mit tRPC vanilla client
+> import { createTRPCClient, httpBatchLink } from '@trpc/client';
+> import type { AppRouter } from '../server/router';
+>
 > @Injectable({ providedIn: 'root' })
 > export class TrpcService {
+>   // tRPC v11: links-Array statt url direkt
 >   private client = createTRPCClient<AppRouter>({
->     url: '/api/trpc',
+>     links: [httpBatchLink({ url: '/api/trpc' })],
 >   });
 >
 >   getUser(id: string) {

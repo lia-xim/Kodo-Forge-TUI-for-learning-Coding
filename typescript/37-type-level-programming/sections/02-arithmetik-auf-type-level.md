@@ -235,6 +235,8 @@ nicht das Limit ueberschreiten:
 
 ```typescript
 // Schritt 1: Multiplikation (vereinfacht mit bekannten Werten)
+// ⚠️ Dieses Beispiel ist bewusst unvollständig — MultLookup ist nicht definiert
+// Es zeigt das Konzept, kompiliert aber nicht ohne die vollständige Lookup-Tabelle
 type Multiply<A extends number, B extends number> =
   MultLookup extends Record<`${A}x${B}`, number>
     ? MultLookup[`${A}x${B}`]

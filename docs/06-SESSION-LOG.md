@@ -1,6 +1,6 @@
 # Session-Log: Was wurde wann gemacht
 
-> Letzte Aktualisierung: 2026-04-02
+> Letzte Aktualisierung: 2026-04-05
 
 ---
 
@@ -239,6 +239,43 @@ Der Lernende ist ein **theoretischer Lerner** — liest lieber ausfuehrlich, den
 
 ---
 
+## Session 5 (2026-04-05) — Phase 5: Neue Lektionen L41-L44 + Sektions-Ergaenzungen
+
+### Ueberblick
+
+Kurs von 40 auf **44 Lektionen** erweitert. Alle fehlenden TypeScript-Themen identifiziert und ergaenzt — sowohl als neue Sektionen in bestehenden Lektionen als auch als komplett neue Lektionen.
+
+### 1. Neue Sektionen in bestehenden Lektionen
+
+- **L22/S07** — `NoInfer<T>` und `infer T extends X` (TS 4.7 + TS 5.4): 340 Zeilen, alle 9 Elemente ✅
+- **L28/S07** — `reflect-metadata` & Metadata Reflection API: 315 Zeilen, Angular DI Internals ✅
+- **L31/S07** — `using` keyword & Explicit Resource Management (TS 5.2): 314 Zeilen ✅
+
+### 2. Neue Lektionen (Phase 5)
+
+**L41: TypeScript 5.x Features** (`typescript/41-typescript-5x-features/`)
+- 6 Sektionen: TS 5.x Aera, verbatimModuleSyntax/bundler-Resolution, Inferred Type Predicates (TS 5.5), Array/ControlFlow-Verbesserungen, Performance/Editor-Features, Upgrade-Pfad
+- quiz-data.ts (15 Fragen), pretest-data.ts (18 Fragen), cheatsheet.md ✅
+
+**L42: TypeScript Security** (`typescript/42-typescript-sicherheit/`)
+- 6 Sektionen: Security-Paradox, gefaehrliche Muster (as/!/any), JavaScript-Fallen (Prototype Pollution, eval), Runtime-Validierung, Parse-dont-validate, Security-Checkliste
+- quiz-data.ts (16 Fragen), pretest-data.ts (18 Fragen), cheatsheet.md ✅
+
+**L43: TypeScript mit RxJS** (`typescript/43-typescript-mit-rxjs/`)
+- 6 Sektionen: RxJS+TS Warum das passt, Observable/Subject-Typen, Operator-Typen, Kombinations-Operatoren, Fehlerbehandlung, Angular-Patterns (toSignal/takeUntilDestroyed/async pipe)
+- quiz-data.ts, pretest-data.ts, cheatsheet.md ✅
+
+**L44: Design Patterns Erweitert** (`typescript/44-design-patterns-erweitert/`)
+- 6 Sektionen: Creational Patterns, Structural Patterns, Behavioral Patterns, Repository/Data Access, SOLID mit TypeScript, Wann kein Pattern
+- quiz-data.ts (15 Fragen), pretest-data.ts (18 Fragen), cheatsheet.md ✅
+
+### 3. Curriculum und Plattform aktualisiert
+
+- `typescript/CURRICULUM.md` — Phase 5 (L41-L44) ergaenzt
+- `platform/platform.json` — totalLessons: 40→44, totalSections: 212→239, estimatedHours: 68→82
+
+---
+
 ## Session 3 (2026-04-02) — TypeScript Phase 3: L24 Branded/Nominal Types
 
 ### Ueberblick
@@ -293,6 +330,92 @@ L24 (Branded/Nominal Types) vollständig erstellt mit allen 12 Pflicht-Dateien. 
 - [ ] Progress-Export als Markdown
 - [ ] Kalibrierungs-Tracking ueber Sessions hinweg
 - [ ] Horizontales Scrollen fuer lange Code-Zeilen
+
+---
+
+## Session 4 (2026-04-05) — Grosser Qualitaets-Sprint: Alle 40 Lektionen verbessert
+
+### Ueberblick
+
+Umfassendster Qualitaets-Sprint bisher: Alle bekannten Probleme aus den Audits behoben. 11 parallele Agents gleichzeitig, danach 4 weitere Fix-Agents fuer Quiz-Bias und technische Korrekturen.
+
+### 1. Kritische Rewrites (C → A)
+
+- **L17 Conditional Types** — alle 5 Sektionen komplett neu: 83-134 → 286-369 Zeilen, alle 9 didaktischen Elemente ergaenzt
+- **L18 Template Literal Types** — alle 5 Sektionen komplett neu: 84-124 → 273-322 Zeilen
+- **L19 Modules & Declarations** — alle 5 Sektionen komplett neu: 85-124 → 283-350 Zeilen
+
+### 2. Enhancements (B → A)
+
+- **L12 Discriminated Unions** — Experimente, Framework-Bezuege, Denkfragen, "Was gelernt hast" als Bullets (nicht Tabelle) ergaenzt
+- **L13 Generics Basics** — S01: 210 → 322 Zeilen; alle 6 Sektionen: Geschichte, Experiment, Framework-Bezug ergaenzt
+- **L14 Generic Patterns** — alle 5 Sektionen: 232-315 → 302-413 Zeilen
+
+### 3. Sektions-Expansions (A-/B+ → A)
+
+- **L35 Migration Strategies** — S01: 237→282, S03: 258→320 Zeilen
+- **L36 Library Authoring** — 4 Sektionen auf 283-295 Zeilen ausgebaut
+- **L37 Type-Level Programming** — alle 6 Sektionen: 226-278 → 303-360 Zeilen
+- **L38 Compiler API** — S01: 238→296, S03: 275→299, S04: 272→293, S05: 263→316
+- **L39 Best Practices** — alle 6 Sektionen: 214-253 → 297-396 Zeilen
+
+### 4. Extern→Inline Experiment-Fixes
+
+Alle Experiment-Boxen die auf externe `examples/*.ts`-Dateien verwiesen umgestellt auf inline Code:
+- L02, L03, L06, L07, L09, L11, L15, L25, L27 — insgesamt ~60 externe Referenzen entfernt
+
+### 5. Fehlende Elemente ergaenzt
+
+- **L01** — annotierte Code-Bloecke, Self-Explanation Prompts in allen Sektionen
+- **L04** — Self-Explanation Prompts und annotierte Code-Bloecke in allen 6 Sektionen
+- **L05** — S01: 137→296 Zeilen; alle Sektionen: annotierte Code-Bloecke und Self-Explanation
+- **L08** — Experimente in S01 und S03 ergaenzt
+- **L32** — 14 Analogien/Metaphern ergaenzt (war 0, Phase-Regression-Ursache identifiziert)
+
+### 6. Technische Korrekturen
+
+- **L28 S02** — LogCreation Decorator: `): void` → `): any`; Factory-Beispiele komplett repariert (`@First()` ohne Definition → korrekte Factory-Funktionen)
+- **L29 S02** — "11 Flags" → "8 Flags" an 5 Stellen; `strictFunctionTypes`-Erklaerung korrigiert (Kontravarianz war falsch als "unsicher" dargestellt); Flags-Tabelle in zwei Teile geteilt: im Bundle vs. explizit setzen
+- **L32 S03** — tRPC v10 API → v11: `createTRPCClient({ url: ... })` → `createTRPCClient({ links: [httpBatchLink({ url: ... })] })`
+- **L37 S02** — Warning-Kommentar fuer undefiniertes `MultLookup` ergaenzt
+
+### 7. Quiz-Bias-Fixes
+
+| Lektion | Problem | Ergebnis |
+|---------|---------|----------|
+| L18 | 13/15 Fragen `correct:1` (87% Bias) | 4/4/4/3 verteilt ✅ |
+| L09 | Alle 18 Fragen `correct:1` | 5/4/5/4 ✅ |
+| L14 | Alle 15 Fragen `correct:1` | 4/4/4/3 ✅ |
+| L31 | 16/18 Fragen `correct:1` | 5/4/5/4 ✅ |
+| L08 | `elaboratedFeedback` als separates Export-Objekt | Inline per Frage migriert ✅ |
+| L31 | Interface-Namen falsch | `sectionId`→`sectionIndex`, `explanation`→`briefExplanation`, `pretestData`→`pretestQuestions` ✅ |
+
+### 8. Cross-Lesson Back-References
+
+- **L08 S01** — Rueckbezug auf Union Types (L07) und Discriminated Unions (L12)
+- **L21 S01** — Rueckbezug auf Structural Typing (L05, L08)
+- **L26 S01** — Rueckbezug auf Mapped Types (L16), Generics (L13), Advanced Generics (L22)
+- **L33 S01** — Bonus-Denkfrage mit Bezug auf Result-Pattern (L25)
+- **L40 S01** — Lektion-zu-Feature-Tabelle erweitert (L08, L21, L33)
+
+### 9. Cross-Phase-Vergleich: Qualitaets-Regression identifiziert
+
+**Hauptursache der Regression (Phase 1→4):** Nicht technische Qualitaet oder Sektionslaenge, sondern **Anzahl der Analogien/Metaphern**:
+- L02 (Phase 1): 6 Analogien
+- L32 (Phase 4): 0 Analogien (vor Fix)
+
+Empfehlung: Bei zukuenftigen Lektionen immer mindestens 2-3 Metaphern/Analogien pro Sektion einbauen.
+
+### 10. Strukturelle Curriculum-Probleme (noch offen — Entscheidung noetig)
+
+| Problem | Lektion | Empfehlung |
+|---------|---------|-----------|
+| `using` keyword (TS 5.2) fehlt komplett | — | Neue Sektion in L31 |
+| `NoInfer<T>` (TS 5.4) fehlt | — | Neue Sektion in L22 |
+| `reflect-metadata` fehlt | L28 | Neue Sektion ergaenzen |
+| Type Guards vor L11 gelehrt | L07/S02+S03 | Diskussion noetig |
+| Template Literals vor L18 | L09/S05 | Diskussion noetig |
+| Utility Types vor Mapped Types | L05/S07 | Diskussion noetig |
 
 ---
 

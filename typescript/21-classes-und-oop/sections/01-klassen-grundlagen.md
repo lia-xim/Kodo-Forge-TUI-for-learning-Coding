@@ -228,6 +228,7 @@ console.log(counter.getCount()); // 2
 
 Einer der ueberraschendsten Aspekte von TypeScript ist, dass Klassen
 dem **Structural Typing** unterliegen — genau wie Interfaces.
+Das erinnerst du vielleicht aus L05 (Objekt-Typen) und L08 (Type Aliases): TypeScript prueft nie den *Namen* eines Typs, sondern seine *Struktur*. Klassen sind da keine Ausnahme.
 Das bedeutet: Wenn ein Objekt die gleiche Struktur hat wie eine
 Klasse, kann es als diese Klasse behandelt werden.
 

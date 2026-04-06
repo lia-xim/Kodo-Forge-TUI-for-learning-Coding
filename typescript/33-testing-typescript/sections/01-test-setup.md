@@ -114,6 +114,8 @@ describe('add', () => {
 > melden — die Signatur stimmt ja. Tests pruefen das VERHALTEN,
 > TypeScript prueft die FORM. Beides zusammen ergibt Sicherheit.
 
+> 💭 **Bonus-Denkfrage:** Wie hilft das Result-Pattern aus L25 beim Testen? Wenn deine Funktion `Result<T, E>` zurueckgibt statt zu werfen, kannst du direkt `expect(result.ok).toBe(true)` schreiben — kein try/catch noetig. Das ist Testbarkeit durch Typendesign.
+
 ---
 
 ## Jest: Setup mit TypeScript

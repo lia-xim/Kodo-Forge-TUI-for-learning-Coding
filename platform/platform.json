@@ -7,9 +7,9 @@
       "directory": "typescript",
       "color": "blue",
       "icon": "TS",
-      "totalLessons": 40,
-      "totalSections": 212,
-      "estimatedHours": 68,
+      "totalLessons": 44,
+      "totalSections": 239,
+      "estimatedHours": 82,
       "exerciseTypes": 12,
       "topics": [
         "Primitives",
@@ -17,7 +17,10 @@
         "Mapped Types",
         "Conditional Types",
         "Decorators",
-        "Compiler API"
+        "Compiler API",
+        "Security",
+        "RxJS",
+        "Design Patterns"
       ],
       "prerequisite": null,
       "prerequisiteDescription": "Keine",
@@ -100,6 +103,6 @@
   ],
   "activeCourse": "typescript",
   "lastAccessed": {
-    "typescript": "2026-04-01T10:10:32.654Z"
+    "typescript": "2026-04-05T00:00:00.000Z"
   }
 }

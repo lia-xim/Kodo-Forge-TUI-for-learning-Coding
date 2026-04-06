@@ -3,7 +3,7 @@
 > Geschaetzte Lesezeit: **10 Minuten**
 >
 > Vorherige Sektion: [05 - Fortgeschrittene Constraints](./05-fortgeschrittene-constraints.md)
-> Naechste Sektion: — (Ende der Lektion)
+> Naechste Sektion: [07 - NoInfer und Inferenz-Kontrolle](./07-noinfer-und-inferenz-kontrolle.md)
 
 ---
 
@@ -339,22 +339,9 @@ veroeffentlichst, pruefe:
 
 ---
 
-## Lektion 22 abgeschlossen!
+---
 
-Du hast die fortgeschrittenen Aspekte von Generics gemeistert:
-
-1. **Grenzen einfacher Generics** und die Motivation fuer Advanced
-2. **Higher-Order Types** mit dem URI-to-Kind-Pattern
-3. **Varianz** — Kovarianz, Kontravarianz, Invarianz
-4. **in/out-Modifier** fuer explizite Varianz-Annotationen
-5. **Fortgeschrittene Constraints** — Intersection, Recursive, Conditional
-6. **API-Design** — Rule of Two, Overloads vs Generics, Inference
-
-> **Naechste Schritte:**
-> - Loese die Exercises in `exercises/`
-> - Teste dein Wissen mit dem Quiz: `npx tsx quiz.ts`
-> - Nutze das Cheatsheet als Schnellreferenz
+> **Pausenpunkt** — Guter Moment fuer eine Pause. Du hast die
+> zentralen Designprinzipien fuer generische APIs verinnerlicht.
 >
-> **Naechste Lektion:** [23 - Recursive Types](../../23-recursive-types/README.md) —
-> Typen die sich selbst referenzieren: JSON, Tree-Strukturen und tiefe
-> Verschachtelung.
+> Weiter geht es mit: [Sektion 07 - NoInfer und Inferenz-Kontrolle](./07-noinfer-und-inferenz-kontrolle.md)

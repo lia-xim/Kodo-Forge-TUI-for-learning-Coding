@@ -9,7 +9,7 @@
 
 ## Was du hier lernst
 
-- Was `strict: true` wirklich aktiviert (es sind 11 einzelne Flags!)
+- Was `strict: true` wirklich aktiviert (es sind 8 einzelne Flags!)
 - Warum `strictNullChecks` das wichtigste einzelne Flag ist
 - Wie `strictFunctionTypes` Varianz erzwingt (Bezug zu L22!)
 - Welche Strict-Flags oft uebersehen werden
@@ -19,19 +19,21 @@
 ## Das `strict`-Flag: Ein Buendel, kein einzelnes Flag
 
 Wenn du `"strict": true` setzt, aktivierst du nicht ein einzelnes
-Verhalten — du aktivierst **11 einzelne Flags gleichzeitig**. Das ist
+Verhalten — du aktivierst **8 einzelne Flags gleichzeitig**. Das ist
 wie ein "Alles anschalten"-Schalter fuer Typsicherheit.
 
 ```typescript annotated
 {
   "compilerOptions": {
     "strict": true
-    // ^ Aktiviert ALLE folgenden 11 Flags auf einmal:
+    // ^ Aktiviert ALLE folgenden 8 Flags auf einmal:
     // strictNullChecks, strictFunctionTypes, strictBindCallApply,
     // strictPropertyInitialization, noImplicitAny, noImplicitThis,
-    // alwaysStrict, useUnknownInCatchVariables,
+    // alwaysStrict, useUnknownInCatchVariables (seit TS 4.0)
+    //
+    // NICHT enthalten (muessen explizit gesetzt werden):
     // exactOptionalPropertyTypes, noImplicitOverride,
-    // strictBuiltinIteratorReturn (ab TS 5.6)
+    // strictBuiltinIteratorReturn
   }
 }
 ```
@@ -53,7 +55,7 @@ wie ein "Alles anschalten"-Schalter fuer Typsicherheit.
 
 ---
 
-## Die 11 Flags im Detail
+## Die 8 Flags im Detail
 
 ### 1. `strictNullChecks` — Das wichtigste Flag
 
@@ -92,31 +94,55 @@ du bewusst handhaben musst.
 
 ### 2. `strictFunctionTypes` — Varianz erzwingen
 
-Dieses Flag erzwingt **kontravariante Parameter-Typen** bei
-Funktionstypen. Erinnerst du dich an L22 (Advanced Generics)?
-Dort hast du Kovarianz und Kontravarianz gelernt.
+Dieses Flag schaltet die **bivariante** Behandlung von Funktionstypen
+ab und erzwingt stattdessen korrekte Kontravarianz bei Parametern.
+Erinnerst du dich an L22 (Advanced Generics)? Dort hast du Kovarianz
+und Kontravarianz gelernt.
+
+**Was bedeutet das konkret?** Ohne `strictFunctionTypes` behandelt
+TypeScript Funktionsparameter *bivariant* — sowohl Subtypen als auch
+Supertypen werden akzeptiert. Das klingt flexibel, erlaubt aber
+unsicheren Code.
 
 ```typescript annotated
 type Handler = (event: MouseEvent) => void;
 
-// OHNE strictFunctionTypes:
+// SICHER — auch mit strictFunctionTypes erlaubt:
 const handler: Handler = (event: Event) => {};
-// ^ Erlaubt! Event ist Supertyp von MouseEvent — das ist unsicher
-// Weil handler vielleicht auf MouseEvent-spezifische Properties zugreift
+// ^ OK! Event ist Supertyp von MouseEvent.
+// Die Funktion akzeptiert jeden Event — MouseEvent ist ein Event,
+// also wird sie mit einem MouseEvent problemlos umgehen koennen.
+// Das ist korrekte Kontravarianz: Parameter duerfen allgemeiner sein.
 
-// MIT strictFunctionTypes:
-const handler: Handler = (event: Event) => {};
-// ^ Fehler! Type '(event: Event) => void' is not assignable to type 'Handler'
-// Parameter-Typen sind kontravariant — Supertyp geht NICHT
+// VERBOTEN mit strictFunctionTypes:
+type ClickHandler = (event: UIEvent) => void;
+const clickHandler: Handler = (event: UIEvent) => {
+// ^ Fehler! Type '(event: UIEvent) => void' is not assignable to type 'Handler'
+// UIEvent ist Supertyp von MouseEvent — die Funktion koennte intern
+// UIEvent-only-Properties erwarten, die MouseEvent NICHT hat.
+// Nein: MouseEvent IST ein UIEvent, also hat es alle UIEvent-Properties.
+// Der echte Fehler: MouseEvent hat z.B. clientX/clientY, UIEvent nicht —
+// der Aufrufer uebergibt einen MouseEvent, aber die Funktion sieht nur UIEvent.
+  console.log(event.detail); // UIEvent.detail — kein Fehler, aber clientX fehlt!
+};
+
+// Das wirklich verbotene Muster (covariant parameter — falsche Richtung):
+type AnimalHandler = (animal: Animal) => void;
+const dogHandler: AnimalHandler = (dog: Dog) => {
+// ^ Fehler! Dog ist SUBTYP von Animal — das ist covariant, nicht kontravariant.
+// Der Aufrufer koennte einen Cat uebergeben — dog.bark() wuerde crashen!
+  dog.bark(); // Was, wenn "animal" eigentlich eine Cat ist?
+};
 ```
 
-> 🧠 **Erklaere dir selbst:** Warum ist es unsicher, wenn eine
-> Funktion, die `MouseEvent` erwartet, nur `Event` akzeptiert?
-> Denke an einen konkreten Fall: Was passiert, wenn die Funktion
-> `event.clientX` aufruft?
-> **Kernpunkte:** MouseEvent hat clientX/clientY | Event hat das nicht |
-> Funktion mit Event-Parameter koennte MouseEvent-Properties verlieren |
-> kontravariante Parameter verhindern das
+> 🧠 **Erklaere dir selbst:** Warum ist eine Funktion, die `Animal`
+> erwartet, sicher als Handler fuer `Dog` — aber eine Funktion die
+> nur `Dog` erwartet, NICHT sicher als Handler fuer `Animal`?
+> Denke an den Aufrufer: Was uebergibt er?
+> **Kernpunkte:** Kontravariant = allgemeiner Typ ist sicher (jeder Dog ist ein Animal) |
+> Covariant = spezifischer Typ ist UNSICHER (nicht jedes Animal ist ein Dog) |
+> strictFunctionTypes verbietet die unsichere Richtung | Methoden-Syntax
+> bleibt bivariant (Rueckwaertskompatibilitaet)
 
 ### 3. `noImplicitAny` — Kein verstecktes any
 
@@ -203,13 +229,20 @@ try {
 Das passt perfekt zu L25 (Type-safe Error Handling) — dort hast du
 gelernt, warum `throw` beliebige Werte werfen kann, nicht nur `Error`.
 
-### 6-11: Die weiteren Flags
+### 6-8: Die weiteren Flags
+
+**Im `strict`-Buendel enthalten (6-8):**
 
 | Flag | Bewirkt |
 |------|---------|
 | `strictBindCallApply` | Prueft Typen bei `.bind()`, `.call()`, `.apply()` |
 | `noImplicitThis` | Verbietet implizites `any` fuer `this` |
 | `alwaysStrict` | Fuegt `"use strict"` in jede Ausgabe-Datei ein |
+
+**Nicht im `strict`-Buendel — muessen explizit gesetzt werden:**
+
+| Flag | Bewirkt |
+|------|---------|
 | `exactOptionalPropertyTypes` | `age?: number` erlaubt NICHT `age: undefined` — nur Weglassen |
 | `noImplicitOverride` | `override` Keyword pflicht bei Method-Override in Klassen |
 | `strictBuiltinIteratorReturn` | Prueft Iterator-Return-Typen (ab TS 5.6) |
@@ -267,10 +300,11 @@ ist eine potenzielle Fehlerquelle.
 
 ## Was du gelernt hast
 
-- `strict: true` aktiviert 11 einzelne Flags gleichzeitig
+- `strict: true` aktiviert 8 einzelne Flags gleichzeitig
 - `strictNullChecks` ist das wichtigste einzelne Flag — es macht null/undefined zu expliziten Typen
-- `strictFunctionTypes` erzwingt kontravariante Parameter (Bezug zu Varianz aus L22)
+- `strictFunctionTypes` schaltet bivariante Funktionsparameter ab und erzwingt korrekte Kontravarianz (Bezug zu Varianz aus L22)
 - `useUnknownInCatchVariables` macht catch-Variablen sicher (Bezug zu Error Handling aus L25)
+- `exactOptionalPropertyTypes`, `noImplicitOverride`, `strictBuiltinIteratorReturn` sind NICHT in `strict: true` — sie muessen explizit gesetzt werden
 - Du kannst `strict: true` setzen und einzelne Flags temporaer deaktivieren
 
 > 🧠 **Erklaere dir selbst:** Ein Kollege sagt: "Ich setze

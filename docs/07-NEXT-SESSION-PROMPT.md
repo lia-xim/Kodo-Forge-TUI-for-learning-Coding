@@ -25,7 +25,8 @@ Ich arbeite an einer Multi-Kurs-Lernplattform im Terminal (TUI). Das Projekt lie
 
 ## Aktueller Stand (2026-04-05)
 
-- **TypeScript:** **40 von 40 Lektionen fertig** (alle 4 Phasen komplett)
+- **TypeScript:** **44 von 44 Lektionen fertig** — Phase 5 ergaenzt (Session 5)
+- **Qualitaets-Fixes:** L17/L18/L19 komplett neu geschrieben (A), L12/L13/L14 enhanced (A), L35-L39 expandiert (A), L01-L27 extern→inline Experimente, Quiz-Bias L09/L14/L18/L31 gefixt, technische Fehler in L28/L29/L32/L37 behoben
 - **Angular/React/Next.js:** Nur Curricula, keine Lektionen
 - **TUI:** 39 Module, ~15.000+ Zeilen, 25 Features, modularisiert
 - **Plattform:** 4 Kurse registriert, Lock-System, dynamische Statistiken
@@ -43,46 +44,49 @@ Der Lernende ist ein **theoretischer Lerner** der viel in kurzer Zeit aufnehmen 
 
 ## Was als naechstes zu tun ist (Prioritaetsreihenfolge)
 
-### KRITISCH: L17, L18, L19 komplett neu schreiben
+### ERLEDIGT in Session 4 (2026-04-05)
 
-Diese 3 Lektionen haben eine schwere Qualitaets-Regression. Audit-Ergebnis: Note C.
-- Sektionen nur **83-127 Zeilen** statt Ziel 280-320
-- Fast **alle didaktischen Elemente fehlen** (kein Geschichte, kein Self-Explanation, kein Denkfrage, kein Experiment, kein annotierter Code, kein Framework-Bezug, kein "Was du gelernt hast")
-- Sektionen lesen sich wie Referenzkarten/Cheatsheets, nicht wie Lernsektionen
+- ✅ L17/L18/L19 komplett neu geschrieben (83-127 → 280-370 Zeilen, alle didaktischen Elemente)
+- ✅ L12/L13/L14 aufgewertet (Experimente, Framework, Denkfragen, "Was gelernt hast")
+- ✅ L35-L39 auf 280-320+ Zeilen expandiert
+- ✅ L02/L03/L06/L07/L09/L11/L15/L25/L27 extern→inline Experimente
+- ✅ L01/L04/L05/L08 fehlende Elemente ergaenzt, L32 Analogien
+- ✅ Quiz-Bias: L09/L14/L18/L31 gefixt, L08 elaboratedFeedback inline migriert
+- ✅ Technische Korrekturen: L28/L29/L32/L37
+- ✅ Cross-lesson back-references: L08/L21/L26/L33/L40
 
-**Vorgehen:** Max. 3 Lektionen pro Agent-Run. Jede Sektion MUSS 280-320 Zeilen haben. Qualitaets-Checkliste unten beachten.
+### ERLEDIGT in Session 5 (2026-04-05)
 
-**L17: Conditional Types** (`typescript/17-conditional-types/sections/`)
-**L18: Template Literal Types** (`typescript/18-template-literal-types/sections/`)
-**L19: Modules & Declarations** (`typescript/19-modules-und-declarations/sections/`)
+- ✅ L22/S07: `NoInfer<T>` + `infer T extends X`
+- ✅ L28/S07: `reflect-metadata` & Angular DI Internals
+- ✅ L31/S07: `using` keyword & Explicit Resource Management
+- ✅ L41: TypeScript 5.x Features (alle TS 5.0-5.7 Neuerungen)
+- ✅ L42: TypeScript Security (gefaehrliche Muster, Parse-dont-validate)
+- ✅ L43: TypeScript mit RxJS (Observable-Typen, Angular-Patterns)
+- ✅ L44: Design Patterns Erweitert (GoF, SOLID, Repository, Strategy)
 
-### HOCH: L12, L13, L14 aufwerten
+### OFFEN: Strukturelle Ergaenzungen (Entscheidung noetig)
 
-Audit-Ergebnis: B bis B-. Hauptprobleme:
-- **L12 Discriminated Unions:** Kein Experiment, kein Framework-Bezug, kein "Was du gelernt hast" (nur Tabelle), keine Denkfrage
-- **L13 Generics Basics:** S01 fehlen Geschichte, Experiment, Framework, Denkfrage, "Was du gelernt hast"
-- **L14 Generic Patterns:** Keine Geschichten, keine Experimente, keine Framework-Bezuege, keine Denkfragen
+**1. `using` keyword (TS 5.2 — Explicit Resource Management)**
+- Fehlt komplett im Kurs
+- Besonders relevant fuer Angular HTTP-Client-Management
+- Empfehlung: Neue Sektion in L31 (Async TypeScript)
 
-Ansatz: Sektionen ergaenzen (nicht komplett neu schreiben). Fehlende Elemente hinzufuegen.
+**2. `NoInfer<T>` (TS 5.4)**
+- Fehlt komplett
+- Empfehlung: Neue Sektion in L22 (Advanced Generics)
 
-### HOCH: L35-L39 Sektionen verlaengern
+**3. `reflect-metadata` in L28 (Decorators)**
+- Kritisch fuer Angular Dependency Injection
+- Fehlt im Decorators-Kapitel
 
-Audit-Ergebnis: A- bis B. Alle didaktischen Elemente vorhanden, aber Sektionen zu kurz:
-- L35: 237-258 Zeilen
-- L36: 266-273 Zeilen
-- L37: 226-245 Zeilen (deutlich unter Ziel)
-- L38: 238-275 Zeilen
-- L39: 214-232 Zeilen (kuerzeste im ganzen Kurs!)
-
-### MITTEL: L01-L09 extern→inline Experiment-Referenzen
-
-Mehrere fruehe Lektionen haben Experiment-Boxen die auf `examples/`-Dateien verweisen.
-Das widerspricht der neuen Philosophie (Code inline, kein Datei-Wechsel).
-Betroffen: L02, L03, L06, L07, L09 (und teils L05, L11, L12, L13, L15, L16, L25)
+**4. Curriculum-Redundanzen (Diskussion noetig)**
+- L07/S02+S03: Lehrt Type Guards und Discriminated Unions vor L11/L12 (leichter Vorgriff)
+- L09/S05: Template Literals vor L18 (leichter Vorgriff)
+- L05/S07: Utility Types vor Mapped Types in L16 (Reihenfolge-Problem?)
 
 ### NIEDRIG: Angular-Kurs starten
 
-Wenn TypeScript-Qualitaets-Fixes abgeschlossen: Angular-Kurs beginnen (40 Lektionen).
 Curriculum in `angular/CURRICULUM.md`. Lernende kennt Angular beruflich — hoeheres Startniveau.
 
 ## Qualitaets-Checkliste (PFLICHT fuer neue/ueberarbeitete Sektionen)
@@ -133,13 +137,10 @@ Deine Sektionen muessen MINDESTENS so reichhaltig sein (aber mit inline Code sta
 
 ## Bekannte Probleme und Warnungen
 
-1. **L17/L18/L19 kritisch:** Sektionen 83-127 Zeilen, alle didaktischen Elemente fehlen. Komplett-Rewrite noetig!
-2. **L12-L14 lueckenhaft:** Mehrere fehlende Qualitaetselemente (Experimente, Framework, Denkfragen, "Was du gelernt hast")
-3. **L35-L39 zu kurz:** 214-258 Zeilen statt 280-320 Ziel. Sektionen ausbauen.
-4. **Quiz-Bias (Index):** correct-Indizes MUESSEN gleichmaessig verteilt sein (4/4/4/3).
-5. **Quiz-Bias (Laenge):** Die laengste/komplexeste Antwort darf NICHT systematisch die richtige sein.
-6. **Pretest-Bias:** Gleiche Bias-Gefahr bei pretest-data.ts — noch nicht systematisch geprueft.
-7. **TS 5.5 Inferred Type Predicates:** `arr.filter(x => x !== null)` gibt seit TS 5.5 `T[]` statt `(T | null)[]` zurueck.
-8. **Circular Dependencies:** `tui-state.ts` darf NICHTS von Screen-Modulen importieren! Nur umgekehrt.
+1. **Quiz-Bias (Laenge):** Die laengste/komplexeste Antwort darf NICHT systematisch die richtige sein. (Quiz-Index-Bias wurde in Session 4 gefixt, Laengen-Bias noch nicht systematisch geprueft)
+2. **TS 5.5 Inferred Type Predicates:** `arr.filter(x => x !== null)` gibt seit TS 5.5 `T[]` statt `(T | null)[]` zurueck.
+3. **Circular Dependencies:** `tui-state.ts` darf NICHTS von Screen-Modulen importieren! Nur umgekehrt.
+4. **Fehlende TS 5.x Features:** `using` (TS 5.2), `NoInfer<T>` (TS 5.4) noch nicht im Kurs.
+5. **`reflect-metadata`** fehlt in L28 — wichtig fuer Angular DI-Verstaendnis.
 
 ---

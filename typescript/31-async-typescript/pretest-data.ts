@@ -1,19 +1,21 @@
 // pretest-data.ts — L31: Async TypeScript
 // 18 Fragen (3 pro Sektion)
+// correct-Index-Verteilung: 5×0, 4×1, 5×2, 4×3
 
 export interface PretestQuestion {
-  sectionId: number;
+  sectionIndex: number;
   question: string;
   options: string[];
   correct: number;
-  explanation: string;
+  briefExplanation: string;
 }
 
-export const pretestData: PretestQuestion[] = [
+export const pretestQuestions: PretestQuestion[] = [
   // ─── Sektion 1: Promise-Typen ──────────────────────────────────────────
 
+  // Q1 → correct:0 (unveraendert — war schon correct:0)
   {
-    sectionId: 1,
+    sectionIndex: 1,
     question: "Was beschreibt der Typparameter in Promise<string>?",
     options: [
       "Den Typ des aufgeloesten Werts",
@@ -22,10 +24,12 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 0,
-    explanation: "Promise<T> beschreibt den Typ des Werts der bei resolve() uebergeben wird.",
+    briefExplanation: "Promise<T> beschreibt den Typ des Werts der bei resolve() uebergeben wird.",
   },
+
+  // Q2 → correct:1 (unveraendert)
   {
-    sectionId: 1,
+    sectionIndex: 1,
     question: "Was macht Awaited<Promise<Promise<number>>>?",
     options: [
       "Ergibt Promise<number>",
@@ -34,49 +38,56 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 1,
-    explanation: "Awaited<T> entpackt rekursiv alle Promise-Schichten bis zum Basistyp.",
+    briefExplanation: "Awaited<T> entpackt rekursiv alle Promise-Schichten bis zum Basistyp.",
   },
+
+  // Q3 → correct:0 (Richtige nach vorne)
   {
-    sectionId: 1,
+    sectionIndex: 1,
     question: "Was ist PromiseLike<T>?",
     options: [
-      "Ein Alias fuer Promise<T>",
       "Das minimale Interface mit nur then() — fuer 'thenable' Objekte",
+      "Ein Alias fuer Promise<T>",
       "Ein deprecated Typ aus alten TypeScript-Versionen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "PromiseLike<T> hat nur then() und ist kompatibel mit jedem Objekt das eine then()-Methode hat.",
+    correct: 0,
+    briefExplanation: "PromiseLike<T> hat nur then() und ist kompatibel mit jedem Objekt das eine then()-Methode hat.",
   },
 
   // ─── Sektion 2: async/await und Typinferenz ────────────────────────────
 
+  // Q4 → correct:2 (Richtige an Pos 2)
   {
-    sectionId: 2,
+    sectionIndex: 2,
     question: "Was ist der Rueckgabetyp einer async-Funktion die 'return 42' hat?",
     options: [
       "number",
-      "Promise<number>",
       "Promise<number> | number",
+      "Promise<number>",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "async-Funktionen wrappen den Rueckgabetyp IMMER in Promise<T>.",
+    correct: 2,
+    briefExplanation: "async-Funktionen wrappen den Rueckgabetyp IMMER in Promise<T>.",
   },
+
+  // Q5 → correct:0 (Richtige nach vorne)
   {
-    sectionId: 2,
+    sectionIndex: 2,
     question: "Was gibt response.json() in fetch zurueck?",
     options: [
-      "Promise<unknown>",
       "Promise<any> — ein Typ-Loch",
+      "Promise<unknown>",
       "Den geparsten JSON-Typ",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "json() gibt Promise<any> zurueck. Das 'any' infiziert alle abgeleiteten Typen.",
+    correct: 0,
+    briefExplanation: "json() gibt Promise<any> zurueck. Das 'any' infiziert alle abgeleiteten Typen.",
   },
+
+  // Q6 → correct:1 (unveraendert)
   {
-    sectionId: 2,
+    sectionIndex: 2,
     question: "Was passiert wenn man 'await' vor einem Nicht-Promise-Wert schreibt?",
     options: [
       "Compile-Error",
@@ -85,13 +96,14 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 1,
-    explanation: "await auf einem Nicht-Promise gibt den Wert direkt zurueck. Im Typ: Awaited<number> = number.",
+    briefExplanation: "await auf einem Nicht-Promise gibt den Wert direkt zurueck. Im Typ: Awaited<number> = number.",
   },
 
   // ─── Sektion 3: Error Handling in Async ────────────────────────────────
 
+  // Q7 → correct:2 (unveraendert — war schon correct:2)
   {
-    sectionId: 3,
+    sectionIndex: 3,
     question: "Welchen Typ hat die catch-Variable mit 'strict: true' seit TS 4.4?",
     options: [
       "Error",
@@ -100,10 +112,12 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 2,
-    explanation: "Mit useUnknownInCatchVariables (Teil von strict) ist die catch-Variable 'unknown'.",
+    briefExplanation: "Mit useUnknownInCatchVariables (Teil von strict) ist die catch-Variable 'unknown'.",
   },
+
+  // Q8 → correct:1 (unveraendert)
   {
-    sectionId: 3,
+    sectionIndex: 3,
     question: "Warum kann TypeScript den Fehlertyp in catch nicht genau bestimmen?",
     options: [
       "Weil catch nur Error-Objekte faengt",
@@ -112,76 +126,86 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 1,
-    explanation: "throw kann Strings, Zahlen, Objekte, undefined werfen. TypeScript muesste alle throw-Pfade tracken.",
+    briefExplanation: "throw kann Strings, Zahlen, Objekte, undefined werfen. TypeScript muesste alle throw-Pfade tracken.",
   },
+
+  // Q9 → correct:2 (Richtige an Pos 2)
   {
-    sectionId: 3,
+    sectionIndex: 3,
     question: "Was ist das Async Result Pattern?",
     options: [
       "Eine spezielle try/catch-Syntax fuer Async",
-      "Ein Pattern das Promise<T> in Promise<Result<T>> konvertiert",
       "Ein Angular-spezifisches Error-Handling-Pattern",
+      "Ein Pattern das Promise<T> in Promise<Result<T>> konvertiert",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "trySafe<T>(promise) faengt Fehler und gibt Result<T> zurueck — Fehler werden im Typ sichtbar.",
+    correct: 2,
+    briefExplanation: "trySafe<T>(promise) faengt Fehler und gibt Result<T> zurueck — Fehler werden im Typ sichtbar.",
   },
 
   // ─── Sektion 4: Generische Async-Patterns ──────────────────────────────
 
+  // Q10 → correct:0 (Richtige nach vorne)
   {
-    sectionId: 4,
+    sectionIndex: 4,
     question: "Warum nimmt eine retry-Funktion () => Promise<T> statt Promise<T>?",
     options: [
-      "Weil TypeScript sonst den Typ nicht inferieren kann",
       "Weil ein Promise sofort startet — die Funktion ermoeglicht Wiederholung",
+      "Weil TypeScript sonst den Typ nicht inferieren kann",
       "Weil Promises nicht als Parameter uebergeben werden koennen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "Promises sind eager (starten sofort). Eine Funktion ist lazy und kann bei jedem Retry neu aufgerufen werden.",
+    correct: 0,
+    briefExplanation: "Promises sind eager (starten sofort). Eine Funktion ist lazy und kann bei jedem Retry neu aufgerufen werden.",
   },
+
+  // Q11 → correct:2 (Richtige an Pos 2)
   {
-    sectionId: 4,
+    sectionIndex: 4,
     question: "Was macht AbortController bei einem Timeout besser als Promise.race?",
     options: [
       "AbortController ist schneller",
-      "AbortController bricht die Operation tatsaechlich ab, race laesst sie weiterlaufen",
       "AbortController hat bessere Typen",
+      "AbortController bricht die Operation tatsaechlich ab, race laesst sie weiterlaufen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "Promise.race gibt das schnellste Ergebnis zurueck, aber das langsame Promise laeuft weiter. AbortController bricht ab.",
+    correct: 2,
+    briefExplanation: "Promise.race gibt das schnellste Ergebnis zurueck, aber das langsame Promise laeuft weiter. AbortController bricht ab.",
   },
+
+  // Q12 → correct:3 (Richtige ans Ende)
   {
-    sectionId: 4,
+    sectionIndex: 4,
     question: "Warum verschwindet 'never' in Promise.race([Promise<T>, Promise<never>])?",
     options: [
       "never ist ein Fehler-Typ",
-      "never ist die leere Menge — T | never = T",
       "TypeScript ignoriert Promise<never>",
-      "Ich weiss es nicht",
+      "never wird zu unknown konvertiert",
+      "never ist die leere Menge — T | never = T",
     ],
-    correct: 1,
-    explanation: "never ist der Bottom Type (leere Menge). In einer Union verschwindet er: T | never = T.",
+    correct: 3,
+    briefExplanation: "never ist der Bottom Type (leere Menge). In einer Union verschwindet er: T | never = T.",
   },
 
   // ─── Sektion 5: AsyncIterable und Generators ──────────────────────────
 
+  // Q13 → correct:0 (Richtige nach vorne)
   {
-    sectionId: 5,
+    sectionIndex: 5,
     question: "Was bedeutet 'async function*' in TypeScript?",
     options: [
-      "Eine Funktion die Promises erzeugt",
       "Ein Async Generator der Werte asynchron yielden kann",
+      "Eine Funktion die Promises erzeugt",
       "Eine Funktion mit Stern-Operator fuer Multiplikation",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "async function* definiert einen Async Generator. Er kann Werte mit yield asynchron liefern.",
+    correct: 0,
+    briefExplanation: "async function* definiert einen Async Generator. Er kann Werte mit yield asynchron liefern.",
   },
+
+  // Q14 → correct:1 (unveraendert)
   {
-    sectionId: 5,
+    sectionIndex: 5,
     question: "Was ist IteratorResult<T, TReturn>?",
     options: [
       "Ein Promise das T zurueckgibt",
@@ -190,57 +214,64 @@ export const pretestData: PretestQuestion[] = [
       "Ich weiss es nicht",
     ],
     correct: 1,
-    explanation: "IteratorResult ist eine Discriminated Union. 'done' ist die Diskriminante — value hat je nach done verschiedene Typen.",
+    briefExplanation: "IteratorResult ist eine Discriminated Union. 'done' ist die Diskriminante — value hat je nach done verschiedene Typen.",
   },
+
+  // Q15 → correct:3 (Richtige ans Ende)
   {
-    sectionId: 5,
+    sectionIndex: 5,
     question: "Was passiert bei 'break' in einer for-await-of-Schleife?",
     options: [
       "Der Generator laeuft im Hintergrund weiter",
-      "Es wird automatisch gen.return() aufgerufen",
       "Es gibt einen Compile-Error",
-      "Ich weiss es nicht",
+      "Der naechste yield wird noch ausgefuehrt",
+      "Es wird automatisch gen.return() aufgerufen",
     ],
-    correct: 1,
-    explanation: "break ruft implizit return() auf dem Iterator auf. Der Generator wird sauber beendet.",
+    correct: 3,
+    briefExplanation: "break ruft implizit return() auf dem Iterator auf. Der Generator wird sauber beendet.",
   },
 
   // ─── Sektion 6: Praxis — Frameworks ────────────────────────────────────
 
+  // Q16 → correct:2 (Richtige an Pos 2)
   {
-    sectionId: 6,
+    sectionIndex: 6,
     question: "Was ist das Problem mit HttpClient.get<User[]>('/api/users') in Angular?",
     options: [
       "Der Typ ist falsch — es sollte Observable<User[]> sein",
-      "Es ist ein 'Trust me, Compiler' — keine Runtime-Pruefung ob die API wirklich User[] liefert",
       "HttpClient akzeptiert keine Generics",
+      "Es ist ein 'Trust me, Compiler' — keine Runtime-Pruefung ob die API wirklich User[] liefert",
       "Ich weiss es nicht",
     ],
-    correct: 1,
-    explanation: "HttpClient.get<T>() ist ein Compilezeit-Versprechen. TypeScript prueft nicht was die API tatsaechlich liefert.",
+    correct: 2,
+    briefExplanation: "HttpClient.get<T>() ist ein Compilezeit-Versprechen. TypeScript prueft nicht was die API tatsaechlich liefert.",
   },
+
+  // Q17 → correct:3 (Richtige ans Ende)
   {
-    sectionId: 6,
+    sectionIndex: 6,
     question: "Was ist der Vorteil von Typed API Routes als zentrale Typ-Map?",
     options: [
       "Sie machen HTTP-Aufrufe schneller",
-      "Autocomplete und Typ-Sicherheit fuer alle Endpunkte an einer Stelle",
       "Sie ersetzen REST durch GraphQL",
-      "Ich weiss es nicht",
+      "Sie reduzieren die Bundle-Groesse",
+      "Autocomplete und Typ-Sicherheit fuer alle Endpunkte an einer Stelle",
     ],
-    correct: 1,
-    explanation: "Eine zentrale Typ-Map definiert alle Endpunkte mit ihren Request/Response-Typen. IDE-Autocomplete und Compile-Pruefung inklusive.",
+    correct: 3,
+    briefExplanation: "Eine zentrale Typ-Map definiert alle Endpunkte mit ihren Request/Response-Typen. IDE-Autocomplete und Compile-Pruefung inklusive.",
   },
+
+  // Q18 → correct:3 (Richtige ans Ende)
   {
-    sectionId: 6,
+    sectionIndex: 6,
     question: "Was schliesst die Luecke zwischen TypeScript-Typen und tatsaechlichen API-Daten?",
     options: [
       "Strengere tsconfig-Optionen",
-      "Runtime-Validierung mit Zod, Valibot oder aehnlichen Bibliotheken",
       "Mehr Generics im Code",
-      "Ich weiss es nicht",
+      "Readonly-Typen in Interfaces",
+      "Runtime-Validierung mit Zod, Valibot oder aehnlichen Bibliotheken",
     ],
-    correct: 1,
-    explanation: "Runtime-Validierung prueft die tatsaechlichen Daten gegen ein Schema — nicht nur den TypeScript-Typ.",
+    correct: 3,
+    briefExplanation: "Runtime-Validierung prueft die tatsaechlichen Daten gegen ein Schema — nicht nur den TypeScript-Typ.",
   },
 ];

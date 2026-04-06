@@ -172,6 +172,8 @@ class TypedConfigBuilder<Set extends string = never> {
 
 Ein eleganterer Ansatz nutzt Mapped Types um das Tracking zu automatisieren:
 
+Das `[K in keyof T]`-Konstrukt kennst du aus L16 (Mapped Types). Die Generic-Akkumulation baut auf L13 (Generics Basics) und L22 (Advanced Generics) auf. Und `type` als einziges Werkzeug fuer Mapped Types — das war schon das Kernthema in L08.
+
 ```typescript annotated
 type Builder<T, Required extends keyof T, Set extends keyof T = never> = {
   // ^ T = Zieltyp, Required = Pflichtfelder, Set = schon gesetzt
