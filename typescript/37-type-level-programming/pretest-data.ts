@@ -118,12 +118,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Welche String-Operationen kann man auf Type-Level implementieren?",
     options: [
-      "Keine — Strings sind zur Compilezeit nicht manipulierbar",
       "Split, Replace, Trim und mehr — alles mit Template Literals und Rekursion",
+      "Keine — Strings sind zur Compilezeit nicht manipulierbar",
       "Nur Uppercase und Lowercase",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Mit Template Literal Types + infer + Rekursion kann man Split, Replace, Trim und beliebig komplexe String-Operationen bauen.",
   },
 
@@ -133,12 +133,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 4,
     question: "Was macht 'infer' in einem Conditional Type?",
     options: [
-      "Es inferiert den Rueckgabetyp einer Funktion",
       "Es extrahiert Teile eines Typs in Variablen — wie Destructuring auf Type-Level",
+      "Es inferiert den Rueckgabetyp einer Funktion",
       "Es macht einen Typ optional",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "infer bindet eine Typ-Variable an den passenden Teil des Patterns. T extends [infer F, ...infer R] extrahiert erstes Element und Rest.",
   },
   {
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Kann man mehrere infer-Variablen in einem Conditional Type verwenden?",
     options: [
       "Nein, nur eine pro Conditional Type",
-      "Ja, beliebig viele — z.B. T extends (a: infer A, b: infer B) => infer R",
       "Nur in verschachtelten Conditional Types",
+      "Ja, beliebig viele — z.B. T extends (a: infer A, b: infer B) => infer R",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Mehrfaches infer erlaubt komplexe Destrukturierung in einem einzigen Pattern.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist 'infer K extends string' (TypeScript 4.7+)?",
     options: [
       "K wird als string festgelegt",
-      "K wird inferiert UND muss den Constraint string erfuellen",
       "Ein Syntax-Fehler",
+      "K wird inferiert UND muss den Constraint string erfuellen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Kombiniert Inferenz und Constraint: K wird extrahiert, aber nur wenn es string zuweisbar ist.",
   },
 
@@ -173,11 +173,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist das TypeScript-Rekursionslimit fuer Typen?",
     options: [
       "Es gibt kein Limit",
-      "Ca. 1000 mit Tail-Call-Optimierung (seit TS 4.5)",
       "Genau 100",
+      "Ca. 1000 mit Tail-Call-Optimierung (seit TS 4.5)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Seit TS 4.5 erkennt der Compiler Tail-Recursive Conditional Types und erlaubt ca. 1000 Rekursionsschritte.",
   },
   {
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist PathOf<T>?",
     options: [
       "Der Dateipfad eines TypeScript-Moduls",
-      "Ein Typ der alle moeglichen Pfade zu verschachtelten Properties als Union erzeugt",
-      "Ein Utility-Typ fuer Node.js-Pfade",
       "Ich weiss es nicht",
+      "Ein Utility-Typ fuer Node.js-Pfade",
+      "Ein Typ der alle moeglichen Pfade zu verschachtelten Properties als Union erzeugt",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "PathOf<{ a: { b: string } }> = 'a' | 'a.b' — alle Pfade als String-Literal-Union.",
   },
   {
@@ -197,11 +197,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist der Accumulator-Pattern auf Type-Level?",
     options: [
       "Ein Pattern das Zahlen akkumuliert",
-      "Ein zusaetzlicher Typparameter der das Zwischenergebnis traegt fuer Tail-Call-Optimierung",
-      "Ein Pattern fuer Array-Reduktionen",
       "Ich weiss es nicht",
+      "Ein Pattern fuer Array-Reduktionen",
+      "Ein zusaetzlicher Typparameter der das Zwischenergebnis traegt fuer Tail-Call-Optimierung",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Der Accumulator traegt das Ergebnis im Parameter statt es nach der Rekursion zusammenzubauen — das ermoeglicht Tail-Call-Optimierung.",
   },
 
@@ -224,11 +224,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Wann lohnt sich Type-Level Programming am meisten?",
     options: [
       "Fuer alle Typen im Projekt",
-      "An Schnittstellen: APIs, Router, ORMs, Bibliotheken",
-      "Nur fuer Tests",
       "Ich weiss es nicht",
+      "Nur fuer Tests",
+      "An Schnittstellen: APIs, Router, ORMs, Bibliotheken",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Schnittstellen sind stabil und werden oft aufgerufen — Type-Level-Sicherheit dort verhindert ganze Fehlerkategorien.",
   },
   {
@@ -236,11 +236,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist die wichtigste Frage vor dem Einsatz von Type-Level Programming?",
     options: [
       "Ist es technisch moeglich?",
-      "Braucht der Nutzer diese Typsicherheit — oder ist es Over-Engineering?",
-      "Wie viele Zeilen spart es?",
       "Ich weiss es nicht",
+      "Wie viele Zeilen spart es?",
+      "Braucht der Nutzer diese Typsicherheit — oder ist es Over-Engineering?",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Die Frage ist nicht 'kann ich?' sondern 'sollte ich?'. Type-Level-Komplexitaet muss durch echten Nutzen gerechtfertigt sein.",
   },
 ];

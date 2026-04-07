@@ -95,12 +95,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "laesst TypeScript dich `.length` darauf aufrufen?",
     code: "function len(s: string | null) {\n  return s.length;\n}",
     options: [
-      "Ja, TypeScript konvertiert null automatisch",
       "Nein, du musst erst pruefen ob s nicht null ist",
+      "Ja, TypeScript konvertiert null automatisch",
       "Ja, null hat auch eine length-Property",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Mit `strictNullChecks` (Standard) meldet TypeScript einen Fehler. " +
       "Du musst erst null ausschliessen, z.B. mit `if (s !== null)`.",
@@ -111,12 +111,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Unterschied zwischen `??` und `||` bei dem Wert `0`?",
     code: "const a = 0 || 42;\nconst b = 0 ?? 42;",
     options: [
-      "Beide geben 42 zurueck",
       "`||` gibt 42, `??` gibt 0",
+      "Beide geben 42 zurueck",
       "Beide geben 0 zurueck",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`||` prueft auf alle falsy-Werte (0 ist falsy!) und gibt 42 zurueck. " +
       "`??` prueft nur auf null/undefined — da 0 weder null noch undefined ist, " +
@@ -131,12 +131,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "TypeScript hat `any` und `unknown`. Beide akzeptieren jeden Wert. " +
       "Was denkst du — wo ist der Unterschied?",
     options: [
-      "`any` ist sicherer als `unknown`",
       "`unknown` zwingt dich zu pruefen bevor du den Wert nutzt",
+      "`any` ist sicherer als `unknown`",
       "Es gibt keinen Unterschied",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`unknown` ist der sichere Weg: Du kannst einen unknown-Wert nicht " +
       "direkt verwenden — du musst erst pruefen (Type Narrowing). " +
@@ -150,11 +150,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "let x: any = { name: 'Max' };\nlet y = x.name;\nlet z = y.length;",
     options: [
       "`y` ist `string`, `z` ist `number`",
-      "`y` und `z` sind beide `any`",
-      "`y` ist `any`, `z` ist `number`",
       "Ich weiss es nicht",
+      "`y` ist `any`, `z` ist `number`",
+      "`y` und `z` sind beide `any`",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`any` ist ansteckend! Alles was aus einem `any`-Wert abgeleitet wird, " +
       "ist wieder `any`. Die gesamte Kette verliert den Typschutz.",
@@ -204,11 +204,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "let x: unknown = 'hello';\nlet y: string = x; // Geht das?",
     options: [
       "Ja, weil der Wert tatsaechlich ein String ist",
-      "Nein, man muss erst pruefen ob es ein String ist",
-      "Ja, `unknown` ist wie `any`",
       "Ich weiss es nicht",
+      "Ja, `unknown` ist wie `any`",
+      "Nein, man muss erst pruefen ob es ein String ist",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`unknown` kann NICHT direkt zugewiesen werden. Du musst erst " +
       "pruefen (Type Narrowing), z.B. mit `typeof x === 'string'`. " +
@@ -221,11 +221,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "const x = 'hallo';",
     options: [
       "`string`",
-      '`"hallo"` (der exakte Wert als Typ)',
-      "`any`",
       "Ich weiss es nicht",
+      "`any`",
+      '`"hallo"` (der exakte Wert als Typ)',
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "const-Variablen mit primitiven Werten bekommen einen Literal Type. " +
       'Da const sich nie aendert, ist der Typ exakt `"hallo"` — nicht `string`. ' +

@@ -212,12 +212,12 @@ const a: HasName = data;
 // B:
 const b: HasName = { name: "Max", age: 30 };`,
     options: [
-      "Nur A — Variable hat Extra-Property 'age'",
       "Nur B — frisches Object Literal hat Extra-Property 'age'",
+      "Nur A — Variable hat Extra-Property 'age'",
       "Beide — 'age' ist nicht in HasName",
       "Keines — Extra-Properties sind immer erlaubt",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Excess Property Check greift NUR bei frischen Object Literals! " +
       "Bei A geht die Zuweisung ueber eine Variable — kein Check.",
@@ -228,12 +228,12 @@ const b: HasName = { name: "Max", age: 30 };`,
     question:
       "Warum hat TypeScript den Excess Property Check eingefuehrt?",
     options: [
-      "Aus Performance-Gruenden — weniger Properties sind schneller",
       "Um Tippfehler in Object Literals zu finden (haeufigste Fehlerquelle)",
+      "Aus Performance-Gruenden — weniger Properties sind schneller",
       "Weil Structural Typing zu unsicher ist",
       "Weil JavaScript Extra-Properties verbietet",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Eingefuehrt in TypeScript 1.6: Die Maintainer beobachteten, dass " +
       "Tippfehler in Object Literals eine der haeufigsten Fehlerquellen waren.",
@@ -267,12 +267,12 @@ const b: HasName = { name: "Max", age: 30 };`,
 const u: User = { address: { city: "Berlin" } };
 u.address.city = "Hamburg";`,
     options: [
-      "Compile-Fehler — address ist readonly, also auch alles darunter",
       "Kein Fehler — readonly ist shallow, nur die Referenz 'address' ist geschuetzt",
+      "Compile-Fehler — address ist readonly, also auch alles darunter",
       "Laufzeit-Fehler — das Objekt ist eingefroren",
       "Compile-Fehler bei 'city', weil es auch 'readonly' sein muesste",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "readonly ist SHALLOW! Es schuetzt nur die oberste Ebene. " +
       "'u.address = ...' waere ein Fehler, aber 'u.address.city = ...' ist erlaubt.",
@@ -284,12 +284,12 @@ u.address.city = "Hamburg";`,
     code: `interface A { x?: number; }
 interface B { x: number | undefined; }`,
     options: [
-      "Kein Unterschied — beide sind identisch",
       "Bei A kann x komplett fehlen, bei B muss x vorhanden sein (Wert darf undefined sein)",
+      "Kein Unterschied — beide sind identisch",
       "Bei B ist x immer undefined",
       "Bei A ist x immer vorhanden aber optional",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "{} ist gueltig fuer A (x darf fehlen), aber NICHT fuer B " +
       "(x muss vorhanden sein, auch wenn der Wert undefined ist).",
@@ -302,10 +302,10 @@ interface B { x: number | undefined; }`,
     options: [
       "Einfach 'readonly' auf die oberste Ebene setzen",
       "Object.freeze() aufrufen",
-      "Einen rekursiven Utility Type wie DeepReadonly<T>",
       "'as const' auf das Objekt",
+      "Einen rekursiven Utility Type wie DeepReadonly<T>",
     ],
-    correct: 2,
+    correct: 3,
     briefExplanation:
       "Fuer echte tiefe Immutabilitaet im Typ-System brauchst du einen " +
       "rekursiven Typ. 'as const' funktioniert auch, aber nur bei Literal-Werten.",
@@ -324,12 +324,12 @@ interface B { x: number | undefined; }`,
   [key: string]: string;
 }`,
     options: [
-      "Index Signatures duerfen nicht mit festen Properties kombiniert werden",
       "'port: number' widerspricht der Index Signature '[key: string]: string'",
+      "Index Signatures duerfen nicht mit festen Properties kombiniert werden",
       "Der Key-Typ 'string' ist nicht erlaubt",
       "Es gibt kein Problem",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Alle festen Properties muessen zum Typ der Index Signature passen. " +
       "'port: number' widerspricht '[key: string]: string'. " +
@@ -341,11 +341,11 @@ interface B { x: number | undefined; }`,
     question: "Was beschreibt Record<string, number>?",
     options: [
       "Ein Array von Zahlen",
-      "Ein Objekt mit beliebigen String-Keys und number-Werten",
-      "Ein Tuple [string, number]",
       "Einen Typ mit genau einer Property",
+      "Ein Tuple [string, number]",
+      "Ein Objekt mit beliebigen String-Keys und number-Werten",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Record<K, V> erstellt einen Typ mit Keys vom Typ K und Werten vom Typ V. " +
       "Record<string, number> ist { [key: string]: number }.",
@@ -382,11 +382,11 @@ type B = { y: number; z: number };
 type C = A & B;`,
     options: [
       "{ y: number } — nur die gemeinsamen Properties",
-      "{ x: number; y: number; z: number } — ALLE Properties aus A UND B",
-      "Fehler — A und B haben die gleiche Property 'y'",
       "{ x: number; z: number } — nur die unterschiedlichen Properties",
+      "Fehler — A und B haben die gleiche Property 'y'",
+      "{ x: number; y: number; z: number } — ALLE Properties aus A UND B",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Intersection (&) bedeutet: ALLE Properties aus BEIDEN Typen. " +
       "Das ist eine Vereinigung der Anforderungen, nicht der gemeinsame Schnitt.",
@@ -416,11 +416,11 @@ type C = A & B;`,
     code: `interface User { id: string; name: string; email: string; }`,
     options: [
       "{ id?: string; name?: string; email?: string }",
-      "{ name?: string; email?: string }",
-      "{ name: string; email: string }",
       "{ id: string; name?: string; email?: string }",
+      "{ name: string; email: string }",
+      "{ name?: string; email?: string }",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Zuerst Pick: nur name und email. Dann Partial: beide optional. " +
       "Ergebnis: { name?: string; email?: string }.",

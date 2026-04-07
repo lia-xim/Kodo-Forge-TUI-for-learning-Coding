@@ -18,9 +18,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist ein rekursiver Typ in TypeScript?",
     options: [
       "Ein Typ der sich selbst in seiner Definition referenziert",
-      "Ein Typ der generische Parameter verwendet",
-      "Ein Typ der nur zur Laufzeit existiert",
-      "Ein Typ der mit typeof erstellt wird",
+      "Ein Typ der generische Parameter verwendet um andere Typen zu transformieren",
+      "Ein Typ der nur zur Laufzeit existiert und nicht statisch analysiert werden kann",
+      "Ein Typ der mit typeof erstellt wird und den Typ einer Variable extrahiert",
     ],
     correct: 0,
     explanation:
@@ -42,10 +42,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche Abbruchbedingung hat type LinkedList<T> = { value: T; next: LinkedList<T> | null }?",
     options: [
-      "Das leere Array []",
+      "Das leere Array [] das das Ende der Liste markiert",
       "Der Union-Member null (next kann null sein)",
-      "Der generische Parameter T",
-      "Es gibt keine Abbruchbedingung",
+      "Der generische Parameter T der die Rekursion begrenzt",
+      "Es gibt keine Abbruchbedingung, die Rekursion ist endlos",
     ],
     correct: 1,
     explanation:
@@ -92,9 +92,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum hat TypeScript kein eingebautes DeepPartial<T>?",
     options: [
-      "Weil TypeScript keine rekursiven Typen unterstuetzt",
-      "Weil DeepPartial zu langsam fuer den Compiler waere",
-      "Weil DeepPartial ein Sicherheitsrisiko darstellt",
+      "Weil TypeScript keine rekursiven Typen unterstuetzt und sie als Fehler markiert",
+      "Weil DeepPartial zu langsam fuer den Compiler waere und die IDE zum Absturz bringt",
+      "Weil DeepPartial ein Sicherheitsrisiko darstellt und potenziell Endlosschleifen erzeugt",
       "Weil die Semantik kontextabhaengig ist (Arrays, Date, Map, etc.)",
     ],
     correct: 3,
@@ -121,9 +121,9 @@ export const questions: QuizQuestion[] = [
       "bei einem Array-Feld (z.B. tags: string[])?",
     options: [
       "Das Array wird als Objekt behandelt und seine Properties (length, push, etc.) werden aufgeloest",
-      "Das Array bleibt unveraendert",
-      "Es gibt einen Compile-Error",
-      "Das Array wird zu einem Tuple",
+      "Das Array bleibt unveraendert und wird einfach durchgereicht",
+      "Es gibt einen Compile-Error weil Arrays nicht mit Mapped Types kompatibel sind",
+      "Das Array wird zu einem Tuple mit fester Laenge und optionalen Elementen",
     ],
     correct: 0,
     explanation:
@@ -223,9 +223,9 @@ export const questions: QuizQuestion[] = [
     question: "Wann nutzt TypeScript (ab 4.5) Tail Recursion Optimization fuer Typen?",
     options: [
       "Wenn der rekursive Aufruf in Tail-Position steht (letzter Ausdruck im Conditional-Zweig)",
-      "Immer bei rekursiven Conditional Types",
-      "Nur bei Mapped Types mit Rekursion",
-      "Nur wenn man einen speziellen Compiler-Flag aktiviert",
+      "Immer bei rekursiven Conditional Types ohne zusaetzliche Einschraenkungen",
+      "Nur bei Mapped Types mit Rekursion und explizitem Tail-Keyword",
+      "Nur wenn man einen speziellen Compiler-Flag in der tsconfig.json aktiviert",
     ],
     correct: 0,
     explanation:
@@ -272,10 +272,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Pattern fuehrt zu exponentieller Compile-Zeit bei rekursiven Typen?",
     options: [
-      "Mapped Types mit Rekursion",
-      "Tail-rekursive Conditional Types",
+      "Mapped Types mit Rekursion die ueber alle Properties iterieren",
+      "Tail-rekursive Conditional Types die in einem Schritt abbrechen",
       "Distributive Conditional Types mit Rekursion",
-      "DeepPartial auf flachen Objekten",
+      "DeepPartial auf flachen Objekten ohne verschachtelte Strukturen",
     ],
     correct: 2,
     explanation:
@@ -298,9 +298,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum braucht Zod z.lazy() fuer rekursive Schemas?",
     options: [
-      "Weil TypeScript keine rekursiven Typen unterstuetzt",
-      "Weil z.lazy() schneller ist als direkte Referenz",
-      "Weil Zod intern nur Strings verwendet",
+      "Weil TypeScript keine rekursiven Typen unterstuetzt und sie ablehnt",
+      "Weil z.lazy() schneller ist als direkte Referenz und weniger Speicher braucht",
+      "Weil Zod intern nur Strings verwendet und keine Objekt-Strukturen kennt",
       "Weil Laufzeit-Objekte sofort erstellt werden und sich nicht vor der Fertigstellung selbst referenzieren koennen",
     ],
     correct: 3,
@@ -325,10 +325,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was passiert bei type X = X | string?",
     options: [
-      "X wird zu string aufgeloest",
-      "X wird zu never",
+      "X wird zu string aufgeloest und der Union vereinfacht sich automatisch",
+      "X wird zu never weil die Selbstreferenz keine gueltige Basis hat",
       "TypeScript meldet 'Type alias circularly references itself'",
-      "X wird zu unknown",
+      "X wird zu unknown und akzeptiert damit jeden moeglichen Wert",
     ],
     correct: 2,
     explanation:
@@ -377,9 +377,9 @@ export const questions: QuizQuestion[] = [
     question: "Wann solltest du rekursive Typen NICHT verwenden?",
     options: [
       "Wenn die IDE durch den Typ merklich langsamer wird oder Kollegen den Typ nicht verstehen",
-      "Wenn du JSON-Daten typisieren willst",
-      "Wenn du verschachtelte Konfigurationen modellierst",
-      "Wenn du DeepPartial oder DeepReadonly brauchst",
+      "Wenn du JSON-Daten typisieren willst die eine verschachtelte Struktur haben",
+      "Wenn du verschachtelte Konfigurationen modellierst die sich selbst referenzieren",
+      "Wenn du DeepPartial oder DeepReadonly fuer komplexe Objekte brauchst",
     ],
     correct: 0,
     explanation:

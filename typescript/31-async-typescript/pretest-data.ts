@@ -239,11 +239,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist das Problem mit HttpClient.get<User[]>('/api/users') in Angular?",
     options: [
       "Der Typ ist falsch — es sollte Observable<User[]> sein",
-      "HttpClient akzeptiert keine Generics",
       "Es ist ein 'Trust me, Compiler' — keine Runtime-Pruefung ob die API wirklich User[] liefert",
+      "HttpClient akzeptiert keine Generics",
       "Ich weiss es nicht",
     ],
-    correct: 2,
+    correct: 1,
     briefExplanation: "HttpClient.get<T>() ist ein Compilezeit-Versprechen. TypeScript prueft nicht was die API tatsaechlich liefert.",
   },
 

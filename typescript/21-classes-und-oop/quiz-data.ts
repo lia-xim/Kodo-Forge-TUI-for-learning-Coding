@@ -18,9 +18,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert mit TypeScript-Klassen zur Laufzeit?",
     options: [
       "Die Klasse bleibt als JS-Konstruktorfunktion, aber Typ-Annotationen werden entfernt",
-      "Die gesamte Klasse wird entfernt (Type Erasure)",
-      "Die Klasse wird in ein Interface umgewandelt",
-      "TypeScript fuegt Laufzeit-Pruefungen fuer Felder hinzu",
+      "Die gesamte Klasse wird entfernt — Type Erasure gilt hier genauso wie bei Interfaces",
+      "Die Klasse wird in ein Interface umgewandelt — der Compiler transformiert sie automatisch",
+      "TypeScript fuegt Laufzeit-Pruefungen fuer Felder hinzu um Typsicherheit zu garantieren",
     ],
     correct: 0,
     explanation:
@@ -98,9 +98,9 @@ export const questions: QuizQuestion[] = [
     question: "Wo muss 'super()' im Constructor einer Subklasse stehen?",
     options: [
       "Als ERSTE Anweisung, noch vor jeglichem Zugriff auf 'this'",
-      "Am Ende des Constructors",
-      "An beliebiger Stelle im Constructor",
-      "super() ist nur bei abstract Klassen noetig",
+      "Am Ende des Constructors, nachdem alle Subklasse-Felder initialisiert wurden",
+      "An beliebiger Stelle im Constructor, TypeScript validiert die Position selbst",
+      "super() ist nur bei abstract Klassen noetig, bei konkreten Klassen optional",
     ],
     correct: 0,
     explanation:
@@ -181,7 +181,7 @@ export const questions: QuizQuestion[] = [
       "Compile-Error: plainObj hat nicht den Typ Dog",
       "Compile-Error: plainObj ist kein instanceof Dog",
       "Kompiliert und gibt 'Wuff!' aus — Structural Typing",
-      "Runtime-Error: plainObj hat keine bark-Methode",
+      "Runtime-Error: plainObj hat keine bark-Methode, der Aufruf schlaegt zur Laufzeit fehl",
     ],
     correct: 2,
     code:
@@ -209,9 +209,9 @@ export const questions: QuizQuestion[] = [
     question: "Was macht 'constructor(private name: string)' in TypeScript?",
     options: [
       "Deklariert ein private Feld 'name', nimmt den Parameter und weist this.name = name zu",
-      "Erstellt nur einen privaten Parameter, kein Feld",
-      "Das ist ein Syntax-Error, private kann nicht im Constructor stehen",
-      "Erstellt ein public Feld 'name' mit privatem Zugriff",
+      "Erstellt nur einen privaten Parameter fuer den Constructor, aber kein Klassen-Feld",
+      "Das ist ein Syntax-Error, private kann nicht im Constructor stehen und muss vorher deklariert werden",
+      "Erstellt ein public Feld 'name' mit eingeschraenktem privaten Zugriff nur von aussen",
     ],
     correct: 0,
     explanation:
@@ -262,10 +262,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was passiert bei diesem Code mit 'noImplicitOverride: true'?",
     options: [
-      "Kompiliert ohne Fehler",
-      "Runtime-Error beim Aufruf von render()",
+      "Kompiliert ohne Fehler, da noImplicitOverride nur eine Warnung ausgibt",
+      "Runtime-Error beim Aufruf von render() weil die Methode nicht korrekt ueberschrieben wurde",
       "Compile-Error: 'render' muss mit 'override' markiert werden",
-      "Compile-Error: 'rendr' existiert nicht in der Elternklasse",
+      "Compile-Error: 'rendr' existiert nicht in der Elternklasse und kann nicht ueberschrieben werden",
     ],
     correct: 2,
     code:

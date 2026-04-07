@@ -79,12 +79,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 2,
     question: "Wie erweitert man Vitest/Jest um eigene Matcher?",
     options: [
-      "Durch Vererbung von der Matcher-Klasse",
       "Durch expect.extend() und Declaration Merging (declare module)",
+      "Durch Vererbung von der Matcher-Klasse",
       "Durch Installation eines Plugins",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "expect.extend() registriert den Matcher. Declaration Merging erweitert das Assertion-Interface um die TypeScript-Typen.",
   },
 
@@ -107,11 +107,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was macht vi.mocked()?",
     options: [
       "Es erstellt einen neuen Mock",
-      "Es castet den Typ zu Mocked<T> — Methoden werden zu Mock-Typen",
       "Es spioniert auf alle Aufrufe",
+      "Es castet den Typ zu Mocked<T> — Methoden werden zu Mock-Typen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "vi.mocked() ist ein reiner Typ-Cast. Es macht .mockResolvedValue() etc. verfuegbar ohne den Wert zu aendern.",
   },
   {
@@ -134,11 +134,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was testen Type-Tests im Unterschied zu normalen Tests?",
     options: [
       "Die Performance von Typen",
-      "Das Compilezeit-Verhalten (korrekte Typen), nicht das Laufzeit-Verhalten",
       "Ob der Code kompiliert",
+      "Das Compilezeit-Verhalten (korrekte Typen), nicht das Laufzeit-Verhalten",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Type-Tests pruefen: Hat dieser Ausdruck den richtigen Typ? Z.B. 'Ist identity(42) vom Typ number und nicht any?'",
   },
   {
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was macht expectTypeOf(value).toEqualTypeOf<string>()?",
     options: [
       "Es prueft ob value den Wert 'string' hat",
-      "Es prueft ob der TypeScript-TYP von value exakt string ist",
       "Es konvertiert value zu einem String",
+      "Es prueft ob der TypeScript-TYP von value exakt string ist",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "expectTypeOf prueft den Compilezeit-Typ, nicht den Wert. toEqualTypeOf prueft exakte Typ-Gleichheit.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was kann tsd, was expectTypeOf nicht kann?",
     options: [
       "Schnellere Type-Checks",
-      "Testen ob Code NICHT kompiliert (expectError)",
       "Mehr Typ-Vergleiche",
+      "Testen ob Code NICHT kompiliert (expectError)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "tsd analysiert Code statisch und kann pruefen ob ein Ausdruck einen Compile-Error verursacht. expectTypeOf laeuft zur Laufzeit — nicht-kompilierender Code erreicht es nie.",
   },
 
@@ -173,11 +173,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist eine Test-Factory-Funktion?",
     options: [
       "Eine Funktion die Test-Dateien automatisch generiert",
-      "Eine Funktion die Test-Daten mit sinnvollen Defaults erzeugt und Partial<T> fuer Overrides akzeptiert",
-      "Eine Funktion die Tests parallel ausfuehrt",
       "Ich weiss es nicht",
+      "Eine Funktion die Tests parallel ausfuehrt",
+      "Eine Funktion die Test-Daten mit sinnvollen Defaults erzeugt und Partial<T> fuer Overrides akzeptiert",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "createTestUser({ role: 'admin' }) — Defaults fuer alles ausser role. Nur das Relevante wird ueberschrieben.",
   },
   {
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist der Vorteil eines Test-Fixtures gegenueber einzelnen Factory-Aufrufen?",
     options: [
       "Fixtures sind schneller",
-      "Fixtures buendeln zusammenhaengende Daten mit konsistenten Referenzen (IDs etc.)",
-      "Fixtures brauchen weniger Speicher",
       "Ich weiss es nicht",
+      "Fixtures brauchen weniger Speicher",
+      "Fixtures buendeln zusammenhaengende Daten mit konsistenten Referenzen (IDs etc.)",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Ein Fixture enthaelt admin, user, posts, comments — mit korrekten Referenzen zueinander. Einzelne Factories wuessen die IDs manuell synchronisieren.",
   },
   {
@@ -224,11 +224,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist MSW (Mock Service Worker)?",
     options: [
       "Ein framework-spezifischer HTTP-Mock fuer Angular",
-      "Ein framework-unabhaengiger Netzwerk-Mock der fetch/XHR interceptet",
-      "Ein TypeScript Compiler-Plugin fuer Tests",
       "Ich weiss es nicht",
+      "Ein TypeScript Compiler-Plugin fuer Tests",
+      "Ein framework-unabhaengiger Netzwerk-Mock der fetch/XHR interceptet",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "MSW interceptet auf Netzwerk-Ebene — funktioniert mit Angular, React, Vue, und ohne Framework.",
   },
   {
@@ -236,11 +236,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Warum ist TypeScript die 'Basis-Schicht' der Test-Pyramide?",
     options: [
       "Weil TypeScript die meisten Bugs findet",
-      "Weil Typ-Checks staendig laufen, keine Laufzeit kosten und ~15% aller Bugs verhindern",
-      "Weil TypeScript Unit-Tests ersetzt",
       "Ich weiss es nicht",
+      "Weil TypeScript Unit-Tests ersetzt",
+      "Weil Typ-Checks staendig laufen, keine Laufzeit kosten und ~15% aller Bugs verhindern",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "TypeScript prueft bei jedem Tastendruck. Keine Test-Ausfuehrung noetig. Kostenlose, permanente Sicherheitspruefung.",
   },
 ];

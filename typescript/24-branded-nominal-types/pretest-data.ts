@@ -167,12 +167,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 5,
     question: "Warum modelliert man Geldbeträge als positive Integer (Cents) statt als Dezimalzahlen (Euro)?",
     options: [
-      "Weil TypeScript keine Dezimalzahlen als Branded Types unterstützt",
       "Wegen JavaScript's Floating-Point-Darstellung: `0.1 + 0.2 !== 0.3`",
+      "Weil TypeScript keine Dezimalzahlen als Branded Types unterstützt",
       "Weil internationale Währungen keine Dezimalstellen haben",
       "Aus Performance-Gründen — Integer-Operationen sind schneller"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "IEEE 754 Floating-Point (JavaScript's Zahlenformat) ist ungenau bei Dezimalzahlen. `0.1 + 0.2 = 0.30000000000000004`. Cents als Integer haben dieses Problem nicht."
   },
   {
@@ -191,12 +191,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 5,
     question: "Welche Funktion macht `AbsolutePath` und `RelativePath` zu verschiedenen Typen?",
     options: [
-      "`/`-Präfix verbietet in `RelativePath`, erlaubt in `AbsolutePath`",
       "`__pathType: 'absolute'` vs `__pathType: 'relative'` als Brand-Property",
+      "`/`-Präfix verbietet in `RelativePath`, erlaubt in `AbsolutePath`",
       "Klassen-Vererbung: `class AbsolutePath extends RelativePath`",
       "Runtime-Check: `path.isAbsolute()` bestimmt den Typ"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Brand-Typen: `AbsolutePath = string & { __pathType: 'absolute' }` und `RelativePath = string & { __pathType: 'relative' }`. Die verschiedenen Literal-Typen machen sie inkompatibel."
   },
 
@@ -217,24 +217,24 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 6,
     question: "Wann sollte man Branded Types NICHT verwenden?",
     options: [
-      "Bei Datenbankentitäten — das ist Sache des ORM",
+      "Bei lokalen Berechnungen mit wenigen, klar benannten Variablen — Over-Engineering",
       "Bei HTTP API-Responses — diese brauchen keine Typsicherheit",
       "Bei Authentifizierungs-Tokens — zu viel Runtime-Overhead",
-      "Bei lokalen Berechnungen mit wenigen, klar benannten Variablen — Over-Engineering"
+      "Bei Datenbankentitäten — das ist Sache des ORM"
     ],
-    correct: 3,
+    correct: 0,
     explanation: "YAGNI: Wenn lokale Variablen im gleichen Scope (`width`, `height`) keine Verwechslung ermöglichen, ist ein Brand-Typ unnötige Komplexität ohne Sicherheitsgewinn."
   },
   {
     sectionId: 6,
     question: "Welchen Vorteil haben Branded Types gegenüber Runtime-Validierung mit Klassen (z.B. `class UserId { constructor(public value: string) {} }`)?",
     options: [
-      "Branded Types sind schneller in der Ausführung weil sie zur Laufzeit existieren",
-      "Klassen bieten bessere Typsicherheit als Branded Types",
       "Branded Types haben Zero Runtime-Overhead — sie verschwinden nach der Kompilierung (Type Erasure)",
+      "Klassen bieten bessere Typsicherheit als Branded Types",
+      "Branded Types sind schneller in der Ausführung weil sie zur Laufzeit existieren",
       "Es gibt keinen Unterschied — beide Ansätze sind gleichwertig"
     ],
-    correct: 2,
+    correct: 0,
     explanation: "Branded Types existieren nur zur Compilezeit (Type Erasure). Im transpilierten JavaScript ist ein `UserId` einfach ein `string` — kein Wrapper-Objekt, kein Overhead. Klassen erzeugen reale Objekte zur Laufzeit, was Serialisierung und API-Kompatibilität erschwert."
   }
 ];

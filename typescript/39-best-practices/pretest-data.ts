@@ -94,36 +94,36 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Wann ist ein Generic Over-Engineering?",
     options: [
-      "Wenn er einen Constraint hat",
       "Wenn der Typparameter T nur einmal vorkommt (kein Zusammenhang zwischen Input und Output)",
+      "Wenn er einen Constraint hat",
       "Wenn er mit extends verwendet wird",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Ein Generic der nur einmal vorkommt verbindet nichts. function log<T>(msg: T): void → besser: function log(msg: unknown): void.",
   },
   {
     sectionId: 3,
     question: "Was ist YAGNI?",
     options: [
-      "Eine TypeScript-Compiler-Option",
       "You Aren't Gonna Need It — implementiere keine Komplexitaet die du nicht jetzt brauchst",
+      "Eine TypeScript-Compiler-Option",
       "Yet Another Generic Naming Issue",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "YAGNI gilt auch fuer Typen: Ein einfaches Interface ist besser als ein verschachtelter Conditional Type wenn beides den Job erledigt.",
   },
   {
     sectionId: 3,
     question: "Wann sind Branded Types Over-Engineering?",
     options: [
-      "Immer",
       "Fuer lokale Formularfelder die nur in einer Komponente existieren",
+      "Immer",
       "Fuer Entity-IDs wie UserId und OrderId",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Branded Types lohnen sich wenn Verwechslung echte Bugs verursacht. Lokale Formularfelder werden nicht zwischen Modulen ausgetauscht.",
   },
 
@@ -133,12 +133,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 4,
     question: "Was ist der fundamentale Unterschied zwischen 'as User' und einem Type Guard?",
     options: [
-      "'as' prueft zur Runtime, Type Guard prueft zur Compilezeit",
       "'as' ist ein 'Trust me' (keine Pruefung), Type Guard ist ein 'Prove it' (Runtime-Pruefung)",
+      "'as' prueft zur Runtime, Type Guard prueft zur Compilezeit",
       "Kein Unterschied",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Type Assertion = Compiler glaubt dir blind. Type Guard = Du lieferst den Beweis mit Runtime-Checks.",
   },
   {
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was macht 'asserts value is T' anders als 'value is T'?",
     options: [
       "Kein Unterschied",
-      "'asserts' wirft bei Fehler — der Typ gilt danach direkt ohne if",
       "'asserts' ist nur fuer Klassen",
+      "'asserts' wirft bei Fehler — der Typ gilt danach direkt ohne if",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "is → boolean (fuer if/else). asserts → void oder throw. Nach asserts gilt der Typ sofort im Scope.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Wann ist 'as' (Type Assertion) akzeptabel?",
     options: [
       "Bei jeder API-Response",
-      "In Test-Code (Mocks), bei DOM-Zugriff (getElementById) und bei Typ-System-Grenzen",
       "Immer wenn der Compiler meckert",
+      "In Test-Code (Mocks), bei DOM-Zugriff (getElementById) und bei Typ-System-Grenzen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "In Tests sind partielle Mocks OK. Bei DOM weisst du welches Element es ist. Bei Typ-Grenzen: Double Cast mit Kommentar.",
   },
 
@@ -173,11 +173,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist die 'Defensive Schale, offensiver Kern' Architektur?",
     options: [
       "Alles defensiv typisieren",
-      "An Systemgrenzen Runtime-validieren, im Kern dem Typsystem vertrauen",
       "Nur Tests defensiv schreiben",
+      "An Systemgrenzen Runtime-validieren, im Kern dem Typsystem vertrauen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Systemgrenzen (API, User-Input): unknown + Validierung. Kern (Services, Logik): Typsystem reicht.",
   },
   {
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Ist HttpClient.get<User>() in Angular echte Typsicherheit?",
     options: [
       "Ja, der Generic prueft den Response",
-      "Nein, es ist eine getarnte Assertion — die API koennte etwas anderes liefern",
       "Nur mit strict: true",
+      "Nein, es ist eine getarnte Assertion — die API koennte etwas anderes liefern",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "<User> wird zur Laufzeit entfernt (Type Erasure). Es ist ein 'Trust me' an den Compiler, keine Pruefung.",
   },
   {
@@ -197,11 +197,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was bedeutet 'Parse, Don't Validate'?",
     options: [
       "JSON.parse statt regulaere Ausdruecke verwenden",
-      "Validiere UND transformiere in einen staerkeren Typ — der Typ beweist die Validierung",
-      "Parsing ist immer schneller als Validierung",
       "Ich weiss es nicht",
+      "Parsing ist immer schneller als Validierung",
+      "Validiere UND transformiere in einen staerkeren Typ — der Typ beweist die Validierung",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "parseEmail(s): Email statt validateEmail(s): boolean. Nach dem Parse IST der Typ der Beweis.",
   },
 
@@ -212,11 +212,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist die wichtigste Metrik fuer TypeScript-Qualitaet?",
     options: [
       "Anzahl der Generics",
-      "any-Dichte: Anzahl 'any' pro 1000 Zeilen (Ziel: < 1)",
-      "Anzahl der Dateien",
       "Ich weiss es nicht",
+      "Anzahl der Dateien",
+      "any-Dichte: Anzahl 'any' pro 1000 Zeilen (Ziel: < 1)",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "any-Dichte ist direkt messbar und korreliert mit der Anzahl der Runtime-Bugs durch fehlende Typpruefung.",
   },
   {
@@ -224,11 +224,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Welches Refactoring-Pattern hat den groessten Impact?",
     options: [
       "Alle Strings mit Branded Types versehen",
-      "Boolean-Flags durch Discriminated Unions ersetzen (verhindert unmoegliche Zustaende)",
-      "Alle Kommentare entfernen",
       "Ich weiss es nicht",
+      "Alle Kommentare entfernen",
+      "Boolean-Flags durch Discriminated Unions ersetzen (verhindert unmoegliche Zustaende)",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Boolean-Flags → DU eliminiert ganze Klassen von Bugs: unmoegliche Zustaende, korrelierte Nullability, vergessene Cases.",
   },
   {
@@ -236,11 +236,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist die einzelne wichtigste TypeScript Best Practice?",
     options: [
       "Moeglichst viele Generics verwenden",
-      "Dem Compiler vertrauen und 'as'/'any' nicht als Loesung verwenden",
-      "Jede Variable explizit annotieren",
       "Ich weiss es nicht",
+      "Jede Variable explizit annotieren",
+      "Dem Compiler vertrauen und 'as'/'any' nicht als Loesung verwenden",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Der Compiler ist dein Partner. Wenn er meckert, hat er meistens recht. 'as' und 'any' unterdrücken nur Symptome.",
   },
 ];

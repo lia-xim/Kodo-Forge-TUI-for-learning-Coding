@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Hauptvorteil eines typsicheren Builders gegenueber einem klassischen Builder?",
     options: [
       "Pflichtfelder werden zur Compilezeit geprueft, nicht zur Laufzeit",
-      "Er erzeugt schnelleren JavaScript-Code",
-      "Er braucht weniger Speicher als ein klassischer Builder",
-      "Er funktioniert nur mit Klassen, nicht mit Funktionen",
+      "Er erzeugt schnelleren JavaScript-Code durch optimierte Compiler-Generierung",
+      "Er braucht weniger Speicher als ein klassischer Builder zur Laufzeit",
+      "Er funktioniert nur mit Klassen, nicht mit Funktionen oder Factory-Patterns",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum sind Boolean-Flags fuer Zustaende ein Antipattern?",
     options: [
       "n Booleans erzeugen 2^n Kombinationen, von denen die meisten ungueltig sind",
-      "Booleans sind langsamer als Strings in JavaScript",
-      "TypeScript kann Booleans nicht in switch-Statements verwenden",
-      "Boolean-Flags brauchen mehr Speicher als Discriminated Unions",
+      "Booleans sind langsamer als Strings in JavaScript und beeintrachtigen die Performance",
+      "TypeScript kann Booleans nicht in switch-Statements verwenden und zeigt einen Fehler an",
+      "Boolean-Flags brauchen mehr Speicher als Discriminated Unions zur Laufzeit",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert mit dem __phantom-Property eines Phantom Types zur Laufzeit?",
     options: [
       "Es existiert nicht — Type Erasure entfernt es komplett",
-      "Es wird als undefined-Property gespeichert",
-      "Es wird in ein Symbol konvertiert",
-      "Es wird als Metadaten im Prototyp gespeichert",
+      "Es wird als undefined-Property gespeichert und verbraucht minimalen Speicher",
+      "Es wird in ein Symbol konvertiert das zur Laufzeit nicht enumerierbar ist",
+      "Es wird als Metadaten im Prototyp gespeichert und ist ueber Reflection zugreifbar",
     ],
     correct: 0,
     explanation:
@@ -75,9 +75,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Vorteil von Step-Interfaces gegenueber einfachem 'return this' beim Method Chaining?",
     options: [
       "Step-Interfaces erzwingen die richtige Reihenfolge — unmoegliche Aufrufe existieren nicht im Typ",
-      "Step-Interfaces sind schneller als 'return this'",
-      "Step-Interfaces ermoeglichen Vererbung, 'return this' nicht",
-      "Step-Interfaces sind der einzige Weg um Method Chaining zu implementieren",
+      "Step-Interfaces sind schneller als 'return this' weil sie weniger Method-Calls erzeugen",
+      "Step-Interfaces ermoeglichen Vererbung waehrend 'return this' das nicht unterstuetzt",
+      "Step-Interfaces sind der einzige Weg um Method Chaining in TypeScript zu implementieren",
     ],
     correct: 0,
     explanation:
@@ -94,10 +94,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ein 'Smart Constructor' im Newtype-Pattern?",
     options: [
-      "Ein Konstruktor der automatisch Generics inferiert",
+      "Ein Konstruktor der automatisch Generics inferiert und den Typ des Inputs uebernimmt",
       "Eine Funktion die den Rohwert validiert und als Newtype zurueckgibt",
-      "Ein TypeScript-Decorator der Klassen validiert",
-      "Ein spezieller Compiler-Modus fuer Branded Types",
+      "Ein TypeScript-Decorator der Klassen-Konstruktoren validiert und erweitert",
+      "Ein spezieller Compiler-Modus fuer Branded Types der strenge Pruefungen aktiviert",
     ],
     correct: 1,
     explanation:
@@ -134,10 +134,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie verhindert man unmoegliche Zustandsuebergaenge zur Compilezeit?",
     options: [
-      "Mit try/catch um jeden Uebergang",
+      "Mit try/catch um jeden Uebergang der zur Laufzeit einen Fehler wirft",
       "Mit einer Typ-Level Transition Map die erlaubte Uebergaenge definiert",
-      "Mit runtime assertions in jeder Methode",
-      "Mit dem TypeScript-Decorator @ValidTransition",
+      "Mit runtime assertions in jeder Methode die den Uebergang zur Laufzeit pruefen",
+      "Mit dem TypeScript-Decorator @ValidTransition der automatisch gueltige Uebergaenge erkennt",
     ],
     correct: 1,
     explanation:
@@ -154,10 +154,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Zusammenhang zwischen Branded Types (L24) und Phantom Types?",
     options: [
-      "Sie sind voellig verschiedene Konzepte ohne Gemeinsamkeit",
+      "Sie sind voellig verschiedene Konzepte ohne Gemeinsamkeit und werden unterschiedlich implementiert",
       "Branded Types sind eine einfache Form von Phantom Types — das Brand existiert nur im Typ",
-      "Phantom Types sind eine Erweiterung von Branded Types mit Laufzeit-Daten",
-      "Branded Types funktionieren nur mit Klassen, Phantom Types mit Primitiven",
+      "Phantom Types sind eine Erweiterung von Branded Types mit zusaetzlichen Laufzeit-Daten",
+      "Branded Types funktionieren nur mit Klassen, Phantom Types ausschliesslich mit Primitiven",
     ],
     correct: 1,
     explanation:
@@ -174,10 +174,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist 'this' als Rueckgabetyp besser als der Klassenname beim Method Chaining?",
     options: [
-      "'this' ist schneller zur Laufzeit als der Klassenname",
-      "'this' erlaubt den Zugriff auf private Methoden",
+      "'this' ist schneller zur Laufzeit als der Klassenname und verbraucht weniger Speicher",
+      "'this' erlaubt den Zugriff auf private Methoden die sonst nicht erreichbar waeren",
       "'this' ist polymorph — Subklassen geben ihren eigenen Typ zurueck",
-      "'this' verhindert Circular Dependencies",
+      "'this' verhindert Circular Dependencies und verbessert die Modulstruktur",
     ],
     correct: 2,
     explanation:
@@ -214,10 +214,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum verwendet man 'unique symbol' statt String-Literals als Brand bei Newtypes?",
     options: [
-      "unique symbol ist schneller zur Laufzeit",
-      "String-Literals koennen nicht als Typ-Parameter verwendet werden",
+      "unique symbol ist schneller zur Laufzeit und verbraucht weniger Speicher",
+      "String-Literals koennen nicht als Typ-Parameter verwendet werden und erzeugen einen Fehler",
       "unique symbol ist garantiert einzigartig — keine Kollision zwischen Modulen moeglich",
-      "unique symbol wird vom TypeScript-Compiler speziell optimiert",
+      "unique symbol wird vom TypeScript-Compiler speziell optimiert und beschleunigt das Type-Checking",
     ],
     correct: 2,
     explanation:
@@ -274,9 +274,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ein Opaque Type in TypeScript?",
     options: [
-      "Ein Typ der nur in generischen Funktionen verwendet werden kann",
-      "Ein Typ der automatisch von TypeScript inferiert wird",
-      "Ein Typ mit Laufzeit-Validierung durch den Compiler",
+      "Ein Typ der nur in generischen Funktionen verwendet werden kann und nicht direkt",
+      "Ein Typ der automatisch von TypeScript inferiert wird ohne explizite Annotation",
+      "Ein Typ mit Laufzeit-Validierung die vom Compiler automatisch generiert wird",
       "Ein Newtype dessen interne Struktur nur innerhalb eines Moduls bekannt ist",
     ],
     correct: 3,

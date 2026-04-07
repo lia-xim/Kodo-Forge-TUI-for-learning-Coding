@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert mit `include` wenn eine Kind-tsconfig `extends` verwendet und eigenes `include` setzt?",
     options: [
       "Das `include` der Eltern-Datei wird komplett ueberschrieben",
-      "Beide `include`-Listen werden zusammengefuehrt (merged)",
-      "Das Kind-`include` wird ignoriert",
-      "TypeScript wirft einen Fehler"
+      "Beide `include`-Listen werden zusammengefuehrt (merged) und beide gelten",
+      "Das Kind-`include` wird ignoriert und nur die Eltern-Liste wird verwendet",
+      "TypeScript wirft einen Fehler weil include nicht ueberschrieben werden darf"
     ],
     correct: 0,
     explanation: "Im Gegensatz zu compilerOptions (die gemerged werden) wird include/exclude/files bei extends KOMPLETT ueberschrieben. Die Eltern-Liste wird ignoriert.",
@@ -29,9 +29,9 @@ export const questions: QuizQuestion[] = [
     question: "Welches Flag ist PFLICHT fuer ein Projekt das mit Project References (`references`) referenziert wird?",
     options: [
       "`composite: true` — aktiviert inkrementelle Builds und erzwingt declaration",
-      "`incremental: true` — fuer schnellere Builds",
-      "`declaration: true` — fuer .d.ts-Erzeugung",
-      "`noEmit: true` — fuer reine Typ-Pruefung"
+      "`incremental: true` — fuer schnellere Builds durch Caching von Compiler-Informationen",
+      "`declaration: true` — fuer .d.ts-Erzeugung die die Typen fuer andere Projekte bereitstellt",
+      "`noEmit: true` — fuer reine Typ-Pruefung ohne JavaScript-Output"
     ],
     correct: 0,
     explanation: "composite: true ist Pflicht fuer referenzierte Projekte. Es aktiviert incremental automatisch und erzwingt declaration: true.",
@@ -41,9 +41,9 @@ export const questions: QuizQuestion[] = [
     question: "Was bewirkt `noEmit: true` in der tsconfig?",
     options: [
       "TypeScript prueft Typen, erzeugt aber KEINE Dateien — ideal wenn esbuild/Vite transpiliert",
-      "TypeScript erzeugt nur .d.ts Dateien",
-      "TypeScript ueberspringt die Typ-Pruefung",
-      "TypeScript erzeugt minifizierten Output"
+      "TypeScript erzeugt nur .d.ts Dateien und ueberspringt die JavaScript-Generierung komplett",
+      "TypeScript ueberspringt die Typ-Pruefung und verlaesst sich ausschliesslich auf den Bundler",
+      "TypeScript erzeugt minifizierten Output der direkt im Browser verwendet werden kann"
     ],
     correct: 0,
     explanation: "noEmit macht TypeScript zum reinen Type-Checker. Kein .js, kein .d.ts — nur Fehlermeldungen. Der Bundler uebernimmt die Transpilation.",
@@ -53,9 +53,9 @@ export const questions: QuizQuestion[] = [
     question: "Was macht `verbatimModuleSyntax` anders als `isolatedModules`?",
     options: [
       "Es erzwingt explizites `import type` fuer reine Typ-Imports und ersetzt drei aeltere Flags",
-      "Es ist nur ein Alias fuer isolatedModules",
-      "Es deaktiviert die Modul-Aufloesung komplett",
-      "Es erzwingt CommonJS-Syntax"
+      "Es ist nur ein Alias fuer isolatedModules und aendert nichts am bestehenden Verhalten",
+      "Es deaktiviert die Modul-Aufloesung komplett und verwendet ausschliesslich relative Pfade",
+      "Es erzwingt CommonJS-Syntax und verhindert die Verwendung von ES Modules"
     ],
     correct: 0,
     explanation: "verbatimModuleSyntax (TS 5.0) ersetzt isolatedModules + preserveValueImports + importsNotUsedAsValues. Die Regel: import type wird geloescht, import bleibt.",
@@ -90,10 +90,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen `target` und `lib`?",
     options: [
-      "`target` bestimmt die APIs, `lib` bestimmt die Syntax",
+      "`target` bestimmt die APIs die verfuegbar sind, `lib` bestimmt die Syntax-Transformation",
       "`target` bestimmt die Syntax-Transformation, `lib` bestimmt die verfuegbaren API-Typen",
-      "Es gibt keinen Unterschied",
-      "`target` ist fuer Browser, `lib` ist fuer Node.js"
+      "Es gibt keinen Unterschied zwischen target und lib sie sind vollstaendig austauschbar",
+      "`target` ist ausschliesslich fuer Browser-Projekte, `lib` ist nur fuer Node.js relevant"
     ],
     correct: 1,
     explanation: "target steuert, WELCHE Syntax heruntertransformiert wird (z.B. class → function). lib steuert, WELCHE APIs TypeScript kennt (z.B. DOM, ES2023).",
@@ -102,10 +102,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bewirkt `skipLibCheck: true`?",
     options: [
-      "Ueberspringt die Pruefung aller importierten Module",
+      "Ueberspringt die Pruefung aller importierten Module und behandelt sie als vertrauenswuerdig",
       "Ueberspringt die Pruefung von .d.ts Dateien — dein eigener Code wird trotzdem voll geprueft",
-      "Deaktiviert TypeScript komplett fuer externe Libraries",
-      "Ueberspringt die Pruefung von .ts Dateien in node_modules"
+      "Deaktiviert TypeScript komplett fuer externe Libraries und behandelt sie als any",
+      "Ueberspringt die Pruefung von .ts Dateien in node_modules aber nicht von .d.ts Dateien"
     ],
     correct: 1,
     explanation: "skipLibCheck prueft .d.ts-Dateien nicht INTERN, aber dein Code wird trotzdem GEGEN diese .d.ts-Dateien geprueft. Nur Konflikte innerhalb der .d.ts werden ignoriert.",
@@ -116,10 +116,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `const enum` mit `isolatedModules` inkompatibel?",
     options: [
-      "const enum ist generell veraltet",
-      "const enum erzeugt zu viel Code",
+      "const enum ist generell veraltet und sollte nicht mehr in modernen Projekten verwendet werden",
+      "const enum erzeugt zu viel Code und verlaengert die Build-Zeit erheblich",
       "const enum erfordert Cross-File-Kontext — esbuild/swc verarbeiten aber nur einzelne Dateien",
-      "const enum funktioniert nur mit CommonJS"
+      "const enum funktioniert nur mit CommonJS und ist mit ES Modules nicht kompatibel"
     ],
     correct: 2,
     explanation: "const enum wird inline ersetzt (der Wert wird eingesetzt). esbuild verarbeitet Dateien einzeln und kann Werte aus anderen Dateien nicht nachschlagen.",
@@ -128,10 +128,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht `esModuleInterop: true`?",
     options: [
-      "Erlaubt ES Module in CommonJS-Projekten",
-      "Deaktiviert die Modul-Pruefung",
+      "Erlaubt ES Module in CommonJS-Projekten und konvertiert sie automatisch zur Laufzeit",
+      "Deaktiviert die Modul-Pruefung und erlaubt beliebige Import-Syntax ohne Validierung",
       "Ermoeglicht Default-Imports von CommonJS-Modulen durch Hilfsfunktionen",
-      "Konvertiert alle Imports zu require()"
+      "Konvertiert alle Imports zu require() und entfernt ES-Module-Syntax komplett"
     ],
     correct: 2,
     explanation: "CommonJS hat kein default-Export-Konzept. esModuleInterop fuegt Hilfsfunktionen ein, die module.exports so wrappen, dass import x from 'pkg' funktioniert.",
@@ -140,10 +140,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "In Angular: Warum wird die tsconfig in app und spec aufgeteilt?",
     options: [
-      "Performance — kleinere tsconfig = schnellerer Build",
-      "Angular CLI erfordert diese Struktur",
+      "Performance — kleinere tsconfig bedeutet schnelleren Build und weniger Speicherbedarf",
+      "Angular CLI erfordert diese Struktur und verweigert den Build ohne sie",
       "Test-Isolation — `types: ['jasmine']` nur in Tests, nicht im Produktionscode",
-      "Historische Gruende ohne praktischen Nutzen"
+      "Historische Gruende ohne praktischen Nutzen die aus Kompatibilitaetsgruenden beibehalten werden"
     ],
     correct: 2,
     explanation: "Ohne Trennung waeren describe(), it(), expect() im Produktionscode verfuegbar. Die types-Option steuert, welche globalen Typen sichtbar sind.",
@@ -152,10 +152,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bewirkt `noUncheckedIndexedAccess: true`?",
     options: [
-      "Verbietet Index-Zugriffe auf Arrays",
-      "Erzwingt Bounds-Checks zur Laufzeit",
+      "Verbietet Index-Zugriffe auf Arrays komplett und erzwingt die Verwendung von Methoden",
+      "Erzwingt Bounds-Checks zur Laufzeit die bei fehlerhaften Zugriffen eine Exception ausloesen",
       "Array/Objekt-Zugriff per Index gibt `T | undefined` statt nur `T`",
-      "Aktiviert stricte Array-Typen"
+      "Aktiviert stricte Array-Typen die nur spezifische Elemente anstelle von any erlauben"
     ],
     correct: 2,
     explanation: "arr[5] gibt mit diesem Flag number | undefined statt number zurueck. Das verhindert Array-Out-of-Bounds-Fehler zur Compile-Zeit.",

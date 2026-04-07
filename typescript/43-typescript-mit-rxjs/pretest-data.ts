@@ -123,12 +123,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was ist der Unterschied zwischen switchMap und mergeMap aus TypeScript-Sicht?",
     options: [
-      "switchMap gibt Observable<T | R> zurueck, mergeMap gibt Observable<R>",
       "Keiner — beide haben dieselbe Typ-Signatur, der Unterschied liegt im Laufzeitverhalten",
+      "switchMap gibt Observable<T | R> zurueck, mergeMap gibt Observable<R>",
       "switchMap ist typsicherer weil es Fehler besser behandelt",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "switchMap, mergeMap, concatMap und exhaustMap haben alle dieselbe Typ-Signatur: " +
       "T => Observable<R> gibt OperatorFunction<T, R>. Nur das Concurrency-Verhalten " +
@@ -139,12 +139,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was passiert mit dem Typ wenn du `filter(user => user.isActive)` in einer RxJS-Pipeline verwendest?",
     options: [
-      "Der Typ wird zu Observable<ActiveUser> genarrowt",
       "Der Typ aendert sich NICHT — filter ohne Type Predicate gibt OperatorFunction<T, T> zurueck",
+      "Der Typ wird zu Observable<ActiveUser> genarrowt",
       "Der Typ wird zu Observable<boolean>",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "filter ohne Type Predicate gibt OperatorFunction<T, T> zurueck — der Typ bleibt. " +
       "Nur `filter((u): u is Admin => u.role === 'admin')` narrowt den Typ zu Observable<Admin>.",
@@ -154,12 +154,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Warum kamen pipeable Operators (`.pipe(map(...))` statt `.map(...)`) mit RxJS 5.5?",
     options: [
-      "Weil die Punkt-Syntax in JavaScript deprecated ist",
       "Um Tree-Shaking zu ermoeglichen — freie Funktionen werden nur gebundelt wenn importiert",
+      "Weil die Punkt-Syntax in JavaScript deprecated ist",
       "Weil TypeScript Methodenverkettung nicht typisieren kann",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Prototype-Methoden werden immer gebundelt, auch wenn ungenutzt. " +
       "Freie pipeable Operator-Funktionen werden nur ins Bundle aufgenommen wenn importiert — " +
@@ -173,12 +173,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was emittiert `combineLatest([a$, b$])` wenn a$ einen neuen Wert hat, b$ aber noch keinen hatte?",
     options: [
-      "Es emittiert sofort mit undefined fuer b$",
       "Es emittiert NICHT — es wartet bis beide mindestens einmal emittiert haben",
+      "Es emittiert sofort mit undefined fuer b$",
       "Es emittiert nur den Wert von a$ als Array mit einem Element",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "combineLatest wartet bis ALLE Teilnehmer mindestens einmal emittiert haben. " +
       "Erst dann emittiert es — und dann bei jeder weiteren Emission eines Teilnehmers.",
@@ -225,11 +225,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was muss man jetzt tun bevor man auf error.message zugreift?",
     options: [
       "error als any casten: (error as any).message",
-      "error mit instanceof pruefen: if (error instanceof Error) dann error.message",
-      "Nichts — unknown erlaubt denselben Zugriff wie any",
       "Ich weiss es nicht",
+      "Nichts — unknown erlaubt denselben Zugriff wie any",
+      "error mit instanceof pruefen: if (error instanceof Error) dann error.message",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "unknown erzwingt Typ-Pruefung. `instanceof Error` narrowt den Typ von unknown " +
       "zu Error — danach ist .message sicher zugreifbar. any haette das erlaubt " +
@@ -257,11 +257,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist das Result-Pattern in RxJS? Wozu dient es?",
     options: [
       "Ein Muster um mehrere Observables zu kombinieren",
-      "Fehler werden als normale Stream-Werte modelliert: Observable<{ success: true, data: T } | { success: false, error: E }>",
-      "Ein Pattern um subscribe zu vermeiden",
       "Ich weiss es nicht",
+      "Ein Pattern um subscribe zu vermeiden",
+      "Fehler werden als normale Stream-Werte modelliert: Observable<{ success: true, data: T } | { success: false, error: E }>",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Statt Pipeline-Abbruch bei Fehler wird Erfolg/Fehler als normaler Wert im Stream " +
       "abgebildet. Die Komponente reagiert auf success: true vs false — typsicher, " +
@@ -292,11 +292,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was macht `takeUntilDestroyed()` (aus @angular/core/rxjs-interop)?",
     options: [
       "Es haelt die Subscription an wenn die Komponente nicht sichtbar ist",
-      "Es beendet die Subscription wenn die Angular-Komponente zerstoert wird — automatisch",
-      "Es gibt ein Signal zurueck statt einem Observable",
       "Ich weiss es nicht",
+      "Es gibt ein Signal zurueck statt einem Observable",
+      "Es beendet die Subscription wenn die Angular-Komponente zerstoert wird — automatisch",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "takeUntilDestroyed() abonniert DestroyRef.onDestroy und beendet die Subscription " +
       "automatisch. Kein manuelles unsubscribe(), kein ngOnDestroy() noetig. " +
@@ -308,11 +308,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Die `async pipe` im Angular-Template gibt `T | null` zurueck, nicht T. Warum?",
     options: [
       "Weil Angular async pipes immer optional macht",
-      "Weil null der Anfangszustand ist — bevor das Observable emittiert hat die async pipe keinen Wert",
-      "Weil TypeScript null immer zu Observables hinzufuegt",
       "Ich weiss es nicht",
+      "Weil TypeScript null immer zu Observables hinzufuegt",
+      "Weil null der Anfangszustand ist — bevor das Observable emittiert hat die async pipe keinen Wert",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Die async pipe gibt null zurueck bevor das Observable seinen ersten Wert emittiert. " +
       "Das ist der Hauptunterschied zu toSignal mit initialValue — dort kontrollierst " +

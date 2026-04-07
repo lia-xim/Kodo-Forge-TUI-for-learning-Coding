@@ -80,12 +80,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Typ von `config.method` in diesem Code?",
     code: 'const config = { method: "GET" };',
     options: [
-      '`"GET"` — der exakte Wert',
       "`string` — der breite Typ",
+      '`"GET"` — der exakte Wert',
       '`"GET" | "POST"` — ein Union',
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Obwohl `config` const ist, sind die Properties veraenderbar " +
       '(man koennte `config.method = "POST"` schreiben). Deshalb ' +
@@ -99,12 +99,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Typen automatisch erweitert?",
     code: 'const status = "active" as ???;',
     options: [
-      "`as literal`",
       "`as const`",
+      "`as literal`",
       "`as strict`",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`as const` verhindert Widening komplett. Alle Werte behalten " +
       "ihren Literal-Typ, Arrays werden zu readonly Tuples, und " +
@@ -135,12 +135,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Warum braucht `n` hier keine Typ-Annotation?",
     code: "const nums = [1, 2, 3];\nconst doubled = nums.map(n => n * 2);",
     options: [
-      "Arrow Functions haben immer Typ `any`",
       "TypeScript leitet den Typ aus dem Array-Element ab",
+      "Arrow Functions haben immer Typ `any`",
       "Callback-Parameter sind immer `number`",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Contextual Typing: TypeScript kennt den Typ von `nums` (`number[]`) " +
       "und weiss daher, dass der .map()-Callback ein `number` bekommt.",
@@ -153,11 +153,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: 'const handler = (e) => console.log(e);\ndocument.addEventListener("click", handler);',
     options: [
       "Ja, TypeScript verfolgt den Fluss",
-      "Nein, der Kontext geht verloren — `e` wird `any`",
       "Nur wenn man den Handler als `const` definiert",
+      "Nein, der Kontext geht verloren — `e` wird `any`",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Contextual Typing funktioniert nur bei DIREKTER Uebergabe als " +
       "Argument. Wenn der Callback vorher in einer Variable gespeichert " +
@@ -170,11 +170,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: 'function f(value: string | number) {\n  if (typeof value === "string") {\n    // Hier: welcher Typ?\n  }\n}',
     options: [
       "`string | number` — unveraendert",
-      "`string` — TypeScript verengt den Typ",
-      "`any` — in Bedingungen wird es unbestimmt",
       "Ich weiss es nicht",
+      "`any` — in Bedingungen wird es unbestimmt",
+      "`string` — TypeScript verengt den Typ",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Control Flow Analysis: TypeScript verfolgt den Code-Fluss und " +
       "verengt (narrowt) den Typ. Nach dem typeof-Check weiss TS, " +
@@ -191,11 +191,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "type Colors = Record<string, string>;\nconst theme: Colors = { primary: '#f00' };\n// theme.primary ist jetzt `string`, nicht `'#f00'`",
     options: [
       "Nein, Annotation ueberschreibt immer die Inference",
-      "Ja, mit dem `satisfies`-Operator",
-      "Ja, mit `as const`",
       "Ich weiss es nicht",
+      "Ja, mit `as const`",
+      "Ja, mit dem `satisfies`-Operator",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`satisfies` validiert gegen den Typ, behaelt aber die spezifische " +
       "Inference. `theme.primary` waere dann `'#f00'` statt `string`.",
@@ -207,11 +207,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "zurueck und nicht `('a' | 'b')[]`?",
     options: [
       "Das ist ein Bug in TypeScript",
-      "Weil Objekte zur Laufzeit mehr Keys haben koennten",
-      "Weil Object.keys() immer Strings zurueckgibt",
       "Ich weiss es nicht",
+      "Weil Object.keys() immer Strings zurueckgibt",
+      "Weil Objekte zur Laufzeit mehr Keys haben koennten",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "TypeScript ist absichtlich konservativ. Durch Vererbung oder " +
       "dynamische Zuweisung koennte ein Objekt mehr Keys haben als " +

@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was verhindert Branded Types (L24), das normale string/number-Typen nicht koennen?",
     options: [
       "Verwechslung gleichfoermiger Werte — z.B. UserId und OrderId sind beide string, aber nicht austauschbar",
-      "Runtime-Fehler bei falschen Typen",
-      "Dass Strings zu lang werden",
-      "Dass number-Werte negativ sind"
+      "Runtime-Fehler bei falschen Typen die erst zur Laufzeit sichtbar werden",
+      "Dass Strings zu lang werden und die Lesbarkeit des Codes beeintrachtigen",
+      "Dass number-Werte negativ sind und dadurch ungueltige IDs entstehen"
     ],
     correct: 0,
     explanation: "Branded Types fuegen einen 'unsichtbaren' Brand hinzu: type UserId = string & { __brand: 'UserId' }. Obwohl beide string sind, sind UserId und OrderId nicht zuweisbar.",
@@ -29,9 +29,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Hauptvorteil des Result-Patterns (L25) gegenueber try/catch?",
     options: [
       "Fehler sind im Typ sichtbar — der Compiler erzwingt die Fehlerbehandlung",
-      "Bessere Performance als try/catch",
-      "Kuerzer zu schreiben",
-      "Funktioniert nur mit async/await"
+      "Bessere Performance als try/catch weil keine Stack-Traces erstellt werden muessen",
+      "Kuerzer zu schreiben und benoetigt weniger Boilerplate-Code im Projekt",
+      "Funktioniert nur mit async/await und ist fuer synchronen Code nicht verwendbar"
     ],
     correct: 0,
     explanation: "Result<T,E> macht den Fehler zum Teil des Return-Typs. Der Compiler prueft, dass du den Fehlerfall behandelst — try/catch ist unsichtbar im Typ.",
@@ -41,9 +41,9 @@ export const questions: QuizQuestion[] = [
     question: "Was macht `composite: true` in einer tsconfig (L29)?",
     options: [
       "Aktiviert inkrementelle Builds, erzwingt declaration, und ist Pflicht fuer Project References",
-      "Kombiniert mehrere tsconfig-Dateien",
-      "Komprimiert den Output",
-      "Aktiviert experimentelle Features"
+      "Kombiniert mehrere tsconfig-Dateien zu einer einzigen zentralen Konfiguration",
+      "Komprimiert den Output und reduziert die Groesse der generierten JavaScript-Dateien",
+      "Aktiviert experimentelle Features die noch nicht im offiziellen TypeScript-Standard sind"
     ],
     correct: 0,
     explanation: "composite: true ist Pflicht fuer referenzierte Projekte. Es aktiviert incremental automatisch und erzwingt declaration: true fuer .d.ts-Erzeugung.",
@@ -53,9 +53,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum hat Angular `experimentalDecorators: true` in der tsconfig (L28 + L29)?",
     options: [
       "Angular nutzt Legacy-Decorators (@Component etc.) die vor dem TC39-Standard existierten",
-      "Fuer Performance-Optimierungen",
-      "Fuer Template-Syntax",
-      "Weil Angular kein strict unterstuetzt"
+      "Fuer Performance-Optimierungen die nur mit experimentellen Decorators moeglich sind",
+      "Fuer Template-Syntax die von Stage 3 Decorators nicht unterstuetzt wird",
+      "Weil Angular kein strict unterstuetzt und deshalb auf experimentelle Features angewiesen ist"
     ],
     correct: 0,
     explanation: "Angular nutzt seit 2016 experimentelle Decorators. Die neuen TC39 Stage 3 Decorators haben andere Semantik — Angular muss auf Legacy bleiben bis zur Migration.",
@@ -66,10 +66,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bedeutet `out T` in `interface ReadonlyBox<out T>` (L22)?",
     options: [
-      "T darf nur als Eingabe-Parameter verwendet werden",
+      "T darf nur als Eingabe-Parameter verwendet werden und niemals als Rueckgabetyp",
       "T ist kovariant — ReadonlyBox<Dog> ist ReadonlyBox<Animal> zuweisbar",
-      "T muss ein Output-Typ sein",
-      "T ist kontravariant"
+      "T muss ein Output-Typ sein und darf nicht als Parameter verwendet werden",
+      "T ist kontravariant und verhaelt sich genau umgekehrt zu kovariant"
     ],
     correct: 1,
     explanation: "out markiert T als kovariant: T erscheint nur in Output-Positionen (Return-Typen). ReadonlyBox<Dog> → ReadonlyBox<Animal> ist zuweisbar.",
@@ -78,10 +78,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht DeepReadonly<T> anders als Readonly<T> (L23)?",
     options: [
-      "Nichts — beide sind identisch",
+      "Nichts — beide sind identisch und erzeugen denselben readonly-Typ",
       "Es macht alle verschachtelten Properties readonly, nicht nur die oberste Ebene",
-      "Es entfernt alle Properties",
-      "Es macht nur Arrays readonly"
+      "Es entfernt alle Properties die nicht readonly sind und erzeugt einen leeren Typ",
+      "Es macht nur Arrays readonly und laesst Objekte unveraendert mutable"
     ],
     correct: 1,
     explanation: "Readonly<T> wirkt nur eine Ebene tief. DeepReadonly<T> ist ein rekursiver Typ der ALLE verschachtelten Objekte und Arrays readonly macht.",
@@ -90,10 +90,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Zweck von Smart Constructors bei Branded Types (L24)?",
     options: [
-      "Performance-Optimierung",
+      "Performance-Optimierung die den Code zur Laufzeit schneller ausfuehrt",
       "Die einzige Stelle sein an der ein Brand vergeben wird — nach Validierung",
-      "Branded Types zur Laufzeit erzeugen",
-      "Klassen-Konstruktoren ersetzen"
+      "Branded Types zur Laufzeit erzeugen und den Brand als Property speichern",
+      "Klassen-Konstruktoren ersetzen und die Objektorstellung vereinfachen"
     ],
     correct: 1,
     explanation: "Smart Constructors validieren den Input und vergeben den Brand nur nach erfolgreicher Pruefung. 'Parse, Don't Validate' — der Brand ist der Beweis.",
@@ -102,10 +102,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was erzwingt `verbatimModuleSyntax: true` (L29)?",
     options: [
-      "Alle Imports muessen absolut sein",
+      "Alle Imports muessen absolut sein und duerfen keine relativen Pfade verwenden",
       "Explizites `import type` fuer reine Typ-Imports — was als type markiert wird, wird geloescht",
-      "CommonJS-Syntax fuer alle Imports",
-      "Dass alle Module exportiert werden"
+      "CommonJS-Syntax fuer alle Imports und die komplette Deaktivierung von ES Modules",
+      "Dass alle Module exportiert werden und keine privaten Module erlaubt sind"
     ],
     correct: 1,
     explanation: "verbatimModuleSyntax macht import vs import type explizit. import type wird entfernt, import bleibt. Kein automatisches 'import elision' mehr.",
@@ -116,10 +116,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `HttpResult<never>` ein gueltiger Return-Typ fuer eine Fehler-Funktion (L25 + L02)?",
     options: [
-      "never ist der Default-Typ",
-      "never bedeutet 'kein Wert' und ist deshalb egal",
+      "never ist der Default-Typ der verwendet wird wenn kein Typparameter angegeben ist",
+      "never bedeutet 'kein Wert' und ist deshalb egal und kann ignoriert werden",
       "never ist der Bottom Type — HttpResult<never> ist jedem HttpResult<T> zuweisbar",
-      "never ist dasselbe wie void"
+      "never ist dasselbe wie void und zeigt an dass die Funktion nichts zurueckgibt"
     ],
     correct: 2,
     explanation: "never als Bottom Type ist jedem Typ zuweisbar. Result<never, E> (nur Fehler moeglich) ist zu Result<T, E> zuweisbar — logisch korrekt.",
@@ -128,10 +128,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht Phantom Types bei State Machines besonders nuetzlich (L26)?",
     options: [
-      "Sie sind schneller als regulaere Typen",
-      "Sie speichern den Zustand zur Laufzeit",
+      "Sie sind schneller als regulaere Typen und verbessern die Runtime-Performance",
+      "Sie speichern den Zustand zur Laufzeit und ermoeglichen dynamische Uebergangspruefungen",
       "Sie machen ungueltige Zustandsuebergaenge zu Compile-Fehlern statt Runtime-Fehlern",
-      "Sie ersetzen if/switch-Statements"
+      "Sie ersetzen if/switch-Statements komplett und machen den Code kuerzer"
     ],
     correct: 2,
     explanation: "Phantom Types existieren nur auf Typ-Level. Der Compiler verhindert ungueltige Uebergaenge — z.B. publish(draftDoc) ist ein Fehler wenn publish nur ReviewDoc akzeptiert.",
@@ -140,10 +140,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen Declaration Merging und Module Augmentation (L27)?",
     options: [
-      "Kein Unterschied — beides ist dasselbe",
-      "Declaration Merging funktioniert nur mit Klassen",
+      "Kein Unterschied — beides ist dasselbe und kann austauschbar verwendet werden",
+      "Declaration Merging funktioniert nur mit Klassen und nicht mit Interfaces oder Typen",
       "Declaration Merging erweitert Interfaces am selben Ort, Module Augmentation erweitert Interfaces in externen Modulen",
-      "Module Augmentation funktioniert nur zur Laufzeit"
+      "Module Augmentation funktioniert nur zur Laufzeit und hat keinen Einfluss auf den Compilezeit-Typ"
     ],
     correct: 2,
     explanation: "Declaration Merging: interface A {}; interface A {} verschmilzt zu einer. Module Augmentation: declare module 'express' { interface Request { ... } } erweitert externe Module.",
@@ -166,9 +166,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum setzt man `noEmit: true` in React/Vite/Next.js-Projekten (L29)?",
     options: [
-      "React braucht kein JavaScript",
-      "Fuer schnelleres Linting",
-      "Weil TypeScript zu langsam kompiliert",
+      "React braucht kein JavaScript und verwendet ausschliesslich TypeScript-Features",
+      "Fuer schnelleres Linting das keine kompilierten Dateien benoetigt",
+      "Weil TypeScript zu langsam kompiliert und die Developer Experience verschlechtert",
       "Weil esbuild/SWC die Transpilation uebernimmt — TypeScript prueft nur Typen"
     ],
     correct: 3,
@@ -178,9 +178,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Vorteil von `strictFunctionTypes` in Bezug auf Varianz (L22 + L29)?",
     options: [
-      "Schnellere Kompilierung",
-      "Verbietet alle Funktionstypen",
-      "Erzwingt striktere Typ-Inferenz",
+      "Schnellere Kompilierung durch optimierte Varianz-Berechnung im Compiler",
+      "Verbietet alle Funktionstypen die nicht explizit mit Kovarianz annotiert sind",
+      "Erzwingt striktere Typ-Inferenz die implizite any-Typen verhindert",
       "Erzwingt kontravariante Parameter-Typen — ein Handler<MouseEvent> akzeptiert keinen Handler<Event>"
     ],
     correct: 3,
@@ -190,9 +190,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist das Prinzip 'Make Illegal States Unrepresentable' und welche Phase-3-Konzepte setzen es um?",
     options: [
-      "Nur Branded Types setzen es um",
-      "Es bedeutet Runtime-Validierung fuer alles",
-      "Es ist nur fuer funktionale Programmierung relevant",
+      "Nur Branded Types setzen es um und sind dafuer das einzige gueltige Pattern",
+      "Es bedeutet Runtime-Validierung fuer alle Daten die in die Anwendung fliessen",
+      "Es ist nur fuer funktionale Programmierung relevant und hat in TypeScript keine Bedeutung",
       "Ungueltiger Zustand = Compile-Fehler — umgesetzt durch Branded Types (L24), Phantom Types (L26), Result-Pattern (L25)"
     ],
     correct: 3,

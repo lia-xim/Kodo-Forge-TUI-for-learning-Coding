@@ -69,12 +69,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 2,
     question: "Was ist das 'Early Return Pattern' bei Discriminated Unions?",
     options: [
-      "Alle Faelle mit switch behandeln",
       "Jeden Fall mit if + return pruefen — flacher Code statt verschachteltem if/else",
+      "Alle Faelle mit switch behandeln",
       "Die Funktion sofort beenden",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Statt verschachteltem if/else: Jeden Status mit if pruefen und sofort returnen. TypeScript narrowt durch Elimination.",
   },
   {
@@ -82,12 +82,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Funktioniert Narrowing nach Destrukturierung des Diskriminators?",
     code: 'const { kind } = shape;\nif (kind === "circle") { /* shape.radius? */ }',
     options: [
-      "Ja, genau wie direkt",
       "Nein — TypeScript verliert die Verbindung zum Original-Objekt",
+      "Ja, genau wie direkt",
       "Nur bei const",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Destrukturierung bricht das Narrowing. TypeScript kann die separate Variable nicht zum Objekt zurueck verfolgen.",
   },
 
@@ -96,12 +96,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 3,
     question: "Was ist ein Sum Type?",
     options: [
-      "Ein Typ der mehrere Properties hat (UND)",
       "Ein Typ der genau eine Variante repraesentiert (ODER)",
+      "Ein Typ der mehrere Properties hat (UND)",
       "Ein mathematischer Typ",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Sum Type = ODER: Genau eine Variante ist aktiv. Das Gegenteil ist Product Type (UND) = Interface.",
   },
   {
@@ -109,12 +109,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was modelliert Option<T>?",
     code: 'type Option<T> = { tag: "some"; value: T } | { tag: "none" };',
     options: [
-      "Einen optionalen Parameter",
       "Einen Wert der da sein kann (Some) oder nicht (None) — typsichere null-Alternative",
+      "Einen optionalen Parameter",
       "Eine Checkbox",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Option<T> erzwingt die Pruefung ob ein Wert vorhanden ist. Typsicherer als T | null.",
   },
   {
@@ -122,11 +122,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist der Vorteil von Result<T, E> gegenueber try/catch?",
     options: [
       "Schneller",
-      "Der Fehlertyp E ist Teil der Signatur — der Aufrufer weiss was schiefgehen kann",
       "Funktioniert ohne async",
+      "Der Fehlertyp E ist Teil der Signatur — der Aufrufer weiss was schiefgehen kann",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "Bei try/catch ist der Error 'unknown'. Bei Result<T, E> ist der Fehlertyp explizit in der Signatur.",
   },
 
@@ -136,11 +136,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: 'Was bedeutet "Make impossible states impossible"?',
     options: [
       "Alle Exceptions abfangen",
-      "Zustaende so modellieren, dass ungueltige Kombinationen nicht darstellbar sind",
       "Alle Inputs validieren",
+      "Zustaende so modellieren, dass ungueltige Kombinationen nicht darstellbar sind",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "Discriminated Unions statt Booleans: Nur gueltige Zustaende sind als Typ darstellbar.",
   },
   {
@@ -174,11 +174,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist der Diskriminator bei Redux/NgRx Actions?",
     options: [
       '"payload"',
-      '"type"',
-      '"action"',
       "Ich weiss es nicht",
+      '"action"',
+      '"type"',
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Redux/NgRx verwenden konventionell 'type' als Diskriminator fuer Actions.",
   },
   {
@@ -186,11 +186,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was macht Extract<Shape, { kind: 'circle' }>?",
     options: [
       "Entfernt die Circle-Variante",
-      "Extrahiert die Circle-Variante aus der Union",
-      "Erstellt einen neuen Circle-Typ",
       "Ich weiss es nicht",
+      "Erstellt einen neuen Circle-Typ",
+      "Extrahiert die Circle-Variante aus der Union",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Extract filtert die Union auf Varianten die zum zweiten Argument passen. Exclude tut das Gegenteil.",
   },
   {
@@ -198,11 +198,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Wie modelliert man verschiedene API-Fehlertypen typsicher?",
     options: [
       "Ein Error-Objekt mit vielen optionalen Properties",
-      "Eine Discriminated Union mit einer Variante pro Fehlertyp",
-      "try/catch mit instanceof",
       "Ich weiss es nicht",
+      "try/catch mit instanceof",
+      "Eine Discriminated Union mit einer Variante pro Fehlertyp",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Jeder Fehlertyp als eigene Variante mit Tag und spezifischen Properties. Der switch deckt alle Faelle ab.",
   },
 ];

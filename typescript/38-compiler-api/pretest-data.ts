@@ -106,12 +106,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Wofuer ist checker.getSymbolAtLocation nützlich?",
     options: [
-      "Um den Typ eines Ausdrucks zu bekommen",
       "Um herauszufinden wo ein Name deklariert wurde — die Basis fuer 'Go to Definition'",
+      "Um den Typ eines Ausdrucks zu bekommen",
       "Um den AST zu traversieren",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "getSymbolAtLocation loest einen Namen (Identifier) auf seine Deklaration auf — inklusive Import-Aufloesung.",
   },
   {
@@ -119,11 +119,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Warum ist der Type Checker die teuerste Compiler-Komponente?",
     options: [
       "Weil er viele Dateien liest",
-      "Weil er alle Typen fuer alle Ausdruecke berechnet — Inferenz, Generics, Narrowing",
       "Weil er JavaScript generiert",
+      "Weil er alle Typen fuer alle Ausdruecke berechnet — Inferenz, Generics, Narrowing",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Der Type Checker berechnet Typen, loest Generics, fuehrt Narrowing durch und prueft Kompatibilitaet — ~50.000 Zeilen Code.",
   },
 
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Warum sind AST-Nodes in TypeScript immutable?",
     options: [
       "Weil JavaScript keine Objekt-Mutation unterstuetzt",
-      "Damit mehrere Transformer hintereinander laufen koennen ohne sich zu stoeren",
       "Weil es schneller ist als mutable Nodes",
+      "Damit mehrere Transformer hintereinander laufen koennen ohne sich zu stoeren",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Immutability stellt sicher dass jeder Transformer den richtigen Input bekommt — keine Seiteneffekte zwischen Transformern.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist ts.factory?",
     options: [
       "Ein Build-Tool fuer TypeScript-Projekte",
-      "Eine API zum Erstellen neuer AST-Nodes",
       "Ein Modul fuer Datei-Operationen",
+      "Eine API zum Erstellen neuer AST-Nodes",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "ts.factory.createStringLiteral(), ts.factory.createCallExpression() etc. erzeugen neue immutable AST-Nodes.",
   },
 
@@ -173,11 +173,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was enthaelt ein TypeScript-Diagnostic-Objekt?",
     options: [
       "Nur die Fehlermeldung",
-      "Datei, Position, Kategorie (Error/Warning), Fehlercode und Nachricht",
       "Den gesamten Quellcode",
+      "Datei, Position, Kategorie (Error/Warning), Fehlercode und Nachricht",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Diagnostics sind strukturiert: Position, Laenge, Kategorie, Code und Nachricht — nicht nur ein String.",
   },
   {
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was unterscheidet den Language Service von createProgram?",
     options: [
       "Der Language Service kann keine Typen pruefen",
-      "Der Language Service arbeitet inkrementell — ideal fuer IDEs",
-      "Der Language Service ist nur fuer .d.ts-Dateien",
       "Ich weiss es nicht",
+      "Der Language Service ist nur fuer .d.ts-Dateien",
+      "Der Language Service arbeitet inkrementell — ideal fuer IDEs",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Der Language Service cached Ergebnisse und aktualisiert nur geaenderte Dateien — schnell genug fuer jeden Tastendruck.",
   },
   {
@@ -197,11 +197,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Wie nutzt VS Code die TypeScript Compiler API?",
     options: [
       "Es startet tsc als separaten Prozess",
-      "Es nutzt den Language Service fuer Autocomplete, Hover, Rename und Quick Fixes",
-      "Es nutzt die API nicht — VS Code hat seinen eigenen Parser",
       "Ich weiss es nicht",
+      "Es nutzt die API nicht — VS Code hat seinen eigenen Parser",
+      "Es nutzt den Language Service fuer Autocomplete, Hover, Rename und Quick Fixes",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "VS Code startet einen tsserver-Prozess der den Language Service hostet. Jede IDE-Aktion wird an den Language Service delegiert.",
   },
 
@@ -212,11 +212,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Kann ein Linter mit der Compiler API Regeln pruefen die ESLint nicht kann?",
     options: [
       "Nein, ESLint kann alles was die Compiler API kann",
-      "Ja, Typ-basierte Regeln die den aufgeloesten Typ eines Ausdrucks brauchen",
-      "Nur fuer TypeScript-spezifische Syntax",
       "Ich weiss es nicht",
+      "Nur fuer TypeScript-spezifische Syntax",
+      "Ja, Typ-basierte Regeln die den aufgeloesten Typ eines Ausdrucks brauchen",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Regeln wie 'ist der Rueckgabewert ein Promise?' brauchen den Type Checker. @typescript-eslint nutzt deshalb die Compiler API.",
   },
   {
@@ -224,11 +224,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist ein realistischer Anwendungsfall fuer Code-Generierung mit der Compiler API?",
     options: [
       "CSS-Dateien generieren",
-      "Aus TypeScript-Interfaces automatisch Validierungsfunktionen erzeugen",
-      "HTML-Templates kompilieren",
       "Ich weiss es nicht",
+      "HTML-Templates kompilieren",
+      "Aus TypeScript-Interfaces automatisch Validierungsfunktionen erzeugen",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Interface lesen → Properties und Typen extrahieren → Runtime-Validierungscode generieren. Wie Zod, aber aus bestehenden Interfaces.",
   },
   {

@@ -37,8 +37,8 @@ export const pretestData: PretestQuestion[] = [
     options: ["Nur in JavaScript (nicht TypeScript)", "Wenn 'nicht gefunden' ein normaler Zustand ist, kein Fehler", "Wenn Performance kritisch ist", "Immer — Result ist immer Over-Engineering"],
     correct: 1, explanation: "null = normales Fehlen (nicht gefunden). Result = Fehler mit Ursache. findUser → null. createUser → Result." },
   { sectionId: 3, question: "Was macht optional chaining `user?.name`?",
-    options: ["Wirft wenn user null ist", "Gibt undefined zurück wenn user null/undefined ist, sonst user.name", "Konvertiert null in undefined", "Ist identisch mit user && user.name"],
-    correct: 1, explanation: "`user?.name` gibt `undefined` wenn user null/undefined ist, sonst `user.name`. Kurz für null-safe Property-Zugriff." },
+    options: ["Gibt undefined zurück wenn user null/undefined ist, sonst user.name", "Wirft wenn user null ist", "Konvertiert null in undefined", "Ist identisch mit user && user.name"],
+    correct: 0, explanation: "`user?.name` gibt `undefined` wenn user null/undefined ist, sonst `user.name`. Kurz für null-safe Property-Zugriff." },
   { sectionId: 3, question: "Was gibt `null ?? 'Default'` zurück?",
     options: ["null", "false", "'Default' — ?? ist Nullish Coalescing", "Throws TypeError"],
     correct: 2, explanation: "Nullish Coalescing `??`: Gibt rechte Seite zurück wenn linke Seite null oder undefined ist. `null ?? 'Default'` → 'Default'." },
@@ -56,23 +56,23 @@ export const pretestData: PretestQuestion[] = [
 
   // Sektion 5: Error-Typen Patterns
   { sectionId: 5, question: "Warum sind Union-Typen für Fehler besser als Klassen-Hierarchien?",
-    options: ["Union-Typen haben bessere Performance", "Klassen können nicht in TypeScript sein", "Union-Typen sind JSON-serialisierbar, kein instanceof nötig, flexibler für mehrere Kontexte", "Klassen haben kein Narrowing"],
-    correct: 2, explanation: "Union-Typen: serialisierbar, einfach zu erstellen, Pattern-Matching. Klassen: instanceof nötig, nicht JSON-konform, ein Elternteil-Typ." },
+    options: ["Union-Typen sind JSON-serialisierbar, kein instanceof nötig, flexibler für mehrere Kontexte", "Klassen können nicht in TypeScript sein", "Union-Typen haben bessere Performance", "Klassen haben kein Narrowing"],
+    correct: 0, explanation: "Union-Typen: serialisierbar, einfach zu erstellen, Pattern-Matching. Klassen: instanceof nötig, nicht JSON-konform, ein Elternteil-Typ." },
   { sectionId: 5, question: "Was ist ein 'Anti-Corruption Layer' in der Fehler-Architektur?",
-    options: ["Ein try/catch Block im Middleware", "Eine Schicht die externe Fehler-Typen in interne Domain-Typen konvertiert", "Eine TypeScript-Linter-Regel", "Eine Abstraktionsschicht für Netzwerk-Fehler"],
-    correct: 1, explanation: "ACL: Externe Fehler (DB-Codes, HTTP-Status) werden zu Domain-Fehlern (UserNotFound, ValidationError) konvertiert. Jede Schicht spricht ihre eigene Sprache." },
+    options: ["Eine Schicht die externe Fehler-Typen in interne Domain-Typen konvertiert", "Ein try/catch Block im Middleware", "Eine TypeScript-Linter-Regel", "Eine Abstraktionsschicht für Netzwerk-Fehler"],
+    correct: 0, explanation: "ACL: Externe Fehler (DB-Codes, HTTP-Status) werden zu Domain-Fehlern (UserNotFound, ValidationError) konvertiert. Jede Schicht spricht ihre eigene Sprache." },
   { sectionId: 5, question: "Was ist `readonly type = 'VALIDATION' as const` in einer Error-Klasse?",
-    options: ["Es definiert einen konstanten Methodenaufruf", "Es macht die Klasse unveränderlich", "Es fügt ein Discriminant-Property hinzu das Narrowing in switch/case ermöglicht", "as const ist in Klassen nicht erlaubt"],
-    correct: 2, explanation: "`type = 'VALIDATION' as const` → Literal-Typ 'VALIDATION'. Das macht Klassen-Instanzen zu discriminated union Teilnehmern — switch über `error.type` funktioniert." },
+    options: ["Es definiert einen konstanten Methodenaufruf", "Es macht die Klasse unveränderlich", "as const ist in Klassen nicht erlaubt", "Es fügt ein Discriminant-Property hinzu das Narrowing in switch/case ermöglicht"],
+    correct: 3, explanation: "`type = 'VALIDATION' as const` → Literal-Typ 'VALIDATION'. Das macht Klassen-Instanzen zu discriminated union Teilnehmern — switch über `error.type` funktioniert." },
 
   // Sektion 6: Praxis
   { sectionId: 6, question: "Wie wrapping'st du eine Angular-HTTP-Request zu Result<User, HttpError>?",
-    options: ["Durch Implementierung von HttpInterceptor", "map(user => ok(user)), catchError(e => of(err(toHttpError(e))))", "HttpClient gibt automatisch Result zurück", "Durch extends HttpClient"],
-    correct: 1, explanation: ".pipe(map(user => ok(user)), catchError(err => of(err(toHttpError(err))))) wrapper den Observable in Result-Werte." },
+    options: ["map(user => ok(user)), catchError(e => of(err(toHttpError(e))))", "Durch Implementierung von HttpInterceptor", "HttpClient gibt automatisch Result zurück", "Durch extends HttpClient"],
+    correct: 0, explanation: ".pipe(map(user => ok(user)), catchError(err => of(err(toHttpError(err))))) wrapper den Observable in Result-Werte." },
   { sectionId: 6, question: "Für welche Situation ist `throw` bei einem fetch-Wrapper falsch?",
     options: ["Wenn der Server 500 zurückgibt", "Wenn JSON.parse fehlschlägt", "Wenn der URL-Parameter ungültig ist", "Für alle drei — fetch-Wrapper sollten immer Result zurückgeben"],
     correct: 3, explanation: "Alle drei Fehler (500, JSON-Parse, ungültige URL) sind für HTTP-operationen 'erwartet'. Der Wrapper sollte immer Result zurückgeben statt zu werfen." },
   { sectionId: 6, question: "Was ist die empfohlene Architektur für Fehler in einer SPA?",
-    options: ["Eine globale try/catch in main.ts", "Result-Typen pro Schicht mit Übersetzung zwischen den Schichten", "Alle Fehler als strings serialisieren", "Error-Boundaries nur im Root-Component"],
-    correct: 1, explanation: "Infra (try/catch → Result) → Repository (DB-Error → Domain-Error) → Service → Presentation (exhaustive switch). Jede Schicht spricht ihre Sprache." }
+    options: ["Result-Typen pro Schicht mit Übersetzung zwischen den Schichten", "Eine globale try/catch in main.ts", "Alle Fehler als strings serialisieren", "Error-Boundaries nur im Root-Component"],
+    correct: 0, explanation: "Infra (try/catch → Result) → Repository (DB-Error → Domain-Error) → Service → Presentation (exhaustive switch). Jede Schicht spricht ihre Sprache." }
 ];

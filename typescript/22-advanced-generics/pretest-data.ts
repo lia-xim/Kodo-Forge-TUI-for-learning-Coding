@@ -122,11 +122,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wenn `Cat extends Animal`, ist `Array<Cat>` dann ein Subtyp von `Array<Animal>`?",
     options: [
       "Ja — weil Cat ein Subtyp von Animal ist",
-      "Nein — weil Arrays auch beschrieben werden koennen",
       "Nur bei readonly Arrays",
+      "Nein — weil Arrays auch beschrieben werden koennen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Arrays sind invariant: Man kann Elemente lesen UND schreiben. " +
       "Nur ReadonlyArray<Cat> waere ein Subtyp von ReadonlyArray<Animal> (kovariant).",
@@ -138,11 +138,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "type Handler<T> = (item: T) => void;",
     options: [
       "Handler<Cat> ist Subtyp von Handler<Animal>",
-      "Handler<Animal> ist Subtyp von Handler<Cat>",
       "Handler<Cat> und Handler<Animal> sind identisch",
+      "Handler<Animal> ist Subtyp von Handler<Cat>",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Kontravarianz kehrt die Subtyprichtung um: `Handler<Animal>` ist ein " +
       "Subtyp von `Handler<Cat>`, weil wer Animal verarbeiten kann, auch Cat verarbeiten kann.",
@@ -186,11 +186,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "In welcher TypeScript-Version wurden die `in`/`out`-Modifier eingefuehrt?",
     options: [
       "TypeScript 4.0",
-      "TypeScript 4.7",
-      "TypeScript 5.0",
       "Ich weiss es nicht",
+      "TypeScript 5.0",
+      "TypeScript 4.7",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "TypeScript 4.7 (Mai 2022) fuehrte die `in`/`out`-Modifier ein, " +
       "inspiriert von C#'s Varianz-Annotationen.",
@@ -219,11 +219,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was bedeutet `T extends A & B` in TypeScript?",
     options: [
       "T muss Subtyp von A ODER B sein",
-      "T muss Subtyp von A UND B sein (alle Properties beider Typen haben)",
-      "T ist ein Union von A und B",
       "Ich weiss es nicht",
+      "T ist ein Union von A und B",
+      "T muss Subtyp von A UND B sein (alle Properties beider Typen haben)",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Intersection-Constraints verlangen, dass T alle Eigenschaften von " +
       "A UND B hat — wie ein UND-Vertrag.",
@@ -250,12 +250,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist F-bounded Polymorphism?",
     code: "interface Comparable<T extends Comparable<T>> { compareTo(other: T): number; }",
     options: [
-      "Ein Pattern bei dem der Typparameter sich selbst im Constraint referenziert",
-      "Ein Pattern das nur in funktionalen Sprachen existiert",
       "Ein anderer Name fuer Generics",
+      "Ein Pattern das nur in funktionalen Sprachen existiert",
+      "Ein Pattern bei dem der Typparameter sich selbst im Constraint referenziert",
       "Ich weiss es nicht",
     ],
-    correct: 0,
+    correct: 2,
     briefExplanation:
       "F-bounded Polymorphism: T referenziert sich selbst im Constraint. " +
       "Stellt sicher, dass Typen nur mit sich selbst vergleichbar sind.",
@@ -269,11 +269,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wann ist ein Typparameter ueberfluessig (Anti-Pattern)?",
     options: [
       "Wenn er mehr als einmal vorkommt",
-      "Wenn er nur einmal vorkommt und keine Beziehung herstellt",
-      "Wenn er einen Default-Wert hat",
       "Ich weiss es nicht",
+      "Wenn er einen Default-Wert hat",
+      "Wenn er nur einmal vorkommt und keine Beziehung herstellt",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Ein Typparameter der nur einmal vorkommt korreliert nichts. " +
       "Er kann durch `unknown` ersetzt werden. Das ist die 'Rule of Two'.",
@@ -284,11 +284,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist besser fuer eine parse-Funktion: `parse<T>(input: string): T` oder Overloads?",
     options: [
       "Der Generic — weil er flexibler ist",
-      "Overloads — weil die Input-Output-Beziehung diskret und endlich ist",
-      "Beides ist gleichwertig",
       "Ich weiss es nicht",
+      "Beides ist gleichwertig",
+      "Overloads — weil die Input-Output-Beziehung diskret und endlich ist",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Overloads sind besser wenn die Beziehung zwischen Input und Output " +
       "eine endliche Menge konkreter Faelle ist, nicht parametrisch.",
@@ -298,12 +298,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was passiert wenn TypeScript einen Typparameter nicht inferieren kann und kein Default existiert?",
     options: [
-      "TypeScript inferiert `unknown`",
-      "TypeScript inferiert `any`",
       "Compile-Error",
+      "TypeScript inferiert `any`",
+      "TypeScript inferiert `unknown`",
       "Ich weiss es nicht",
     ],
-    correct: 0,
+    correct: 2,
     briefExplanation:
       "Ohne Inference-Kandidat und ohne Default faellt TypeScript auf `unknown` zurueck " +
       "(frueher `{}`, seit TS 5.x meistens `unknown`).",

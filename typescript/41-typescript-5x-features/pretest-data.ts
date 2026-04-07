@@ -152,12 +152,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Wofuer steht das 'No' in `NoInfer<T>`?",
     options: [
-      "T darf nicht null oder undefined sein",
       "T soll fuer diesen Parameter NICHT fuer die Inferenz herangezogen werden",
+      "T darf nicht null oder undefined sein",
       "T ist ein negativer Typ (Complement Type)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`NoInfer<T>` verhindert dass dieser Parameter die Inferenz von T beeinflusst. " +
       "T wird aus anderen Parametern inferiert und dann dort nur validiert.",
@@ -170,12 +170,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was bedeutet `using` in TypeScript 5.2?",
     options: [
-      "Eine neue Import-Syntax fuer Namespaces",
       "Automatisches Aufrufen von `Symbol.dispose` am Block-Ende",
+      "Eine neue Import-Syntax fuer Namespaces",
       "Eine Abkuerzung fuer using strict",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`using` implementiert das Explicit Resource Management Pattern (TC39). " +
       "Am Block-Ende wird automatisch `[Symbol.dispose]()` aufgerufen.",
@@ -185,12 +185,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was ist der Unterschied zwischen `using` und `await using`?",
     options: [
-      "await using wartet auf den naechsten Microtask bevor dispose aufgerufen wird",
       "await using ruft `Symbol.asyncDispose` auf und wartet auf das Promise",
+      "await using wartet auf den naechsten Microtask bevor dispose aufgerufen wird",
       "Es gibt keinen Unterschied",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`await using` nutzt `Symbol.asyncDispose` statt `Symbol.dispose`. " +
       "Es wartet auf das zurueckgegebene Promise — fuer asynchrones Aufraeumen wie DB-Verbindungen.",
@@ -200,12 +200,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was aendert sich mit `noUncheckedIndexedAccess: true` bei `arr[0]`?",
     options: [
-      "arr[0] wirft sofort einen Fehler wenn arr leer ist",
       "arr[0] hat Typ T | undefined statt T",
+      "arr[0] wirft sofort einen Fehler wenn arr leer ist",
       "Negativer Index-Zugriff wird verboten",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Mit `noUncheckedIndexedAccess` gibt TypeScript fuer jeden Index-Zugriff " +
       "`T | undefined` zurueck — weil das Array zur Laufzeit leer sein koennte.",
@@ -219,11 +219,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was macht `skipLibCheck: true` in tsconfig.json?",
     options: [
       "Ueberspringt das Pruefe der eigenen TypeScript-Dateien",
-      "Ueberspringt die Pruefung von .d.ts-Dateien (inkl. node_modules)",
-      "Deaktiviert Library-spezifische Compiler-Warnungen",
       "Ich weiss es nicht",
+      "Deaktiviert Library-spezifische Compiler-Warnungen",
+      "Ueberspringt die Pruefung von .d.ts-Dateien (inkl. node_modules)",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`skipLibCheck: true` bringt erhebliche Performance-Gewinne in grossen Projekten. " +
       "Der Preis: Fehler in den Typ-Definitionen von Dependencies werden nicht entdeckt.",
@@ -249,11 +249,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wann ist `isolatedDeclarations: true` sinnvoll?",
     options: [
       "Immer — es macht TypeScript strenger und sicherer",
-      "Bei npm-Libraries die parallele .d.ts-Erzeugung durch andere Tools ermoeglichen wollen",
-      "In grossen Angular-Anwendungen mit vielen Komponenten",
       "Ich weiss es nicht",
+      "In grossen Angular-Anwendungen mit vielen Komponenten",
+      "Bei npm-Libraries die parallele .d.ts-Erzeugung durch andere Tools ermoeglichen wollen",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`isolatedDeclarations` erzwingt explizite Typen bei Exporten. " +
       "Dadurch kann jedes Tool (esbuild, swc) .d.ts-Dateien erzeugen — " +
@@ -284,11 +284,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist `@ts-expect-error` und worin unterscheidet es sich von `@ts-ignore`?",
     options: [
       "Beide sind identisch — es sind Aliases",
-      "@ts-expect-error gibt selbst einen Fehler wenn kein Fehler darunter existiert; @ts-ignore ist immer still",
-      "@ts-expect-error funktioniert nur in Test-Dateien",
       "Ich weiss es nicht",
+      "@ts-expect-error funktioniert nur in Test-Dateien",
+      "@ts-expect-error gibt selbst einen Fehler wenn kein Fehler darunter existiert; @ts-ignore ist immer still",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`@ts-expect-error` ist ehrlicher: Es gibt einen Fehler wenn die naechste Zeile " +
       "keinen Fehler hat. Das zwingt dich, es wieder zu entfernen sobald der urspruengliche " +
@@ -301,10 +301,10 @@ export const pretestQuestions: PretestQuestion[] = [
     options: [
       "Stage 1 — sobald der Proposal-Champion eine Implementierung zeigt",
       "Stage 2 — wenn die erste Spezifikation vorliegt",
-      "Stage 3 — wenn Syntax und Semantik eingefroren sind",
       "Ich weiss es nicht",
+      "Stage 3 — wenn Syntax und Semantik eingefroren sind",
     ],
-    correct: 2,
+    correct: 3,
     briefExplanation:
       "Stage 3 bedeutet eingefrorene Syntax. TypeScript hat gelernt (durch Decorators), " +
       "dass fruehe Implementierungen zu Breaking Changes fuehren wenn sich der Proposal " +

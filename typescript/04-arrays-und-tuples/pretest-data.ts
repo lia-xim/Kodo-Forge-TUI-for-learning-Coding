@@ -209,12 +209,12 @@ pair.push("world");`,
     code: `const pair: [string, number] = ["hello", 42];
 const copy = [...pair];`,
     options: [
-      "copy hat den Typ [string, number]",
-      "copy hat den Typ readonly [string, number]",
       "copy hat den Typ (string | number)[]",
+      "copy hat den Typ readonly [string, number]",
+      "copy hat den Typ [string, number]",
       "Compile-Fehler: Spread auf Tuples nicht erlaubt",
     ],
-    correct: 2,
+    correct: 0,
     briefExplanation:
       "Spread auf ein Tuple VERLIERT den Tuple-Typ! TypeScript inferiert " +
       "stattdessen (string | number)[]. Das ist eine haeufige Falle.",
@@ -227,10 +227,10 @@ const copy = [...pair];`,
     options: [
       'Nur ["hello", 1, 2, 3] — mindestens eine Zahl noetig',
       'Nur ["hello"] — Rest-Element kann leer sein',
-      '["hello"], ["hello", 1], ["hello", 1, 2, 3] — alle gueltig',
       '[] — leeres Array ist auch gueltig',
+      '["hello"], ["hello", 1], ["hello", 1, 2, 3] — alle gueltig',
     ],
-    correct: 2,
+    correct: 3,
     briefExplanation:
       "Ein Rest-Element (...number[]) kann 0 oder mehr Elemente haben. " +
       'Also: ["hello"] mit 0 Zahlen ist gueltig, ein leeres [] nicht ' +
@@ -324,10 +324,10 @@ const result = mixed.filter(x => x !== null);`,
     options: [
       "number[]",
       "Array<number>",
-      "readonly number[]",
       "const number[]",
+      "readonly number[]",
     ],
-    correct: 2,
+    correct: 3,
     briefExplanation:
       "'readonly number[]' signalisiert dem Aufrufer, dass die Funktion " +
       "das Array nicht veraendert. Bonus: Man kann auch readonly Arrays uebergeben.",
@@ -338,12 +338,12 @@ const result = mixed.filter(x => x !== null);`,
     question: "Was bewirkt 'satisfies' in Kombination mit 'as const'?",
     code: `const ROLES = ["admin", "user", "guest"] as const satisfies readonly string[];`,
     options: [
-      "Es macht gar keinen Unterschied",
       "Es validiert die Struktur, behaelt aber die engen Literal-Typen",
+      "Es macht gar keinen Unterschied",
       "Es wandelt die Werte in Strings um",
       "Es entfernt das readonly",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "'satisfies' prueft zur Compile-Zeit, dass der Wert einem breiteren Typ " +
       "entspricht — OHNE die Literal-Typen zu verlieren.",

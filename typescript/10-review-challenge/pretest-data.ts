@@ -112,12 +112,12 @@ const p1: Point = { x: 1, y: 2, z: 3 };
 const temp = { x: 1, y: 2, z: 3 };
 const p2: Point = temp;`,
     options: [
-      "p2 wird zur Laufzeit auf Point getrimmt",
       "Excess Property Check greift nur bei frischen Object Literals, nicht bei Variablen",
+      "p2 wird zur Laufzeit auf Point getrimmt",
       "const-Variablen deaktivieren den Check",
       "temp hat den Typ 'any'",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Der Excess Property Check ist ein spezieller Mechanismus der NUR bei " +
       "direkt geschriebenen Object Literals greift. Bei Variablen gilt nur " +
@@ -138,12 +138,12 @@ function parseB(input: string | string[]): number | number[] { ... }
 
 const result = parseB("42"); // Welchen Typ hat result?`,
     options: [
-      "Overloads sind schneller zur Laufzeit",
       "Overloads geben praezisere Return Types: result ist 'number', nicht 'number | number[]'",
+      "Overloads sind schneller zur Laufzeit",
       "Overloads erlauben mehr Parameter-Typen",
       "Kein Vorteil — es ist nur syntaktischer Zucker",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Der Hauptvorteil: TypeScript waehlt basierend auf den Argumenten den " +
       "passenden Overload und gibt den EXAKTEN Return Type. Ohne Overloads " +
@@ -201,11 +201,11 @@ const c: C = { value: ??? };`,
 } as const;`,
     options: [
       "Nichts — Objekte sind bereits const durch 'const'",
-      "Macht alle Properties readonly und alle Werte zu Literal Types",
-      "Konvertiert das Objekt in einen String",
       "Macht das Objekt immutable zur Laufzeit (wie Object.freeze)",
+      "Konvertiert das Objekt in einen String",
+      "Macht alle Properties readonly und alle Werte zu Literal Types",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "as const macht das gesamte Objekt 'deep readonly' und wandelt alle " +
       "Werte in Literal Types um: api wird '\"https://api.example.com\"' statt string, " +
@@ -219,11 +219,11 @@ const c: C = { value: ??? };`,
       "Welche Kombination von Konzepten modelliert einen API-Response am SICHERSTEN?",
     options: [
       "Ein Interface mit optionalen Feldern (data?, error?, loading?)",
-      "Discriminated Union + Literal Types + Exhaustive Switch",
-      "Generics (kommen erst in Phase 2)",
       "any + Laufzeit-Checks",
+      "Generics (kommen erst in Phase 2)",
+      "Discriminated Union + Literal Types + Exhaustive Switch",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Discriminated Unions mit Literal Types und exhaustive Switches stellen " +
       "sicher, dass 1) nur gueltige Zustaende existieren, 2) jeder Zustand die " +

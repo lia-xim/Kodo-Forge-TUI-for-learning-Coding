@@ -128,12 +128,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Kann instanceof mit TypeScript-Interfaces verwendet werden?",
     code: "interface User { name: string }\n// if (x instanceof User) ???",
     options: [
-      "Ja, instanceof funktioniert mit allen Typen",
       "Nein, Interfaces existieren nur zur Compilezeit",
+      "Ja, instanceof funktioniert mit allen Typen",
       "Nur wenn das Interface eine Klasse erweitert",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Interfaces werden durch Type Erasure entfernt. Zur Laufzeit " +
       "gibt es kein Interface-Objekt. instanceof braucht eine Klasse.",
@@ -144,12 +144,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was macht der in-Operator in TypeScript?",
     code: "if ('name' in obj) { ... }",
     options: [
-      "Prueft ob der Wert von obj.name truthy ist",
       "Prueft ob die Property 'name' auf dem Objekt existiert",
+      "Prueft ob der Wert von obj.name truthy ist",
       "Prueft ob 'name' ein gueltiger Typ ist",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Der in-Operator prueft ob eine PROPERTY auf dem Objekt existiert " +
       "(nicht den Wert!). TypeScript nutzt das fuer Narrowing.",
@@ -159,12 +159,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was ist eine 'Discriminated Union'?",
     options: [
-      "Ein Union aus nur zwei Typen",
       "Ein Union mit einer gemeinsamen Property die verschiedene Literal-Werte hat",
+      "Ein Union aus nur zwei Typen",
       "Ein Union der readonly ist",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Eine Discriminated Union hat eine gemeinsame Property (z.B. 'type') " +
       "mit unterschiedlichen Literal-Werten (z.B. 'success' | 'error'). " +
@@ -194,11 +194,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Unterschied zwischen 'if (x)' und 'if (x != null)'?",
     options: [
       "Kein Unterschied — beide pruefen auf null",
-      "'if (x)' schliesst auch 0, '' und false aus",
       "'if (x != null)' ist langsamer",
+      "'if (x)' schliesst auch 0, '' und false aus",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "if (x) schliesst ALLE falsy-Werte aus (null, undefined, 0, '', false, NaN). " +
       "if (x != null) schliesst nur null und undefined aus. " +
@@ -230,11 +230,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "function isString(x: unknown): x is string {\n  return true; // immer true!\n}",
     options: [
       "TypeScript meldet einen Fehler",
-      "TypeScript vertraut dem Guard blind — Laufzeit-Crash moeglich",
-      "Der Guard wird ignoriert",
       "Ich weiss es nicht",
+      "Der Guard wird ignoriert",
+      "TypeScript vertraut dem Guard blind — Laufzeit-Crash moeglich",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "TypeScript prueft NICHT ob dein Type Guard korrekt ist. " +
       "Wenn du immer true zurueckgibst, vertraut der Compiler dir " +
@@ -247,11 +247,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "const x: (string | null)[] = ['a', null];\nconst y = x.filter(v => v !== null);\n// Typ von y?",
     options: [
       "Nein, filter narrowte schon immer automatisch",
-      "Ja, der Typ war (string | null)[] ohne manuellen Guard",
-      "filter() konnte gar nicht mit null-Werten umgehen",
       "Ich weiss es nicht",
+      "filter() konnte gar nicht mit null-Werten umgehen",
+      "Ja, der Typ war (string | null)[] ohne manuellen Guard",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Vor TS 5.5 war der Typ nach filter immer noch (string | null)[]. " +
       "Man musste .filter((v): v is string => v !== null) schreiben. " +
@@ -299,11 +299,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was passiert wenn du assertNever(x) aufrufst aber x NICHT never ist?",
     options: [
       "Laufzeit-Error",
-      "Compile-Error: x ist nicht never zuweisbar",
-      "assertNever gibt undefined zurueck",
       "Ich weiss es nicht",
+      "assertNever gibt undefined zurueck",
+      "Compile-Error: x ist nicht never zuweisbar",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "assertNever erwartet never als Parameter. Wenn x nicht never ist " +
       "(weil ein Fall fehlt), meldet TypeScript einen Compile-Fehler: " +
@@ -315,11 +315,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Gibt es eine Alternative zu switch + assertNever fuer exhaustive Checks?",
     options: [
       "Nein, switch ist die einzige Moeglichkeit",
-      "Ja, Record<UnionType, Value> mit satisfies",
-      "Ja, if/else Ketten sind immer exhaustive",
       "Ich weiss es nicht",
+      "Ja, if/else Ketten sind immer exhaustive",
+      "Ja, Record<UnionType, Value> mit satisfies",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Record<UnionType, Value> mit satisfies stellt sicher, dass fuer " +
       "JEDEN Union-Wert ein Eintrag existiert. Wenn ein Wert fehlt, " +

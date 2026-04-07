@@ -22,9 +22,9 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Was ist das Hauptproblem mit `function parseUser(): User` wenn die Funktion werfen kann?",
     options: [
       "Der Rückgabetyp 'lügt' — er verspricht User, kann aber gar nichts zurückgeben",
-      "TypeScript kompiliert solche Funktionen grundsätzlich nicht",
-      "throw funktioniert nicht in Funktionen mit explizitem Rückgabetyp",
-      "User-Typen können keine Fehler repräsentieren"
+      "TypeScript kompiliert solche Funktionen nicht und zeigt einen Fehler im Return-Typ an",
+      "throw funktioniert nicht in Funktionen mit explizitem Rückgabetyp und erzeugt einen Compile-Error",
+      "User-Typen können keine Fehler repräsentieren und benötigen dafür einen separaten Error-Typ"
     ],
     correct: 0,
     explanation: "Der Typ `User` verspricht: immer ein User. throw = gar nichts. Das ist eine Lüge im Typsystem die der Caller nicht sehen kann.",
@@ -38,9 +38,9 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Was ist der 'Discriminant' in einem Result-Discriminated-Union?",
     options: [
       "Das `ok`-Property mit dem Literal-Typ `true` oder `false` — ermöglicht TypeScript-Narrowing",
-      "Die Methode `.isOk()` die den Typ zur Laufzeit prüft",
-      "Der Typ-Parameter `T` in `Result<T, E>`",
-      "Das optionale `error`-Property das nur bei Fehler gesetzt ist"
+      "Die Methode `.isOk()` die den Typ zur Laufzeit prüft und einen Boolean zurückgibt",
+      "Der Typ-Parameter `T` in `Result<T, E>` der den Erfolgsfall definiert",
+      "Das optionale `error`-Property das nur im Fehlerfall gesetzt wird und sonst undefined ist"
     ],
     correct: 0,
     explanation: "Der Discriminant ist `ok: true | false` als Literal-Typ. Im `if(result.ok)` Branch narrowt TypeScript auf `{ ok: true; value: T }` — TypeScript weiß value existiert.",
@@ -54,9 +54,9 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Warum braucht man `ok: true as const` und nicht einfach `ok: true`?",
     options: [
       "Ohne `as const` inferiert TypeScript `ok: boolean` statt `ok: true` — kein Narrowing möglich",
-      "`as const` ist in TypeScript 5.0 Pflicht für alle boolean Properties",
+      "`as const` ist in TypeScript 5.0 Pflicht für alle boolean Properties in discriminated unions",
       "`true` ist kein gültiger Literal-Typ in TypeScript — nur `as const` macht es gültig",
-      "Ohne `as const` würde der Wert zur Laufzeit zu `false` konvertiert"
+      "Ohne `as const` würde der Wert zur Laufzeit zu `false` konvertiert und das Narrowing schlägt fehl"
     ],
     correct: 0,
     explanation: "TypeScript inferiert `{ ok: true }` als `{ ok: boolean }` — zu breit für Narrowing. `as const` (oder Helper-Funktion) erzwingt den Literal-Typ `true`.",
@@ -70,9 +70,9 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Was macht `function assertNever(x: never): never`?",
     options: [
       "Erzwingt exhaustive Behandlung: wenn x nicht 'never' ist, gibt es einen Compile-Error",
-      "Deaktiviert TypeScript-Typprüfung für den Parameter x",
-      "Wirft einen Laufzeitfehler wenn x undefined ist",
-      "Konvertiert x in einen anderen Typ zur Laufzeit"
+      "Deaktiviert TypeScript-Typprüfung für den Parameter x und behandelt ihn als any",
+      "Wirft einen Laufzeitfehler wenn x undefined ist und stoppt die Programmausführung sofort",
+      "Konvertiert x in einen anderen Typ zur Laufzeit und ermöglicht so eine Typanpassung"
     ],
     correct: 0,
     explanation: "`never` Parameter: Nur ein Wert vom Typ `never` darf übergeben werden. Wenn alle Union-Varianten behandelt wurden, ist der Rest-Typ `never`. Wenn nicht → Compile-Error.",
@@ -87,10 +87,10 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     id: 5,
     question: "Was ist der Unterschied zwischen `Option<T>` und `Result<T, E>`?",
     options: [
-      "Option enthält immer einen Fehlertyp; Result kann auch ohne Fehler sein",
+      "Option enthält immer einen Fehlertyp; Result kann auch ohne Fehler sein und nur Werte liefern",
       "Option = 'vielleicht ein Wert' (kein Fehler); Result = Operation die scheitern kann (mit Fehlerdetails)",
-      "Option und Result sind identisch — nur unterschiedliche Namenskonventionen",
-      "Option wird nur in React verwendet; Result in Angular"
+      "Option und Result sind identisch — nur unterschiedliche Namenskonventionen aus verschiedenen Sprachen",
+      "Option wird nur in React verwendet; Result in Angular und anderen Frameworks mit Dependency Injection"
     ],
     correct: 1,
     explanation: "Option (T|null) = normales Fehlen ohne Details. Result = Fehler der erklärt werden muss. Beispiel: findUser (Option) vs. createUser (Result mit Validierungsfehler).",
@@ -103,10 +103,10 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     id: 6,
     question: "Was gibt `strictNullChecks: true` einer TypeScript-Codebasis?",
     options: [
-      "Verhindert dass null-Werte in TypeScript-Code verwendet werden",
+      "Verhindert dass null-Werte in TypeScript-Code verwendet werden und zeigt Fehler an",
       "Erzwingt explizite Behandlung von null/undefined — effektiv ein eingebautes Option-System",
-      "Wandelt alle null-Werte automatisch in undefined um",
-      "Ermöglicht nur primitive Typen null zuzuweisen"
+      "Wandelt alle null-Werte automatisch in undefined um und vereinheitlicht die Behandlung",
+      "Ermöglicht nur primitive Typen null zuzuweisen und verbietet es bei Objekt-Typen"
     ],
     correct: 1,
     explanation: "strictNullChecks macht null und undefined zu eigenen Typen. `string` ≠ `string | null`. Damit muss jeder optionale Wert explizit behandelt werden — wie in Option-Typen.",
@@ -122,7 +122,7 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
       "satisfies ist nur in React verfügbar; Record-Annotation für alle Frameworks",
       "satisfies prüft Vollständigkeit OHNE den Inferenz-Typ zu verbreitern — spezifische Typen bleiben erhalten",
       "satisfies ist veraltet (TypeScript 5.0+) und sollte nicht mehr verwendet werden",
-      "satisfies erlaubt zusätzliche Keys die nicht in Status sind"
+      "satisfies erlaubt zusätzliche Keys die nicht in Status sind und erweitert den Typ automatisch"
     ],
     correct: 1,
     explanation: "`satisfies` = Vollständigkeitsprüfung (alle Keys) + behält spezifische Typen. `: Record<Status, V>` = Vollständigkeitsprüfung aber verliert spezifische Typen (alles wird zu V).",
@@ -135,10 +135,10 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     id: 8,
     question: "Für welche Situationen ist `throw` weiterhin die richtige Wahl?",
     options: [
-      "Für alle Fehler — throw immer verwenden, Result ist Over-Engineering",
+      "Für alle Fehler — throw immer verwenden, Result ist Over-Engineering und nicht noetig",
       "Für Initialisierungsfehler, Bugs/Invariant-Verletzungen, und als Wrapper für externe Systeme die werfen",
-      "Niemals — Result<T, E> sollte in allen Fällen verwendet werden",
-      "Nur in async-Funktionen — in synchronen immer Result verwenden"
+      "Niemals — Result<T, E> sollte in allen Fällen verwendet werden um maximale Typsicherheit zu garantieren",
+      "Nur in async-Funktionen — in synchronen immer Result verwenden um Fehler im Typsystem zu halten"
     ],
     correct: 1,
     explanation: "throw = richtig für: Bugs (Division durch Null), Initialisierung (fehlende Env-Vars), unrecoverable states. Result = richtig für erwartete Fehler (Validierung, Netzwerk, nicht gefunden).",
@@ -220,7 +220,7 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Welche tsconfig-Option ist für `useUnknownInCatchVariables` zuständig?",
     options: [
       "`strict: true` macht es optional; separat muss `catchUnknown: true` gesetzt werden",
-      "`noImplicitAny: true` ist genug um catch-Variablen zu typisieren",
+      "`noImplicitAny: true` ist genug um catch-Variablen zu typisieren und zu schuetzen",
       "`useUnknownInCatchVariables: true` ist ein separates Setting außerhalb von strict",
       "`useUnknownInCatchVariables` ist standardmäßig in `strict: true` enthalten (seit TS 4.4)"
     ],
@@ -235,9 +235,9 @@ export const questions: (MCQuizQuestion | QuizQuestion)[] = [
     id: 14,
     question: "Warum ist `Record<ApiError, string>` ein exhaustiver Check?",
     options: [
-      "Weil Record eine eingebaute Exhaustivitäts-Garantie in TypeScript hat",
-      "Weil ApiError als string-Union alle Keys definiert die im Record vorkommen müssen",
-      "Weil TypeScript automatisch Switch-Statements für Record-Types generiert",
+      "Weil Record eine eingebaute Exhaustivitäts-Garantie in TypeScript hat die switch ersetzt",
+      "Weil ApiError als string-Union alle Keys definiert die im Record vorkommen muessen",
+      "Weil TypeScript automatisch Switch-Statements für Record-Types generiert und ausfuehrt",
       "Record<K, V> erzwingt dass ALLE Werte von K als Keys vorhanden sein müssen — fehlt einer → COMPILE-ERROR"
     ],
     correct: 3,

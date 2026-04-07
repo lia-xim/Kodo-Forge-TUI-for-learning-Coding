@@ -158,12 +158,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was ist ReDoS (Regular Expression Denial of Service)?",
     options: [
-      "Ein Angriff bei dem eine Regex den Browser zum Absturz bringt durch Arbeitsspeicher-Verbrauch",
       "Ein Angriff bei dem boeswillige Strings exponentiell lange Regex-Ausfuehrungszeiten erzeugen",
+      "Ein Angriff bei dem eine Regex den Browser zum Absturz bringt durch Arbeitsspeicher-Verbrauch",
       "Ein Angriff bei dem Regex-Muster aus dem Netzwerk injiziert werden",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Verschachtelte Quantifizierer wie `(a+)+` koennen exponentielles Backtracking erzeugen. " +
       "Ein Angreifer sendet einen String der den Regex-Motor haengen laesst. " +
@@ -177,12 +177,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was macht `function isUser(v: unknown): v is User` anders als `function isUser(v: unknown): boolean`?",
     options: [
-      "Nichts — der Rueckgabetyp ist nur Dokumentation",
       "Das Type Predicate teilt TypeScript mit: 'Wenn true, dann ist v ein User im aufrufenden Code'",
+      "Nichts — der Rueckgabetyp ist nur Dokumentation",
       "v is User fuehrt automatisch einen Cast durch",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Type Predicates (value is T) sind Narrowing-Informationen fuer den Compiler. " +
       "Nach `if (isUser(v))` weiss TypeScript im if-Zweig: v ist User. " +
@@ -193,12 +193,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Welche Validierungsstrategie ist besser: beim ersten Fehler abbrechen oder alle Fehler sammeln?",
     options: [
-      "Beim ersten Fehler abbrechen — schneller und einfacher zu implementieren",
       "Alle Fehler sammeln — der Benutzer sieht alle Probleme auf einmal und kann sie beheben",
+      "Beim ersten Fehler abbrechen — schneller und einfacher zu implementieren",
       "Beides ist gleichwertig — es kommt auf den Use Case an",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Alle Fehler auf einmal ist nutzerzentrierter. " +
       "Wenn ein Formular 3 Probleme hat, ist 'Korrigiere eins, submit, naechster Fehler' " +
@@ -210,11 +210,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Warum ist `const v = value as Record<string, unknown>` nach `typeof value === 'object'` sicher?",
     options: [
       "Weil Record<string, unknown> ein sehr allgemeiner Typ ist der alles erlaubt",
-      "Weil typeof-Check und null-Check zusammen beweisen: value ist ein Objekt mit Properties — der Cast spiegelt das wider",
       "Weil TypeScript Record<string, unknown> nicht prueft",
+      "Weil typeof-Check und null-Check zusammen beweisen: value ist ein Objekt mit Properties — der Cast spiegelt das wider",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Nach `typeof value === 'object' && value !== null` weiss TypeScript: " +
       "value ist ein JavaScript-Objekt. Record<string, unknown> ist das korrekte " +
@@ -230,11 +230,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Kern des 'Parse, don't validate'-Prinzips von Alexis King?",
     options: [
       "Man soll keine boolean-Validierungsfunktionen schreiben",
-      "Transformiere Eingaben direkt in typisierte Werte — das Ergebnis ist T oder Fehler, kein boolean",
       "Parsen ist schneller als Validieren",
+      "Transformiere Eingaben direkt in typisierte Werte — das Ergebnis ist T oder Fehler, kein boolean",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Das Kernproblem bei isValid(x): boolean ist, dass das Wissen 'gueltig' " +
       "vom Objekt getrennt ist und verloren gehen kann. " +
@@ -246,11 +246,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wie verbindet sich das Parse-Prinzip mit Branded Types aus Lektion 24?",
     options: [
       "Gar nicht — Branded Types sind ein separates Konzept",
-      "Ein Smart Constructor parsiert einen primitiven Wert in einen Branded Type — das ist Parse in Reinform",
-      "Branded Types ersetzen Parser — man braucht keine Parse-Funktionen mehr",
       "Ich weiss es nicht",
+      "Branded Types ersetzen Parser — man braucht keine Parse-Funktionen mehr",
+      "Ein Smart Constructor parsiert einen primitiven Wert in einen Branded Type — das ist Parse in Reinform",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Ein Smart Constructor wie `parseEmail(raw: string): Email` prueft Format, " +
       "und gibt bei Erfolg `raw as Email` zurueck — einen string mit eingebautem Beweis. " +
@@ -262,11 +262,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist 'Parse at the boundary'?",
     options: [
       "Man soll in jeder Funktion validieren die externe Daten empfangt",
-      "Validierung findet einmal am Systemrand statt (API, Storage, URL) — danach gilt der Typ als bewiesen",
-      "Boundary ist ein Design Pattern aus dem Domain-Driven Design",
       "Ich weiss es nicht",
+      "Boundary ist ein Design Pattern aus dem Domain-Driven Design",
+      "Validierung findet einmal am Systemrand statt (API, Storage, URL) — danach gilt der Typ als bewiesen",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Die boundary (Grenze) ist der Uebergang von aussen zu deinem System. " +
       "Dort parsest du einmal. Danach tragt der Typ die Garantie. " +
@@ -281,11 +281,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Welche der folgenden ist eine 'rote Flagge' beim TypeScript Code Review?",
     options: [
       "`type UserId = string & { readonly _brand: 'UserId' }`",
-      "`const config = JSON.parse(raw) as AppConfig`",
-      "`function parseUser(v: unknown): User { /* ... */ }`",
       "Ich weiss es nicht",
+      "`function parseUser(v: unknown): User { /* ... */ }`",
+      "`const config = JSON.parse(raw) as AppConfig`",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "`JSON.parse(raw) as AppConfig` ist gleich zwei rote Flaggen in einer Zeile: " +
       "JSON.parse ohne try-catch (kann werfen bei ungueltigem JSON) " +
@@ -313,11 +313,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was koennen ESLint-Regeln bei der Sicherheit, was Code Review nicht kann?",
     options: [
       "ESLint versteht die Semantik des Codes besser als ein menschlicher Reviewer",
-      "ESLint prueft konsistent jede Zeile ohne muede zu werden oder Ausnahmen zu machen",
-      "ESLint kann Sicherheitsluecken zur Laufzeit abfangen",
       "Ich weiss es nicht",
+      "ESLint kann Sicherheitsluecken zur Laufzeit abfangen",
+      "ESLint prueft konsistent jede Zeile ohne muede zu werden oder Ausnahmen zu machen",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "ESLint ist unmuedbar und konsistent — es prueft jede Zeile nach denselben Regeln. " +
       "Menschen uebersehen Dinge, machen Ausnahmen, werden abgelenkt. " +

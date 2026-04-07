@@ -119,12 +119,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Welcher Modifier erlaubt Zugriff in Subklassen, aber nicht von aussen?",
     options: [
-      "private",
       "protected",
+      "private",
       "readonly",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "'protected' erlaubt Zugriff in der Klasse selbst und in Subklassen, " +
       "aber nicht von aussen. 'private' erlaubt nur Zugriff in der Klasse selbst.",
@@ -137,12 +137,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Kann eine abstract class auch konkrete Methoden (mit Body) haben?",
     options: [
-      "Nein, alle Methoden muessen abstract sein",
       "Ja, eine abstract class kann abstrakte UND konkrete Methoden haben",
+      "Nein, alle Methoden muessen abstract sein",
       "Nur static Methoden koennen konkret sein",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Abstract classes koennen sowohl abstrakte (ohne Body, muessen " +
       "implementiert werden) als auch konkrete (mit Body, werden vererbt) " +
@@ -153,12 +153,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was passiert, wenn du 'new AbstractClass()' aufrufst?",
     options: [
-      "Es funktioniert — eine abstrakte Klasse ist eine normale Klasse",
       "Compile-Error — abstract classes koennen nicht instanziiert werden",
+      "Es funktioniert — eine abstrakte Klasse ist eine normale Klasse",
       "Runtime-Error — es wird erst zur Laufzeit geworfen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "TypeScript verhindert die Instanziierung von abstract classes " +
       "zur Compilezeit. Nur Subklassen, die alle abstrakten Methoden " +
@@ -170,12 +170,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "TypeScript 4.3 hat das 'override'-Keyword eingefuehrt. " +
       "Was passiert mit 'override rendr()' wenn die Elternklasse 'render()' hat?",
     options: [
-      "Kompiliert — override ist nur ein Hinweis",
       "Compile-Error — 'rendr' existiert nicht in der Elternklasse",
+      "Kompiliert — override ist nur ein Hinweis",
       "Runtime-Error beim Aufruf",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "'override' prueft, ob die Methode wirklich in der Elternklasse existiert. " +
       "Bei einem Tippfehler (rendr statt render) meldet TypeScript sofort einen Fehler.",
@@ -189,11 +189,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Erbt eine Klasse Code, wenn sie ein Interface mit 'implements' verwendet?",
     options: [
       "Ja, implements ist wie extends",
-      "Nein, implements uebernimmt keinen Code — nur den Vertrag",
       "Nur statische Methoden werden uebernommen",
+      "Nein, implements uebernimmt keinen Code — nur den Vertrag",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "'implements' erbt KEINEN Code. Es ist nur ein Compile-Zeit-Versprechen: " +
       "'Ich habe alle Mitglieder des Interfaces.' Den Code musst du selbst schreiben.",
@@ -204,11 +204,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Kann eine Klasse mehrere Interfaces gleichzeitig implementieren?",
     options: [
       "Nein, nur ein Interface pro Klasse",
-      "Ja, mit Komma getrennt: implements A, B, C",
       "Nur mit extends, nicht mit implements",
+      "Ja, mit Komma getrennt: implements A, B, C",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Ja! Eine Klasse kann beliebig viele Interfaces implementieren " +
       "(implements A, B, C). Im Gegensatz zu extends (nur EINE Elternklasse).",
@@ -220,11 +220,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Structural Typing nutzt?",
     options: [
       "Ja, ohne implements kompiliert der Code nicht",
-      "Nein, aber es bietet fruehere Fehlermeldungen und bessere Dokumentation",
       "Es ist in striktem Modus erforderlich",
+      "Nein, aber es bietet fruehere Fehlermeldungen und bessere Dokumentation",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Structural Typing macht 'implements' technisch optional. " +
       "Aber 'implements' bietet fruehere Fehlermeldungen (beim Schreiben " +
@@ -240,11 +240,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Worauf verweist 'this' in einer static Methode?",
     options: [
       "Auf die aktuelle Instanz",
-      "Auf die Klasse selbst (nicht eine Instanz)",
       "this ist in static Methoden nicht verfuegbar",
+      "Auf die Klasse selbst (nicht eine Instanz)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "In static Methoden verweist 'this' auf die KLASSE, nicht auf " +
       "eine Instanz. Das ist logisch: Static Members gehoeren der Klasse, " +
@@ -256,11 +256,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was macht 'constructor(public name: string)' in TypeScript?",
     options: [
       "Nur einen Parameter — kein Feld wird erstellt",
-      "Erstellt automatisch ein Feld 'name' und weist den Wert zu",
-      "Ist ein Syntax-Error",
       "Ich weiss es nicht",
+      "Ist ein Syntax-Error",
+      "Erstellt automatisch ein Feld 'name' und weist den Wert zu",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Parameter Properties: Ein Modifier (public/private/protected/readonly) " +
       "vor einem Constructor-Parameter deklariert automatisch ein Feld " +
@@ -291,11 +291,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Warum hat React von Class Components zu Hooks gewechselt?",
     options: [
       "Weil Klassen in JavaScript zu langsam sind",
-      "Wegen this-Binding-Problemen, schlechter Code-Organisation und schwieriger Code-Wiederverwendung",
-      "Weil TypeScript keine Class Components unterstuetzt",
       "Ich weiss es nicht",
+      "Weil TypeScript keine Class Components unterstuetzt",
+      "Wegen this-Binding-Problemen, schlechter Code-Organisation und schwieriger Code-Wiederverwendung",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "React identifizierte drei Probleme: 1) this-Binding-Verwirrung, " +
       "2) zusammengehoerige Logik ueber Lifecycle-Methoden verstreut, " +
@@ -309,11 +309,11 @@ export const pretestQuestions: PretestQuestion[] = [
           "const t = new T();\nconst fn = t.show;\nfn(); // ???",
     options: [
       "Weil fn eine Kopie der Funktion ist, nicht eine Referenz",
-      "Weil JavaScript 'this' anhand des Aufruf-Kontexts bestimmt",
-      "Weil Klassen-Methoden nicht in Variablen gespeichert werden koennen",
       "Ich weiss es nicht",
+      "Weil Klassen-Methoden nicht in Variablen gespeichert werden koennen",
+      "Weil JavaScript 'this' anhand des Aufruf-Kontexts bestimmt",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "JavaScript bestimmt 'this' dynamisch beim Aufruf. " +
       "'obj.method()' → this=obj. 'fn()' → this=undefined (strict mode). " +
@@ -325,11 +325,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Vorteil von Komposition gegenueber Vererbung?",
     options: [
       "Komposition ist schneller zur Laufzeit",
-      "Komposition erlaubt flexibles Zusammenstecken von Faehigkeiten ohne enge Kopplung",
-      "Komposition funktioniert nur in TypeScript, nicht in JavaScript",
       "Ich weiss es nicht",
+      "Komposition funktioniert nur in TypeScript, nicht in JavaScript",
+      "Komposition erlaubt flexibles Zusammenstecken von Faehigkeiten ohne enge Kopplung",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Komposition ('hat-ein') ist flexibler als Vererbung ('ist-ein'): " +
       "Faehigkeiten koennen unabhaengig kombiniert, ausgetauscht und " +

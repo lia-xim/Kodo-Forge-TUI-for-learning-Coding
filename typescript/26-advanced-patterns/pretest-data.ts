@@ -106,24 +106,24 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Wie haengen Branded Types und Phantom Types zusammen?",
     options: [
-      "Sie sind komplett verschiedene Konzepte",
       "Branded Types sind eine einfache Form von Phantom Types",
+      "Sie sind komplett verschiedene Konzepte",
       "Phantom Types ersetzen Branded Types",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Das __brand-Property bei Branded Types ist ein Phantom — es existiert nur im Typ, nicht zur Laufzeit.",
   },
   {
     sectionId: 3,
     question: "Warum braucht man in TypeScript ein __phantom-Property fuer Phantom Types?",
     options: [
-      "Damit der Wert zur Laufzeit den Typ kennt",
       "Weil TypeScript sonst den ungenutzten Typparameter ignoriert (strukturelles Typsystem)",
+      "Damit der Wert zur Laufzeit den Typ kennt",
       "Weil TypeScript Phantom Types nicht nativ unterstuetzt",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "TypeScript's strukturelles Typsystem ignoriert ungenutzte Typparameter. Das __phantom-Property verankert den Typ.",
   },
 
@@ -133,12 +133,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 4,
     question: "Was ist Method Chaining?",
     options: [
-      "Eine Methode die andere Methoden aufruft",
       "Methoden geben 'this' zurueck, sodass man Aufrufe verketten kann",
+      "Eine Methode die andere Methoden aufruft",
       "Eine Vererbungskette von Methoden",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "builder.host('x').port(80).build() — jede Methode gibt den Builder zurueck, sodass der naechste Aufruf direkt folgen kann.",
   },
   {
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Kann TypeScript die Reihenfolge von Method-Chaining-Aufrufen erzwingen?",
     options: [
       "Nein, Method Chaining hat keine Reihenfolge",
-      "Ja, mit Step-Interfaces die pro Schritt nur erlaubte Methoden anbieten",
       "Nur mit Runtime-Assertions",
+      "Ja, mit Step-Interfaces die pro Schritt nur erlaubte Methoden anbieten",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Step-Interfaces geben bei jedem Schritt einen anderen Typ zurueck — nur mit den Methoden die im aktuellen Schritt erlaubt sind.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Warum ist 'this' als Rueckgabetyp besser als der konkrete Klassenname?",
     options: [
       "'this' ist schneller",
-      "'this' ist polymorph — bei Vererbung gibt es den Subklassen-Typ zurueck",
-      "'this' ist ein spezieller TypeScript-Typ der Chaining ermoeglicht",
       "Ich weiss es nicht",
+      "'this' ist ein spezieller TypeScript-Typ der Chaining ermoeglicht",
+      "'this' ist polymorph — bei Vererbung gibt es den Subklassen-Typ zurueck",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "'this' in einer Basisklasse wird zum Subklassen-Typ wenn vererbt. Der Klassenname wuerde den Basistyp festnageln.",
   },
 
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist ein Smart Constructor?",
     options: [
       "Ein TypeScript-Compiler-Feature fuer automatische Typerkennung",
-      "Eine Funktion die validiert und einen Branded/Newtype zurueckgibt",
-      "Ein Konstruktor der Generics automatisch inferiert",
       "Ich weiss es nicht",
+      "Ein Konstruktor der Generics automatisch inferiert",
+      "Eine Funktion die validiert und einen Branded/Newtype zurueckgibt",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Smart Constructors validieren den Rohwert und sind der offizielle Weg einen Newtype zu erstellen.",
   },
   {
@@ -197,11 +197,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Hat ein Newtype Laufzeit-Overhead in TypeScript?",
     options: [
       "Ja, der Wrapper-Typ braucht Speicher",
-      "Nein, zur Laufzeit ist es ein normaler primitiver Wert (Type Erasure)",
-      "Nur bei Verwendung von unique symbol",
       "Ich weiss es nicht",
+      "Nur bei Verwendung von unique symbol",
+      "Nein, zur Laufzeit ist es ein normaler primitiver Wert (Type Erasure)",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Newtypes nutzen Type Erasure: Zur Laufzeit sind sie normale string/number-Werte. Kein Overhead.",
   },
 
@@ -236,11 +236,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist ein Zeichen fuer Over-Engineering mit Typ-Patterns?",
     options: [
       "Der Code hat weniger als 100 Zeilen",
-      "Die Typ-Komplexitaet uebersteigt den Business-Wert",
-      "Es werden mehr als 2 Interfaces verwendet",
       "Ich weiss es nicht",
+      "Es werden mehr als 2 Interfaces verwendet",
+      "Die Typ-Komplexitaet uebersteigt den Business-Wert",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Wenn das Typ-System komplizierter ist als die Business-Logik, ist es Over-Engineering. KISS gilt auch fuer Typen.",
   },
 ];

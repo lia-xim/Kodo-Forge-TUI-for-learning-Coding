@@ -68,7 +68,7 @@ export const pretestQuestions: PretestQuestion[] = [
   { sectionIndex: 5, question: "Was ist der Unterschied zwischen Capitalize und Uppercase?", options: ["Kein Unterschied", "Uppercase ist veraltet", "Kein semantischer Unterschied, nur Benennung", "Capitalize: erster Buchstabe gross. Uppercase: ALLES gross."], correct: 3, briefExplanation: "Capitalize<'hello'> = 'Hello'. Uppercase<'hello'> = 'HELLO'." },
 
   // Q15 → correct:2
-  { sectionIndex: 5, question: "Was beschreibt `on${string}`?", options: ["Nur 'on'", "Jeden String", "Jeden String der mit 'on' anfaengt", "Ich weiss es nicht"], correct: 2, briefExplanation: "${string} ist ein Wildcard — akzeptiert beliebige String-Suffixe." },
+  { sectionIndex: 5, question: "Was beschreibt `on${string}`?", options: ["Nur 'on'", "Jeden String der mit 'on' anfaengt", "Jeden String", "Ich weiss es nicht"], correct: 1, briefExplanation: "${string} ist ein Wildcard — akzeptiert beliebige String-Suffixe." },
 
   // ═══ Sektion 6: Patterns und Alternativen ═══════════════════════════════
 

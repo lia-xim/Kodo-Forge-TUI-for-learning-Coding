@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist ein Decorator in TypeScript?",
     options: [
       "Eine Funktion die eine Klasse, Methode oder Property transformiert oder annotiert",
-      "Ein spezieller TypeScript-Typ der nur zur Compilezeit existiert",
-      "Ein CSS-aehnliches Styling-System fuer TypeScript-Klassen",
-      "Ein Build-Tool das TypeScript in JavaScript konvertiert",
+      "Ein spezieller TypeScript-Typ der nur zur Compilezeit existiert und keinen Einfluss auf Code hat",
+      "Ein CSS-aehnliches Styling-System fuer TypeScript-Klassen das Metadaten hinzufuegt",
+      "Ein Build-Tool das TypeScript in JavaScript konvertiert und dabei Annotationen verarbeitet",
     ],
     correct: 0,
     explanation:
@@ -35,9 +35,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen @Decorator und @Decorator()?",
     options: [
       "@Decorator wendet die Funktion direkt an, @Decorator() ruft eine Factory auf die den Decorator zurueckgibt",
-      "@Decorator ist fuer Klassen, @Decorator() ist fuer Methoden",
-      "@Decorator() ist die Legacy-Syntax, @Decorator die Stage-3-Syntax",
-      "Es gibt keinen Unterschied — beide sind identisch",
+      "@Decorator ist fuer Klassen, @Decorator() ist fuer Methoden und Properties",
+      "@Decorator() ist die Legacy-Syntax, @Decorator die neue Stage-3-Syntax",
+      "Es gibt keinen Unterschied — beide sind identisch und austauschbar",
     ],
     correct: 0,
     explanation:
@@ -54,9 +54,9 @@ export const questions: QuizQuestion[] = [
     question: "In welcher Reihenfolge werden gestapelte Decorators angewandt?",
     options: [
       "Bottom-up: Der naechste zum Code wird zuerst angewandt",
-      "Top-down: Der oberste wird zuerst angewandt",
-      "Alphabetisch nach Decorator-Name",
-      "Zufaellig — die Reihenfolge ist nicht garantiert",
+      "Top-down: Der oberste wird zuerst angewandt und dann nach unten fortgefahren",
+      "Alphabetisch nach Decorator-Name sortiert und dann angewandt",
+      "Zufaellig — die Reihenfolge ist nicht garantiert und kann variieren",
     ],
     correct: 0,
     explanation:
@@ -72,9 +72,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum koennen Parameter Decorators den Parameterwert NICHT aendern?",
     options: [
       "Parameter Decorators laufen VOR dem Funktionsaufruf — der Wert existiert noch nicht",
-      "TypeScript verbietet Wertaenderungen in Decorators generell",
-      "Parameter Decorators existieren nur in Stage 3",
-      "Parameter sind unveraenderbar in JavaScript",
+      "TypeScript verbietet Wertaenderungen in Decorators generell und blockiert sie zur Compilezeit",
+      "Parameter Decorators existieren nur in Stage 3 und wurden in Legacy nicht unterstuetzt",
+      "Parameter sind unveraenderbar in JavaScript und koennen von Decorators nicht beeinflusst werden",
     ],
     correct: 0,
     explanation:
@@ -91,10 +91,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht emitDecoratorMetadata in tsconfig.json?",
     options: [
-      "Es aktiviert Stage 3 Decorators",
+      "Es aktiviert Stage 3 Decorators und deaktiviert die Legacy-Variante",
       "Es emittiert Typ-Information als Laufzeit-Metadaten (Reflect.metadata)",
-      "Es generiert .d.ts-Dateien fuer Decorators",
-      "Es deaktiviert Type Erasure fuer dekorierte Klassen",
+      "Es generiert .d.ts-Dateien fuer Decorators die in der Distribution verwendet werden",
+      "Es deaktiviert Type Erasure fuer dekorierte Klassen und bewahrt alle Typen zur Laufzeit",
     ],
     correct: 1,
     explanation:
@@ -110,10 +110,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Feature hat Stage 3 das Legacy Decorators NICHT haben?",
     options: [
-      "Parameter Decorators",
+      "Parameter Decorators die in Legacy vorhanden sind aber in Stage 3 fehlen",
       "Auto-Accessor ('accessor' Keyword) und context.addInitializer()",
-      "Methoden Decorators",
-      "Class Decorators mit Parametern",
+      "Methoden Decorators die in Stage 3 neu hinzugekommen sind",
+      "Class Decorators mit Parametern die nur in der Stage-3-Syntax verfuegbar sind",
     ],
     correct: 1,
     explanation:
@@ -129,10 +129,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was speichert Angular's @Component() Decorator?",
     options: [
-      "Den kompilierten JavaScript-Code der Komponente",
+      "Den kompilierten JavaScript-Code der Komponente der zur Laufzeit ausgefuehrt wird",
       "Metadaten (selector, template, styles) die der Angular-Compiler liest",
-      "Eine Referenz auf die DOM-Elemente der Komponente",
-      "Die Change-Detection-Strategie als Laufzeit-Flag",
+      "Eine Referenz auf die DOM-Elemente der Komponente die beim Rendern erstellt werden",
+      "Die Change-Detection-Strategie als Laufzeit-Flag das das Rendering-Verhalten steuert",
     ],
     correct: 1,
     explanation:
@@ -148,10 +148,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welcher Legacy Method Decorator-Parameter enthaelt die Methode selbst?",
     options: [
-      "target (erster Parameter)",
+      "target (erster Parameter) der die Klasse selbst enthaelt",
       "descriptor.value (im dritten Parameter)",
-      "propertyKey (zweiter Parameter)",
-      "this (implizit)",
+      "propertyKey (zweiter Parameter) der den Methodennamen enthaelt",
+      "this (implizit) das innerhalb der Decorator-Funktion verfuegbar ist",
     ],
     correct: 1,
     explanation:
@@ -167,10 +167,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist die Angular-empfohlene Alternative zu @Input() ab Angular 17.1+?",
     options: [
-      "@Prop() aus Vue",
-      "this.inputs.get('name')",
+      "@Prop() aus Vue das die gleiche Funktionalitaet fuer Angular bietet",
+      "this.inputs.get('name') der manuelle Zugriff auf Component-Inputs",
       "input<string>() — Signal-basierte Inputs (Stage-3-kompatibel)",
-      "constructor(private name: string) mit DI",
+      "constructor(private name: string) mit DI das den Input automatisch injiziert",
     ],
     correct: 2,
     explanation:
@@ -204,10 +204,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum gibt es in Stage 3 KEINE Parameter Decorators?",
     options: [
-      "JavaScript unterstuetzt keine Funktionsparameter",
-      "Parameter Decorators wurden durch Proxy-Objekte ersetzt",
+      "JavaScript unterstuetzt keine Funktionsparameter und erlaubt nur feste Argumentlisten",
+      "Parameter Decorators wurden durch Proxy-Objekte ersetzt die dieselbe Funktion erfuellen",
       "TC39 entschied: Zu komplex, Alternativen wie inject() sind einfacher",
-      "Stage 3 unterstuetzt nur Class Decorators",
+      "Stage 3 unterstuetzt nur Class Decorators und keine anderen Decorator-Typen",
     ],
     correct: 2,
     explanation:
@@ -223,10 +223,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches tsconfig-Flag aktiviert Legacy Decorators?",
     options: [
-      "decorators: true",
-      "useDecorators: 'legacy'",
+      "decorators: true das die neue Stage-3-Syntax fuer alle Projekte aktiviert",
+      "useDecorators: 'legacy' das explizit die Legacy-Variante auswaehlt",
       "experimentalDecorators: true",
-      "enableDecorators: true",
+      "enableDecorators: true das alle Decorator-Features ohne Einschraenkungen aktiviert",
     ],
     correct: 2,
     explanation:
@@ -243,9 +243,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ein Anti-Pattern bei der Decorator-Nutzung?",
     options: [
-      "Decorators fuer Logging und Caching verwenden",
-      "Decorator Factories mit Parametern nutzen",
-      "Mehrere Decorators auf eine Methode stapeln",
+      "Decorators fuer Logging und Caching verwenden die keine Seiteneffekte haben",
+      "Decorator Factories mit Parametern nutzen die Konfiguration ermoeglichen",
+      "Mehrere Decorators auf eine Methode stapeln die nacheinander ausgefuehrt werden",
       "Business-Logik oder globalen State in Decorators implementieren",
     ],
     correct: 3,
@@ -262,9 +262,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie funktioniert Angular's Dependency Injection intern?",
     options: [
-      "Angular analysiert den Quellcode zur Laufzeit mit eval()",
-      "Angular nutzt Template-Metadaten fuer DI",
-      "Angular liest Parameter-Namen aus dem JavaScript-Code",
+      "Angular analysiert den Quellcode zur Laufzeit mit eval() um die Typen zu extrahieren",
+      "Angular nutzt Template-Metadaten fuer DI und liest die Typen aus dem HTML-Code",
+      "Angular liest Parameter-Namen aus dem JavaScript-Code und mappt sie zu Services",
       "emitDecoratorMetadata liefert Konstruktor-Parameter-Typen, Angular's DI liest sie",
     ],
     correct: 3,
@@ -281,9 +281,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist NestJS's SetMetadata()-Helfer?",
     options: [
-      "Ein Typ-Utility fuer generische Metadaten",
-      "Ein ORM-Feature fuer Datenbank-Metadaten",
-      "Ein interner Compiler-Mechanismus",
+      "Ein Typ-Utility fuer generische Metadaten die in verschiedenen Kontexten verwendet werden",
+      "Ein ORM-Feature fuer Datenbank-Metadaten die automatisch persistiert werden",
+      "Ein interner Compiler-Mechanismus der zur Build-Zeit Metadaten generiert",
       "Ein Decorator-Helfer der Metadaten an Klassen/Methoden heftet fuer Guards und Interceptors",
     ],
     correct: 3,

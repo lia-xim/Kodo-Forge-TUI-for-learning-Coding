@@ -18,9 +18,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum kann man in TypeScript nicht `type Apply<F, A> = F<A>` schreiben?",
     options: [
       "TypeScript unterstuetzt keine Higher-Kinded Types — Typparameter koennen nicht selbst generisch sein",
-      "Die Syntax ist falsch, richtig waere `type Apply<F, A> = F(A)`",
-      "Es funktioniert ab TypeScript 5.0",
-      "Man muss `type Apply<F extends Function, A> = F<A>` schreiben",
+      "Die Syntax ist falsch, richtig waere `type Apply<F, A> = F(A)` mit Klammern statt spitzen Klammern",
+      "Es funktioniert ab TypeScript 5.0, das Feature wurde mit dem neuen Type-System-Update eingefuehrt",
+      "Man muss `type Apply<F extends Function, A> = F<A>` schreiben um den Typparameter einzuschraenken",
     ],
     correct: 0,
     explanation:
@@ -42,10 +42,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie emuliert man Higher-Kinded Types am haeufigsten in TypeScript?",
     options: [
-      "Mit `eval()` zur Laufzeit",
+      "Mit `eval()` zur Laufzeit um Typ-Information dynamisch zu erzeugen",
       "Mit Interface-Maps (URItoKind-Pattern) oder Conditional Types",
-      "Mit Template Literal Types",
-      "Gar nicht — man braucht Haskell dafuer",
+      "Mit Template Literal Types die Typ-Namen als String-Schluessel verwenden",
+      "Gar nicht — man braucht Haskell oder eine andere Sprache mit nativen Higher-Kinded Types",
     ],
     correct: 1,
     explanation:
@@ -124,9 +124,9 @@ type Kind<URI extends keyof URItoKind<any>, A> = URItoKind<A>[URI];
     question: "Wann ist ein generischer Typ invariant?",
     options: [
       "Wenn der Typparameter sowohl in Input- als auch Output-Position verwendet wird",
-      "Wenn der Typparameter nie verwendet wird",
-      "Wenn der Typ readonly ist",
-      "Wenn der Typ nur Methoden hat",
+      "Wenn der Typparameter nie verwendet wird und somit keine Varianz-Beziehung besteht",
+      "Wenn der Typ readonly ist und daher keine Schreib-Operationen erlaubt",
+      "Wenn der Typ nur Methoden hat aber keine Properties definiert",
     ],
     correct: 0,
     explanation:
@@ -147,10 +147,10 @@ type Kind<URI extends keyof URItoKind<any>, A> = URItoKind<A>[URI];
   {
     question: "Was bewirkt `interface Producer<out T> { get(): T; }`?",
     options: [
-      "Es aendert das Verhalten zur Laufzeit und fuegt Varianz-Pruefungen hinzu",
+      "Es aendert das Verhalten zur Laufzeit und fuegt Varianz-Pruefungen in den generierten Code hinzu",
       "Es annotiert T als kovariant und TypeScript prueft dass T nur in Output-Position steht",
-      "Es macht T optional",
-      "Es ist Syntax fuer TypeScript 6.0 und funktioniert noch nicht",
+      "Es macht T optional und erlaubt undefined als Default-Wert fuer den Typparameter",
+      "Es ist Syntax fuer TypeScript 6.0 und funktioniert in aktuellen Versionen noch nicht",
     ],
     correct: 1,
     explanation:
@@ -252,10 +252,10 @@ type Result = IsString<string | number>; // ???`,
 }
 function sort<T extends Comparable<T>>(arr: T[]): T[] { /* ... */ }`,
     options: [
-      "Es erzeugt eine Endlosschleife im Compiler",
+      "Es erzeugt eine Endlosschleife im Compiler die zum Absturz fuehrt",
       "T muss sich selbst vergleichen koennen — das F-bounded Polymorphism Pattern",
-      "T wird auf Comparable eingeschraenkt und T wird ignoriert",
-      "Es ist ungueltige Syntax",
+      "T wird auf Comparable eingeschraenkt und der rekursive Typparameter wird ignoriert",
+      "Es ist ungueltige Syntax und erzeugt einen Compile-Error wegen zirkulaerer Referenz",
     ],
     correct: 1,
     explanation:
@@ -335,9 +335,9 @@ const result = fetch("/api/users"); // Typ von result?`,
     question: "Warum verbessern `in`/`out`-Modifier die TypeScript-Performance?",
     options: [
       "TypeScript muss Varianz nicht mehr strukturell berechnen sondern liest die Annotation",
-      "Sie reduzieren die Groesse des kompilierten JavaScript-Codes",
-      "Sie aktivieren einen speziellen JIT-Compiler fuer generische Typen",
-      "Sie haben keinen Performance-Effekt — nur Korrektheit",
+      "Sie reduzieren die Groesse des kompilierten JavaScript-Codes durch Wegfall von Pruefcode",
+      "Sie aktivieren einen speziellen JIT-Compiler der generische Typen zur Laufzeit optimiert",
+      "Sie haben keinen Performance-Effekt — sie dienen ausschliesslich der Typ-Korrektheit",
     ],
     correct: 0,
     explanation:

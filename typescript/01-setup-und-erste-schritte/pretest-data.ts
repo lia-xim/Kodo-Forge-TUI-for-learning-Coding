@@ -92,12 +92,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was denkst du — was macht `strict: true` in der tsconfig.json?",
     options: [
-      "Es macht den Code schneller",
       "Es aktiviert strenge Typ-Pruefungen (z.B. null-Checks)",
+      "Es macht den Code schneller",
       "Es verhindert die Nutzung von `var`",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "`strict: true` aktiviert eine Reihe strenger Pruefungen, " +
       "darunter strictNullChecks — die wichtigste einzelne Option, " +
@@ -127,12 +127,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wenn du im Browser einen Fehler debuggst, siehst du normalerweise " +
       "die JavaScript-Datei. Wie findest du die Stelle in deiner TypeScript-Quelle?",
     options: [
-      "Man muss manuell vergleichen",
       "Source Maps ordnen JS-Zeilen den TS-Zeilen zu",
+      "Man muss manuell vergleichen",
       "Browser koennen TypeScript direkt lesen",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Source Maps (.js.map) sind JSON-Dateien, die jede Zeile im " +
       "JavaScript-Output der entsprechenden Zeile im TypeScript-Quellcode " +
@@ -144,11 +144,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was denkst du — wofuer sind `.d.ts`-Dateien (Declaration Files) da?",
     options: [
       "Sie enthalten den kompilierten JavaScript-Code",
-      "Sie liefern Typ-Informationen fuer andere Entwickler/Libraries",
-      "Sie sind Konfigurationsdateien fuer den Compiler",
       "Ich weiss es nicht",
+      "Sie sind Konfigurationsdateien fuer den Compiler",
+      "Sie liefern Typ-Informationen fuer andere Entwickler/Libraries",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       ".d.ts-Dateien enthalten NUR Typen, keinen ausfuehrbaren Code. " +
       "Sie dienen als Schnittstellen-Beschreibung, z.B. @types/react " +
@@ -162,10 +162,10 @@ export const pretestQuestions: PretestQuestion[] = [
     options: [
       "Der Wert wird in einen String konvertiert",
       "Es wird geprueft ob der Wert ein String ist",
-      "Es wird komplett entfernt — der Wert aendert sich nicht",
       "Ich weiss es nicht",
+      "Es wird komplett entfernt — der Wert aendert sich nicht",
     ],
-    correct: 2,
+    correct: 3,
     briefExplanation:
       "Type Assertions (`as string`) existieren nur zur Compile-Zeit. " +
       "Sie werden bei Type Erasure entfernt und aendern den Wert NICHT. " +

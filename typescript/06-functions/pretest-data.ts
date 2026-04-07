@@ -115,12 +115,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Wie viele Implementationen hat eine ueberladene Funktion in TypeScript?",
     options: [
-      "Eine pro Overload-Signatur",
       "Genau eine — die Implementation Signature",
+      "Eine pro Overload-Signatur",
       "Mindestens zwei",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Anders als in Java/C# hat TypeScript nur EINE Implementation. " +
       "Die Overload-Signaturen sind reine Compilezeit-Information.",
@@ -129,12 +129,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 3,
     question: "Wann sollte man Overloads statt Union Types verwenden?",
     options: [
-      "Immer — Overloads sind praeziser",
       "Wenn der Return-Typ vom Argument-Wert abhaengt",
+      "Immer — Overloads sind praeziser",
       "Nur bei mehr als 3 Parametern",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Overloads sind nur sinnvoll wenn der Return-Typ vom Argument-Wert " +
       "abhaengt. Bei gleichem Return-Typ sind Union Types besser.",
@@ -143,12 +143,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 3,
     question: "In welcher Reihenfolge prueft TypeScript die Overloads?",
     options: [
-      "Zufaellig",
       "Von oben nach unten — erster Treffer gewinnt",
+      "Zufaellig",
       "Von unten nach oben",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "TypeScript prueft von oben nach unten. Deshalb muessen spezifische " +
       "Overloads VOR breiteren stehen.",
@@ -161,12 +161,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Darf ein Callback mit Return-Typ void einen Wert zurueckgeben?",
     code: "type Cb = () => void;\nconst fn: Cb = () => 42;",
     options: [
-      "Nein, void bedeutet 'kein Return'",
       "Ja, void-Callbacks duerfen Werte zurueckgeben",
+      "Nein, void bedeutet 'kein Return'",
       "Nur undefined",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Void-Callbacks sind tolerant — sie duerfen Werte zurueckgeben. " +
       "Das basiert auf dem Substitutability Principle.",
@@ -176,12 +176,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Warum ist void bei Callbacks tolerant aber bei Funktionsdeklarationen streng?",
     options: [
-      "Kein Unterschied — void ist immer tolerant",
       "Bei Deklarationen kontrollierst DU den Typ, bei Callbacks definiert jemand ANDERES die Schnittstelle",
+      "Kein Unterschied — void ist immer tolerant",
       "Es haengt von strict mode ab",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Bei Deklarationen sagst DU void und meinst es. Bei Callbacks sagt " +
       "die Schnittstelle 'der Rueckgabewert ist mir egal' — deshalb tolerant.",
@@ -192,11 +192,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "type Mapper<T, U> = (item: T) => U;",
     options: [
       "Ein Callback der nur mit Generics aufgerufen werden kann",
-      "Ein Callback dessen Input- und Output-Typen flexibel sind",
       "Ein Callback der jeden Typ akzeptiert",
+      "Ein Callback dessen Input- und Output-Typen flexibel sind",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Generische Callback-Typen wie Mapper<T, U> sind flexibel und " +
       "wiederverwendbar. T und U werden beim Aufruf inferiert.",
@@ -209,11 +209,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "function greet(this: { name: string }) { return this.name; }",
     options: [
       "Er wird zum ersten Parameter",
-      "Er verschwindet komplett (Type Erasure)",
       "Er wird zu einem Kommentar",
+      "Er verschwindet komplett (Type Erasure)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Der this-Parameter verschwindet bei der Kompilierung (Type Erasure). " +
       "Er dient nur der Compilezeit-Pruefung.",
@@ -223,11 +223,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Warum ist this in JavaScript so verwirrend?",
     options: [
       "this ist immer undefined",
-      "this wird dynamisch beim Aufruf bestimmt, nicht bei der Definition",
       "this gibt es nur in Klassen",
+      "this wird dynamisch beim Aufruf bestimmt, nicht bei der Definition",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "In JavaScript wird this zur AUFRUFZEIT bestimmt. " +
       "Arrow Functions loesen das Problem durch lexikalisches this.",
@@ -237,11 +237,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Warum loesen Arrow Functions das this-Problem?",
     options: [
       "Sie binden this automatisch mit .bind()",
-      "Sie haben kein eigenes this — es wird vom umgebenden Scope geerbt",
-      "Sie laufen immer im strict mode",
       "Ich weiss es nicht",
+      "Sie laufen immer im strict mode",
+      "Sie haben kein eigenes this — es wird vom umgebenden Scope geerbt",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Arrow Functions haben KEIN eigenes this. Sie erben this " +
       "lexikalisch vom umgebenden Scope — wie eine Closure.",
@@ -253,11 +253,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist ein Type Guard?",
     options: [
       "Ein Dekorator der Typen prueft",
-      "Eine Funktion mit Return-Typ 'value is Type' fuer benutzerdefiniertes Narrowing",
-      "Ein Compiler-Plugin",
       "Ich weiss es nicht",
+      "Ein Compiler-Plugin",
+      "Eine Funktion mit Return-Typ 'value is Type' fuer benutzerdefiniertes Narrowing",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Ein Type Guard ist eine Funktion mit 'value is Type' als Return-Typ. " +
       "Er erweitert TypeScripts automatisches Narrowing.",
@@ -268,11 +268,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Unterschied zwischen einem Type Guard und einer Assertion Function?",
     options: [
       "Kein Unterschied",
-      "Type Guard: boolean + if-Verzweigung. Assertion Function: wirft bei Misserfolg",
-      "Type Guard ist schneller",
       "Ich weiss es nicht",
+      "Type Guard ist schneller",
+      "Type Guard: boolean + if-Verzweigung. Assertion Function: wirft bei Misserfolg",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Type Guard = boolean (if/else). Assertion Function = wirft bei Misserfolg, " +
       "danach ist der Typ garantiert. Verschiedene Kontrollfluss-Strategien.",
@@ -283,11 +283,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "function add(a: number): (b: number) => number { return (b) => a + b; }",
     options: [
       "Es addiert zwei Zahlen",
-      "Es verwandelt eine Funktion in eine Kette von Funktionen mit je einem Parameter",
-      "Es ist ein Array-Pattern",
       "Ich weiss es nicht",
+      "Es ist ein Array-Pattern",
+      "Es verwandelt eine Funktion in eine Kette von Funktionen mit je einem Parameter",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Currying trennt Konfiguration und Ausfuehrung: add(5) gibt eine " +
       "Funktion zurueck die 5 + b berechnet. TypeScript inferiert alle Zwischentypen.",

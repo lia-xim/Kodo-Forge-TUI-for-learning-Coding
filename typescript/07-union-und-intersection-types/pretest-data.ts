@@ -82,12 +82,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 2,
     question: "Welche Narrowing-Techniken kennt TypeScript?",
     options: [
-      "Nur typeof",
       "typeof, instanceof, in, Truthiness, Assignment",
+      "Nur typeof",
       "Nur typeof und instanceof",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "TypeScript hat 5 eingebaute Narrowing-Techniken plus benutzerdefinierte Type Guards.",
   },
 
@@ -96,36 +96,36 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 3,
     question: "Was braucht eine Discriminated Union?",
     options: [
-      "Mindestens 3 Union-Mitglieder",
       "Eine gemeinsame Tag-Property mit verschiedenen Literal-Typen",
+      "Mindestens 3 Union-Mitglieder",
       "Einen Exhaustive Check",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Die Tag-Property (z.B. type: 'circle') identifiziert eindeutig welcher Typ vorliegt.",
   },
   {
     sectionIndex: 3,
     question: "Was bewirkt `const _: never = shape` im default-Case?",
     options: [
-      "Nichts — es ist toter Code",
       "Ein Exhaustive Check — Compile-Error wenn ein Case fehlt",
+      "Nichts — es ist toter Code",
       "Es verhindert Laufzeit-Fehler",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Wenn alle Cases behandelt sind, ist shape 'never'. Ein neues Mitglied bricht das — Compile-Error.",
   },
   {
     sectionIndex: 3,
     question: "Was sind Algebraische Datentypen (ADTs)?",
     options: [
-      "Datentypen fuer mathematische Berechnungen",
       "Typen die aus Summentypen (Union) und Produkttypen (Objekte) zusammengesetzt sind",
+      "Datentypen fuer mathematische Berechnungen",
       "Eine spezielle TypeScript-Feature",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "ADTs kommen aus der funktionalen Programmierung. Discriminated Unions sind Summentypen.",
   },
 
@@ -134,12 +134,12 @@ export const pretestQuestions: PretestQuestion[] = [
     sectionIndex: 4,
     question: "Was bedeutet `A & B` fuer Objekt-Typen?",
     options: [
-      "Entweder A oder B",
       "Ein Objekt das ALLE Properties aus A UND B haben muss",
+      "Entweder A oder B",
       "Nur die gemeinsamen Properties",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation: "Intersection kombiniert alle Properties. Ein Wert muss beide Typen gleichzeitig erfuellen.",
   },
   {
@@ -147,11 +147,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ergibt `string & number`?",
     options: [
       "string | number",
-      "never — kein Wert ist beides gleichzeitig",
       "any",
+      "never — kein Wert ist beides gleichzeitig",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "Inkompatible Primitive ergeben never. Kein Wert kann gleichzeitig string UND number sein.",
   },
   {
@@ -160,11 +160,11 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "type A = { x: string };\ntype B = { x: number };\ntype AB = A & B;",
     options: [
       "Compile-Error",
-      "x wird zu string & number = never (kein Fehler, aber unbrauchbar)",
       "x wird zu string | number",
+      "x wird zu string & number = never (kein Fehler, aber unbrauchbar)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "Intersection-Konflikte erzeugen keinen Fehler! Die Property wird never — still und unbrauchbar.",
   },
 
@@ -174,11 +174,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist der Unterschied zwischen | und & bei der Wertemenge?",
     options: [
       "Kein Unterschied",
-      "| macht die Wertemenge groesser, & macht sie kleiner",
       "| macht sie kleiner, & groesser",
+      "| macht die Wertemenge groesser, & macht sie kleiner",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "Union = mehr Werte passen. Intersection = weniger Werte passen (muessen mehr erfuellen).",
   },
   {
@@ -186,11 +186,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist schneller fuer den Compiler: extends oder &?",
     options: [
       "Kein Unterschied",
-      "extends ist schneller und meldet Konflikte besser",
       "& ist schneller",
+      "extends ist schneller und meldet Konflikte besser",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation: "extends ist fuer den Compiler effizienter und meldet Konflikte direkt als Fehler.",
   },
   {
@@ -198,11 +198,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ergibt (A | B) & C?",
     options: [
       "A | B | C",
-      "(A & C) | (B & C) — distributiv",
-      "never",
       "Ich weiss es nicht",
+      "never",
+      "(A & C) | (B & C) — distributiv",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Intersection verteilt sich ueber Union: Distributives Gesetz aus der Mengenlehre.",
   },
 
@@ -212,11 +212,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Welches Pattern modelliert Erfolg/Fehler typsicher?",
     options: [
       "try/catch",
-      "Das Result-Pattern mit Discriminated Union",
-      "Optionale Properties",
       "Ich weiss es nicht",
+      "Optionale Properties",
+      "Das Result-Pattern mit Discriminated Union",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Das Result-Pattern nutzt Discriminated Unions: success hat data, error hat error-Info.",
   },
   {
@@ -224,11 +224,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Warum sind Discriminated Unions ideal fuer State Machines?",
     options: [
       "Weil sie schneller sind",
-      "Weil der Compiler ungueltige Zustaende und fehlende Behandlung verhindert",
-      "Weil sie weniger Code brauchen",
       "Ich weiss es nicht",
+      "Weil sie weniger Code brauchen",
+      "Weil der Compiler ungueltige Zustaende und fehlende Behandlung verhindert",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Jeder Zustand hat eigene Properties. Der Compiler verhindert Zugriffe auf Zustand-fremde Properties.",
   },
   {
@@ -236,11 +236,11 @@ export const pretestQuestions: PretestQuestion[] = [
     question: "Was ist das Command-Pattern mit Discriminated Unions?",
     options: [
       "Ein Pattern fuer CLI-Tools",
-      "Verschiedene Aktionen als Union mit typ-spezifischen Payloads",
-      "Ein Ersatz fuer Funktionen",
       "Ich weiss es nicht",
+      "Ein Ersatz fuer Funktionen",
+      "Verschiedene Aktionen als Union mit typ-spezifischen Payloads",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation: "Jede Aktion ist ein Union-Mitglied mit eigenem Payload-Typ — typsicher und erweiterbar.",
   },
 ];

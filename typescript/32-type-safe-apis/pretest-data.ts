@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was macht graphql-codegen?",
     options: [
       "Es kompiliert GraphQL zu SQL",
-      "Es generiert TypeScript-Typen und Hooks aus GraphQL-Schemas und Queries",
       "Es ersetzt den GraphQL-Server durch TypeScript-Code",
+      "Es generiert TypeScript-Typen und Hooks aus GraphQL-Schemas und Queries",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "graphql-codegen liest Schema + Queries und generiert TypeScript-Typen, React Hooks oder Angular Services.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist der Vorteil von Query-spezifischen Typen gegenueber globalen Schema-Typen?",
     options: [
       "Globale Typen brauchen mehr Speicher",
-      "Query-Typen reflektieren exakt die angeforderten Felder — kein Zugriff auf nicht-geladene Felder",
       "Query-Typen sind schneller zu kompilieren",
+      "Query-Typen reflektieren exakt die angeforderten Felder — kein Zugriff auf nicht-geladene Felder",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Wenn du nur { id, name } abfragst, hat der Typ nur id und name. Zugriff auf email waere ein Compile-Error.",
   },
 
@@ -172,12 +172,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 5,
     question: "Was ist OpenAPI (frueher Swagger)?",
     options: [
-      "Der Standard fuer REST API-Dokumentation und Schema-Definition",
-      "Ein JavaScript-Framework fuer API-Entwicklung",
       "Eine Alternative zu GraphQL",
+      "Ein JavaScript-Framework fuer API-Entwicklung",
+      "Der Standard fuer REST API-Dokumentation und Schema-Definition",
       "Ich weiss es nicht",
     ],
-    correct: 0,
+    correct: 2,
     explanation: "OpenAPI ist eine maschinenlesbare Spezifikation fuer REST APIs. Die meisten Backend-Frameworks generieren sie automatisch.",
   },
   {
@@ -185,23 +185,23 @@ export const pretestData: PretestQuestion[] = [
     question: "Was generiert openapi-typescript?",
     options: [
       "Einen kompletten HTTP-Client mit Validierung",
-      "NUR TypeScript-Typen aus einer OpenAPI-Spezifikation",
-      "Eine neue OpenAPI-Spec aus TypeScript-Code",
       "Ich weiss es nicht",
+      "Eine neue OpenAPI-Spec aus TypeScript-Code",
+      "NUR TypeScript-Typen aus einer OpenAPI-Spezifikation",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "openapi-typescript generiert TypeScript-Typen (.d.ts) aus einer OpenAPI-Spec. Kein Client, keine Hooks — nur Typen.",
   },
   {
     sectionId: 5,
     question: "Was ist das Hauptrisiko bei generierten Typen?",
     options: [
-      "Sie koennen stale werden wenn die API sich aendert und nicht neu generiert wird",
-      "Sie sind langsamer als handgeschriebene Typen",
       "Sie funktionieren nicht mit strict: true",
+      "Sie sind langsamer als handgeschriebene Typen",
+      "Sie koennen stale werden wenn die API sich aendert und nicht neu generiert wird",
       "Ich weiss es nicht",
     ],
-    correct: 0,
+    correct: 2,
     explanation: "Generierte Typen sind Snapshots. Ohne Neugenerierung stimmen sie nicht mehr mit der API ueberein. CI/CD-Integration hilft.",
   },
 
@@ -212,11 +212,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Wie macht man Angular's HttpClient wirklich typsicher?",
     options: [
       "Durch striktere tsconfig-Optionen",
-      "Durch get<unknown>() und Zod-Validierung der Response",
-      "Durch Verwendung von HttpClient v2",
       "Ich weiss es nicht",
+      "Durch Verwendung von HttpClient v2",
+      "Durch get<unknown>() und Zod-Validierung der Response",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "get<unknown>() statt get<User[]>() — dann Zod-Validierung. So ist der Typ BEWIESEN, nicht nur behauptet.",
   },
   {
@@ -224,11 +224,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist ein generischer ValidatedHttpService?",
     options: [
       "Ein Service der alle HTTP-Aufrufe cached",
-      "Ein Wrapper um HttpClient der Zod-Schemas fuer automatische Validierung akzeptiert",
-      "Ein Service der HTTP-Aufrufe loggt",
       "Ich weiss es nicht",
+      "Ein Service der HTTP-Aufrufe loggt",
+      "Ein Wrapper um HttpClient der Zod-Schemas fuer automatische Validierung akzeptiert",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "ValidatedHttpService.get(url, schema) validiert die Response mit dem Zod-Schema und gibt Result<T> zurueck.",
   },
   {
@@ -236,11 +236,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist der pragmatischste Ansatz fuer die meisten Projekte?",
     options: [
       "Immer tRPC verwenden",
-      "Zod-Schemas definieren, Typen ableiten, jede Response validieren",
-      "Nur TypeScript-Interfaces verwenden",
       "Ich weiss es nicht",
+      "Nur TypeScript-Interfaces verwenden",
+      "Zod-Schemas definieren, Typen ableiten, jede Response validieren",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Zod-Schemas als Source of Truth, z.infer fuer Typen, Response-Validierung an der API-Grenze. Funktioniert unabhaengig vom Backend.",
   },
 ];

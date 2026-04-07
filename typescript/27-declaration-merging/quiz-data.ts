@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert wenn du zwei gleichnamige Interfaces in TypeScript deklarierst?",
     options: [
       "Sie werden automatisch zu einem Interface vereint (Declaration Merging)",
-      "TypeScript meldet einen Compile-Error wegen doppelter Deklaration",
-      "Das zweite Interface ueberschreibt das erste komplett",
-      "Beide existieren unabhaengig voneinander",
+      "TypeScript meldet einen Compile-Error wegen doppelter Deklaration und verweigert die Kompilierung",
+      "Das zweite Interface ueberschreibt das erste komplett und alle Properties gehen verloren",
+      "Beide existieren unabhaengig voneinander und muessen explizit gemerged werden",
     ],
     correct: 0,
     explanation:
@@ -35,9 +35,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum braucht Module Augmentation 'declare module' mit dem EXAKTEN Paketnamen?",
     options: [
       "Falscher Name erzeugt ein neues, separates Modul statt das existierende zu erweitern",
-      "TypeScript ignoriert Augmentations mit falschem Namen komplett",
-      "Falsche Namen verursachen einen Compile-Error",
-      "Der Paketname muss nur ungefaehr stimmen",
+      "TypeScript ignoriert Augmentations mit falschem Namen komplett und zeigt keine Warnung an",
+      "Falsche Namen verursachen einen Compile-Error und verhindern die Kompilierung",
+      "Der Paketname muss nur ungefaehr stimmen — TypeScript findet das richtige Modul automatisch",
     ],
     correct: 0,
     explanation:
@@ -54,9 +54,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Zweck von 'declare global { }' in TypeScript?",
     options: [
       "Den globalen Scope (window, globalThis, process) aus einem Modul heraus erweitern",
-      "Alle Variablen in der aktuellen Datei global machen",
-      "TypeScript's Strict Mode deaktivieren",
-      "Globale Variablen vor anderen Modulen verstecken",
+      "Alle Variablen in der aktuellen Datei global machen und sie aus allen Modulen zugaenglich machen",
+      "TypeScript's Strict Mode deaktivieren und alle Typ-Pruefungen fuer die Datei ausschalten",
+      "Globale Variablen vor anderen Modulen verstecken und Kapselung gewaehrleisten",
     ],
     correct: 0,
     explanation:
@@ -72,9 +72,9 @@ export const questions: QuizQuestion[] = [
     question: "Was macht 'declare function add(a: number, b: number): number' in einer .d.ts-Datei?",
     options: [
       "Deklariert den Typ einer Funktion die WOANDERS implementiert ist — ohne Funktionskoerper",
-      "Implementiert und exportiert die Funktion add",
-      "Erstellt eine abstrakte Funktion die spaeter ueberschrieben werden muss",
-      "Deklariert eine Funktion die nur im Typsystem existiert (Phantom Function)",
+      "Implementiert und exportiert die Funktion add mit Standard-Logik fuer die Verwendung",
+      "Erstellt eine abstrakte Funktion die spaeter von einer konkreten Klasse ueberschrieben werden muss",
+      "Deklariert eine Funktion die nur im Typsystem existiert (Phantom Function) und nie aufgerufen wird",
     ],
     correct: 0,
     explanation:
@@ -168,9 +168,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen Module Augmentation und Global Augmentation?",
     options: [
       "Module Augmentation ist fuer npm-Pakete, Global fuer lokale Dateien",
-      "Module Augmentation braucht import, Global nicht",
+      "Module Augmentation braucht import, Global nicht und funktioniert in jeder Datei",
       "Module erweitert ein spezifisches Paket, Global erweitert window/process/globalThis",
-      "Es gibt keinen Unterschied — beide machen das gleiche",
+      "Es gibt keinen Unterschied — beide machen das gleiche und sind austauschbar",
     ],
     correct: 2,
     explanation:
@@ -185,10 +185,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht 'declare module \"*.png\" { ... }' in einer .d.ts-Datei?",
     options: [
-      "Es konvertiert PNG-Dateien in TypeScript",
-      "Es verhindert den Import von PNG-Dateien",
+      "Es konvertiert PNG-Dateien in TypeScript-Code und erstellt automatisch Typ-Definitionen",
+      "Es verhindert den Import von PNG-Dateien und blockiert alle Asset-Referenzen",
       "Es definiert den Typ fuer alle PNG-Imports (Wildcard Module Declaration)",
-      "Es generiert automatisch Typ-Dateien fuer PNG-Assets",
+      "Es generiert automatisch Typ-Dateien fuer PNG-Assets die im Projekt verwendet werden",
     ],
     correct: 2,
     explanation:
@@ -242,9 +242,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum funktioniert Interface Merging nur mit 'interface' und nicht mit 'type'?",
     options: [
-      "type ist schneller als interface — Merging wuerde Performance kosten",
-      "type wurde vor interface eingefuehrt und hat aeltere Regeln",
-      "TypeScript-Compiler unterstuetzt type-Merging noch nicht",
+      "type ist schneller als interface — Merging wuerde die Compiler-Performance verschlechtern",
+      "type wurde vor interface eingefuehrt und hat aeltere Regeln die Merging nicht erlauben",
+      "TypeScript-Compiler unterstuetzt type-Merging noch nicht, es ist ein bekanntes Feature-Request",
       "interface ist 'offen' (erweiterbar), type ist 'geschlossen' (einmalige Zuweisung)",
     ],
     correct: 3,
@@ -280,9 +280,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Namespace-Merging-Pattern erlaubt eine Funktion die gleichzeitig Properties hat?",
     options: [
-      "interface + class Merging",
-      "type + declare Merging",
-      "Generic Function mit Properties",
+      "interface + class Merging kombiniert die Features beider Deklarationen",
+      "type + declare Merging erstellt neue Typen mit Property-Zugriff",
+      "Generic Function mit Properties die automatisch erweitert werden koennen",
       "function + namespace Merging (wie jQuery)",
     ],
     correct: 3,

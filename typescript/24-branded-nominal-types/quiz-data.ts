@@ -22,9 +22,9 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Was ist das Hauptproblem mit `type UserId = string` in TypeScript?",
     options: [
       "Es bietet keine Typsicherheit — `UserId` und `string` sind strukturell identisch",
-      "Es verursacht Runtime-Overhead durch zusätzliche Objekt-Allokation",
-      "TypeScript erlaubt keine Type Aliases für primitive Typen",
-      "Es funktioniert nur mit `strict: true` in tsconfig.json"
+      "Es verursacht Runtime-Overhead durch zusaetzliche Objekt-Allokation zur Laufzeit",
+      "TypeScript erlaubt keine Type Aliases fuer primitive Typen wie string oder number",
+      "Es funktioniert nur mit `strict: true` in tsconfig.json und ist sonst ungueltig"
     ],
     correct: 0,
     explanation: "Type Aliases sind nur Umbenennung, kein neuer Typ. TypeScript prüft Struktur — und `UserId = string` ist strukturell identisch mit `string`.",
@@ -38,9 +38,9 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Wie wird ein Brand-Typ in TypeScript definiert?",
     options: [
       "`type UserId = string & { readonly __brand: 'UserId' }`",
-      "`type UserId = class UserId extends String {}`",
-      "`type UserId = Nominal<string, 'UserId'>`",
-      "`type UserId = string implements 'UserId'`"
+      "`type UserId = class UserId extends String {}` mit Klassen-Vererbung",
+      "`type UserId = Nominal<string, 'UserId'>` mit eingebautem Nominal-Keyword",
+      "`type UserId = string implements 'UserId'` mit Interface-Implementierung"
     ],
     correct: 0,
     explanation: "Brand-Typen nutzen Intersection mit einem einzigartigen Property. Das `readonly __brand` Property macht die Typen strukturell verschieden.",
@@ -70,9 +70,9 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     question: "Warum hat `UserId = string & { __brand: 'UserId' }` Zero Runtime Overhead?",
     options: [
       "Das `__brand`-Property ist nur ein Compilezeit-Konstrukt und wird nach Type Erasure entfernt",
-      "TypeScript optimiert Brand-Typen intern zu primitiven JavaScript-Typen",
-      "Das `__brand`-Property ist als `readonly` deklariert und wird nicht gespeichert",
-      "JavaScript wurde so modifiziert dass Brand-Properties automatisch ignoriert werden"
+      "TypeScript optimiert Brand-Typen intern zu primitiven JavaScript-Typen ohne zusatzlichen Overhead",
+      "Das `__brand`-Property ist als `readonly` deklariert und wird deshalb nicht im Speicher gespeichert",
+      "JavaScript wurde so modifiziert dass Brand-Properties automatisch vom Interpreter ignoriert werden"
     ],
     correct: 0,
     explanation: "Alle TypeScript-Typ-Informationen (inklusive Brand-Properties) werden bei der Kompilierung entfernt (Type Erasure). Ein `UserId`-Wert ist zur Laufzeit ein normaler JavaScript-String.",
@@ -103,10 +103,10 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     id: 6,
     question: "Welche TypeScript-Version hat Nominal Typing eingebaut?",
     options: [
-      "TypeScript 5.0 mit dem `nominal` Keyword",
+      "TypeScript 5.0 mit dem neuen `nominal` Keyword fuer nominale Typen",
       "Keine — TypeScript hat kein eingebautes Nominal Typing; Brand-Typen sind ein Workaround",
-      "TypeScript 4.9 mit `satisfies`-Operator als Nominal Type Guard",
-      "TypeScript 5.3 mit dem `opaque type` Feature"
+      "TypeScript 4.9 mit `satisfies`-Operator der als Nominal Type Guard fungiert",
+      "TypeScript 5.3 mit dem `opaque type` Feature aus Flow uebernommen"
     ],
     correct: 1,
     explanation: "TypeScript hat bis heute kein natives Nominal Typing. Die Brand-Technik ist ein Community-Workaround der Nominal Typing im Structural Type System simuliert.",
@@ -135,10 +135,10 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     id: 8,
     question: "Was macht `type Newtype<A, Brand> = A & { readonly [phantom]: Brand }` wo `phantom: unique symbol`?",
     options: [
-      "Es erzeugt einen Wrapper-Typ der einen JavaScript-Proxy erstellt",
+      "Es erzeugt einen Wrapper-Typ der zur Laufzeit einen JavaScript-Proxy um den Wert legt",
       "Es erzeugt einen Typ der strukturell von allen anderen Newtypes verschieden ist, weil `unique symbol` als Property-Key einzigartig ist",
-      "Es fügt dem Wert zur Laufzeit ein verstecktes `phantom`-Property hinzu",
-      "Es ist syntaktischer Zucker für `class Newtype<A, Brand> extends A {}`"
+      "Es fuegt dem Wert zur Laufzeit ein verstecktes `phantom`-Property hinzu das nicht enumerierbar ist",
+      "Es ist syntaktischer Zucker fuer `class Newtype<A, Brand> extends A {}` mit generischer Vererbung"
     ],
     correct: 1,
     explanation: "`unique symbol` erzeugt einen Typ der für jede `declare const`-Deklaration einzigartig ist. Als Computed Property Key macht er das Brand-Property für externe Module unzugänglich.",
@@ -219,9 +219,9 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     id: 13,
     question: "Was ist `type Id<E extends string> = string & { readonly __idType: E }` für ein Pattern?",
     options: [
-      "Ein Recursive Type der E rekursiv expandiert",
-      "Ein Mapped Type der alle string-Literale in E zu ID-Typen macht",
-      "Eine generische Utility Function für ID-Konvertierung",
+      "Ein Recursive Type der E rekursiv expandiert und sich selbst referenziert",
+      "Ein Mapped Type der alle string-Literale in E zu separaten ID-Typen transformiert",
+      "Eine generische Utility Function fuer ID-Konvertierung zwischen verschiedenen Systemen",
       "Ein generischer Brand-Typ der es erlaubt ID-Typen per Type-Parameter zu unterscheiden"
     ],
     correct: 3,
@@ -235,10 +235,10 @@ export const quizData: (MCQuizQuestion | QuizQuestion)[] = [
     id: 14,
     question: "Wann sollte man Branded Types NICHT verwenden?",
     options: [
-      "Bei API-Keys und Session-Tokens — diese sind zu sicherheitskritisch für Brands",
-      "Bei Datenbankentitäten — Brands passen nicht zum Repository-Pattern",
-      "Bei Währungsbeträgen — Dezimalzahlen lassen sich nicht branden",
-      "Bei lokalen Berechnungen mit 2-3 Variablen — der Komplexitäts-Overhead lohnt sich nicht"
+      "Bei API-Keys und Session-Tokens — diese sind zu sicherheitskritisch fuer einfache Brands",
+      "Bei Datenbankentitaeten — Brands passen nicht zum Repository-Pattern und erschweren Queries",
+      "Bei Waehrungsbetraegen — Dezimalzahlen lassen sich nicht als Branded Types modellieren",
+      "Bei lokalen Berechnungen mit 2-3 Variablen — der Komplexitaets-Overhead lohnt sich nicht"
     ],
     correct: 3,
     explanation: "YAGNI: Bands fügen Komplexität hinzu. Bei lokalen Berechnungen (2-3 Variable, klar benamt) lohnt sich die Abstraktion nicht — da passieren keine Verwechslungen.",

@@ -105,12 +105,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Kann der JSON-Typ 'undefined' enthalten?",
     code: "type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };",
     options: [
-      "Ja, undefined ist implizit enthalten",
       "Nein, undefined ist kein gueltiger JSON-Wert",
+      "Ja, undefined ist implizit enthalten",
       "Nur in Arrays",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "JSON kennt kein undefined. Die JSON-Spezifikation definiert nur " +
       "string, number, boolean, null, array und object als Wert-Typen.",
@@ -138,12 +138,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Was passiert wenn DeepPartial auf ein Array-Feld trifft?",
     options: [
-      "Das Array bleibt immer unveraendert",
       "Es haengt von der Implementierung ab — ohne Sonderbehandlung wird das Array als Objekt aufgeloest",
+      "Das Array bleibt immer unveraendert",
       "Arrays werden automatisch zu Tuples",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Arrays sind Objekte (typeof [] === 'object'). Ohne " +
       "spezielle Erkennung wuerde DeepPartial die Array-Properties " +
@@ -155,12 +155,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Welcher Modifier macht Properties in einem Mapped Type readonly?",
     code: "type ReadonlyVersion<T> = { ??? [K in keyof T]: T[K] };",
     options: [
-      "const",
       "readonly",
+      "const",
       "immutable",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "readonly vor [K in keyof T] macht alle Properties unveraenderbar. " +
       "Mit -readonly kann man readonly wieder entfernen.",
@@ -173,12 +173,12 @@ export const pretestQuestions: PretestQuestion[] = [
     question:
       "Ab welcher TypeScript-Version sind rekursive Conditional Types erlaubt?",
     options: [
-      "TypeScript 3.0",
       "TypeScript 4.1",
+      "TypeScript 3.0",
       "TypeScript 5.0",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "TypeScript 4.1 (November 2020) fuehrte Template Literal Types " +
       "und rekursive Conditional Types ein.",
@@ -189,12 +189,12 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wie zerlegt man einen String-Typ an einem Punkt?",
     code: "type Split = 'a.b' extends `${infer H}.${infer T}` ? [H, T] : never;",
     options: [
-      "Mit string.split() auf Type-Level",
       "Mit Template Literal Types und infer",
+      "Mit string.split() auf Type-Level",
       "Das geht in TypeScript nicht",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     briefExplanation:
       "Template Literal Types mit infer koennen Strings auf Type-Level " +
       "zerlegen: `${infer Head}.${infer Tail}` matcht 'a.b' zu Head='a', Tail='b'.",
@@ -205,11 +205,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was berechnet Paths<T> bei type Paths<T> = T extends object ? ... : never?",
     options: [
       "Alle Schluessel auf der obersten Ebene",
-      "Alle moeglichen Punkt-getrennten Pfade des Objekts",
       "Die Tiefe des Objekts",
+      "Alle moeglichen Punkt-getrennten Pfade des Objekts",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Paths<T> berechnet alle moeglichen Punkt-getrennten Pfade, " +
       "z.B. Paths<{a: {b: string}}> = 'a' | 'a.b'.",
@@ -223,11 +223,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist das ungefaehre Rekursionslimit fuer TypeScript-Typen?",
     options: [
       "10 Ebenen",
-      "50 Ebenen (ohne Tail Recursion Optimization)",
       "Unbegrenzt",
+      "50 Ebenen (ohne Tail Recursion Optimization)",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "TypeScript bricht bei ca. 50 Rekursionsebenen ab. " +
       "Mit Tail Recursion Optimization (TS 4.5+) geht es bis ~1000.",
@@ -238,11 +238,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist Tail Recursion bei Typen?",
     options: [
       "Eine spezielle Syntax fuer Rekursion",
-      "Wenn der rekursive Aufruf die letzte Operation ist und TypeScript den Stack-Frame wiederverwenden kann",
       "Rekursion die von hinten nach vorne arbeitet",
+      "Wenn der rekursive Aufruf die letzte Operation ist und TypeScript den Stack-Frame wiederverwenden kann",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "Tail Recursion Optimization erlaubt tiefere Rekursion, " +
       "wenn der rekursive Aufruf in Tail-Position steht.",
@@ -253,11 +253,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wie zaehlt man auf Type-Level in TypeScript?",
     options: [
       "Mit dem ++ Operator",
-      "Ueber die Laenge von Tuples als Zaehler",
-      "Mit einer Counter-API",
       "Ich weiss es nicht",
+      "Mit einer Counter-API",
+      "Ueber die Laenge von Tuples als Zaehler",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "TypeScript hat keine Arithmetik auf Type-Level. " +
       "Der Workaround: Tuple-Laenge als Zaehler verwenden. " +
@@ -272,11 +272,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Warum braucht Zod z.lazy() fuer rekursive Schemas?",
     options: [
       "Weil TypeScript es verlangt",
-      "Weil JavaScript-Objekte sofort erstellt werden und sich nicht vor der Fertigstellung selbst referenzieren koennen",
-      "Weil z.lazy() schneller validiert",
       "Ich weiss es nicht",
+      "Weil z.lazy() schneller validiert",
+      "Weil JavaScript-Objekte sofort erstellt werden und sich nicht vor der Fertigstellung selbst referenzieren koennen",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Typen werden lazy ausgewertet, aber JavaScript-Objekte " +
       "sofort. z.lazy() verzoegert die Auswertung des Schemas.",
@@ -287,11 +287,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Wann solltest du rekursive Typen NICHT verwenden?",
     options: [
       "Bei JSON-Daten",
-      "Wenn die IDE merklich langsamer wird oder das Team den Typ nicht versteht",
-      "Bei Baum-Strukturen",
       "Ich weiss es nicht",
+      "Bei Baum-Strukturen",
+      "Wenn die IDE merklich langsamer wird oder das Team den Typ nicht versteht",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Rekursive Typen sind problematisch wenn sie die Compile-Zeit " +
       "sprengen oder zu komplex fuer das Team sind.",
@@ -302,11 +302,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Welche Library nutzt Paths<T> fuer typsichere Form-Felder?",
     options: [
       "Lodash",
-      "React Hook Form",
-      "Express",
       "Ich weiss es nicht",
+      "Express",
+      "React Hook Form",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "React Hook Form nutzt Path<FormValues> damit register('address.street') " +
       "typsicher ist und Autocomplete bietet.",

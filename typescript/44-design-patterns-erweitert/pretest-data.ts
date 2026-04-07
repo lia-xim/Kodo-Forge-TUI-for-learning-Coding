@@ -191,11 +191,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Warum gibt `findById()` im Repository-Interface `Promise<TEntity | null>` zurueck statt eine Exception zu werfen?",
     options: [
       "Weil async Funktionen keine Exceptions werfen koennen",
-      "Weil 'nicht gefunden' ein normaler Fall ist — null ist expliziter und sicherer als Exception",
       "Weil TypeScript keine Exceptions in generischen Typen unterstuetzt",
+      "Weil 'nicht gefunden' ein normaler Fall ist — null ist expliziter und sicherer als Exception",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "'Nicht gefunden' ist kein Fehler — es ist ein normaler Zustand. " +
       "null zwingt den Aufrufer zur expliziten Behandlung: `if (user === null) { ... }`. " +
@@ -207,11 +207,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was macht `Partial<TEntity>` als Typ fuer den `filter`-Parameter in `findAll(filter?: Partial<TEntity>)`?",
     options: [
       "Es erlaubt nur die Haelfte der Properties",
-      "Alle Properties von TEntity werden optional — man kann nach beliebig vielen Feldern filtern",
       "Es schraenkt TEntity auf primitive Typen ein",
+      "Alle Properties von TEntity werden optional — man kann nach beliebig vielen Feldern filtern",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     briefExplanation:
       "`Partial<T>` macht alle Properties von T optional (Fragezeichen). " +
       "Damit kann der Filter 0 bis alle Properties enthalten — flexibel ohne Overloads.",
@@ -225,11 +225,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was verletzt eine Klasse `UserService` die sowohl Authentifizierung als auch E-Mail-Versand als auch Datenbankzugriff enthaelt?",
     options: [
       "Open/Closed Principle — sie ist geschlossen fuer Erweiterung",
-      "Single Responsibility Principle — sie hat drei Gruende zur Aenderung",
-      "Liskov Substitution Principle — sie erbt falsch",
       "Ich weiss es nicht",
+      "Liskov Substitution Principle — sie erbt falsch",
+      "Single Responsibility Principle — sie hat drei Gruende zur Aenderung",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "SRP: Eine Klasse soll genau einen Grund zur Aenderung haben. " +
       "Auth-Aenderung, E-Mail-Template-Aenderung und DB-Schema-Aenderung sind drei " +
@@ -241,11 +241,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Welches SOLID-Prinzip macht es moeglich, neue Zahlungsmethoden hinzuzufuegen ohne die `OrderCalculator`-Klasse zu aendern?",
     options: [
       "Single Responsibility — jede Klasse hat eine Verantwortung",
-      "Open/Closed — offen fuer Erweiterung durch neue Implementierungen, geschlossen fuer Modifikation",
-      "Dependency Inversion — OrderCalculator haengt von einer Abstraktion ab",
       "Ich weiss es nicht",
+      "Dependency Inversion — OrderCalculator haengt von einer Abstraktion ab",
+      "Open/Closed — offen fuer Erweiterung durch neue Implementierungen, geschlossen fuer Modifikation",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Open/Closed: Neue `DiscountStrategy`-Implementierungen erweitern das System " +
       "ohne `OrderCalculator` zu aendern. Der Calculator iteriert ueber Strategien — " +
@@ -276,11 +276,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Was ist der Hauptkritikpunkt an 'Pattern-Fetishismus' in der Softwareentwicklung?",
     options: [
       "Patterns sind zu schwer zu lernen und verwirren Juniorentwickler",
-      "Abstraktion hat Kosten — ueber-abstrahierter Code loest Probleme die nicht existieren",
-      "Patterns funktionieren nur in Java und C++, nicht in TypeScript",
       "Ich weiss es nicht",
+      "Patterns funktionieren nur in Java und C++, nicht in TypeScript",
+      "Abstraktion hat Kosten — ueber-abstrahierter Code loest Probleme die nicht existieren",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Jede Abstraktion erhoehe Komplexitaet. Wenn die Abstraktion kein echtes Problem loest, " +
       "ist sie reiner Overhead. DHH: 'Test-Induced Design Damage' — " +
@@ -307,11 +307,11 @@ export const pretestQuestions: PretestQuestion[] = [
       "Welches Signal deutet darauf hin, dass ein Strategy Pattern jetzt sinnvoll ist?",
     options: [
       "Du hast eine Klasse mit mehr als 100 Zeilen Code geschrieben",
-      "Du fuegst zum fuenften Mal eine neue if-else-Verzweigung in denselben Switch hinzu (Open/Closed-Verletzung)",
-      "Du verwendest ein Interface das du nur einmal implementierst",
       "Ich weiss es nicht",
+      "Du verwendest ein Interface das du nur einmal implementierst",
+      "Du fuegst zum fuenften Mal eine neue if-else-Verzweigung in denselben Switch hinzu (Open/Closed-Verletzung)",
     ],
-    correct: 1,
+    correct: 3,
     briefExplanation:
       "Eine wachsende if-else- oder switch-Kaskade ist das Warnsignal fuer Open/Closed-Verletzungen. " +
       "Ab drei konkreten Faellen: Strategy Pattern erwaegen. " +

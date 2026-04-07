@@ -79,12 +79,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 2,
     question: "Was passiert wenn der Modulname in 'declare module' falsch ist?",
     options: [
-      "Compile-Error",
       "Ein neues, separates Modul wird erstellt — kein Merging",
+      "Compile-Error",
       "TypeScript korrigiert den Namen automatisch",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Bei falschem Namen: kein Error, aber auch kein Merging. Ein neues Modul entsteht.",
   },
 
@@ -94,12 +94,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Wie erweitert man window um eigene Properties in TypeScript?",
     options: [
-      "(window as any).myProp = value",
       "declare global { interface Window { myProp: string } }",
+      "(window as any).myProp = value",
       "window.myProp ist automatisch typisiert",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Global Augmentation mit 'declare global' erweitert das Window-Interface typsicher.",
   },
   {
@@ -118,12 +118,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 3,
     question: "Kann man process.env in TypeScript typsicher machen?",
     options: [
-      "Nein, process.env ist immer Record<string, string | undefined>",
       "Ja, mit Global Augmentation auf NodeJS.ProcessEnv",
+      "Nein, process.env ist immer Record<string, string | undefined>",
       "Nur mit einer Validierungs-Bibliothek wie zod",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: "declare global { namespace NodeJS { interface ProcessEnv { ... } } } macht env typsicher.",
   },
 
@@ -133,12 +133,12 @@ export const pretestData: PretestQuestion[] = [
     sectionId: 4,
     question: "Was ist eine .d.ts-Datei?",
     options: [
-      "Eine kompilierte TypeScript-Datei",
       "Eine reine Typ-Deklarationsdatei ohne Implementierung",
+      "Eine kompilierte TypeScript-Datei",
       "Eine Debug-Datei fuer TypeScript",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 0,
     explanation: ".d.ts-Dateien enthalten nur Typ-Deklarationen — keinen ausfuehrbaren Code.",
   },
   {
@@ -146,11 +146,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was macht das 'declare' Keyword vor einer Funktion in einer .d.ts-Datei?",
     options: [
       "Es exportiert die Funktion",
-      "Es sagt: 'Diese Funktion existiert woanders — hier ist nur der Typ'",
       "Es macht die Funktion abstract",
+      "Es sagt: 'Diese Funktion existiert woanders — hier ist nur der Typ'",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "'declare' beschreibt was existiert, ohne es zu implementieren.",
   },
   {
@@ -158,11 +158,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist DefinitelyTyped (@types/*)?",
     options: [
       "TypeScript's eigener Compiler",
-      "Eine Community-Sammlung von .d.ts-Dateien fuer JavaScript-Bibliotheken",
       "Ein Testing-Framework",
+      "Eine Community-Sammlung von .d.ts-Dateien fuer JavaScript-Bibliotheken",
       "Ich weiss es nicht",
     ],
-    correct: 1,
+    correct: 2,
     explanation: "DefinitelyTyped stellt @types/*-Pakete bereit — Typ-Definitionen fuer tausende JS-Libraries.",
   },
 
@@ -173,11 +173,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Warum ist '(req as any).user' schlecht?",
     options: [
       "Es ist langsamer als typisierte Zugriffe",
-      "'as any' deaktiviert Typsicherheit — Tippfehler werden nicht erkannt",
-      "Express verbietet Casts auf Request",
       "Ich weiss es nicht",
+      "Express verbietet Casts auf Request",
+      "'as any' deaktiviert Typsicherheit — Tippfehler werden nicht erkannt",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "'as any' deaktiviert alle Typ-Pruefungen. req.usr (Tippfehler) → kein Error.",
   },
   {
@@ -185,11 +185,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Was ist der erste Debugging-Schritt wenn eine Augmentation nicht funktioniert?",
     options: [
       "TypeScript neu installieren",
-      "Pruefen ob die .d.ts-Datei in tsconfig.json eingebunden ist",
-      "Den Modulnamen grossschreiben",
       "Ich weiss es nicht",
+      "Den Modulnamen grossschreiben",
+      "Pruefen ob die .d.ts-Datei in tsconfig.json eingebunden ist",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "Die haeufigste Ursache: Die .d.ts-Datei ist nicht im 'include'-Pfad der tsconfig.json.",
   },
   {
@@ -197,11 +197,11 @@ export const pretestData: PretestQuestion[] = [
     question: "Wie typisiert man Custom Web Components in React/JSX?",
     options: [
       "Mit einer speziellen JSX-Compiler-Option",
-      "declare module 'react' { namespace JSX { interface IntrinsicElements { ... } } }",
-      "Custom Elements brauchen keine Typisierung",
       "Ich weiss es nicht",
+      "Custom Elements brauchen keine Typisierung",
+      "declare module 'react' { namespace JSX { interface IntrinsicElements { ... } } }",
     ],
-    correct: 1,
+    correct: 3,
     explanation: "JSX.IntrinsicElements erweitern via Module Augmentation auf 'react'.",
   },
 ];
