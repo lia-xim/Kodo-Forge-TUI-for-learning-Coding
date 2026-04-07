@@ -688,6 +688,98 @@ export function extractMermaidBlocks(markdown: string): string[] {
   return blocks;
 }
 
+// ─── Adaptive Depth Filtering ──────────────────────────────────────────────
+
+/**
+ * Filtert Markdown-Inhalt basierend auf der gewaehlten Tiefe.
+ *
+ * Unterstuetzt folgende Marker:
+ * - `<!-- section:summary -->` — Immer sichtbar (alle Tiefen)
+ * - `<!-- depth:standard -->` — Sichtbar bei "standard" und "vollstaendig"
+ * - `<!-- depth:vollstaendig -->` — Nur sichtbar bei "vollstaendig"
+ * - `<!-- /depth -->` — Schliesst den letzten Tiefenblock
+ * - Inhalt OHNE Marker ist immer sichtbar (abwaertskompatibel)
+ */
+export function filterByDepth(
+  markdown: string,
+  depth: "kurz" | "standard" | "vollständig"
+): string {
+  const lines = markdown.split("\n");
+  const result: string[] = [];
+  let currentDepth: string | null = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Marker erkennen
+    if (trimmed === "<!-- section:summary -->") {
+      currentDepth = "summary";
+      continue;
+    }
+    if (trimmed === "<!-- depth:standard -->") {
+      currentDepth = "standard";
+      continue;
+    }
+    if (trimmed === "<!-- depth:vollstaendig -->" || trimmed === "<!-- depth:vollständig -->") {
+      currentDepth = "vollstaendig";
+      continue;
+    }
+    if (trimmed === "<!-- /depth -->") {
+      currentDepth = null;
+      continue;
+    }
+
+    // Sichtbarkeitsregeln
+    if (currentDepth === null) {
+      // Kein Marker → immer sichtbar
+      result.push(line);
+    } else if (currentDepth === "summary") {
+      // Summary → immer sichtbar
+      result.push(line);
+    } else if (currentDepth === "standard") {
+      // Standard → sichtbar bei "standard" und "vollstaendig"
+      if (depth === "standard" || depth === "vollständig") {
+        result.push(line);
+      }
+    } else if (currentDepth === "vollstaendig") {
+      // Vollstaendig → nur bei "vollständig"
+      if (depth === "vollständig") {
+        result.push(line);
+      }
+    }
+  }
+
+  return result.join("\n");
+}
+
+/**
+ * Validiert Markdown auf korrekte Depth-Marker-Syntax.
+ * Gibt eine Warnung zurueck wenn Marker unausgeglichen sind.
+ */
+export function validateDepthMarkers(markdown: string): string | null {
+  const lines = markdown.split("\n");
+  let depthCount = 0;
+  let summaryCount = 0;
+  let closeCount = 0;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === "<!-- depth:standard -->") depthCount++;
+    if (trimmed === "<!-- depth:vollstaendig -->" || trimmed === "<!-- depth:vollständig -->") depthCount++;
+    if (trimmed === "<!-- section:summary -->") summaryCount++;
+    if (trimmed === "<!-- /depth -->") closeCount++;
+  }
+
+  if (depthCount > 0 && summaryCount === 0) {
+    return "Depth-Marker vorhanden aber kein <!-- section:summary --> gefunden.";
+  }
+  if (depthCount !== closeCount) {
+    return `Unausgeglichene Depth-Marker: ${depthCount} oeffnende, ${closeCount} schliessende.`;
+  }
+
+  return null; // Alles OK
+}
+
 // ─── Hauptrenderer ──────────────────────────────────────────────────────────
 
 /**
