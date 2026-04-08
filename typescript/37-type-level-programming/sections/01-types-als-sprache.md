@@ -34,6 +34,21 @@ Datenstrukturen. Wenn du `T extends string ? A : B` schreibst,
 programmierst du die obere Schicht — und der TypeScript-Compiler ist
 dein Interpreter.
 
+> **Warum du das ueberhaupt lernen solltest:**
+>
+> Du musst **KEIN** type-level Programming schreiben um gute Angular-
+> oder React-Apps zu bauen. Die meisten Entwickler kommen ihr ganzes
+> Karriere ohne `infer` oder rekursive Conditional Types aus.
+>
+> **ABER:** Wenn du diese Konzepte verstehst, dann:
+> - Liest du Bibliotheks-Code (Zod, tRPC, React Hook Form) wie Offenen-Text
+> - Weisst du WARUM `Partial<User>` funktioniert, nicht nur DASS es funktioniert
+> - Erkennst du wenn eine Library type-level Magie falsch einsetzt
+> - Kannst du deine eigenen Utility Types bauen statt auf fertige zu warten
+>
+> **Diese Lektion ist also kein "musst du koennen" sondern ein
+> "verstehst du die Werkzeuge die du taeglich nutzt".**
+
 > 📖 **Hintergrund: Wie TypeScript's Typsystem Turing-vollstaendig wurde**
 >
 > Als Anders Hejlsberg 2012 TypeScript entwarf, war das Typsystem

@@ -341,11 +341,30 @@ Die vollstaendige Erklaerung kommt in Lektion 24 (Branded Types).
 | Duck Typing | "Wenn es quakt wie eine Ente..." -- die philosophische Grundlage |
 | Width Subtyping | Mehr Properties = Subtyp (spezieller) |
 | Euro/Dollar-Problem | Grenzen des Structural Typing |
-| Branded Types | Kuenstliches nominales Feld als Workaround (Lektion 24) |
+| Branded Types | Kuenstliches nominales Feld als Workaround (tiefer in Lektion 24) |
 
 ---
 
 **Was du gelernt hast:** Du verstehst die Designentscheidung hinter Structural Typing,
 kannst Width Subtyping erklaeren, und kennst die Grenzen des Systems.
+
+> **Praxis-Tipp fuer JETZT:** Wenn du heute in deinem Angular-Projekt
+> zwei Typen mit gleicher Struktur hast die du unterscheiden musst
+> (z.B. `UserId` vs `ProductId`, beide `{ value: number }`),
+> dann kannst du das Branded-Type-Pattern **sofort** verwenden —
+> du musst nicht bis Lektion 24 warten:
+>
+> ```typescript
+> type UserId = number & { readonly __brand: "UserId" };
+> type ProductId = number & { readonly __brand: "ProductId" };
+>
+> function getUser(id: UserId) { /* ... */ }
+> function getProduct(id: ProductId) { /* ... */ }
+>
+> // getUser(42 as ProductId);  // FEHLER! TypeScript schuetzt dich.
+> ```
+>
+> Das ist kein "fortgeschrittenes" Feature — es ist ein einfaches,
+> pragmatisches Pattern das du ab heute nutzen kannst.
 
 | [<-- Vorherige Sektion](02-interfaces-deklaration.md) | [Zurueck zur Uebersicht](../README.md) | [Naechste Sektion: Excess Property Checking -->](04-excess-property-checking.md) |

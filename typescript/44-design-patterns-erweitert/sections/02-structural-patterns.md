@@ -34,6 +34,33 @@ beschrieben — Sprachen ohne Duck Typing. In TypeScript ist es oft noch elegant
 weil das strukturelle Typsystem viel weniger Boilerplate erfordert: Wenn deine Klasse
 die richtigen Methoden hat, *ist* sie das Interface — egal wie sie heisst.
 
+> **TypeScript macht das Adapter Pattern 90% ueberfluessig:**
+>
+> In Java brauchst du einen Adapter wenn ein externes Library `ILogger` erwartet,
+> aber dein Logger `MyLogger` heisst und andere Methodennamen hat:
+>
+> ```java
+> // Java — ADAPTER NOTWENDIG:
+> class MyLoggerAdapter implements ILogger {
+>   private MyLogger logger;
+>   public void log(String msg) { logger.write(msg); }  // Methodennamen anpassen
+> }
+> ```
+>
+> In TypeScript: **Du brauchst oft GAR KEINEN Adapter.** Weil TypeScript
+> structural typing nutzt:
+>
+> ```typescript
+> // TypeScript — KEIN Adapter noetig:
+> const myLogger = { log: (msg: string) => console.log(msg) };
+> takeLogger(myLogger);  // Funktioniert! Hat die richtige STRUKTUR.
+> ```
+>
+> **Echte Adapter-Faelle in TypeScript:**
+> - API-Antwort → Domain-Model (Feldnamen unterscheiden sich: `user_id` → `userId`)
+> - Callback-basierte Library → Promise-basierte API
+> - Altes synchrones Interface → neues asynchrones Interface
+
 > 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen dem Aendern des
 > Legacy-Codes direkt und dem Schreiben eines Adapters? Wann wuerdest du welchen Weg
 > bevorzugen?

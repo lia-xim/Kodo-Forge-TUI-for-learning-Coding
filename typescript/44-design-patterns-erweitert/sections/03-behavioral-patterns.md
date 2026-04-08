@@ -162,10 +162,17 @@ class TypedEventBus<Events extends Record<string, unknown>> {
     // ^ listener ist typisiert: bekommt genau den richtigen Payload-Typ
   ): () => void {
     // ^ Rueckgabetyp: Unsubscribe-Funktion (Cleanup-Pattern)
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, new Set());
+    let eventListeners = this.listeners.get(event);
+    if (!eventListeners) {
+      eventListeners = new Set();
+      this.listeners.set(event, eventListeners);
     }
-    this.listeners.get(event)!.add(listener as (data: unknown) => void);
+    eventListeners.add(listener as (data: unknown) => void);
+
+    // SICHER: Kein `!` non-null assertion noetig.
+    // Wir speichern die Referenz in `eventListeners` und
+    // wissen dass sie nach dem if-Block garantiert existiert.
+    // In Lektion 42 lernst du warum `!` gefaehrlich sein kann.
 
     // Gibt eine Cleanup-Funktion zurueck — kein separates off() noetig!
     return () => this.listeners.get(event)?.delete(listener as (data: unknown) => void);

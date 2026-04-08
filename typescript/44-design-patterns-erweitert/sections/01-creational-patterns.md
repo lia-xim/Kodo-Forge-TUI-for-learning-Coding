@@ -37,6 +37,18 @@ Die Lektion heute ist nicht: "Lerne die 23 GoF-Patterns auswendig." Sie ist:
 **Verstehe, welches Problem ein Pattern loest, und erkenne, wann TypeScript dir eine
 elegantere Loesung gibt.**
 
+> **TypeScript veraendert das Pattern-Spiel:**
+>
+> Viele GoF-Patterns existieren weil Java/C++ bestimmte Dinge NICHT koennen:
+> - **Adapter Pattern** → In TypeScript: einfach ein Objekt-Literal mit den richtigen Keys
+> - **State Pattern** → In TypeScript: Discriminated Union + exhaustive switch
+> - **Strategy Pattern** → In TypeScript: Funktion als Parameter (Funktionen sind First-Class)
+> - **Factory Pattern** → In TypeScript: Union Type + switch mit Exhaustive Checking
+>
+> **Das bedeutet NICHT dass Patterns wertlos sind.** Es bedeutet:
+> TypeScript reduziert den Boilerplate-Aufwand von ~50 Zeilen auf ~5 Zeilen.
+> Das Pattern-KONZEPT bleibt gleich — die Implementierung wird eleganter.
+
 > 🧠 **Erklaere dir selbst:** Warum koennen TypeScript-Union-Types manche Patterns
 > aus dem GoF-Buch ueberfluessig machen? Denke an das State-Pattern, das explizite
 > Zustands-Objekte erfordert.
@@ -234,6 +246,30 @@ class DatabaseConnection {
 > du kannst sie in Tests durch `TestBed.overrideProvider()` ersetzen. Das ist
 > **Singleton-Verhalten ohne Singleton-Anti-Pattern**: Der Container kontrolliert
 > die Lebenszeit, nicht die Klasse selbst.
+
+> **TypeScript-Ersatz fuer Singleton: Module-Level Konstante**
+>
+> In TypeScript brauchst du oft gar kein klassisches Singleton. Ein Module-Level
+> `const` ist automatisch ein Singleton — aber einfacher und testbarer:
+>
+> ```typescript
+> // config.ts — eine einzige Instanz, aber KEIN Singleton-Pattern
+> export const config = {
+>   apiUrl: 'https://api.example.com',
+>   timeout: 5000,
+> };
+>
+> // Jeder Import bekommt DIESELBE Referenz:
+> // In module A: config.timeout = 3000
+> // In module B: console.log(config.timeout) → 3000
+> // ABER: In Tests kannst du `vi.mock('./config')` und eine Mock-Config liefern.
+> // Beim klassischen Singleton geht das NICHT.
+> ```
+>
+> **Faustregel:** Wenn du "nur eine Instanz" brauchst, nimm ein Module-Level
+> `const` oder Angular's DI. Das klassische Singleton-Pattern mit
+> `private constructor` + `static getInstance` ist in TypeScript fast immer
+> over-engineered.
 
 ---
 
