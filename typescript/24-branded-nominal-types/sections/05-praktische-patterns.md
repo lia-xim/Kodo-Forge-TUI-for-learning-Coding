@@ -1,4 +1,4 @@
-# Sektion 5: Praktische Patterns mit Branded Types
+﻿# Sektion 5: Praktische Patterns mit Branded Types
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -17,10 +17,14 @@
 ---
 
 ## Pattern 1: Das ID-System
+<!-- section:summary -->
+Das häufigste Use-Case für Branded Types in echten TypeScript-Projekten:
 
+<!-- depth:standard -->
 Das häufigste Use-Case für Branded Types in echten TypeScript-Projekten:
 typsichere Entity-IDs die nicht verwechselt werden können.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: ID-Chaos in echten Projekten**
 >
 > In einer typischen CRUD-Applikation gibt es Dutzende von ID-Typen:
@@ -78,8 +82,12 @@ await userRepo.findById(userId);  // ✅
 
 ---
 
+<!-- /depth -->
 ## Pattern 2: Currency-Typen
+<!-- section:summary -->
+Geldbeträge sind notorisch fehleranfällig — falsche Einheit, falsche Währung,
 
+<!-- depth:standard -->
 Geldbeträge sind notorisch fehleranfällig — falsche Einheit, falsche Währung,
 Integer vs. Float-Fehler:
 
@@ -123,6 +131,7 @@ const total  = addMoney(price, tax); // 2379 Cent = 23,79 EUR
 // ^ EUR + USD? Nein! TypeScript fängt das ab.
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Öffne `examples/03-currency.ts` und:
 > 1. Erstelle `GbpCents = MoneyAmount<'GBP'>`.
 > 2. Versuche `addMoney(eurAmount, gbpAmount)` — was sagt TypeScript?
@@ -131,8 +140,12 @@ const total  = addMoney(price, tax); // 2379 Cent = 23,79 EUR
 
 ---
 
+<!-- /depth -->
 ## Pattern 3: Path-Typen
+<!-- section:summary -->
+Datei-Pfade sind eine häufige Fehlerquelle — relative vs. absolute Pfade:
 
+<!-- depth:standard -->
 Datei-Pfade sind eine häufige Fehlerquelle — relative vs. absolute Pfade:
 
 ```typescript annotated
@@ -188,8 +201,12 @@ runScript(fullPath);  // ✅ AbsolutePath
 
 ---
 
+<!-- /depth -->
 ## Pattern 4: Token und Secrets
+<!-- section:summary -->
+Sicherheitskritische Strings können mit Brands geschützt werden:
 
+<!-- depth:standard -->
 Sicherheitskritische Strings können mit Brands geschützt werden:
 
 ```typescript annotated
@@ -217,6 +234,7 @@ function authenticatedRequest(endpoint: string, token: JwtToken): void {
 // ^ Sicherheitslücke vermieden: Refresh-Token darf nicht als Auth-Token verwendet werden
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt** kannst du dies im Auth-Interceptor verwenden:
 >
 > ```typescript
@@ -240,8 +258,12 @@ function authenticatedRequest(endpoint: string, token: JwtToken): void {
 
 ---
 
+<!-- /depth -->
 ## Das `Newtype`-Utility: Wiederverwendbares Muster
+<!-- section:summary -->
+Mehrere TypeScript-Open-Source-Projekte definieren ein universelles `Newtype`:
 
+<!-- depth:standard -->
 Mehrere TypeScript-Open-Source-Projekte definieren ein universelles `Newtype`:
 
 ```typescript annotated
@@ -278,6 +300,7 @@ const userId = makeNewtype<UserId>('user-123');
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **ID-System Pattern**: `Id<Entity>` — ein generischer Brand für alle Entity-IDs,

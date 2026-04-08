@@ -1,4 +1,4 @@
-# Sektion 3: Method und Property Decorators
+﻿# Sektion 3: Method und Property Decorators
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -231,7 +231,10 @@ class UIController {
 ---
 
 ## Property Decorators
+<!-- section:summary -->
+Property Decorators haben weniger Moeglichkeiten als Method Decorators:
 
+<!-- depth:standard -->
 Property Decorators haben weniger Moeglichkeiten als Method Decorators:
 
 ```typescript annotated
@@ -308,6 +311,7 @@ new UserProfile("Max", "secret123"); // OK
 
 ---
 
+<!-- /depth -->
 ## Accessor Decorators (get/set)
 
 ```typescript annotated

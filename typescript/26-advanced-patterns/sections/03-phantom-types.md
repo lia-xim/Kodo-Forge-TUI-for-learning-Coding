@@ -1,4 +1,4 @@
-# Sektion 3: Phantom Types
+﻿# Sektion 3: Phantom Types
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -75,7 +75,10 @@ transfer(12345678, 100, 87654321);
 ---
 
 ## Phantom Types in TypeScript
+<!-- section:summary -->
+In Haskell ist ein Phantom Type einfach ein ungenutzter Typparameter.
 
+<!-- depth:standard -->
 In Haskell ist ein Phantom Type einfach ein ungenutzter Typparameter.
 In TypeScript brauchen wir einen kleinen Trick, weil das strukturelle
 Typsystem ungeutzte Parameter ignorieren wuerde:
@@ -124,8 +127,12 @@ sendEmail(email, subject, body); // OK
 
 ---
 
+<!-- /depth -->
 ## Phantom Types fuer Zustaende
+<!-- section:summary -->
+Eine maechtige Anwendung: Den Zustand eines Objekts im Typ kodieren,
 
+<!-- depth:standard -->
 Eine maechtige Anwendung: Den Zustand eines Objekts im Typ kodieren,
 ohne ihn als Laufzeitwert zu speichern:
 
@@ -168,6 +175,7 @@ const archived = archive(published);  // OK: Published -> Archived
 // publish(archived); // COMPILE-ERROR! Archived ist nicht Draft
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Ueberlege dir ein Phantom-Typ-System fuer Datenbankeintraege:
 >
 > ```typescript
@@ -190,8 +198,12 @@ const archived = archive(published);  // OK: Published -> Archived
 
 ---
 
+<!-- /depth -->
 ## Phantom Types vs. Branded Types vs. Newtype
+<!-- section:summary -->
+| Ansatz | Laufzeit-Overhead | Typensicherheit | Komplexitaet |
 
+<!-- depth:standard -->
 | Ansatz | Laufzeit-Overhead | Typensicherheit | Komplexitaet |
 |---|---|---|---|
 | Branded Types (L24) | Keiner | Hoch | Gering |
@@ -216,6 +228,7 @@ const archived = archive(published);  // OK: Published -> Archived
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Phantom Types** tragen Information im Typ die zur Laufzeit nicht existiert (Type Erasure)

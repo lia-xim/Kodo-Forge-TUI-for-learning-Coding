@@ -1,8 +1,8 @@
-# Sektion 5: Praxis-Patterns
+# Sektion 6: Praxis-Patterns
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
-> Vorherige Sektion: [04 - Zustandsmodellierung](./04-zustandsmodellierung.md)
+> Vorherige Sektion: [05 - Zustandsmodellierung](./05-zustandsmodellierung.md)
 > Naechste Sektion: -- (Ende der Lektion)
 
 ---

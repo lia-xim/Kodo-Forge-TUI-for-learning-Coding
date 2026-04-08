@@ -1,4 +1,4 @@
-# Sektion 6: Generische APIs designen
+﻿# Sektion 6: Generische APIs designen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -18,7 +18,10 @@
 ---
 
 ## "Generics sind ein Werkzeug, kein Ziel"
+<!-- section:summary -->
+Der haeufigste Fehler bei fortgeschrittenen TypeScript-Entwicklern: Zu
 
+<!-- depth:standard -->
 Der haeufigste Fehler bei fortgeschrittenen TypeScript-Entwicklern: Zu
 viele Generics. Man hat das maechtige Werkzeug und will es ueberall
 einsetzen. Aber Generics die keine Beziehung herstellen, fuegen nur
@@ -66,8 +69,12 @@ function merge<T>(target: T, source: Partial<T>): T {
 
 ---
 
+<!-- /depth -->
 ## Overloads vs Generics
+<!-- section:summary -->
+Wann sollte man Function Overloads verwenden und wann Generics?
 
+<!-- depth:standard -->
 Wann sollte man Function Overloads verwenden und wann Generics?
 
 ```typescript annotated
@@ -118,8 +125,12 @@ function badParse<T extends string | number>(input: T): T extends string ? numbe
 
 ---
 
+<!-- /depth -->
 ## Inference lenken
+<!-- section:summary -->
+TypeScript's Type Inference ist maechtig — aber fragil. Gute API-Designer
 
+<!-- depth:standard -->
 TypeScript's Type Inference ist maechtig — aber fragil. Gute API-Designer
 wissen, wie man die Inference in die richtige Richtung lenkt:
 
@@ -150,8 +161,12 @@ function createArrayOf<T>(item: T, count: number): T[] {
 
 ---
 
+<!-- /depth -->
 ## Default-Typparameter und Inference
+<!-- section:summary -->
+Defaults interagieren mit Inference nach einer klaren Prioritaet:
 
+<!-- depth:standard -->
 Defaults interagieren mit Inference nach einer klaren Prioritaet:
 
 ```typescript annotated
@@ -226,8 +241,12 @@ const box5 = createBox();              // T = string (Default!)
 
 ---
 
+<!-- /depth -->
 ## Praktische Design-Prinzipien
+<!-- section:summary -->
+Hier sind die wichtigsten Regeln fuer gutes Generic-API-Design:
 
+<!-- depth:standard -->
 Hier sind die wichtigsten Regeln fuer gutes Generic-API-Design:
 
 ```typescript annotated
@@ -260,6 +279,7 @@ function getId<T extends { id: number }>(item: T): number { return item.id; }
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > ⚛️ **React:** `useQuery<TData, TError>` aus React Query nutzt zwei
@@ -305,7 +325,10 @@ function format<T extends string | number>(value: T): string { }
 ---
 
 ## Checkliste fuer Generic-APIs
+<!-- section:summary -->
+Bevor du eine generische Funktion oder einen generischen Typ
 
+<!-- depth:standard -->
 Bevor du eine generische Funktion oder einen generischen Typ
 veroeffentlichst, pruefe:
 
@@ -320,6 +343,7 @@ veroeffentlichst, pruefe:
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Die **Rule of Two**: Ein Typparameter muss mindestens 2x vorkommen

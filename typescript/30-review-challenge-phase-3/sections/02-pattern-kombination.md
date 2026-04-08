@@ -1,4 +1,4 @@
-# Sektion 2: Pattern-Kombination — Konzepte verbinden
+﻿# Sektion 2: Pattern-Kombination — Konzepte verbinden
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Kombination 1: Branded Types + Result-Pattern
+<!-- section:summary -->
+In L24 hast du gelernt, Typen durch Brands unterscheidbar zu machen.
 
+<!-- depth:standard -->
 In L24 hast du gelernt, Typen durch Brands unterscheidbar zu machen.
 In L25 hast du das Result-Pattern kennengelernt. Zusammen ergibt sich
 ein System, in dem sowohl Werte als auch Fehler typsicher sind:
@@ -77,8 +80,12 @@ if (result.ok) {
 
 ---
 
+<!-- /depth -->
 ## Kombination 2: Classes + Generics + Varianz
+<!-- section:summary -->
+Ein generisches Repository mit korrekter Varianz (L21 + L22):
 
+<!-- depth:standard -->
 Ein generisches Repository mit korrekter Varianz (L21 + L22):
 
 ```typescript annotated
@@ -132,8 +139,12 @@ interface Repository<T extends Entity<unknown>>
 
 ---
 
+<!-- /depth -->
 ## Kombination 3: Recursive Types + Branded Types
+<!-- section:summary -->
+In L23 hast du rekursive Typen gelernt. Kombiniert mit Branded
 
+<!-- depth:standard -->
 In L23 hast du rekursive Typen gelernt. Kombiniert mit Branded
 Types aus L24 entsteht ein System fuer tiefe, typsichere
 Validierung:
@@ -192,8 +203,12 @@ type ValidatedConfig = DeepValidated<Config>;
 
 ---
 
+<!-- /depth -->
 ## Kombination 4: Error Handling + Decorators
+<!-- section:summary -->
+L25 (Result-Pattern) + L28 (Decorators) — automatisches Error-Wrapping:
 
+<!-- depth:standard -->
 L25 (Result-Pattern) + L28 (Decorators) — automatisches Error-Wrapping:
 
 ```typescript annotated
@@ -249,8 +264,12 @@ class UserService {
 
 ---
 
+<!-- /depth -->
 ## Kombination 5: State Machine + Branded Types + Phantom Types
+<!-- section:summary -->
+Das vielleicht maechtigste Pattern aus Phase 3 — eine typsichere
 
+<!-- depth:standard -->
 Das vielleicht maechtigste Pattern aus Phase 3 — eine typsichere
 Zustandsmaschine die ungueltige Uebergaenge zur Compile-Zeit
 verhindert:
@@ -305,6 +324,7 @@ const published = publish(reviewed);             // Document<Published>
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Die Pattern-Bibliothek
 
 | Kombination | Lektionen | Ergebnis |

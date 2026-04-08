@@ -8,6 +8,7 @@ import * as path from "node:path";
 import {
   renderMarkdown, estimateReadTime, extractMermaidBlocks,
   annotationsEnabled, setAnnotationsEnabled, extractSelfExplanationPrompts,
+  filterByDepth, validateDepthMarkers,
 } from "./markdown-renderer.ts";
 import {
   c, padR, truncate,
@@ -33,15 +34,46 @@ import { stopTTS, startTTSFromPosition, setRenderSectionReader } from "./tui-tts
 import { openMermaidDiagram, openInVSCode } from "./tui-utils.ts";
 import { renderLessonMenu } from "./tui-lesson-menu.ts";
 import { HIDE_CURSOR, SHOW_CURSOR } from "./tui-render.ts";
+import { adaptiveState, TOOLS_DIR } from "./tui-state.ts";
+import { loadAdaptiveState, saveAdaptiveState } from "./adaptive-engine.ts";
 
 // ─── Section laden ─────────────────────────────────────────────────────────
 
-function loadSection(lessonIndex: number, sectionIndex: number): void {
+/**
+ * Laedt eine Sektion mit optionaler Tiefenfilterung.
+ * Wenn die Sektion Depth-Marker enthaelt, wird der Inhalt entsprechend
+ * der gewaehlten Tiefe gefiltert.
+ */
+function loadSection(
+  lessonIndex: number,
+  sectionIndex: number,
+  depth?: "kurz" | "standard" | "vollständig"
+): void {
   const lesson = lessons[lessonIndex];
   if (!lesson || !lesson.sections[sectionIndex]) return;
 
   const section = lesson.sections[sectionIndex];
-  const content = fs.readFileSync(section.filePath, "utf-8");
+  let content = fs.readFileSync(section.filePath, "utf-8");
+
+  // Tiefe ermitteln: explizit > adaptive state > default "standard"
+  let effectiveDepth = depth;
+  if (effectiveDepth === undefined) {
+    const key = getSectionKey(lessonIndex, sectionIndex);
+    effectiveDepth = adaptiveState.sectionDepths[key];
+  }
+  if (effectiveDepth === undefined) {
+    effectiveDepth = "standard";
+  }
+
+  // Depth-Filterung anwenden (wenn Marker vorhanden sind)
+  const hasMarkers = content.includes("<!-- section:summary -->") ||
+    content.includes("<!-- depth:standard -->") ||
+    content.includes("<!-- depth:vollstaendig -->") ||
+    content.includes("<!-- depth:vollständig -->");
+
+  if (hasMarkers && effectiveDepth !== "standard") {
+    content = filterByDepth(content, effectiveDepth);
+  }
 
   setSectionReadTime(estimateReadTime(content));
   setSectionMermaidBlocks(extractMermaidBlocks(content));
@@ -52,6 +84,42 @@ function loadSection(lessonIndex: number, sectionIndex: number): void {
   updateTermSize();
   const renderWidth = Math.max(30, W() - 6);
   setSectionRenderedLines(renderMarkdown(content, renderWidth));
+}
+
+/**
+ * Wechselt die Tiefe fuer die aktuelle Sektion.
+ * Wird per [K]/[N]/[V] Tasten im Section Reader aufgerufen.
+ */
+function setSectionDepth(
+  lessonIndex: number,
+  sectionIndex: number,
+  depth: "kurz" | "standard" | "vollständig"
+): void {
+  const key = getSectionKey(lessonIndex, sectionIndex);
+  adaptiveState.sectionDepths[key] = depth;
+  saveAdaptiveState(TOOLS_DIR, adaptiveState);
+
+  // Sektion neu laden mit neuer Tiefe
+  loadSection(lessonIndex, sectionIndex, depth);
+
+  // Screen updaten
+  const screen = currentScreen as {
+    type: "section";
+    lessonIndex: number;
+    sectionIndex: number;
+    scrollOffset: number;
+    totalLines: number;
+  };
+  if (screen.type === "section" &&
+    screen.lessonIndex === lessonIndex &&
+    screen.sectionIndex === sectionIndex
+  ) {
+    // Scroll-Position anpassen (nicht ueber neues Maximum hinaus)
+    const newTotal = sectionRenderedLines.length;
+    const maxScroll = Math.max(0, newTotal - getContentHeight());
+    screen.scrollOffset = Math.min(screen.scrollOffset, maxScroll);
+    screen.totalLines = newTotal;
+  }
 }
 
 // ─── Section Reader Rendering ──────────────────────────────────────────────
@@ -100,6 +168,14 @@ export function renderSectionReader(
   }
   if (sectionMermaidBlocks.length > 0)
     navParts.push(`${c.bold}[D]${c.reset} Diagramm`);
+
+  // Tiefe-Anzeige
+  const depthKey = getSectionKey(lessonIndex, sectionIndex);
+  const currentDepth = adaptiveState.sectionDepths[depthKey] || "standard";
+  const depthLabel = currentDepth === "kurz" ? `${c.cyan}KURZ${c.reset}` :
+    currentDepth === "vollständig" ? `${c.magenta}VOLLST.${c.reset}` :
+      `${c.dim}Standard${c.reset}`;
+  navParts.push(`${c.bold}[K/N/V]${c.reset} Tiefe: ${depthLabel}`);
 
   let ttsLabel = "";
   if (ttsActive) {
@@ -325,6 +401,24 @@ export function handleSectionInput(key: ParsedKey): void {
     renderSectionReader(lessonIndex, sectionIndex, screen.scrollOffset);
     return;
   }
+
+  // ─── Depth switching [K/N/V] ──────────────────────────────────────────
+  if (key.name === "k") {
+    setSectionDepth(lessonIndex, sectionIndex, "kurz");
+    renderSectionReader(lessonIndex, sectionIndex, screen.scrollOffset);
+    return;
+  }
+  if (key.name === "n") {
+    setSectionDepth(lessonIndex, sectionIndex, "standard");
+    renderSectionReader(lessonIndex, sectionIndex, screen.scrollOffset);
+    return;
+  }
+  if (key.name === "v") {
+    setSectionDepth(lessonIndex, sectionIndex, "vollständig");
+    renderSectionReader(lessonIndex, sectionIndex, screen.scrollOffset);
+    return;
+  }
+
   if (key.name === "m") {
     const bm: Bookmark = {
       lessonIndex,

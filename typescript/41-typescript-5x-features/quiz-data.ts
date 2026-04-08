@@ -18,9 +18,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert wenn `verbatimModuleSyntax: true` gesetzt ist und du `import { Component } from '@angular/core'` schreibst, obwohl Component nur als Typ genutzt wird?",
     options: [
       "TypeScript gibt einen Fehler: du musst `import type { Component }` schreiben",
-      "TypeScript entfernt den Import automatisch im Output",
-      "Der Import wird zu require() konvertiert",
-      "Kein Unterschied — verbatimModuleSyntax aendert nichts an Imports",
+      "TypeScript entfernt den Import automatisch im Output — es ist ein stiller Fix ohne Fehlermeldung",
+      "Der Import wird zu require() konvertiert — TypeScript behandelt es als CommonJS-Import",
+      "Kein Unterschied — verbatimModuleSyntax aendert nichts an Imports, nur an Exports",
     ],
     correct: 0,
     explanation:
@@ -42,9 +42,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Worin unterscheidet sich `moduleResolution: 'bundler'` (TS 5.0) von `'node'`?",
     options: [
-      "bundler funktioniert nur mit esbuild, node funktioniert mit allen Tools",
+      "bundler funktioniert nur mit esbuild, node funktioniert mit allen Tools und ist der Standard",
       "bundler erlaubt Imports ohne Dateiendung und mit Package-Exports-Feldern; node erfordert Endungen bei ESM",
-      "bundler ist langsamer aber praeziser als node",
+      "bundler ist langsamer aber praeziser als node — er analysiert den Code tiefer",
       "Es gibt keinen Unterschied — bundler ist nur ein Alias fuer node16",
     ],
     correct: 1,
@@ -67,10 +67,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was aendert sich in TypeScript 5.5 bei `filter(x => x !== null)`?",
     options: [
-      "Nichts — das hat schon immer funktioniert",
-      "TypeScript wirft einen Fehler weil null-Checks explizit sein muessen",
+      "Nichts — das hat schon immer funktioniert, TypeScript inferiert automatisch den richtigen Typ",
+      "TypeScript wirft einen Fehler weil null-Checks explizit sein muessen und nicht mehr automatisch erkannt werden",
       "TypeScript inferiert automatisch `x is NonNullable<T>` als Return-Typ der Callback-Funktion",
-      "filter gibt jetzt niemals undefined zurueck, auch ohne expliziten Typ-Predikaten",
+      "filter gibt jetzt niemals undefined zurueck, auch ohne expliziten Typ-Predikaten — es ist immer typsicher",
     ],
     correct: 2,
     explanation:
@@ -95,8 +95,8 @@ export const questions: QuizQuestion[] = [
   return values.length ? values : [defaultValue];
 }`,
     options: [
-      "T wird nicht inferiert — man muss es immer explizit angeben",
-      "NoInfer<T> macht T zu einem optionalen Typparameter",
+      "T wird nicht inferiert — man muss es immer explizit angeben, NoInfer deaktiviert die automatische Erkennung",
+      "NoInfer<T> macht T zu einem optionalen Typparameter der nicht zwingend angegeben werden muss",
       "defaultValue wird nicht fuer die Typ-Inferenz von T verwendet, aber muss T sein",
       "Beide Parameter werden fuer die Inferenz verwendet, NoInfer ist nur Dokumentation",
     ],
@@ -121,9 +121,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert wenn du `using conn = getConnection()` schreibst und der Block endet?",
     options: [
       "`conn[Symbol.dispose]()` wird automatisch aufgerufen — auch wenn eine Exception geworfen wird",
-      "`conn.close()` wird aufgerufen, wenn und nur wenn kein Fehler aufgetreten ist",
-      "`conn` wird auf null gesetzt und der Garbage Collector laeuft sofort",
-      "Es passiert nichts automatisch — using ist nur ein Hinweis fuer den Entwickler",
+      "`conn.close()` wird aufgerufen, wenn und nur wenn kein Fehler aufgetreten ist — es verhaelt sich wie try/catch",
+      "`conn` wird auf null gesetzt und der Garbage Collector laeuft sofort — es ist eine Speicheroptimierung",
+      "Es passiert nichts automatisch — using ist nur ein Hinweis fuer den Entwickler und hat keine Laufzeitwirkung",
     ],
     correct: 0,
     explanation:
@@ -145,10 +145,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Fuer welchen Use-Case ist `isolatedDeclarations: true` am sinnvollsten?",
     options: [
-      "Fuer grosse Angular-Anwendungen mit vielen Komponenten",
+      "Fuer grosse Angular-Anwendungen mit vielen Komponenten die deklarative Typen brauchen",
       "Fuer npm-Libraries die .d.ts-Dateien parallel zu anderen Dateien erzeugen wollen",
-      "Fuer Micro-Frontends mit Module Federation",
-      "Fuer alle TypeScript-Projekte — es hat keine Nachteile",
+      "Fuer Micro-Frontends mit Module Federation die isolierte Builds benoetigen",
+      "Fuer alle TypeScript-Projekte — es hat keine Nachteile und sollte immer aktiviert werden",
     ],
     correct: 1,
     explanation:
@@ -171,10 +171,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Risiko entsteht wenn `skipLibCheck: true` gesetzt ist?",
     options: [
-      "TypeScript kompiliert langsamer weil mehr Cache-Verwaltung noetig ist",
-      "Eigene .ts-Dateien werden auch nicht mehr geprueft",
+      "TypeScript kompiliert langsamer weil mehr Cache-Verwaltung noetig ist fuer die uebersprungenen Dateien",
+      "Eigene .ts-Dateien werden auch nicht mehr geprueft — der Compiler ignoriert den gesamten Quellcode",
       "Fehler in den Typ-Definitionen von Dependencies werden still ignoriert",
-      "Das Projekt kann nicht mehr mit --strict kompiliert werden",
+      "Das Projekt kann nicht mehr mit --strict kompiliert werden — die Option ist inkompatibel mit strict",
     ],
     correct: 2,
     explanation:
@@ -196,8 +196,8 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `\"typescript\": \"~5.7.0\"` sicherer als `\"typescript\": \"^5.0.0\"` in package.json?",
     options: [
-      "Tilde ist generell sicherer fuer alle npm-Pakete",
-      "Caret-Ranges funktionieren nicht mit TypeScript",
+      "Tilde ist generell sicherer fuer alle npm-Pakete — es verhindert Major-Updates automatisch",
+      "Caret-Ranges funktionieren nicht mit TypeScript — sie sind nur fuer JavaScript-Pakete gedacht",
       "Tilde erlaubt Patch-Updates, Caret Minor-Updates — aber TypeScript hat keine Breaking Changes in Minor-Versionen",
       "Tilde erlaubt nur Bugfix-Patches; Caret erlaubt Minor-Versionen die Behavioral Breaking Changes enthalten koennen",
     ],

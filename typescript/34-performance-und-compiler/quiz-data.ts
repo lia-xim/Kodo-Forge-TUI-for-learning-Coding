@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Welche Phase des TypeScript-Compilers verbraucht typischerweise 60-80% der Compile-Zeit?",
     options: [
       "Der Type Checker",
-      "Der Parser (AST-Erstellung)",
-      "Der Emitter (JavaScript-Generierung)",
-      "Der Scanner (Lexing)",
+      "Der Parser (AST-Erstellung) — das Einlesen und Strukturieren des Quellcodes in einen Syntaxbaum",
+      "Der Emitter (JavaScript-Generierung) — die Umwandlung des AST in ausfuehrbaren JavaScript-Code",
+      "Der Scanner (Lexing) — die Zerlegung des Quelltexts in einzelne Tokens und Schluesselwoerter",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Abstract Syntax Tree (AST) im TypeScript-Compiler?",
     options: [
       "Eine Baumstruktur die die hierarchische Struktur des Quellcodes repraesentiert",
-      "Eine flache Liste aller Typen im Programm",
-      "Die generierte JavaScript-Ausgabe in Baumform",
-      "Ein Optimierungsformat das TypeScript intern fuer Caching nutzt",
+      "Eine flache Liste aller Typen im Programm die der Compiler fuer die Zuweisbarkeitspruefung verwendet",
+      "Die generierte JavaScript-Ausgabe in Baumform — der Compiler erzeugt sie als Zwischenschritt",
+      "Ein Optimierungsformat das TypeScript intern fuer Caching nutzt und den Build beschleunigt",
     ],
     correct: 0,
     explanation:
@@ -57,9 +57,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum koennen rekursive Typen exponentiell viele Type Instantiations erzeugen?",
     options: [
       "Weil jede Rekursionsebene die Anzahl der Instantiierungen verdoppelt oder vervielfacht",
-      "Weil TypeScript rekursive Typen nicht cachen kann",
-      "Weil der Scanner bei Rekursion langsamer wird",
-      "Weil .d.ts-Dateien bei Rekursion groesser werden",
+      "Weil TypeScript rekursive Typen nicht cachen kann und sie bei jeder Verwendung neu berechnet",
+      "Weil der Scanner bei Rekursion langsamer wird und mehr Tokens erzeugen muss",
+      "Weil .d.ts-Dateien bei Rekursion groesser werden und mehr Speicher im Arbeitsspeicher belegen",
     ],
     correct: 0,
     explanation:
@@ -77,9 +77,9 @@ export const questions: QuizQuestion[] = [
     question: "Was macht die tsconfig-Option 'skipLibCheck: true'?",
     options: [
       "Sie ueberspringt das Type-Checking von .d.ts-Dateien und spart 10-30% Compile-Zeit",
-      "Sie ueberspringt den gesamten Type-Check und erzeugt nur JavaScript",
-      "Sie ignoriert alle node_modules beim Kompilieren",
-      "Sie deaktiviert die Pruefung von Bibliotheks-Importen",
+      "Sie ueberspringt den gesamten Type-Check und erzeugt nur JavaScript ohne jegliche Typ-Pruefung",
+      "Sie ignoriert alle node_modules beim Kompilieren und behandelt sie als externe Abhaengigkeiten",
+      "Sie deaktiviert die Pruefung von Bibliotheks-Importen und erlaubt implizite any-Typen aus Libraries",
     ],
     correct: 0,
     explanation:
@@ -96,10 +96,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist 'interface A extends B, C {}' schneller als 'type A = B & C'?",
     options: [
-      "Intersections erzeugen kleinere .d.ts-Dateien",
+      "Intersections erzeugen kleinere .d.ts-Dateien weil sie kompakter serialisiert werden koennen",
       "Interfaces werden vom Compiler eagerly evaluiert und gecacht, Intersections werden lazy bei jeder Verwendung neu berechnet",
-      "Interfaces brauchen weniger Speicher zur Laufzeit",
-      "Intersections koennen nicht mit Generics verwendet werden",
+      "Interfaces brauchen weniger Speicher zur Laufzeit weil sie zu simplen JavaScript-Objekten werden",
+      "Intersections koennen nicht mit Generics verwendet werden weil sie den Typparameter nicht korrekt aufloesen",
     ],
     correct: 1,
     explanation:
@@ -116,10 +116,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "In welchem Format speichert --generateTrace die Analyse-Daten?",
     options: [
-      "In einem TypeScript-spezifischen Binaerformat",
+      "In einem TypeScript-spezifischen Binaerformat das nur mit tsc --analyze gelesen werden kann",
       "Im Chrome Trace Event Format (JSON), lesbar mit chrome://tracing",
-      "Als HTML-Report mit Diagrammen",
-      "Als CSV-Datei fuer Excel-Analyse",
+      "Als HTML-Report mit Diagrammen und interaktiven Visualisierungen der Compiler-Performance",
+      "Als CSV-Datei fuer Excel-Analyse die von CI/CD-Tools automatisch ausgewertet werden kann",
     ],
     correct: 1,
     explanation:
@@ -136,10 +136,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche zwei Arten von Hashes speichert die .tsBuildInfo-Datei pro Datei?",
     options: [
-      "Quellcode-Hash und Dateigroesse-Hash",
+      "Quellcode-Hash und Dateigroesse-Hash — beides zusammen ergibt einen zuverlaessigen Fingerabdruck",
       "Version-Hash (Dateiinhalt) und Signature-Hash (oeffentliche API)",
-      "Import-Hash und Export-Hash",
-      "TypeScript-Version-Hash und Compiler-Options-Hash",
+      "Import-Hash und Export-Hash — die Abhaengigkeiten und exportierten Symbole werden separat gehasht",
+      "TypeScript-Version-Hash und Compiler-Options-Hash — um Build-Umgebungen reproduzierbar zu machen",
     ],
     correct: 1,
     explanation:
@@ -159,8 +159,8 @@ export const questions: QuizQuestion[] = [
     options: [
       "TS1337: Maximum call stack size exceeded",
       "TS2589: Type instantiation is excessively deep and possibly infinite",
-      "TS7023: Type too complex to represent",
-      "TS2321: Recursive type reference detected",
+      "TS7023: Type too complex to represent — der Compiler kann den Typ nicht mehr berechnen",
+      "TS2321: Recursive type reference detected — Zirkulaere Abhaengigkeit zwischen Typen erkannt",
     ],
     correct: 1,
     explanation:
@@ -176,10 +176,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sind grosse Union-Types ein Performance-Problem fuer den Checker?",
     options: [
-      "Unions brauchen mehr Speicher als Interfaces",
-      "Unions koennen nicht in .d.ts-Dateien geschrieben werden",
+      "Unions brauchen mehr Speicher als Interfaces weil sie jedes Member separat im Speicher halten",
+      "Unions koennen nicht in .d.ts-Dateien geschrieben werden und brechen deshalb die Deklarationsgenerierung",
       "Zuweisbarkeits-Pruefungen bei Unions sind O(n*m) — jedes Member gegen jedes andere",
-      "Der Scanner muss Unions zeichenweise parsen",
+      "Der Scanner muss Unions zeichenweise parsen was die Lexing-Phase verlangsamt und den Build bremst",
     ],
     correct: 2,
     explanation:
@@ -196,10 +196,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ermoeglicht die Option 'isolatedModules: true'?",
     options: [
-      "Sie isoliert Module voneinander damit sie nicht aufeinander zugreifen koennen",
-      "Sie erzeugt separate JavaScript-Bundles pro Modul",
+      "Sie isoliert Module voneinander damit sie nicht aufeinander zugreifen koennen und Seiteneffekte vermeidet",
+      "Sie erzeugt separate JavaScript-Bundles pro Modul fuer optimiertes Code-Splitting im Browser",
       "Sie erzwingt Einschraenkungen die schnelle Transpiler wie esbuild und swc unterstuetzen",
-      "Sie deaktiviert Module-Resolution und verwendet stattdessen relative Pfade",
+      "Sie deaktiviert Module-Resolution und verwendet stattdessen relative Pfade fuer alle Importe",
     ],
     correct: 2,
     explanation:
@@ -216,10 +216,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist eine performantere Alternative zu verschachtelten Conditional Types fuer Property-Zugriff?",
     options: [
-      "Switch-Statements im Type-Level",
-      "Rekursive Mapped Types",
+      "Switch-Statements im Type-Level — sie erlauben bedingte Typ-Auswahl ohne Conditional Types",
+      "Rekursive Mapped Types — sie iterieren ueber Properties und fuegen Bedingungen hinzu",
       "Constraints mit direktem Lookup (T extends { id: unknown } → T['id'])",
-      "Template Literal Types mit Pattern Matching",
+      "Template Literal Types mit Pattern Matching — sie zerlegen Typen in Teile und setzen sie neu zusammen",
     ],
     correct: 2,
     explanation:
@@ -236,10 +236,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist die Voraussetzung damit ein Projekt als Project Reference verwendet werden kann?",
     options: [
-      "Es muss 'incremental: true' in der tsconfig haben",
-      "Es muss ein package.json mit 'main'-Feld haben",
+      "Es muss 'incremental: true' in der tsconfig haben um inkrementelle Builds zu unterstuetzen",
+      "Es muss ein package.json mit 'main'-Feld haben damit die Modulaufloesung funktioniert",
       "'composite: true' muss in der tsconfig gesetzt sein",
-      "Es muss mindestens eine .d.ts-Datei exportieren",
+      "Es muss mindestens eine .d.ts-Datei exportieren damit andere Projekte die Typen importieren koennen",
     ],
     correct: 2,
     explanation:
@@ -256,9 +256,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der empfohlene Workflow fuer schnelles Development mit TypeScript?",
     options: [
-      "tsc --watch fuer Type-Checking und JavaScript-Generierung gleichzeitig",
-      "Nur esbuild verwenden und auf Type-Checking verzichten",
-      "TypeScript durch Babel ersetzen und Typen manuell pruefen",
+      "tsc --watch fuer Type-Checking und JavaScript-Generierung gleichzeitig in einem einzigen Prozess",
+      "Nur esbuild verwenden und auf Type-Checking verzichten — die IDE findet die meisten Fehler",
+      "TypeScript durch Babel ersetzen und Typen manuell pruefen — das ist der empfohlene Enterprise-Weg",
       "esbuild/swc fuer schnelle Transpilierung + tsc --noEmit fuer Type-Checking im Background",
     ],
     correct: 3,
@@ -296,9 +296,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht 'tsc --build' anders als normales 'tsc'?",
     options: [
-      "Es kompiliert nur JavaScript ohne Type-Checking",
-      "Es erzeugt optimiertes JavaScript mit Tree-Shaking",
-      "Es aktiviert automatisch den strengsten Strict-Mode",
+      "Es kompiliert nur JavaScript ohne Type-Checking — das ist der Hauptzweck des Build-Befehls",
+      "Es erzeugt optimiertes JavaScript mit Tree-Shaking und entfernt ungenutzten Code automatisch",
+      "Es aktiviert automatisch den strengsten Strict-Mode und ueberschreibt die tsconfig-Einstellungen",
       "Es baut Projekte in Abhaengigkeitsreihenfolge und ueberspringt unveraenderte",
     ],
     correct: 3,

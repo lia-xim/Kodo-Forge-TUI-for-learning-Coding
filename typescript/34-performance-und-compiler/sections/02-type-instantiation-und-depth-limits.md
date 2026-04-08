@@ -30,11 +30,42 @@
 > Rekursionstiefe (50), maximale Type Instantiations (5.000.000 in modernen
 > Versionen). Diese Limits schuetzen den Compiler vor sich selbst — und
 > dich vor endlosen Compile-Zeiten.
+>
+> Interessanterweise war der Ausloeser ein Typ aus dem lodash-types-Paket.
+> Jemand hatte versucht, die ueberladenen `_.get()`-Funktionen vollstaendig
+> zu typen — mit Template Literal Types fuer verschachtelte Property-Pfade.
+> Das Ergebnis war ein Typ-Baum mit Millionen von Zweigen, der den Compiler
+> buchstaeblich erstickte. Dieser Vorfall zeigt: Selbst etablierte Library-Typen
+> koennen die Grenzen des Compilers erreichen.
 
 Stell dir den Checker als eine Maschine vor, die Typen "ausrechnet".
 Manche Berechnungen sind trivial (`string` ist `string`), andere sind
 wie ein Baum, der bei jedem Schritt neue Aeste bekommt. Ohne Limits
 wuerde dieser Baum endlos wachsen.
+
+> 🌳 **Analogie: Fraktale und Typen**
+>
+> Ein rekursiver Typ ist wie ein Fraktal in der Mathematik — ein Muster,
+> das sich selbst in immer kleineren Massstaeben wiederholt. Das Mandelbrot-
+> Set ist theoretisch unendlich tief. In der Praxis zoomt man bis zu einem
+> bestimmten Punkt und hoert auf. Der TypeScript-Compiler macht genau das:
+> Er "zoomt" in rekursive Typen hinein, aber stoppt bei Tiefe 50.
+>
+> Genauso wie du ein Fraktal auf einem Bildschirm nicht unendlich tief
+> rendern kannst (deine Grafikkarte wuerde ueberhitzen), kann der Compiler
+> unendliche Typen nicht unendlich tief aufloesen. Das Limit ist der
+> "maximale Zoom" des Type-Checkers.
+
+---
+
+> 🧠 **Erklaere dir selbst:** Was ist der Unterschied zwischen einem
+> generischen Typ der instantiiert wird und einem rekursiven Typ der
+> instantiiert wird?
+>
+> **Kernpunkte:** Generische Typen erzeugen EINE Instanz pro Verwendung |
+> Rekursive Typen erzeugen viele Instanzen (eine pro Rekursionsstufe) |
+> `Box<string>` = 1 Instantiierung | `DeepReadonly<{a:{b:{c:string}}}>` =
+> 4 Instantiierungen (1 + 3 verschachtelte)
 
 ---
 
@@ -96,6 +127,15 @@ TypeScript hat mehrere harte Grenzen:
 | Typ-Instantiierungen | **5.000.000** | Compiler wird extrem langsam (kein expliziter Fehler) |
 | Conditional Type Tiefe | **50** | Gleicher Fehler wie Rekursionstiefe |
 | Union-Typ-Groesse | **100.000** | "Expression produces a union type that is too complex" |
+
+> 💭 **Denkfrage:** TypeScript hat 5.000.000 als Instantiation Limit.
+> Warum diese spezifische Zahl? Hatten die Entwickler Willkuer?
+>
+> **Antwort:** 5 Millionen ist ein empirischer Wert. Das TypeScript-Team
+> hat hunderte reale Projekte analysiert. Selbst die komplexesten Typen
+> (z.B. GraphQL-Code-Generierung mit Hunderten von Queries) brauchen
+> selten ueber 1 Million Instantiierungen. 5 Millionen gibt genug Puffer
+> fuer echte Projekte, beendet aber Endlosschleifen innerhalb von Sekunden.
 
 Der bekannteste Fehler ist **TS2589**:
 
@@ -186,6 +226,15 @@ declare function pipe<A, B, C, D>(fn1: (a: A) => B, fn2: (b: B) => C, fn3: (c: C
 > ausmachen. Deshalb empfiehlt das React-Team mittlerweile, `React.FC` zu
 > vermeiden und stattdessen Props direkt zu annotieren.
 
+> ⚡ **Framework-Bezug (Angular):** Angulars Dependency Injection erzeugt
+> ebenfalls teure Typ-Instantiierungen. Der Typ `Inject<T>` mit verschachtelten
+> Provider-Konfigurationen kann in grossen Modulen (z.B. `AppModule` mit 20+
+> Providern) zu unerwartet vielen Instantiierungen fuehren. Besonders problematisch:
+> `MultiProvider`-Pattern mit Injection-Tokens, die selbst Generics verwenden.
+> Angular-Teams berichten, dass das Umstellen von `useFactory` mit komplexen
+> generischen Rueckgabetypen auf einfache Factory-Funktionen die Compile-Zeit
+> um 10-15% reduziert hat.
+
 ---
 
 ## Wie du Limit-Fehler behebst
@@ -216,6 +265,44 @@ type Cached = DeepReadonly<MyHugeType>;
 // ^ Einmal berechnet, mehrfach verwendet
 // ^ Ohne Cache: jede Verwendung berechnet neu
 ```
+
+> 🧠 **Erklaere dir selbst:** Was passiert wenn du denselben generischen
+> Typ an zwei verschiedenen Stellen im Code verwendest? Berechnet der
+> Compiler ihn zweimal?
+>
+> **Kernpunkte:** Ja, standardmaessig wird bei jeder Verwendung neu
+> instantiiert | Ein Type Alias `type Cached = GenerischerTyp<X>` wird
+> EINMAL berechnet und das Ergebnis wird gecacht | Wenn du den
+> generischen Typ direkt an 10 Stellen schreibst: 10 Berechnungen |
+> Wenn du ihn einmal cachst und den Cache verwendest: 1 Berechnung
+
+---
+
+> 🧪 **Zusatzexperiment: Template Literal Types und Performance**
+>
+> Template Literal Types koennen ebenfalls Limits erreichen:
+>
+> ```typescript
+> type Join<Parts extends string[], Sep extends string = "-"> =
+>   Parts extends [infer First extends string, ...infer Rest extends string[]]
+>     ? Rest extends string[]
+>       ? `${First}${Sep}${Join<Rest, Sep>}`
+>       : First
+>     : "";
+>
+> type CSS = Join<["bg", "red", "hover", "text", "lg"]>;
+> // ^ "bg-red-hover-text-lg" — funktioniert
+>
+> type VeryLong = Join<[
+>   "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+>   "k", "l", "m", "n", "o", "p", "q", "r", "s", "t"
+> ]>;
+> // ^ Bei 20 Teilen: Template-String-Rekursion erreicht Tiefe 50+
+> // ^ Weil `${First}${Sep}${Join<...>}` TWO rekursive Aufrufe erzeugt
+> ```
+>
+> Der `${Sep}${Join<...>}` Teil erzeugt implizit zwei rekursive Zweige —
+> ein versteckter exponentieller Fallstrick.
 
 > 🧪 **Experiment:** Probiere diesen Typ aus, der absichtlich das Limit erreicht:
 >

@@ -1,4 +1,4 @@
-# Sektion 5: Stage 3 vs Legacy Decorators
+﻿# Sektion 5: Stage 3 vs Legacy Decorators
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -89,7 +89,10 @@ function stage3Log(
 ---
 
 ## Vergleich: Feature-Matrix
+<!-- section:summary -->
+| Method Decorators | Ja | Ja |
 
+<!-- depth:standard -->
 | Feature | Legacy | Stage 3 |
 |---|---|---|
 | Class Decorators | Ja | Ja |
@@ -114,6 +117,7 @@ function stage3Log(
 
 ---
 
+<!-- /depth -->
 ## Stage 3: Neue Features
 
 ### Auto-Accessor (`accessor`)

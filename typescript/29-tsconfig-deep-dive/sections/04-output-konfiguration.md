@@ -1,4 +1,4 @@
-# Sektion 4: Output-Konfiguration
+﻿# Sektion 4: Output-Konfiguration
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## `target` — Welches JavaScript soll rauskommen?
+<!-- section:summary -->
+`target` bestimmt, in welche JavaScript-Version TypeScript kompiliert.
 
+<!-- depth:standard -->
 `target` bestimmt, in welche JavaScript-Version TypeScript kompiliert.
 Es beeinflusst **zwei Dinge**: welche Syntax heruntertransformiert
 wird und welche Built-in-Typen verfuegbar sind.
@@ -85,8 +88,12 @@ var User = /** @class */ (function () {
 
 ---
 
+<!-- /depth -->
 ## `lib` — Welche Built-in-APIs sind verfuegbar?
+<!-- section:summary -->
+`target` bestimmt die Syntax, `lib` bestimmt die **APIs**. Das
 
+<!-- depth:standard -->
 `target` bestimmt die Syntax, `lib` bestimmt die **APIs**. Das
 sind zwei verschiedene Dinge:
 
@@ -128,8 +135,12 @@ document.getElementById("app");
 
 ---
 
+<!-- /depth -->
 ## `module` — Das Modul-Format der Ausgabe
+<!-- section:summary -->
+Nicht zu verwechseln mit `moduleResolution`! `module` bestimmt,
 
+<!-- depth:standard -->
 Nicht zu verwechseln mit `moduleResolution`! `module` bestimmt,
 welches **Format** die generierten Import/Export-Statements haben:
 
@@ -180,8 +191,12 @@ exports.getUser = function getUser() { /* ... */ };
 
 ---
 
+<!-- /depth -->
 ## `outDir` und `declarationDir`
+<!-- section:summary -->
+Ohne `declarationDir` landen `.d.ts`-Dateien neben den `.js`-Dateien
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -204,8 +219,12 @@ Typen separat verteilen wollen.
 
 ---
 
+<!-- /depth -->
 ## `declaration` und verwandte Flags
+<!-- section:summary -->
+### `declaration` — `.d.ts`-Dateien erzeugen
 
+<!-- depth:standard -->
 ### `declaration` — `.d.ts`-Dateien erzeugen
 
 ```typescript annotated
@@ -264,8 +283,12 @@ Typ-Pruefung zustaendig ist.
 
 ---
 
+<!-- /depth -->
 ## `sourceMap` — Debugging ermoeglichen
+<!-- section:summary -->
+Source Maps verbinden den generierten JavaScript-Code mit dem
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -296,8 +319,12 @@ die du tatsaechlich geschrieben hast.
 
 ---
 
+<!-- /depth -->
 ## `noEmit` — Nur pruefen, nichts erzeugen
+<!-- section:summary -->
+TypeScript prueft den Code, erzeugt aber KEINE Dateien. Das ist
 
+<!-- depth:standard -->
 ```json
 {
   "compilerOptions": {
@@ -320,6 +347,7 @@ Zustand ist.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `target` bestimmt die JavaScript-Version (Syntax-Transformation)

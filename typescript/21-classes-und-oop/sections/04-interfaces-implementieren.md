@@ -1,4 +1,4 @@
-# Sektion 4: Interfaces implementieren
+﻿# Sektion 4: Interfaces implementieren
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## implements: Der explizite Vertrag
+<!-- section:summary -->
+Wenn eine Klasse ein Interface mit `implements` angiebt, verspricht sie:
 
+<!-- depth:standard -->
 Wenn eine Klasse ein Interface mit `implements` angiebt, verspricht sie:
 "Ich habe ALLE Felder und Methoden, die das Interface verlangt."
 TypeScript prueft das zur Compilezeit.
@@ -71,6 +74,7 @@ class Document implements Printable {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Structural Typing — "If it walks like a duck..."**
 >
 > TypeScript verwendet **Structural Typing** (auch "Duck Typing" genannt):
@@ -90,8 +94,12 @@ class Document implements Printable {
 
 ---
 
+<!-- /depth -->
 ## Structural Typing in Aktion
+<!-- section:summary -->
+Hier wird es spannend — und fuer Java/C#-Entwickler ueberraschend:
 
+<!-- depth:standard -->
 Hier wird es spannend — und fuer Java/C#-Entwickler ueberraschend:
 
 ```typescript annotated
@@ -117,6 +125,7 @@ class MyList {
 printLength(new MyList());   // OK! Structural Typing
 ```
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:** Wenn TypeScript strukturell prueft, warum braucht man dann
 > `implements` ueberhaupt? Koennte man es nicht einfach weglassen?
 >
@@ -134,8 +143,12 @@ printLength(new MyList());   // OK! Structural Typing
 
 ---
 
+<!-- /depth -->
 ## implements vs extends: Der Vergleich
+<!-- section:summary -->
+Ein haeufiger Fehler ist die Verwechslung von `implements` und `extends`:
 
+<!-- depth:standard -->
 Ein haeufiger Fehler ist die Verwechslung von `implements` und `extends`:
 
 ```typescript annotated
@@ -185,6 +198,7 @@ class Duck extends Animal implements Flyable, Swimmable {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Erstelle ein Interface `Printable` mit einer Methode
 > `print(): void`. Dann erstelle eine Klasse `Report` die `Printable`
 > implementiert. Jetzt ENTFERNE das `implements Printable` — kompiliert
@@ -193,8 +207,12 @@ class Duck extends Animal implements Flyable, Swimmable {
 
 ---
 
+<!-- /depth -->
 ## Interface-Implementierung mit Generics
+<!-- section:summary -->
+Interfaces koennen generisch sein (Lektion 13-14), und Klassen koennen
 
+<!-- depth:standard -->
 Interfaces koennen generisch sein (Lektion 13-14), und Klassen koennen
 sie mit konkreten Typen implementieren:
 
@@ -241,8 +259,12 @@ die Implementierung kann austauschbar sein (InMemory, PostgreSQL, MongoDB...).
 
 ---
 
+<!-- /depth -->
 ## Klassen als Interfaces
+<!-- section:summary -->
+Eine Eigenheit von TypeScript: Du kannst eine **Klasse auch als Interface**
 
+<!-- depth:standard -->
 Eine Eigenheit von TypeScript: Du kannst eine **Klasse auch als Interface**
 verwenden — sowohl mit `implements` als auch als Typ:
 
@@ -276,6 +298,7 @@ printPoint({ x: 1, y: 2 }); // OK: Structural Typing
 
 ---
 
+<!-- /depth -->
 ## Interfaces in Frameworks
 
 > **In deinem Angular-Projekt** begegnest du Interfaces staendig als
@@ -322,7 +345,10 @@ printPoint({ x: 1, y: 2 }); // OK: Structural Typing
 ---
 
 ## Index Signatures in implementierten Interfaces
+<!-- section:summary -->
+Interfaces koennen Index Signatures haben (Lektion 16), und Klassen
 
+<!-- depth:standard -->
 Interfaces koennen Index Signatures haben (Lektion 16), und Klassen
 koennen diese implementieren:
 
@@ -345,6 +371,7 @@ env.NODE_ENV = "production";
 env["CUSTOM_VAR"] = "custom"; // Auch dynamische Keys moeglich
 ```
 
+<!-- depth:vollstaendig -->
 > **Erklaere dir selbst:** Wenn TypeScript strukturell prueft (Structural Typing),
 > warum zeigen IDEs trotzdem `implements` als Vorschlag an, wenn du eine
 > Klasse schreibst? Was ist der praktische Nutzen von `implements`?
@@ -355,6 +382,7 @@ env["CUSTOM_VAR"] = "custom"; // Auch dynamische Keys moeglich
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: implements-Checkliste
 
 | Frage | Antwort |

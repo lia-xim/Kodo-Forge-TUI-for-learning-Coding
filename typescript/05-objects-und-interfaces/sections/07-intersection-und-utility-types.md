@@ -10,6 +10,12 @@
 - Praxis-Patterns fuer Angular und React (API-Responses, Form State, Composition)
 - Discriminated Unions als Vorschau
 
+> **Hinweis:** Die Utility Types (`Partial`, `Pick`, `Omit`, `Required`)
+> sind hier erstmals zu sehen. Wie sie **intern funktionieren** (Mapped Types)
+> lernst du in **Lektion 16** im Detail. Fuer jetzt: Verstehe was sie tun,
+> nicht wie sie implementiert sind. In **Lektion 15** bekommst du alle
+> Built-in Utility Types als komplette Uebersicht.
+
 ---
 
 ## Intersection Types: Die Grundidee

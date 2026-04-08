@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Hauptvorteil von Vitest gegenueber Jest fuer TypeScript?",
     options: [
       "Native TypeScript-Unterstuetzung ohne Transformer (Zero-Config)",
-      "Vitest hat mehr Matcher als Jest",
-      "Vitest kann Tests parallel ausfuehren, Jest nicht",
-      "Vitest unterstuetzt nur TypeScript, nicht JavaScript",
+      "Vitest hat mehr Matcher als Jest und deckt damit mehr Testfaelle von vornherein ab",
+      "Vitest kann Tests parallel ausfuehren, Jest nicht — was bei grossen Testsuites entscheidend ist",
+      "Vitest unterstuetzt nur TypeScript, nicht JavaScript — was den Fokus auf Typsicherheit erhoeht",
     ],
     correct: 0,
     explanation:
@@ -36,9 +36,9 @@ export const questions: QuizQuestion[] = [
     question: "Was prueft TypeScript, was Unit-Tests NICHT pruefen koennen?",
     options: [
       "Die korrekte Form (Typen, Schnittstellen) — nicht das Verhalten",
-      "Die Laufzeit-Performance von Funktionen",
-      "Ob eine Funktion bei bestimmten Eingaben crasht",
-      "Die korrekte Reihenfolge von Funktionsaufrufen",
+      "Die Laufzeit-Performance von Funktionen — TypeScript misst die Ausfuehrungsgeschwindigkeit beim Kompilieren",
+      "Ob eine Funktion bei bestimmten Eingaben crasht — TypeScript simuliert alle Code-Pfade durch",
+      "Die korrekte Reihenfolge von Funktionsaufrufen — TypeScript validiert die Kontrollfluss-Grafen",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Was passiert bei: expect(42).toBe('hello')?",
     options: [
       "Compile-Error — TypeScript prueft dass expected den gleichen Typ wie actual hat",
-      "Der Test schlaegt fehl zur Laufzeit, kompiliert aber",
-      "Der Test besteht weil 42 und 'hello' beide truthy sind",
-      "TypeError zur Laufzeit wegen verschiedener Typen",
+      "Der Test schlaegt fehl zur Laufzeit, kompiliert aber — toBe vergleicht einfach die Werte ohne Typ-Pruefung",
+      "Der Test besteht weil 42 und 'hello' beide truthy sind und toBe auf Wahrheit testet",
+      "TypeError zur Laufzeit wegen verschiedener Typen — JavaScript erkennt den Typ-Konflikt beim Vergleich",
     ],
     correct: 0,
     explanation:
@@ -74,10 +74,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Vorteil von vi.fn<(id: string) => Promise<User>>() gegenueber vi.fn()?",
     options: [
-      "vi.fn() mit Typparameter ist schneller zur Laufzeit",
+      "vi.fn() mit Typparameter ist schneller zur Laufzeit weil der Typ zur Optimierung genutzt wird",
       "Der Typparameter erzwingt korrekte Argumente und Rueckgabewerte beim Mock",
-      "vi.fn() ohne Typparameter erzeugt einen Compile-Error",
-      "Der Typparameter macht den Mock thread-safe",
+      "vi.fn() ohne Typparameter erzeugt einen Compile-Error weil TypeScript den Typ nicht inferieren kann",
+      "Der Typparameter macht den Mock thread-safe und verhindert Race Conditions in parallelen Tests",
     ],
     correct: 1,
     explanation:
@@ -94,10 +94,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht vi.mocked(service)?",
     options: [
-      "Es erstellt einen neuen Mock des Services",
+      "Es erstellt einen neuen Mock des Services mit leeren Implementationen fuer alle Methoden",
       "Es castet den Service zu Mocked<T> — alle Methoden werden zu Mock-Typen",
-      "Es spioniert auf alle Methoden-Aufrufe des Services",
-      "Es ersetzt den Service durch einen automatischen Mock",
+      "Es spioniert auf alle Methoden-Aufrufe des Services und protokolliert sie automatisch mit",
+      "Es ersetzt den Service durch einen automatischen Mock der alle Methodenaufrufe interceptet",
     ],
     correct: 1,
     explanation:
@@ -114,10 +114,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen expect() und expectTypeOf() in Vitest?",
     options: [
-      "expect() ist fuer Vitest, expectTypeOf() ist fuer Jest",
-      "expect() ist synchron, expectTypeOf() ist asynchron",
+      "expect() ist fuer Vitest, expectTypeOf() ist fuer Jest — sie sind framework-spezifisch",
+      "expect() ist synchron und prueft sofort, expectTypeOf() ist asynchron und braucht einen Promise",
       "expect() prueft Laufzeit-Werte, expectTypeOf() prueft Compilezeit-Typen",
-      "Es gibt keinen Unterschied — sie sind Aliase",
+      "Es gibt keinen Unterschied — sie sind Aliase die dieselbe Funktion mit anderem Namen aufrufen",
     ],
     correct: 2,
     explanation:
@@ -134,10 +134,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum nimmt createTestUser() einen Parameter Partial<User> statt alle Felder einzeln?",
     options: [
-      "Weil Partial<User> schneller ist als einzelne Parameter",
-      "Weil TypeScript keine Funktionen mit vielen Parametern unterstuetzt",
+      "Weil Partial<User> schneller ist als einzelne Parameter weil weniger Typ-Checks noetig sind",
+      "Weil TypeScript keine Funktionen mit vielen Parametern unterstuetzt und deshalb Objekte bevorzugt",
       "Weil Tests nur die fuer sie relevanten Felder ueberschreiben — der Rest kommt von Defaults",
-      "Weil Partial<User> optionale Felder automatisch auf null setzt",
+      "Weil Partial<User> optionale Felder automatisch auf null setzt und so Boilerplate reduziert",
     ],
     correct: 2,
     explanation:
@@ -154,9 +154,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist Angular's jasmine.createSpyObj<T>() typsicherer als ein manueller Mock?",
     options: [
-      "createSpyObj ist schneller als manuelle Mocks",
-      "createSpyObj unterstuetzt mehr Methoden als manuelle Mocks",
-      "createSpyObj erstellt automatisch Spy-Implementierungen fuer alle Methoden",
+      "createSpyObj ist schneller als manuelle Mocks weil es optimierte Spy-Funktionen verwendet",
+      "createSpyObj unterstuetzt mehr Methoden als manuelle Mocks und deckt das gesamte Interface ab",
+      "createSpyObj erstellt automatisch Spy-Implementierungen fuer alle Methoden ohne manuellen Aufwand",
       "createSpyObj prueft die Methoden-Namen gegen das Interface — Tippfehler werden erkannt",
     ],
     correct: 3,
@@ -174,9 +174,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist MSW (Mock Service Worker) framework-unabhaengig?",
     options: [
-      "MSW nutzt keine HTTP-Bibliothek",
-      "MSW ist in WebAssembly geschrieben",
-      "MSW testet nur TypeScript-Typen, nicht Laufzeit-Code",
+      "MSW nutzt keine HTTP-Bibliothek und ist damit komplett unabhaengig von externen Dependencies",
+      "MSW ist in WebAssembly geschrieben was es plattformunabhaengig und framework-neutral macht",
+      "MSW testet nur TypeScript-Typen, nicht Laufzeit-Code — deshalb funktioniert es mit jedem Framework",
       "MSW interceptet auf Netzwerk-Ebene — unabhaengig vom HTTP-Client (fetch, axios, HttpClient)",
     ],
     correct: 3,

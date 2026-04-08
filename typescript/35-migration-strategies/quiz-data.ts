@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Welche Migrationsstrategie ist fuer grosse Projekte mit aktiver Feature-Arbeit empfohlen?",
     options: [
       "Graduelle Migration (allowJs + schrittweise .js→.ts)",
-      "Big Bang (alle Dateien auf einmal umbenennen)",
-      "Gar nicht migrieren — JavaScript reicht",
-      "Komplett neu schreiben in TypeScript",
+      "Big Bang (alle Dateien auf einmal umbenennen und alle Fehler auf einmal beheben)",
+      "Gar nicht migrieren — JavaScript reicht fuer moderne Webentwicklung vollkommen aus",
+      "Komplett neu schreiben in TypeScript — das ist der empfohlene Weg fuer alle Projekte",
     ],
     correct: 0,
     explanation:
@@ -36,9 +36,9 @@ export const questions: QuizQuestion[] = [
     question: "In welcher Reihenfolge solltest du Dateien bei einer graduellen Migration umstellen?",
     options: [
       "Blaetter zuerst (Dateien ohne Abhaengigkeiten), dann nach innen",
-      "Die groessten Dateien zuerst",
-      "Alphabetisch nach Dateiname",
-      "Zufaellig — die Reihenfolge spielt keine Rolle",
+      "Die groessten Dateien zuerst — sie haben den groessten Einfluss auf die Code-Qualitaet",
+      "Alphabetisch nach Dateiname — das ist neutral und verhindert bewusste Auswahl",
+      "Zufaellig — die Reihenfolge spielt keine Rolle, alle Dateien sind gleich wichtig",
     ],
     correct: 0,
     explanation:
@@ -55,9 +55,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ermoeglicht 'allowJs: true' in der tsconfig?",
     options: [
       "JavaScript-Dateien (.js) und TypeScript-Dateien (.ts) koexistieren im selben Projekt",
-      "JavaScript-Dateien werden automatisch zu TypeScript konvertiert",
-      "TypeScript-Fehler in .js-Dateien werden ignoriert",
-      "JavaScript-Dateien werden mit Strict Mode kompiliert",
+      "JavaScript-Dateien werden automatisch zu TypeScript konvertiert ohne manuellen Eingriff",
+      "TypeScript-Fehler in .js-Dateien werden ignoriert und nicht im Output angezeigt",
+      "JavaScript-Dateien werden mit Strict Mode kompiliert und erhalten volle Typsicherheit",
     ],
     correct: 0,
     explanation:
@@ -74,9 +74,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum ist '@ts-expect-error' besser als '@ts-ignore' bei Migrationen?",
     options: [
       "Es meldet einen Fehler wenn die unterdrueckte Zeile KEINEN Fehler mehr hat — raeumt sich selbst auf",
-      "Es ist schneller fuer den Compiler",
-      "Es funktioniert auch in JavaScript-Dateien",
-      "Es unterdrueckt nur bestimmte Fehlertypen",
+      "Es ist schneller fuer den Compiler weil es weniger Overhead bei der Verarbeitung erzeugt",
+      "Es funktioniert auch in JavaScript-Dateien — @ts-ignore funktioniert ausschliesslich in TypeScript",
+      "Es unterdrueckt nur bestimmte Fehlertypen und laesst alle anderen Compiler-Fehler weiterhin zu",
     ],
     correct: 0,
     explanation:
@@ -93,10 +93,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche JSDoc-Syntax gibt einer JavaScript-Funktion Parametertypen?",
     options: [
-      "@type {function(string, number): boolean}",
+      "@type {function(string, number): boolean} — annotiert die gesamte Funktionssignatur auf einmal",
       "@param {string} name — und @returns {boolean}",
-      "@typedef {Object} FunctionType",
-      "@template T — fuer generische Funktionen",
+      "@typedef {Object} FunctionType — definiert einen wiederverwendbaren Funktions-Typ",
+      "@template T — fuer generische Funktionen mit dynamischen Typ-Parametern",
     ],
     correct: 1,
     explanation:
@@ -112,10 +112,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist strictNullChecks das schwierigste Strict-Flag bei Migrationen?",
     options: [
-      "Es ist nur fuer TypeScript 5.0+ verfuegbar",
+      "Es ist nur fuer TypeScript 5.0+ verfuegbar und funktioniert in aelteren Versionen nicht",
       "Es aendert fundamental wie null/undefined behandelt werden und erzeugt die meisten Fehler",
-      "Es ist inkompatibel mit Angular-Projekten",
-      "Es verlangsamt die Compile-Zeit um 50%",
+      "Es ist inkompatibel mit Angular-Projekten und fuehrt zu unloesbaren Template-Fehlern",
+      "Es verlangsamt die Compile-Zeit um 50% weil mehr Typ-Checks durchgefuehrt werden muessen",
     ],
     correct: 1,
     explanation:
@@ -132,10 +132,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was loest 'esModuleInterop: true' bei der Migration?",
     options: [
-      "Es konvertiert CommonJS automatisch zu ES Modules",
+      "Es konvertiert CommonJS automatisch zu ES Modules ohne manuelle Anpassungen",
       "Es erlaubt 'import x from \"pkg\"' statt 'import * as x from \"pkg\"' fuer CommonJS-Module",
-      "Es deaktiviert Module-Resolution",
-      "Es aktiviert Tree-Shaking fuer CommonJS-Module",
+      "Es deaktiviert Module-Resolution und verwendet stattdessen ausschliesslich relative Pfade",
+      "Es aktiviert Tree-Shaking fuer CommonJS-Module und entfernt ungenutzte Exporte automatisch",
     ],
     correct: 1,
     explanation:
@@ -152,10 +152,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie gibst du einem untypisierten npm-Paket minimale Typen?",
     options: [
-      "Das Paket manuell in node_modules bearbeiten",
+      "Das Paket manuell in node_modules bearbeiten und die Typ-Definitionen selbst hinzufuegen",
       "'declare module \"paketname\";' in einer .d.ts-Datei — alles wird 'any'",
-      "Den TypeScript-Compiler mit --ignorePackage konfigurieren",
-      "Das Paket durch eine typisierte Alternative ersetzen",
+      "Den TypeScript-Compiler mit --ignorePackage konfigurieren und das Paket ausschliessen",
+      "Das Paket durch eine typisierte Alternative ersetzen — das ist die einzig saubere Loesung",
     ],
     correct: 1,
     explanation:
@@ -172,10 +172,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Strict-Flag solltest du als ERSTES aktivieren?",
     options: [
-      "strictNullChecks (das wichtigste)",
-      "noImplicitAny (das haeufigste)",
+      "strictNullChecks (das wichtigste) — es sollte sofort aktiviert werden fuer maximale Sicherheit",
+      "noImplicitAny (das haeufigste) — es betrifft die meisten Stellen und liefert schnellen Fortschritt",
       "alwaysStrict (das einfachste — fast nie Fehler)",
-      "strictPropertyInitialization (fuer Klassen)",
+      "strictPropertyInitialization (fuer Klassen) — es ist der logische Startpunkt fuer OOP-Projekte",
     ],
     correct: 2,
     explanation:
@@ -192,10 +192,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann ist die Non-null Assertion (!) ein akzeptabler Uebergangsmechanismus?",
     options: [
-      "Immer — ! ist sicherer als explizite Pruefungen",
-      "Nie — ! sollte generell verboten werden",
+      "Immer — ! ist sicherer als explizite Pruefungen weil es zur Laufzeit nichts kostet",
+      "Nie — ! sollte generell verboten werden weil es die Typsicherheit komplett umgeht",
       "Bei der Aktivierung von strictNullChecks als temporaere Loesung mit TODO-Markierung",
-      "Nur in Test-Dateien",
+      "Nur in Test-Dateien — in Produktionscode ist ! generell nicht akzeptabel",
     ],
     correct: 2,
     explanation:
@@ -212,10 +212,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen checkJs: true in tsconfig und @ts-check in einer Datei?",
     options: [
-      "checkJs ist schneller, @ts-check ist genauer",
-      "Es gibt keinen Unterschied",
+      "checkJs ist schneller, @ts-check ist genauer — beide aktivieren die Typ-Pruefung auf unterschiedliche Weise",
+      "Es gibt keinen Unterschied — beide aktivieren die Typ-Pruefung fuer dasselbe Dateiset",
       "checkJs aktiviert Pruefung fuer ALLE .js-Dateien, @ts-check nur fuer die eine Datei",
-      "checkJs funktioniert nur mit allowJs: false",
+      "checkJs funktioniert nur mit allowJs: false — @ts-check funktioniert immer unabhaengig davon",
     ],
     correct: 2,
     explanation:
@@ -232,10 +232,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist die typsichere Loesung fuer dynamische Property-Zugriffe bei der Migration?",
     options: [
-      "as any fuer das Objekt",
-      "Object.defineProperty verwenden",
+      "as any fuer das Objekt — das ist der einfachste und am weitesten verbreitete Workaround",
+      "Object.defineProperty verwenden — das erlaubt dynamische Properties mit voller Typsicherheit",
       "Record<string, unknown> oder ein Interface mit Index Signature",
-      "eval() fuer dynamische Ausdruecke",
+      "eval() fuer dynamische Ausdruecke — das ist die empfohlene Loesung in TypeScript-Projekten",
     ],
     correct: 2,
     explanation:
@@ -251,9 +251,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche 4 Metriken messen den Migrations-Fortschritt am besten?",
     options: [
-      "Lines of Code, Commit-Frequenz, Build-Zeit, Test-Coverage",
-      "Anzahl Dateien, Anzahl Klassen, Anzahl Funktionen, Anzahl Importe",
-      "Compile-Zeit, Bundle-Groesse, Memory-Verbrauch, CPU-Auslastung",
+      "Lines of Code, Commit-Frequenz, Build-Zeit, Test-Coverage — klassische Metriken die den allgemeinen Fortschritt zeigen",
+      "Anzahl Dateien, Anzahl Klassen, Anzahl Funktionen, Anzahl Importe — strukturelle Metriken die den Code-Umfang messen",
+      "Compile-Zeit, Bundle-Groesse, Memory-Verbrauch, CPU-Auslastung — Performance-Metriken die die Build-Qualitaet zeigen",
       "TS-Dateien-Anteil, any-Count, ts-ignore-Count, Strict-Fehler-Count",
     ],
     correct: 3,
@@ -270,9 +270,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum braucht useState(null) in React einen expliziten Typparameter?",
     options: [
-      "React-Hooks funktionieren nicht mit null",
-      "TypeScript kann null nicht als Typ verwenden",
-      "useState ist nicht generisch",
+      "React-Hooks funktionieren nicht mit null — das ist eine React-Einschraenkung die useState betrifft",
+      "TypeScript kann null nicht als Typ verwenden — es erfordert immer einen konkreten Objekt-Typ",
+      "useState ist nicht generisch und kann deshalb keine Union-Typen mit null inferieren",
       "TypeScript inferiert den Typ 'null' — nicht 'User | null' wie gewuenscht",
     ],
     correct: 3,
@@ -290,9 +290,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was prueft Angulars 'strictTemplates: true' das ohne diese Option NICHT geprueft wird?",
     options: [
-      "Die Laufzeit-Performance von Templates",
-      "Ob Templates valides HTML sind",
-      "Die Korrektheit von CSS-Klassen in Templates",
+      "Die Laufzeit-Performance von Templates — wie schnell sie gerendert und aktualisiert werden",
+      "Ob Templates valides HTML sind — falsche Tags und Attribute werden zur Compilezeit erkannt",
+      "Die Korrektheit von CSS-Klassen in Templates — ungültige Klassen werden vom Compiler gemeldet",
       "Property-Bindings, Event-Handler und Pipe-Rueckgabetypen in Templates",
     ],
     correct: 3,

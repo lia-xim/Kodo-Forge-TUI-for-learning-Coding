@@ -18,9 +18,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist die 'Defensive Schale, offensiver Kern' Architektur?",
     options: [
       "An Systemgrenzen Runtime-validieren (unknown → typisiert), im Kern dem Typsystem vertrauen (keine Checks)",
-      "Alles mit try/catch umwickeln",
-      "Jeden Parameter in jeder Funktion validieren",
-      "Nur in Tests defensive Typen verwenden",
+      "Alles mit try/catch umwickeln — das ist die sicherste Art Fehler zu behandeln",
+      "Jeden Parameter in jeder Funktion validieren — defensive Programmierung an jeder Stelle",
+      "Nur in Tests defensive Typen verwenden — Produktionscode sollte ungeprueft bleiben",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum sind Branded IDs (UserId, OrderId) besser als einfache strings?",
     options: [
       "Sie verhindern die Verwechslung von IDs verschiedener Entities zur Compilezeit",
-      "Sie sind schneller zur Laufzeit",
-      "Sie brauchen weniger Speicher",
-      "Sie sind die einzige Moeglichkeit IDs in TypeScript zu verwenden",
+      "Sie sind schneller zur Laufzeit weil Brands zu optimierten Maschinencode kompiliert werden",
+      "Sie brauchen weniger Speicher weil der Brand nur ein unsichtbares Marker-Property ist",
+      "Sie sind die einzige Moeglichkeit IDs in TypeScript zu verwenden — ohne Brand gibt es Compile-Fehler",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum speichert man Geldbetraege als Cents (Integer) statt als Euro (Float)?",
     options: [
       "Floating-Point-Arithmetik hat Rundungsfehler — 19.99 * 0.19 ergibt NICHT exakt 3.80",
-      "Integers sind schneller als Floats in JavaScript",
-      "TypeScript unterstuetzt keine Float-Typen",
-      "Das ist eine veraltete Konvention aus der COBOL-Zeit",
+      "Integers sind schneller als Floats in JavaScript weil die CPU sie direkt verarbeitet",
+      "TypeScript unterstuetzt keine Float-Typen — es gibt nur number und integer",
+      "Das ist eine veraltete Konvention aus der COBOL-Zeit die in modernen Systemen nicht mehr gilt",
     ],
     correct: 0,
     explanation:
@@ -75,9 +75,9 @@ export const questions: QuizQuestion[] = [
     question: "Was verhindert die Transition Map im Order-Status?",
     options: [
       "Ungueltige Zustandsuebergaenge werden zu Compile-Fehlern — z.B. 'draft' direkt zu 'shipped'",
-      "Performance-Probleme bei vielen Zustaenden",
-      "Doppelte Event-Emittierung",
-      "Memory Leaks bei zirkulaeren Uebergaengen",
+      "Performance-Probleme bei vielen Zustaenden — die Transition Map wird zur Laufzeit zu langsam",
+      "Doppelte Event-Emittierung — die Map sende Events zweimal bei jedem Uebergang",
+      "Memory Leaks bei zirkulaeren Uebergaengen — die Map verhindert die Garbage Collection",
     ],
     correct: 0,
     explanation:
@@ -93,10 +93,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum verwendet Repository<T> den Typ T['id'] statt 'string' fuer den ID-Parameter?",
     options: [
-      "Weil T['id'] laenger ist und damit klarer",
+      "Weil T['id'] laenger ist und damit klarer den Zweck des Parameters kommuniziert",
       "Weil T['id'] den spezifischen ID-Typ extrahiert — Repository<User>.findById erwartet UserId, nicht string",
-      "Weil TypeScript 'string' als ID-Typ nicht unterstuetzt",
-      "Weil T['id'] schneller ist als string",
+      "Weil TypeScript 'string' als ID-Typ nicht unterstuetzt — nur generische Index-Zugriffe sind erlaubt",
+      "Weil T['id'] schneller ist als string — der Compiler optimiert Index-Zugriffe besser",
     ],
     correct: 1,
     explanation:
@@ -112,10 +112,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was macht Extract<DomainEvent, { type: 'order:paid' }> im Event-System?",
     options: [
-      "Es loescht alle Events ausser 'order:paid'",
+      "Es loescht alle Events ausser 'order:paid' aus dem Event-Bus — es ist ein Filter-Operator",
       "Es filtert die Discriminated Union auf die Variante mit type: 'order:paid' — mit allen zugehoerigen Feldern",
-      "Es erstellt ein neues Event",
-      "Es konvertiert den Event-Typ in einen String",
+      "Es erstellt ein neues Event vom Typ 'order:paid' und fuegt es dem Event-Stream hinzu",
+      "Es konvertiert den Event-Typ in einen String — aus DomainEvent wird 'order:paid' als string",
     ],
     correct: 1,
     explanation:
@@ -131,10 +131,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum gibt createOrder() ein Result<Order, 'empty-cart'> zurueck statt zu werfen?",
     options: [
-      "Weil Exceptions in TypeScript nicht unterstuetzt werden",
+      "Weil Exceptions in TypeScript nicht unterstuetzt werden — man muss immer Result verwenden",
       "Weil der Fehler im Typ sichtbar ist — der Aufrufer MUSS den Fehlerfall behandeln",
-      "Weil Result schneller ist als throw",
-      "Weil throw den Event-Bus stoert",
+      "Weil Result schneller ist als throw — Exceptions haben in TypeScript einen hohen Laufzeit-Overhead",
+      "Weil throw den Event-Bus stoert — der Error-Handler wird nicht korrekt aufgerufen",
     ],
     correct: 1,
     explanation:
@@ -150,10 +150,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Zusammenhang zwischen Smart Constructors, Parse Don't Validate und der defensiven Schale?",
     options: [
-      "Kein Zusammenhang — drei unabhaengige Konzepte",
+      "Kein Zusammenhang — drei unabhaengige Konzepte die verschiedene Probleme loesen",
       "Smart Constructors SIND das Parse-Pattern — sie validieren und geben den staerkeren Typ zurueck. Die Schale nutzt sie.",
-      "Smart Constructors ersetzen die defensive Schale",
-      "Parse Don't Validate ist nur fuer JSON-Parsing",
+      "Smart Constructors ersetzen die defensive Schale — man braucht nur eine von beiden",
+      "Parse Don't Validate ist nur fuer JSON-Parsing — es hat nichts mit Smart Constructors zu tun",
     ],
     correct: 1,
     explanation:
@@ -169,10 +169,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sind alle Properties im Domain Model 'readonly'?",
     options: [
-      "Weil TypeScript readonly als Default erfordert",
-      "Weil readonly den Code schneller macht",
+      "Weil TypeScript readonly als Default erfordert — alle Properties muessen explizit mutable sein",
+      "Weil readonly den Code schneller macht — der Compiler optimiert unveraenderliche Properties",
       "Weil Immutability Seiteneffekte verhindert — Aenderungen erzwingen ein neues Objekt mit konsistenten Daten",
-      "Weil readonly die Compiler-Fehlermeldungen verbessert",
+      "Weil readonly die Compiler-Fehlermeldungen verbessert — sie sind bei immutable Types genauer",
     ],
     correct: 2,
     explanation:
@@ -188,10 +188,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bedeutet 'End-to-End-Typsicherheit' in der TypeShop-Architektur?",
     options: [
-      "Dass alle Tests bestehen",
-      "Dass jede Variable einen Typ hat",
+      "Dass alle Tests bestehen — Typsicherheit wird durch Tests garantiert",
+      "Dass jede Variable einen Typ hat — explizite Annotationen ueberall im Code",
       "Dass der Typ von der API-Route-Definition ueber die Validierung bis zur Business Logic konsistent ist",
-      "Dass der Code in allen Browsern laeuft",
+      "Dass der Code in allen Browsern laeuft — Cross-Browser-Kompatibilitaet durch Typen",
     ],
     correct: 2,
     explanation:
@@ -207,10 +207,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was passiert wenn ein neuer OrderStatus ('refunded') hinzugefuegt wird?",
     options: [
-      "Nichts — der neue Status funktioniert automatisch",
-      "Ein Laufzeitfehler in der Transition Map",
+      "Nichts — der neue Status funktioniert automatisch und alle switch-Statements updaten sich selbst",
+      "Ein Laufzeitfehler in der Transition Map — sie muss manuell aktualisiert werden",
       "Compile-Fehler an JEDER Stelle die einen exhaustive switch ueber OrderStatus hat",
-      "Nur die Transition Map muss aktualisiert werden",
+      "Nur die Transition Map muss aktualisiert werden — der Rest passt sich automatisch an",
     ],
     correct: 2,
     explanation:
@@ -229,7 +229,7 @@ export const questions: QuizQuestion[] = [
       "3-5 (Branded Types, Generics, Discriminated Unions)",
       "5-8 (plus Conditional Types, Mapped Types, Template Literals)",
       "10+ (plus Result Pattern, Exhaustive Checks, Readonly, Indexed Access, Extract, Phantom Types)",
-      "Alle 40 Lektionen",
+      "Alle 40 Lektionen — jede Lektion wird direkt im Capstone-Projekt angewendet",
     ],
     correct: 2,
     explanation:
@@ -246,9 +246,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der wichtigste Unterschied zwischen einem TypeScript-Nutzer und einem TypeScript-Meister?",
     options: [
-      "Der Meister kennt mehr Syntax",
-      "Der Meister schreibt komplexere Typen",
-      "Der Meister verwendet immer die neueste Version",
+      "Der Meister kennt mehr Syntax — er weiss alle TypeScript-Features auswendig",
+      "Der Meister schreibt komplexere Typen — Type-Level Programming ist sein Spezialgebiet",
+      "Der Meister verwendet immer die neueste Version — er updated sofort bei jedem Release",
       "Der Meister weiss wann einfache Typen reichen und wann komplexe noetig sind — die Balance",
     ],
     correct: 3,
@@ -265,9 +265,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches TypeScript-Konzept aus diesem Kurs ist am DIREKTESTEN uebertragbar auf Angular und React?",
     options: [
-      "Type-Level Programming (L37)",
-      "Compiler API (L38)",
-      "Template Literal Types (L18)",
+      "Type-Level Programming (L37) — es ist das fortgeschrittenste Konzept und am wertvollsten",
+      "Compiler API (L38) — sie gibt Zugang zur vollen Macht des TypeScript-Compilers",
+      "Template Literal Types (L18) — sie ermoeglichen String-Parsing auf Type-Level",
       "Discriminated Unions fuer State Management (L12) — NgRx Actions, Redux Actions, useReducer",
     ],
     correct: 3,
@@ -284,9 +284,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist die wichtigste Erkenntnis aus 40 Lektionen TypeScript?",
     options: [
-      "TypeScript ist kompliziert und braucht viel Uebung",
-      "Man sollte immer die neuesten Features verwenden",
-      "Typen sind nur fuer grosse Projekte sinnvoll",
+      "TypeScript ist kompliziert und braucht viel Uebung — man muss alle Features meistern",
+      "Man sollte immer die neuesten Features verwenden — alte Syntax ist schlechter Code",
+      "Typen sind nur fuer grosse Projekte sinnvoll — kleine Projekte brauchen sie nicht",
       "Der Compiler ist dein Partner — nutze ihn um Bugs zur Compilezeit zu finden statt in Produktion",
     ],
     correct: 3,

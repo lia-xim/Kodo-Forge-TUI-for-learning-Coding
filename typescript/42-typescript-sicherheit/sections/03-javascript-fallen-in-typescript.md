@@ -39,55 +39,91 @@ und TypeScript ist vollkommen blind dafuer.
 
 ```typescript annotated
 // HINTERGRUND: JavaScript's Prototyp-Kette
-// Jedes Objekt in JavaScript erbt von Object.prototype
-// Das bedeutet: { }.toString === Object.prototype.toString
+// Jedes Objekt erbt von Object.prototype
+// { }.toString === Object.prototype.toString
 
 // DIE FALLE: JSON.parse mit boeswilligen Daten
-const userInput: string = '{"__proto__": {"isAdmin": true}}';
-// ^ Kommt von einem Formular, URL-Parameter, oder API-Response
+const userInput = '{"__proto__": {"isAdmin": true}}';
+const parsed = JSON.parse(userInput);
 
-const parsed: unknown = JSON.parse(userInput);
-// ^ TypeScript: parsed ist unknown — korrekt!
-// Aber was passiert intern?
-
-// GEFAEHRLICHE Verwendung:
+// WICHTIG: Object.assign({}, parsed) ist in modernen Engines SICHER!
+// __proto__ wird als EIGENE Property kopiert, nicht als Prototyp.
 const config = Object.assign({}, parsed);
-// ^ Object.assign kopiert __proto__ als eigene Property?
-// Nein! ES fuehrt eine property-basierte Zuweisung durch
-// Bei bestimmten JavaScript-Engines: __proto__ setzt tatsaechlich
-// den Prototyp — das vergiftet Object.prototype!
+console.log(config.__proto__);  // { isAdmin: true } — eigene Property!
+console.log({}.isAdmin);        // undefined — KEINE Pollution!
 
-// Test:
-const normalerUser: Record<string, unknown> = {};
-console.log((normalerUser as any).isAdmin);
-// In manchen Szenarien: true (!) — obwohl nie gesetzt!
-// TypeScript sieht keinen Fehler — weil es ein Laufzeit-Effekt ist
+// Die ECHTEN Gefahren sind:
 
-// SICHER: Object.create(null) als Basis
-function sicheresObjektMergen(basisConfig: object, userConfig: unknown): object {
-  if (typeof userConfig !== 'object' || userConfig === null) {
-    return { ...basisConfig };
-  }
-  // Object.create(null) erstellt ein Objekt OHNE Prototyp
-  // __proto__-Angriffe haben kein Ziel
-  const sichereBasis = Object.create(null) as Record<string, unknown>;
-  Object.assign(sichereBasis, basisConfig);
-
-  // Nur eigene, sichere Properties kopieren
-  for (const key of Object.keys(userConfig as object)) {
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-      continue;  // Diese Keys explizit ueberspringen
+// Gefahr 1: Deep-Merge-Funktionen (lodash < 4.17.21, CVE-2019-10744)
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): void {
+  for (const key in source) {
+    if (typeof source[key] === "object" && source[key] !== null) {
+      if (!target[key]) target[key] = {};
+      deepMerge(target[key] as Record<string, unknown>,
+                source[key] as Record<string, unknown>);
+    } else {
+      target[key] = source[key];
     }
-    sichereBasis[key] = (userConfig as Record<string, unknown>)[key];
   }
-  return sichereBasis;
 }
+
+// Der vergiftete Payload:
+const payload = JSON.parse('{"__proto__": {"isAdmin": true}}');
+const defaults = {};
+deepMerge(defaults, payload);
+// defaults.__proto__.isAdmin = true → Object.prototype.isAdmin = true!
+console.log({}.isAdmin);  // true — JEDES Objekt ist jetzt "admin"!
+```
+
+> **Wichtig:** `Object.assign({}, obj)` und Spread `{...obj}` sind in
+> modernen JavaScript-Engines sicher — sie kopieren `__proto__` als
+> eigene Property, aendern aber NICHT den Prototyp.
+>
+> Die ECHTEN Gefahren sind:
+> 1. **Deep-Merge-Funktionen** die rekursiv `__proto__` durchgehen
+>    (betroffen: lodash < 4.17.21, viele selbstgeschriebene Utilities)
+> 2. **Manuelle Kopier-Schleifen** ohne `hasOwnProperty`-Check
+> 3. **`Object.prototype` direkt manipulieren** (z.B. in Tests)
+>
+> **Schutz:** `Object.hasOwn(obj, key)` statt `key in obj` pruefen,
+> und `JSON.parse`-Ergebnisse NIEMALS ohne Validierung verwenden.
+
+```typescript annotated
+// SICHER: Property-Kopie mit __proto__-Filter
+function safeMerge(userConfig: unknown): Record<string, unknown> {
+  if (typeof userConfig !== "object" || userConfig === null) {
+    return {};
+  }
+  const result: Record<string, unknown> = {};
+  for (const key of Object.keys(userConfig)) {
+    // Kritische Keys explizit ausschliessen
+    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+      continue;
+    }
+    result[key] = (userConfig as Record<string, unknown>)[key];
+  }
+  return result;
+}
+
+// Noch besser: Runtime-Validierung mit Zod (siehe Sektion 02)
+import { z } from "zod";
+const ConfigSchema = z.object({
+  theme: z.enum(["light", "dark"]).default("light"),
+  fontSize: z.number().min(8).max(72).default(16),
+});
+
+const safeConfig = ConfigSchema.parse(JSON.parse(userInput));
+// Wirft wenn __proto__ oder andere unerwartete Keys vorhanden sind
 ```
 
 **Echte CVEs durch Prototype Pollution:**
-- `lodash` hatte mehrfach Prototype-Pollution-CVEs (CVE-2019-10744)
-- `jquery` wurde ebenfalls betroffen (CVE-2019-11358)
-- TypeScript-typisierer Versionen dieser Libraries waren nicht gefeit
+- `lodash` CVE-2019-10744: `_.merge()` vergiftete `Object.prototype`
+- `jquery` CVE-2019-11358: `$.extend()` war anfaellig
+- **TypeScript-typisierte Versionen waren NICHT gefeit** — das Typsystem
+  schuetzt NICHT vor Laufzeit-Pollution
 
 ---
 

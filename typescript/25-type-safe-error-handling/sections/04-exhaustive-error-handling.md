@@ -1,4 +1,4 @@
-# Sektion 4: Exhaustive Error Handling
+﻿# Sektion 4: Exhaustive Error Handling
 
 > Geschätzte Lesezeit: **9 Minuten**
 >
@@ -154,7 +154,10 @@ function displayError(result: Result<string, ParseError>): void {
 ---
 
 ## Exhaustive Checks mit Objekt-Maps
+<!-- section:summary -->
+Eine Alternative zu `switch` — eleganter für einfache Transformationen:
 
+<!-- depth:standard -->
 Eine Alternative zu `switch` — eleganter für einfache Transformationen:
 
 ```typescript annotated
@@ -188,6 +191,7 @@ function handleApiError(error: ApiError): string {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -224,8 +228,12 @@ function handleApiError(error: ApiError): string {
 
 ---
 
+<!-- /depth -->
 ## Exhaustive Union-Typen mit `satisfies` (TS 4.9)
+<!-- section:summary -->
+TypeScript 4.9 fügte `satisfies` hinzu — ein mächtiges Werkzeug:
 
+<!-- depth:standard -->
 TypeScript 4.9 fügte `satisfies` hinzu — ein mächtiges Werkzeug:
 
 ```typescript annotated
@@ -269,6 +277,7 @@ const errorConfig2: Record<ApiError, { message: string; code: number }> = {
 
 ---
 
+<!-- /depth -->
 ## Exhaustive Prüfung in Produktions-Code
 
 ```typescript

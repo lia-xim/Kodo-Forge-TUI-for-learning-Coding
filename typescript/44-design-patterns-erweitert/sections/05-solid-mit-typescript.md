@@ -161,8 +161,19 @@ class BuyTwoGetOneFreeDiscount implements DiscountStrategy {
 
 ## L — Liskov Substitution Principle
 
-Eine Unterklasse soll ueberall verwendbar sein, wo die Basisklasse verwendet wird.
-TypeScript prueft das **automatisch** wenn du `implements` verwendest.
+Eine Unterklasse muss ueberall verwendbar sein, wo die Basisklasse verwendet wird —
+**ohne dass sich das Verhalten unerwartet aendert**.
+
+> **Wichtig:** TypeScript prueft mit `implements` nur die **strukturelle
+> Kompatibilitaet** (alle Methoden mit korrekten Signaturen vorhanden).
+> Es prueft NICHT die **behaviorale Korrektheit**:
+> - Staerkere Vorbedingungen in der Unterklasse (z.B. "width muss > 0 sein")
+> - Schwaechere Nachbedingungen (z.B. "area() kann negativ zurueckgeben")
+> - Verletzung von Invarianten (z.B. "ein Rectangle das nach area()-Aufruf
+>   seine Dimensionen aendert")
+>
+> Diese Liskov-Verletzungen sind **Laufzeit-Probleme** die TypeScript NICHT
+> erkennen kann. Der Compiler gibt dir ein falsches Sicherheitsgefuehl.
 
 ```typescript annotated
 interface Shape {
@@ -170,7 +181,7 @@ interface Shape {
   perimeter(): number;
 }
 
-// Liskov: Jedes Shape muss area() und perimeter() korrekt implementieren
+// KORREKTE Implementierungen — erfuellen Liskov:
 class Circle implements Shape {
   constructor(private readonly radius: number) {}
   area(): number { return Math.PI * this.radius ** 2; }
@@ -183,22 +194,36 @@ class Rectangle implements Shape {
   perimeter(): number { return 2 * (this.width + this.height); }
 }
 
-// Diese Funktion arbeitet mit JEDEM Shape — sie weiss nichts von Circle oder Rectangle
+// Diese Funktion arbeitet mit JEDEM Shape:
 function printShapeInfo(shape: Shape): void {
   console.log(`Flaeche: ${shape.area().toFixed(2)}`);
   console.log(`Umfang: ${shape.perimeter().toFixed(2)}`);
 }
-
-// TypeScript ZWINGT Liskov: Fehlendes area() oder falsche Signatur -> Compile-Fehler
-// class BrokenShape implements Shape {
-//   area(): string { return 'irgendwas'; }  // FEHLER: string ist nicht number
-// }
-
-// TS 5.5 Vorteil: Inferred Type Predicates bei Filteroperationen:
-const shapes: (Shape | null)[] = [new Circle(5), null, new Rectangle(3, 4)];
-const validShapes = shapes.filter(s => s !== null);
-// ^ TypeScript 5.5: validShapes ist Shape[] (nicht (Shape | null)[])
 ```
+
+> **Das klassische Liskov-Beispiel was TypeScript NICHT erkennt:**
+> ```typescript
+> interface Rectangle {
+>   setWidth(w: number): void;
+>   setHeight(h: number): void;
+>   area(): number;
+> }
+>
+> class Square implements Rectangle {
+>   private side: number;
+>   constructor(side: number) { this.side = side; }
+>   setWidth(w: number) { this.side = w; }
+>   setHeight(h: number) { this.side = h; } // Aendert AUCH width!
+>   area(): number { return this.side ** 2; }
+> }
+> // TypeScript: KEIN FEHLER — alle Signaturen stimmen.
+> // Liskov-Verletzung: setWidth() aendert implizit auch height!
+> // Ein Client der r.setWidth(5); r.setHeight(3); erwartet
+> // area() === 15, aber Square liefert 9.
+> ```
+>
+> **Faustregel:** `implements` garantiert nur dass die Methoden existieren.
+> Dass sie sich *korrekt* verhalten, liegt in deiner Verantwortung.
 
 ---
 

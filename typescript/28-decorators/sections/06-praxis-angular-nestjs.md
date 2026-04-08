@@ -1,4 +1,4 @@
-# Sektion 6: Praxis — Angular und NestJS Bezuege
+﻿# Sektion 6: Praxis — Angular und NestJS Bezuege
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -41,7 +41,10 @@
 ---
 
 ## Angular: Eigene Decorators schreiben
+<!-- section:summary -->
+### Custom Property Decorator: @AutoUnsubscribe
 
+<!-- depth:standard -->
 ### Custom Property Decorator: @AutoUnsubscribe
 
 ```typescript annotated
@@ -140,6 +143,7 @@ class SearchComponent {
 
 ---
 
+<!-- /depth -->
 ## NestJS: Eigene Decorators schreiben
 
 ### Custom Decorator: @Roles

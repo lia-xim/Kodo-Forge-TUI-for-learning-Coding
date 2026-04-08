@@ -1,4 +1,4 @@
-# Sektion 3: Smart Constructors & Opaque Types
+﻿# Sektion 3: Smart Constructors & Opaque Types
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -17,13 +17,17 @@
 ---
 
 ## Smart Constructors: Validierung + Sicherheit
+<!-- section:summary -->
+Ein Smart Constructor ist eine Funktion, die:
 
+<!-- depth:standard -->
 Ein Smart Constructor ist eine Funktion, die:
 1. Einen Roh-Wert entgegennimmt
 2. Ihn **validiert**
 3. Bei Erfolg: einen typisierten (gebrandeten) Wert zurückgibt
 4. Bei Misserfolg: einen Fehler wirft *oder* einen `null`/`Error`-Wert
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Smart Constructors aus der Haskell-Welt**
 >
 > Smart Constructors kommen aus der funktionalen Programmierung, besonders
@@ -44,6 +48,7 @@ Ein Smart Constructor ist eine Funktion, die:
 
 ---
 
+<!-- /depth -->
 ## Drei Varianten von Smart Constructors
 
 ```typescript annotated
@@ -94,7 +99,10 @@ function parseEmail(value: string): Result<Email> {
 ---
 
 ## Der generische Brand Helfer-Typ
+<!-- section:summary -->
+Anstatt für jeden Brand die `& { readonly __brand: ... }` Syntax zu wiederholen,
 
+<!-- depth:standard -->
 Anstatt für jeden Brand die `& { readonly __brand: ... }` Syntax zu wiederholen,
 gibt es in TypeScript-Projekten oft einen generischen Helfer:
 
@@ -149,6 +157,7 @@ speed(t, d);   // ❌ COMPILE-ERROR! Seconds ≠ Meters, Meters ≠ Seconds
 // ^ Physikalisch falsch — und TypeScript fängt es ab!
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Öffne `examples/02-smart-constructors.ts` und probiere:
 > 1. Erstelle `Kelvin = Brand<number, 'Kelvin'>` und `Celsius = Brand<number, 'Celsius'>`.
 > 2. Schreibe `toFahrenheit(celsius: Celsius): number`.
@@ -156,8 +165,12 @@ speed(t, d);   // ❌ COMPILE-ERROR! Seconds ≠ Meters, Meters ≠ Seconds
 
 ---
 
+<!-- /depth -->
 ## Opaque Types mit `unique symbol`
+<!-- section:summary -->
+Die Standard-Brand-Technik hat eine Schwäche: Jemand könnte `as UserId`
 
+<!-- depth:standard -->
 Die Standard-Brand-Technik hat eine Schwäche: Jemand könnte `as UserId`
 schreiben und den Schutz umgehen. Für maximale Sicherheit gibt es
 **Opaque Types** mit `unique symbol`:
@@ -195,8 +208,12 @@ export type OrderId = string & { readonly [orderIdBrand]: true };
 
 ---
 
+<!-- /depth -->
 ## Das `Branded` Pattern aus Open-Source
+<!-- section:summary -->
+Bibliotheken wie `@effect/schema` oder `zod` verwenden ähnliche Patterns.
 
+<!-- depth:standard -->
 Bibliotheken wie `@effect/schema` oder `zod` verwenden ähnliche Patterns.
 Hier ist eine elegante Open-Source-Variante:
 
@@ -238,6 +255,7 @@ const id = brand<UserId>('user-123');
 
 ---
 
+<!-- /depth -->
 ## Brands für Validierte Strings: Das Email-Beispiel vollständig
 
 ```typescript annotated

@@ -19,9 +19,9 @@ export const questions: QuizQuestion[] = [
       "Was ist der Rueckgabetyp von `map(user => user.email)` wenn `user: User` ist?",
     options: [
       "OperatorFunction<User, string> — eine Funktion von Observable<User> zu Observable<string>",
-      "Observable<string> — map gibt direkt ein Observable zurueck",
-      "string — der Typ des emittierten Wertes",
-      "OperatorFunction<string, User> — die Reihenfolge ist umgekehrt",
+      "Observable<string> — map gibt direkt ein Observable zurueck, nicht eine Wrapper-Funktion",
+      "string — der Typ des emittierten Wertes, da map den Projektions-Rueckgabetyp direkt liefert",
+      "OperatorFunction<string, User> — die Reihenfolge ist umgekehrt, Output wird zu Input",
     ],
     correct: 0,
     explanation:
@@ -44,10 +44,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Warum ist `new BehaviorSubject<User | null>(null)` besser als `new BehaviorSubject<User>({} as User)`?",
     options: [
-      "BehaviorSubject<User> erlaubt keinen Initialwert, nur BehaviorSubject<User | null>",
+      "BehaviorSubject<User> erlaubt keinen Initialwert, nur BehaviorSubject<User | null> akzeptiert Union-Typen",
       "null ist semantisch korrekt ('kein User'), {} as User ist ein Cast der fehlende Felder verbirgt",
-      "Der Union-Typ User | null hat eine bessere Performance",
-      "TypeScript erlaubt {} as User nicht bei striktem Modus",
+      "Der Union-Typ User | null hat eine bessere Performance zur Laufzeit als ein gecastetes leeres Objekt",
+      "TypeScript erlaubt {} as User nicht bei striktem Modus — der Cast wird als Compile-Fehler markiert",
     ],
     correct: 1,
     explanation:
@@ -105,9 +105,9 @@ export const questions: QuizQuestion[] = [
       "const b$ = of<number>(42);\n" +
       "const combined$ = combineLatest([a$, b$]);",
     options: [
-      "Observable<string | number> — Union aller Typen",
-      "Observable<[string | number, string | number]> — homogenes Tuple",
-      "Observable<Array<string | number>> — getyptes Array",
+      "Observable<string | number> — Union aller Typen, da combineLatest sie zu einem gemeinsamen Typ zusammenfasst",
+      "Observable<[string | number, string | number]> — homogenes Tuple, beide Positionen haben denselben Union-Typ",
+      "Observable<Array<string | number>> — getyptes Array, die Elemente sind entweder string oder number",
       "Observable<[string, number]> — praezises Tuple mit Positionstypen",
     ],
     correct: 3,
@@ -137,9 +137,9 @@ export const questions: QuizQuestion[] = [
       "}",
     options: [
       "Signal<User | undefined> — undefined bis zum ersten emittierten Wert",
-      "Signal<User> — toSignal kennt den Typ des Observables",
-      "Signal<User | null> — Angular initialisiert mit null",
-      "WritableSignal<User | undefined> — Signals sind immer writable",
+      "Signal<User> — toSignal kennt den Typ des Observables und leitet ihn korrekt ab",
+      "Signal<User | null> — Angular initialisiert mit null statt mit undefined als Default-Wert",
+      "WritableSignal<User | undefined> — Signals sind immer writable und koennen direkt modifiziert werden",
     ],
     correct: 0,
     explanation:
@@ -162,10 +162,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum kann `EMPTY` in `catchError` als Observable<User> zurueckgegeben werden?",
     options: [
-      "Weil EMPTY intern ein Observable<any> ist",
+      "Weil EMPTY intern ein Observable<any> ist und deshalb jedem Typ-Parameter zugewiesen werden kann",
       "Weil EMPTY den Typ Observable<never> hat und never Subtyp von jedem T ist",
-      "Weil catchError den Typ ignoriert wenn EMPTY zurueckgegeben wird",
-      "Weil User und never strukturell kompatibel sind",
+      "Weil catchError den Typ ignoriert wenn EMPTY zurueckgegeben wird — es ist ein Sonderfall",
+      "Weil User und never strukturell kompatibel sind — beide haben dieselbe Property-Struktur",
     ],
     correct: 1,
     explanation:
@@ -188,10 +188,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Hauptvorteil der Object-Syntax von forkJoin gegenuebaer der Array-Syntax?",
     options: [
-      "Die Object-Syntax ist schneller weil TypeScript weniger inferieren muss",
-      "Die Object-Syntax erlaubt mehr als 6 Observables (Array-Syntax ist limitiert)",
+      "Die Object-Syntax ist schneller weil TypeScript weniger Typen inferieren muss als bei der Array-Syntax",
+      "Die Object-Syntax erlaubt mehr als 6 Observables (Array-Syntax ist limitiert auf 6 Elemente)",
       "Benannte Properties statt Positions-Indices — TypeScript inferiert { user: User, posts: Post[] }",
-      "Die Object-Syntax erlaubt verschiedene Fehlerbehandlung pro Observable",
+      "Die Object-Syntax erlaubt verschiedene Fehlerbehandlung pro Observable — jeder Key kann einen eigenen catchError haben",
     ],
     correct: 2,
     explanation:
@@ -213,9 +213,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `error: unknown` in catchError sicherer als `error: any`?",
     options: [
-      "unknown ist schneller zu pruefen als any zur Laufzeit",
-      "unknown verhindert Memory Leaks in Subscriptions",
-      "unknown bedeutet dass der Fehler immer eine Error-Instanz ist",
+      "unknown ist schneller zu pruefen als any zur Laufzeit — der Type-Check wird vom Compiler optimiert",
+      "unknown verhindert Memory Leaks in Subscriptions — any kann Referenzen halten die nicht aufgeraeumt werden",
+      "unknown bedeutet dass der Fehler immer eine Error-Instanz ist — any kann jeden beliebigen Typ haben",
       "unknown erzwingt Typ-Pruefung vor Property-Zugriff, any deaktiviert alle Pruefungen",
     ],
     correct: 3,

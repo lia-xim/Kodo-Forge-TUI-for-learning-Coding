@@ -1,4 +1,4 @@
-# Sektion 1: Das Exception-Problem
+﻿# Sektion 1: Das Exception-Problem
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -75,7 +75,10 @@ function loadUserProfile(json: string): void {
 ---
 
 ## Erwartete vs. unerwartete Fehler
+<!-- section:summary -->
+Eine wichtige Unterscheidung die viele Entwickler nicht explizit machen:
 
+<!-- depth:standard -->
 Eine wichtige Unterscheidung die viele Entwickler nicht explizit machen:
 
 ```typescript
@@ -111,8 +114,12 @@ function parseAge(input: string): number {
 
 ---
 
+<!-- /depth -->
 ## Das `throw`-Problem in TypeScript vs. Java
+<!-- section:summary -->
+Java hat **Checked Exceptions** — eine Lösung des gleichen Problems:
 
+<!-- depth:standard -->
 Java hat **Checked Exceptions** — eine Lösung des gleichen Problems:
 
 ```java
@@ -159,6 +166,7 @@ try {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -201,8 +209,12 @@ try {
 
 ---
 
+<!-- /depth -->
 ## Das `unknown` Problem bei try/catch
+<!-- section:summary -->
+TypeScript 4.0 hat `useUnknownInCatchVariables` eingeführt:
 
+<!-- depth:standard -->
 TypeScript 4.0 hat `useUnknownInCatchVariables` eingeführt:
 
 ```typescript annotated
@@ -250,6 +262,7 @@ ist immer noch unsichtbar im Rückgabetyp.
 
 ---
 
+<!-- /depth -->
 ## Warum nicht einfach immer `null` zurückgeben?
 
 ```typescript annotated

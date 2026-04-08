@@ -18,6 +18,9 @@
 
 ## Die vier Access Modifiers im Ueberblick
 
+<!-- section:summary -->
+TypeScript bietet `public` (default), `private`, `protected` und `readonly` — Compilezeit-Modifier zur API-Definition, die zur Laufzeit via Type Erasure verschwinden.
+<!-- depth:standard -->
 TypeScript bietet vier Schluesselwoerter, um den Zugriff auf
 Klassen-Mitglieder zu steuern. Wenn du aus Java oder C# kommst,
 wirst du einiges wiedererkennen — aber es gibt einen entscheidenden
@@ -70,10 +73,21 @@ console.log(account.iban);     // OK: readonly (lesen geht)
 | `protected` | Ja | Ja | Nein |
 | `readonly` | Ja (nur Initialisierung) | Ja (lesen) | Ja (lesen) |
 
+<!-- depth:vollstaendig -->
+> **Analogie:** Access Modifiers sind wie Zonen in einem Firmengebaeude:
+> `public` = Empfangshalle (jeder kommt rein), `private` = CEO-Buero
+> (nur mit Schluessel), `protected` = Labor (Mitarbeiter + Praktikanten),
+> `readonly` = Info-Tafel (anschauen ja, veraendern nein).
+
+<!-- /depth -->
+
 ---
 
 ## Der grosse Irrtum: private ist NICHT wirklich privat
 
+<!-- section:summary -->
+TypeScript's `private` existiert nur zur Compilezeit — zur Laufzeit kann jeder via `(obj as any).feld` darauf zugreifen; JavaScript's `#private` (ES2022) bietet echte Laufzeit-Kapselung.
+<!-- depth:standard -->
 Hier kommt das wichtigste Konzept dieser Sektion — und es haengt
 direkt mit **Type Erasure** aus Lektion 02 zusammen:
 
@@ -92,6 +106,7 @@ const s = new Secret();
 //   Mit 'as any' umgehst du das Typsystem komplett.
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Java's Einfluss und JavaScript's Realitaet**
 >
 > TypeScript's Access Modifiers sind von **Java und C#** inspiriert —
@@ -116,10 +131,15 @@ const s = new Secret();
 > JavaScript `#private` → bleibt im JS-Code | `#private` ist echte Kapselung |
 > `private` ist nur eine Compiler-Anweisung
 
+<!-- /depth -->
+
 ---
 
 ## JavaScript's echtes Private: #private (ES2022)
 
+<!-- section:summary -->
+Seit ES2022 bietet JavaScript `#private` Felder — echte Laufzeit-Kapselung, die selbst mit `(obj as any)` nicht umgangen werden kann.
+<!-- depth:standard -->
 Seit ES2022 hat JavaScript eine **echte** private-Syntax: das Hash-Zeichen.
 Im Gegensatz zu TypeScript's `private` bleibt `#` zur Laufzeit erhalten:
 
@@ -158,6 +178,7 @@ console.log(vault.reveal());  // "top-secret"
 | Mit `Object.keys()` sichtbar? | **Ja** | **Nein** |
 | Performance? | Normal | Minimal langsamer |
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:** Wenn TypeScript-Typen zur Laufzeit verschwinden (Type Erasure,
 > Lektion 02), was bedeutet das fuer `private`? Ist es dann ueberhaupt
 > sinnvoll, `private` zu verwenden, wenn jeder es mit `as any` umgehen kann?
@@ -168,10 +189,19 @@ console.log(vault.reveal());  // "top-secret"
 > weiss, dass er die Regeln bricht — das ist dann ein bewusstes Risiko.
 > In den meisten Projekten reicht TypeScript's `private` voellig aus.
 
+> **Analogie:** TypeScript `private` ist ein "Bitte nicht betreten"-Schild —
+> hoefflich, aber kein Schloss. JavaScript `#private` ist eine Tuer mit
+> Zahlenkombination — niemand kommt rein ohne Code.
+
+<!-- /depth -->
+
 ---
 
 ## protected: Fuer die Familie
 
+<!-- section:summary -->
+`protected` erlaubt Zugriff innerhalb der Klasse und in Subklassen, aber nicht von aussen — ideal fuer interne Werte die in Vererbungshierarchien sichtbar sein sollen.
+<!-- depth:standard -->
 `protected` ist der Modifier, der am meisten Verwirrung stiftet.
 Er erlaubt Zugriff **innerhalb der Klasse und in allen Subklassen** —
 aber nicht von aussen.
@@ -205,16 +235,25 @@ console.log(car.getSpeed()); // 100
 // car.speed;  // FEHLER: protected — von aussen nicht zugaenglich
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Markiere ein Feld als `private` und greife trotzdem
 > via `(obj as any).feld` darauf zu. Dann markiere das gleiche Feld
 > als `#feld` (mit Hash) und versuche dasselbe. Was passiert in beiden
 > Faellen? Das demonstriert den Unterschied zwischen Compilezeit-Schutz
 > und Laufzeit-Schutz.
 
+> **Analogie:** `protected` ist wie ein Familiengeheimnis — alle
+> Familienmitglieder (Subklassen) kennen es, aber Aussenstehende nicht.
+
+<!-- /depth -->
+
 ---
 
 ## readonly: Einmal setzen, nie aendern
 
+<!-- section:summary -->
+`readonly` verhindert Aenderungen nach der Initialisierung — kombinierbar mit anderen Modifiern fuer unveraenderliche Werte wie IDs und Konfigurationen.
+<!-- depth:standard -->
 `readonly` verhindert, dass ein Feld nach der Initialisierung
 geaendert wird. Das ist besonders nuetzlich fuer IDs, Konfigurationen
 und andere Werte, die sich nie aendern sollen.
@@ -255,10 +294,15 @@ class User {
 }
 ```
 
+<!-- /depth -->
+
 ---
 
 ## Getter und Setter: Kontrollierter Zugriff
 
+<!-- section:summary -->
+Getter und Setter mit `get`/`set`-Syntax sind Methoden die wie Properties aussehen — ideal fuer Validierung bei Aenderungen und berechnete Werte.
+<!-- depth:standard -->
 TypeScript unterstuetzt **Getter** und **Setter** mit der
 `get`/`set`-Syntax. Das sind Methoden, die wie Properties aussehen —
 ideal fuer Validierung oder berechnete Werte:
@@ -298,25 +342,26 @@ temp.celsius = 100;           // OK (ruft den Setter auf)
 // temp.celsius = -300;       // Error: Unter absolutem Nullpunkt!
 ```
 
-> **In Angular-Services** nutzt du `private` fuer interne Logik,
-> die nicht nach aussen sichtbar sein soll. Ein Service hat oft
-> eine **oeffentliche API** (public Methoden) und **private Interna**
-> (Caching, State, Hilfsfunktionen). Das ist genau das Prinzip
-> der Kapselung — und Access Modifiers sind dein Werkzeug dafuer.
+<!-- depth:vollstaendig -->
+> **Analogie:** Getter/Setter sind wie ein Concierge: Du fragst einfach
+> nach dem Zimmerservice (Getter), und er liefert — aber er prueft auch
+> ob du ueberhaupt im Hotel bist (Setter-Validierung).
+
+> **Framework-Referenz (Angular):** In Angular-Services nutzt du
+> `private` fuer interne Logik und Getter fuer die oeffentliche API:
 >
 > ```typescript
 > @Injectable({ providedIn: 'root' })
 > class AuthService {
->   private token: string | null = null;          // Intern
->   private refreshTimer?: NodeJS.Timeout;        // Intern
+>   private token: string | null = null;
+>   readonly isLoggedIn$ = new BehaviorSubject(false);
 >
->   readonly isLoggedIn$ = new BehaviorSubject(false); // Oeffentlich, readonly
->
->   login(credentials: Credentials): Observable<void> { ... }  // Oeffentlich
->   logout(): void { ... }                                      // Oeffentlich
->   private refreshToken(): void { ... }                        // Intern
+>   get currentUser(): User | null { ... }  // Berechneter Wert
+>   set token(value: string) { ... }        // Mit Validierung
 > }
 > ```
+
+<!-- /depth -->
 
 ---
 

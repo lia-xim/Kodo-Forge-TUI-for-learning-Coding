@@ -1,4 +1,4 @@
-# Sektion 3: Typ-Level-Programmierung in der Praxis
+﻿# Sektion 3: Typ-Level-Programmierung in der Praxis
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Recap: Das Triumvirat trifft Phase 3
+<!-- section:summary -->
+In Phase 2 hast du das "Triumvirat" gelernt: Mapped Types (L16),
 
+<!-- depth:standard -->
 In Phase 2 hast du das "Triumvirat" gelernt: Mapped Types (L16),
 Conditional Types (L17), Template Literal Types (L18). In Phase 3
 hast du Werkzeuge kennengelernt, die diese Grundbausteine erweitern:
@@ -34,8 +37,12 @@ Schauen wir uns das in der Praxis an.
 
 ---
 
+<!-- /depth -->
 ## Challenge 1: Type-safe API-Client
+<!-- section:summary -->
+Du willst einen API-Client bauen, der die Endpunkte aus einem
 
+<!-- depth:standard -->
 Du willst einen API-Client bauen, der die Endpunkte aus einem
 Typ ableitet — mit Branded Types fuer die IDs:
 
@@ -104,8 +111,12 @@ type ApiClient = {
 
 ---
 
+<!-- /depth -->
 ## Challenge 2: DeepBrand — Rekursive Branded Types
+<!-- section:summary -->
+Wie wuerdest du ALLE string-Felder in einem verschachtelten Objekt
 
+<!-- depth:standard -->
 Wie wuerdest du ALLE string-Felder in einem verschachtelten Objekt
 automatisch zu NonEmptyString branden?
 
@@ -161,8 +172,12 @@ type BrandedUser = DeepBrand<UserInput>;
 
 ---
 
+<!-- /depth -->
 ## Challenge 3: Varianz bei rekursiven Typen
+<!-- section:summary -->
+Wie interagiert Varianz (L22) mit rekursiven Typen (L23)?
 
+<!-- depth:standard -->
 Wie interagiert Varianz (L22) mit rekursiven Typen (L23)?
 
 ```typescript annotated
@@ -210,8 +225,12 @@ const dogVisitor: TreeVisitor<Dog> = animalVisitor;
 
 ---
 
+<!-- /depth -->
 ## Challenge 4: Typ-Level String-Parsing
+<!-- section:summary -->
+Template Literal Types + Recursive Types = ein Parser auf Typ-Level:
 
+<!-- depth:standard -->
 Template Literal Types + Recursive Types = ein Parser auf Typ-Level:
 
 ```typescript annotated
@@ -249,8 +268,12 @@ type Test3 = ParseColor<'red'>;
 
 ---
 
+<!-- /depth -->
 ## Die Grenzen der Typ-Level-Programmierung
+<!-- section:summary -->
+Nicht alles SOLLTE auf Typ-Level geloest werden:
 
+<!-- depth:standard -->
 Nicht alles SOLLTE auf Typ-Level geloest werden:
 
 ```typescript annotated
@@ -292,6 +315,7 @@ function parseEmail(s: string): Email | null {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Template Literal Types + Recursive Types ermoeglichen Typ-Level-Parsing

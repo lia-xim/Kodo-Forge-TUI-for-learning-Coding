@@ -18,6 +18,9 @@
 
 ## Vererbung mit extends
 
+<!-- section:summary -->
+Vererbung mit `extends` und `super()` erlaubt Subklassen, Felder und Methoden zu erben — wobei `super()` immer als erste Anweisung im Constructor stehen muss.
+<!-- depth:standard -->
 Vererbung ist das Konzept, dass eine Klasse die Eigenschaften und
 Methoden einer anderen Klasse uebernimmt. In TypeScript nutzt du
 dafuer das `extends`-Schluesselwort:
@@ -75,6 +78,7 @@ class Cat extends Animal {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: "Favor composition over inheritance" — Gang of Four 1994**
 >
 > Das Buch "Design Patterns" (Gamma, Helm, Johnson, Vlissides — die
@@ -90,6 +94,12 @@ class Cat extends Animal {
 > besteht (ein Dog IST ein Animal), ist Vererbung sinnvoll.
 > Wenn du nur Code teilen willst, ist Komposition besser
 > (mehr dazu in Sektion 06).
+
+> **Analogie:** Vererbung ist wie ein Familien-Erbe: Du bekommst das
+> Haus der Eltern (Methoden) und den Nachnamen (Felder) — aber du
+> musst auch ihre Regeln befolgen (`super()` zuerst).
+
+<!-- /depth -->
 
 ---
 

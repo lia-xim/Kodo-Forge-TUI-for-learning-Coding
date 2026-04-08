@@ -315,7 +315,8 @@ export const shortcutsForScreen: Record<string, { key: string; desc: string }[]>
     { key: "A-D", desc: "Antwort waehlen" },
     { key: "?", desc: "Ich weiss es nicht" },
     { key: "S", desc: "Pre-Test ueberspringen" },
-    { key: "Enter", desc: "Naechste Frage / Sektion oeffnen" },
+    { key: "Enter", desc: "Naechste Frage / Empfehlungen uebernehmen" },
+    { key: "A", desc: "Alle Sektionen auf Standard (Ergebnis-Screen)" },
     { key: "F1", desc: "Tastenbelegung" },
     { key: "Ctrl+C", desc: "Beenden" },
   ],
@@ -832,6 +833,16 @@ export function hasTakenPretest(lessonIndex: number, sectionIndex: number): bool
 
 export function markPretestTaken(lessonIndex: number, sectionIndex: number): void {
   pretestsTaken.add(`${lessonIndex}-${sectionIndex}`);
+}
+
+/** Prueft ob der Lektions-Pretest (alle Sektionen) bereits absolviert wurde. */
+export function hasTakenLessonPretest(lessonIndex: number): boolean {
+  return pretestsTaken.has(`lesson-${lessonIndex}`);
+}
+
+/** Markiert den Lektions-Pretest als absolviert. */
+export function markLessonPretestTaken(lessonIndex: number): void {
+  pretestsTaken.add(`lesson-${lessonIndex}`);
 }
 
 export function hasResumeTarget(): boolean {

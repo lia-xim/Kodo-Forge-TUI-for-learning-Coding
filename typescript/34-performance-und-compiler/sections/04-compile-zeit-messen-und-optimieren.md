@@ -31,10 +31,27 @@
 > frueher machen sollen. Die meisten Performance-Bugs die uns gemeldet
 > werden, haetten die Entwickler selbst finden koennen — wenn sie die
 > Werkzeuge gehabt haetten."
+>
+> Die Inspiration kam von Chrome DevTools Performance Tab. Das TypeScript-
+> Team hat gesehen, wie effektiv visuelle Traces fuer JavaScript-Performance
+> waren, und entschied: "Wenn es fuer JS funktioniert, warum nicht auch
+> fuer den Type-Checker?" Das Ergebnis ist ein Trace-Format das direkt
+> in Chrome DevTools und Perfetto geladen werden kann.
 
 Die erste Regel der Optimierung: **Messen, nicht raten.** Du denkst
 vielleicht, dass eine bestimmte Datei langsam ist — aber oft liegt das
 Problem woanders. TypeScript gibt dir die Werkzeuge um das herauszufinden.
+
+> 🏗️ **Analogie: Arzt-Diagnose und Compiler-Profiling**
+>
+> Stell dir vor du gehst zum Arzt mit Kopfschmerzen. Ein schlechter Arzt
+> verschreibt sofort Schmerzmittel (wie ein Entwickler der blind `skipLibCheck`
+> anschaltet). Ein guter Arzt misst erst: Blutdruck, Blutwerte, EKG.
+>
+> `--extendedDiagnostics` ist wie der Blutdruckmesser — ein schneller
+> Ueberblick. `--generateTrace` ist das MRT — detailliert, aber aufwendiger.
+> Erst die Diagnose, dann die Behandlung. Genauso solltest du erst messen
+> wo die Zeit draufgeht, bevor du optimierst.
 
 ---
 
@@ -74,6 +91,16 @@ Die wichtigsten Zahlen:
 - **Memory used**: Unter 500MB ist normal. Ueber 1GB: zu viele Typ-Instantiierungen
 - **Files**: Pruefe ob node_modules mitgeprueft werden (sollten sie nicht!)
 
+> 🧠 **Erklaere dir selbst:** Was bedeutet es wenn "Emit time" unerwartet
+> hoch ist (z.B. 30% der Gesamtzeit)? Woran kann das liegen?
+>
+> **Kernpunkte:** Emit time ist die Code-Generierung (TS → JS) | Hohes
+> Emit time deutet auf viele Dateien oder komplexe Transformationsregeln hin |
+> Haeufige Ursache: SourceMaps werden erzeugt (`"sourceMap": true`) |
+> Auch `declaration: true` erhoht Emit time weil .d.ts-Dateien geschrieben
+> werden | Fuer reines Type-Checking verwende `--noEmit` — dann faellt
+> Emit time komplett weg
+
 > 🧠 **Erklaere dir selbst:** Wenn "Parse time" 0.8s und "Check time" 12s betraegt, welchen Anteil hat das Parsen an der Gesamtzeit? Was sagt dir das ueber Optimierungsansaetze?
 > **Kernpunkte:** Parse ist ~5% der Gesamtzeit | Selbst wenn du Parsing um 50% schneller machst: 0.4s gespart | Checker um 10% schneller: 1.2s gespart | Fokussiere immer auf den groessten Anteil
 
@@ -105,6 +132,17 @@ In der Chrome-Trace-Ansicht siehst du:
 - **Breite Balken** = langsame Operationen (die musst du optimieren)
 - **Tiefe Verschachtelung** = rekursive Typ-Aufloesungen
 - **Wiederholte gleiche Operationen** = fehlende Caching-Moeglichkeiten
+
+> 💭 **Denkfrage:** Wenn du im Chrome-Trace siehst, dass dieselbe Datei
+> mehrfach als "checkSourceFile" auftaucht — was bedeutet das?
+>
+> **Antwort:** Normalerweise wird jede Datei nur einmal geprueft. Wenn
+> sie mehrfach auftaucht, ist das ein starkes Indiz fuer ein Problem:
+> Entweder wurde `incremental: true` nicht korrekt konfiguriert, oder
+> die Datei wird von mehreren unabhaengigen Compiler-Instanzen geprueft
+> (z.B. in einem Monorepo ohne Project References). In seltenen Faellen
+> kann es auch an fehlerhaften IDE-Caches liegen — ein Neustart des
+> TypeScript-Servers hilft dann.
 
 > 💭 **Denkfrage:** Warum nutzt TypeScript das Chrome-Trace-Format und nicht
 > ein eigenes Format?
@@ -152,6 +190,15 @@ schnelleren Weg:
 > Angular 16+ mit Signals und dem neuen Control Flow (`@if`, `@for`)
 > ist hier deutlich schneller als die Directive-Syntax.
 
+> ⚡ **Framework-Bezug (Next.js):** Next.js verwendet seit Version 13
+> den SWC-Transpiler statt Babel. SWC ist in Rust geschrieben und
+> transpiliert TypeScript 20x schneller als Babel. ABER: SWC fuehrt
+> KEIN Type-Checking durch. Deshalb nutzt Next.js parallel `tsc --noEmit`
+> im Build-Prozess. Im Development-Mode wird das Type-Checking oft
+> komplett deaktiviert oder nur im Background ausgefuehrt. Das erklart
+> auch warum du in Next.js manchmal Typfehler erst siehst wenn du
+> `tsc --noEmit` manuell ausfuehrst.
+
 ---
 
 ## Schritt 4: skipLibCheck und isolatedModules
@@ -195,6 +242,25 @@ ohne dass du einen einzigen Typ aendern musst.
 >
 > In Projekten mit vielen Dependencies (Angular hat allein ~20 @types-Pakete)
 > kann skipLibCheck 5-10 Sekunden sparen.
+
+> 🧪 **Zusatzexperiment: Memory-Usage analysieren**
+>
+> Neben der Zeit ist auch der Speicherverbrauch ein wichtiger Indikator:
+>
+> ```bash
+> # Memory-Profiler aktivieren:
+> node --max-old-space-size=4096 node_modules/typescript/lib/tsc.js \
+>   --extendedDiagnostics --noEmit
+>
+> # Oder mit Node.js Profiling:
+> node --inspect-brk node_modules/typescript/lib/tsc.js --noEmit
+> # Dann chrome://inspect oeffnen und Memory Profiler starten
+> ```
+>
+> Wenn der TypeScript-Compiler mehr als 1GB RAM verbraucht, ist das ein
+> sicheres Zeichen fuer zu viele Typ-Instantiierungen. Typische Causes:
+> Auto-generierte GraphQL-Typen, riesige OpenAPI-Client-Generierungen,
+> oder DeepReadonly/DeepPartial auf sehr verschachtelten Strukturen.
 
 ---
 
@@ -240,6 +306,16 @@ Bevor du einzelne Typen optimierst, pruefe diese Low-Hanging Fruits:
 
 Erst wenn diese Basics stimmen, lohnt es sich die teuersten Typen zu optimieren
 (Sektion 3).
+
+> 🧠 **Erklaere dir selbst:** Warum solltest du `include` und `exclude`
+> regelmaessig pruefen? Was kann schiefgehen?
+>
+> **Kernpunkte:** Ein falsches `include: ["**/*"]` kann Testdateien,
+> Build-Artefakte und node_modules mit aufnehmen | Das erhoht die
+> Dateianzahl dramatisch und verlaengert Parse- UND Check-Time |
+> Best Practice: Explizite Pfade angeben wie `include: ["src/**/*.ts"]` |
+> In der `exclude`-Liste sollten immer stehen: `node_modules`, `dist`,
+> `coverage`, `**/*.spec.ts` (wenn Tests separat geprueft werden)
 
 ---
 

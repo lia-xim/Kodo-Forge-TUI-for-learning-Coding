@@ -1,4 +1,4 @@
-# Sektion 4: Das Fluent API Pattern
+﻿# Sektion 4: Das Fluent API Pattern
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -37,7 +37,10 @@
 ---
 
 ## Einfaches Method Chaining: `return this`
+<!-- section:summary -->
+Das einfachste Fluent-Pattern: Jede Methode gibt `this` zurueck:
 
+<!-- depth:standard -->
 Das einfachste Fluent-Pattern: Jede Methode gibt `this` zurueck:
 
 ```typescript annotated
@@ -90,8 +93,12 @@ const sql = new QueryBuilder()
 
 ---
 
+<!-- /depth -->
 ## Problem: Keine Reihenfolge-Pruefung
+<!-- section:summary -->
+Der einfache Builder erlaubt unsinnige Aufrufe:
 
+<!-- depth:standard -->
 Der einfache Builder erlaubt unsinnige Aufrufe:
 
 ```typescript
@@ -105,6 +112,7 @@ new QueryBuilder()
 
 ---
 
+<!-- /depth -->
 ## Typsicheres Chaining: Methoden schrittweise freischalten
 
 ```typescript annotated
@@ -184,7 +192,10 @@ createQuery().select("*").from("users").where("id = 1").build(); // OK
 ---
 
 ## Generisches Fluent API: Typ akkumuliert Wissen
+<!-- section:summary -->
+Fuer komplexere APIs kann der Generic-Parameter Information sammeln:
 
+<!-- depth:standard -->
 Fuer komplexere APIs kann der Generic-Parameter Information sammeln:
 
 ```typescript annotated
@@ -228,6 +239,7 @@ class FluentQuery<Config extends QueryConfig = EmptyConfig> {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgende Aufrufe — welche kompilieren?
 >
 > ```typescript
@@ -251,6 +263,7 @@ class FluentQuery<Config extends QueryConfig = EmptyConfig> {
 
 ---
 
+<!-- /depth -->
 ## Praxis: Fluent APIs in Frameworks
 
 > ⚡ **In deinem Angular-Projekt** begegnest du Fluent APIs staendig:
@@ -289,7 +302,10 @@ class FluentQuery<Config extends QueryConfig = EmptyConfig> {
 ---
 
 ## Wann Fluent API, wann nicht?
+<!-- section:summary -->
+| Situation | Fluent API | Alternative |
 
+<!-- depth:standard -->
 | Situation | Fluent API | Alternative |
 |---|---|---|
 | SQL/Query-Builder | Ja — liest sich natuerlich | — |
@@ -300,6 +316,7 @@ class FluentQuery<Config extends QueryConfig = EmptyConfig> {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Fluent APIs** nutzen Method Chaining fuer lesbare, natuerlich-sprachliche Aufrufe

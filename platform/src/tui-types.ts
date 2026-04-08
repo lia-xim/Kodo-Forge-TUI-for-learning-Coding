@@ -177,6 +177,8 @@ export type Screen =
       pendingCorrect?: boolean;
       pendingExplanation?: string;
       confidence?: number;
+      /** Per-Sektion Tiefen-Empfehlungen nach Pre-Test-Abschluss */
+      sectionDepths: Record<string, "kurz" | "standard" | "vollständig">;
     }
   | {
       type: "selfexplain";

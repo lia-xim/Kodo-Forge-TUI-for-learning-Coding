@@ -1,4 +1,4 @@
-# Sektion 7: Reflect Metadata — Tiefenanalyse
+﻿# Sektion 7: Reflect Metadata — Tiefenanalyse
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Geschichte: Die Magie hinter @Injectable()
+<!-- section:summary -->
+Du kennst es aus deinem Angular-Projekt: Du schreibst `@Injectable()` ueber einen Service, gibst den `HttpClient` im Konstruktor an — und Angular l...
 
+<!-- depth:standard -->
 Du kennst es aus deinem Angular-Projekt: Du schreibst `@Injectable()` ueber einen Service, gibst den `HttpClient` im Konstruktor an — und Angular liefert automatisch die richtige Instanz. Aber woher weiss Angular, **was** injiziert werden soll?
 
 ```typescript
@@ -52,8 +55,12 @@ Die Antwort auf das Raesel: TypeScript emittiert die Typ-Informationen **vor** d
 
 ---
 
+<!-- /depth -->
 ## Setup: Was du benoetigt
+<!-- section:summary -->
+Damit das funktioniert, braucht es zwei Dinge:
 
+<!-- depth:standard -->
 Damit das funktioniert, braucht es zwei Dinge:
 
 ```typescript
@@ -78,8 +85,12 @@ Ohne `reflect-metadata` wuerde `Reflect.getMetadata(...)` nicht existieren — d
 
 ---
 
+<!-- /depth -->
 ## Die drei automatisch generierten Metadaten-Keys
+<!-- section:summary -->
+Wenn `emitDecoratorMetadata: true` aktiv ist, emittiert TypeScript bei **jeder dekorierten Klasse oder Methode** automatisch bis zu drei Metadaten-...
 
+<!-- depth:standard -->
 Wenn `emitDecoratorMetadata: true` aktiv ist, emittiert TypeScript bei **jeder dekorierten Klasse oder Methode** automatisch bis zu drei Metadaten-Eintraege:
 
 ```
@@ -92,8 +103,12 @@ Wenn `emitDecoratorMetadata: true` aktiv ist, emittiert TypeScript bei **jeder d
 
 ---
 
+<!-- /depth -->
 ## Wie Angular DI den Mechanismus nutzt
+<!-- section:summary -->
+Jetzt wird die Angular-Magie erklaerbar. Schauen wir uns an, was TypeScript tatsaechlich in JavaScript uebersetzt:
 
+<!-- depth:standard -->
 Jetzt wird die Angular-Magie erklaerbar. Schauen wir uns an, was TypeScript tatsaechlich in JavaScript uebersetzt:
 
 ```typescript annotated
@@ -140,8 +155,12 @@ new UserService(httpInstance, loggerInstance);
 
 ---
 
+<!-- /depth -->
 ## Experiment-Box: Eigene Metadaten schreiben und lesen
+<!-- section:summary -->
+Das Interessante an der Reflect API ist, dass du eigene Metadaten-Keys definieren kannst — unabhaengig von den `design:*`-Keys, die TypeScript auto...
 
+<!-- depth:standard -->
 Das Interessante an der Reflect API ist, dass du eigene Metadaten-Keys definieren kannst — unabhaengig von den `design:*`-Keys, die TypeScript automatisch setzt.
 
 ```typescript
@@ -221,8 +240,12 @@ Dieses Muster ist exakt das, was NestJS' `@Roles()`-Decorator intern tut — du 
 
 ---
 
+<!-- /depth -->
 ## Grenzen und Warnungen
+<!-- section:summary -->
+`emitDecoratorMetadata` ist seit Jahren "experimentell" — und das aus gutem Grund. Es gibt wichtige Einschraenkungen:
 
+<!-- depth:standard -->
 `emitDecoratorMetadata` ist seit Jahren "experimentell" — und das aus gutem Grund. Es gibt wichtige Einschraenkungen:
 
 ```typescript
@@ -290,6 +313,7 @@ du spaeter zwischen beiden APIs wechseln kannst.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **`emitDecoratorMetadata: true`** weist TypeScript an, Typ-Informationen nicht zu loeschen, sondern sie vor der Ausfuehrung als JavaScript-Metadaten zu emittieren

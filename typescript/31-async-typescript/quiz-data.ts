@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was beschreibt der Typparameter T in Promise<T>?",
     options: [
       "Den Typ des aufgeloesten Werts (Erfolgsfall)",
-      "Den Typ des abgelehnten Werts (Fehlerfall)",
-      "Den Typ von resolve UND reject",
-      "Den Typ des Promise-Objekts selbst",
+      "Den Typ des abgelehnten Werts (Fehlerfall) — wird vom catch-Handler empfangen",
+      "Den Typ von resolve UND reject kombiniert — also den vereinten Typ beider Pfade",
+      "Den Typ des Promise-Objekts selbst — also die Promise-Instanz, nicht den Inhalt",
     ],
     correct: 0,
     explanation:
@@ -36,9 +36,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen Promise<T> und PromiseLike<T>?",
     options: [
       "PromiseLike hat nur then(), Promise hat zusaetzlich catch() und finally()",
-      "Promise ist fuer Async-Code, PromiseLike fuer synchronen Code",
-      "PromiseLike ist deprecated seit ES2020",
-      "Es gibt keinen Unterschied — sie sind Aliase fuereinander",
+      "Promise ist fuer Async-Code, PromiseLike fuer synchronen Code — sie haben verschiedene Laufzeit-Umgebungen",
+      "PromiseLike ist deprecated seit ES2020 und wurde durch den nativen Promise-Typ ersetzt",
+      "Es gibt keinen Unterschied — sie sind Aliase fuereinander und werden vom Compiler identisch behandelt",
     ],
     correct: 0,
     explanation:
@@ -55,9 +55,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist das Ergebnis von Awaited<Promise<Promise<string>>>?",
     options: [
       "string — Awaited entpackt rekursiv alle Promise-Schichten",
-      "Promise<string> — nur eine Schicht wird entpackt",
-      "Promise<Promise<string>> — Awaited aendert nichts",
-      "unknown — verschachtelte Promises sind nicht unterstuetzt",
+      "Promise<string> — nur eine Schicht wird entpackt, der Rest bleibt erhalten",
+      "Promise<Promise<string>> — Awaited arbeitet nur auf der obersten Ebene und ignoriert verschachtelte Typen",
+      "unknown — verschachtelte Promises sind nicht unterstuetzt und werden auf unknown abgebildet",
     ],
     correct: 0,
     explanation:
@@ -93,10 +93,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welchen Typ hat 'error' in einem catch-Block mit useUnknownInCatchVariables: true?",
     options: [
-      "Error — catch faengt immer Error-Objekte",
+      "Error — catch faengt immer Error-Objekte, deshalb ist der Typ auf Error beschraenkt",
       "unknown — TypeScript weiss nicht was geworfen wurde",
-      "any — catch-Variablen sind immer any",
-      "never — der catch-Block ist unerreichbar",
+      "any — catch-Variablen sind immer any, da JavaScript beliebige Werte werfen kann",
+      "never — der catch-Block ist unerreichbar, also wird der Typ auf never gesetzt",
     ],
     correct: 1,
     explanation:
@@ -112,10 +112,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welchen Typ hat das Ergebnis von: await Promise.all([fetchUser(), fetchPosts()])?",
     options: [
-      "(User | Post[])[] — ein Array der Union",
-      "Promise<[User, Post[]]> — das Promise ist nicht aufgeloest",
+      "(User | Post[])[] — ein Array der Union, da Promise.all alle Ergebnisse zusammenfasst",
+      "Promise<[User, Post[]]> — das Promise ist nicht aufgeloest, weil await nur die oberste Ebene entpackt",
       "[User, Post[]] — ein Tupel mit exakten Typen pro Position",
-      "User & Post[] — eine Intersection",
+      "User & Post[] — eine Intersection, da beide Typen gleichzeitig erfuellt sein muessen",
     ],
     correct: 2,
     explanation:
@@ -132,10 +132,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist das Problem mit: ids.forEach(async id => { await deleteUser(id); })?",
     options: [
-      "forEach akzeptiert keine async-Callbacks",
-      "deleteUser wird synchron statt asynchron aufgerufen",
+      "forEach akzeptiert keine async-Callbacks, deshalb kompiliert der Code nicht",
+      "deleteUser wird synchron statt asynchron aufgerufen, was die Reihenfolge zerstoert",
       "Die Promises werden nicht gesammelt — die Funktion kehrt zurueck bevor alle fertig sind",
-      "Der Typ von ids wird zu Promise<string>[] geaendert",
+      "Der Typ von ids wird zu Promise<string>[] geaendert, was zu spaeteren Compile-Fehlern fuehrt",
     ],
     correct: 2,
     explanation:
@@ -152,9 +152,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum nimmt retry() eine Funktion () => Promise<T> statt direkt ein Promise<T>?",
     options: [
-      "Weil Funktionen weniger Speicher brauchen als Promises",
-      "Weil TypeScript Generics nur mit Funktionen inferieren kann",
-      "Weil Promises in TypeScript nicht als Parameter uebergeben werden koennen",
+      "Weil Funktionen weniger Speicher brauchen als Promises, was bei vielen Retries wichtig ist",
+      "Weil TypeScript Generics nur mit Funktionen inferieren kann und nicht mit konkreten Promise-Werten zur Compilezeit",
+      "Weil Promises in TypeScript nicht als Parameter uebergeben werden koennen — nur Funktionstypen sind erlaubt",
       "Weil ein Promise sofort startet — mit einer Funktion kann retry bei jedem Versuch neu starten",
     ],
     correct: 3,
@@ -173,9 +173,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was hat der Typparameter 'Y' in AsyncGenerator<Y, R, N> fuer eine Bedeutung?",
     options: [
-      "Den Typ des Yielded Values bei 'done: true'",
-      "Den Typ der in next() reingegeben wird",
-      "Den Typ des finalen return-Werts",
+      "Den Typ des Yielded Values bei 'done: true' — also der letzte Wert wenn der Generator beendet ist",
+      "Den Typ der in next() reingegeben wird — also der Parameter den man beim Aufruf von next() uebergibt",
+      "Den Typ des finalen return-Werts — also das Ergebnis wenn der Generator mit return() beendet wird",
       "Den Typ der Werte die bei jedem yield geliefert werden",
     ],
     correct: 3,

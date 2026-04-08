@@ -1,4 +1,4 @@
-# Sektion 1: Was sind rekursive Typen?
+﻿# Sektion 1: Was sind rekursive Typen?
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,11 +17,15 @@
 ---
 
 ## Rekursion: Die aelteste Idee der Informatik
+<!-- section:summary -->
+Bevor wir die erste Zeile TypeScript schreiben, muessen wir verstehen,
 
+<!-- depth:standard -->
 Bevor wir die erste Zeile TypeScript schreiben, muessen wir verstehen,
 woher die Idee der Rekursion kommt — denn sie ist aelter als jeder
 Computer.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Alonzo Church und das Lambda-Kalkuel (1930er)**
 >
 > In den 1930er Jahren — noch bevor es elektronische Computer gab —
@@ -45,8 +49,12 @@ Computer.
 
 ---
 
+<!-- /depth -->
 ## Dein erster rekursiver Typ: LinkedList
+<!-- section:summary -->
+Eine verkettete Liste ist die einfachste rekursive Datenstruktur:
 
+<!-- depth:standard -->
 Eine verkettete Liste ist die einfachste rekursive Datenstruktur:
 Jeder Knoten verweist auf den naechsten Knoten — der denselben Typ hat.
 
@@ -81,8 +89,12 @@ mit einer **Bedingung fuer das Ende** (hier: `| null`).
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Warum funktioniert das?
+<!-- section:summary -->
+Die Antwort: Der Typ referenziert **sich selbst** in seiner eigenen
 
+<!-- depth:standard -->
 > **Erklaere dir selbst:**
 >
 > Warum ist `type LinkedList<T> = { value: T; next: LinkedList<T> | null }`
@@ -98,8 +110,12 @@ wuerde einen "infinite type" melden.
 
 ---
 
+<!-- /depth -->
 ## Baeume: Die naechste Stufe
+<!-- section:summary -->
+Ein Baum ist wie eine Liste, aber jeder Knoten kann **mehrere Kinder**
 
+<!-- depth:standard -->
 Ein Baum ist wie eine Liste, aber jeder Knoten kann **mehrere Kinder**
 haben statt nur eines "next":
 
@@ -140,8 +156,12 @@ Beachte den Unterschied zur LinkedList:
 
 ---
 
+<!-- /depth -->
 ## Denkfrage: Was passiert ohne Abbruchbedingung?
+<!-- section:summary -->
+Ueberraschung: TypeScript **akzeptiert** diesen Typ! Typen werden
 
+<!-- depth:standard -->
 > **Denkfrage:**
 >
 > Was passiert, wenn du die Abbruchbedingung weglaesst?
@@ -174,8 +194,12 @@ type Infinite<T> = { value: T; next: Infinite<T> };
 
 ---
 
+<!-- /depth -->
 ## Rekursion vs Iteration auf Type-Level
+<!-- section:summary -->
+In JavaScript kennst du den Unterschied: Eine `while`-Schleife (iterativ)
 
+<!-- depth:standard -->
 In JavaScript kennst du den Unterschied: Eine `while`-Schleife (iterativ)
 vs eine Funktion die sich selbst aufruft (rekursiv). Auf Type-Level gibt
 es diese Unterscheidung auch:
@@ -201,6 +225,7 @@ Die Faustregel: **Mapped Types** sind iterativ (sie loopen ueber Schluessel),
 
 ---
 
+<!-- /depth -->
 ## Experiment: Baue deine eigene LinkedList
 
 > **Experiment:**
@@ -246,7 +271,10 @@ Die Faustregel: **Mapped Types** sind iterativ (sie loopen ueber Schluessel),
 ---
 
 ## Binaerer Suchbaum: Ein klassisches Beispiel
+<!-- section:summary -->
+Ein binaerer Suchbaum hat exakt **zwei** moegliche Kinder — links
 
+<!-- depth:standard -->
 Ein binaerer Suchbaum hat exakt **zwei** moegliche Kinder — links
 (kleiner) und rechts (groesser):
 
@@ -283,6 +311,7 @@ const baum: BST<number> = {
 
 ---
 
+<!-- /depth -->
 ## Framework-Bezug: Rekursion in Angular und React
 
 > **In deinem Angular-Projekt** hast du wahrscheinlich schon
@@ -332,7 +361,10 @@ const baum: BST<number> = {
 ---
 
 ## Wann sind Typen NICHT rekursiv?
+<!-- section:summary -->
+Nicht alles was verschachtelt aussieht ist rekursiv. Hier die Abgrenzung:
 
+<!-- depth:standard -->
 Nicht alles was verschachtelt aussieht ist rekursiv. Hier die Abgrenzung:
 
 ```typescript
@@ -366,6 +398,7 @@ auf sich selbst verweist.
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung
 
 ### Was du gelernt hast

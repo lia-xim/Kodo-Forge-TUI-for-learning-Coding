@@ -1,4 +1,4 @@
-# Sektion 5: Static Members und Patterns
+﻿# Sektion 5: Static Members und Patterns
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Static Members: Gehoert der Klasse, nicht der Instanz
+<!-- section:summary -->
+Normale Felder und Methoden gehoeren zu einer **Instanz** — jedes
 
+<!-- depth:standard -->
 Normale Felder und Methoden gehoeren zu einer **Instanz** — jedes
 `new MyClass()` hat seine eigene Kopie. **Static** Felder und Methoden
 gehoeren zur **Klasse selbst** und existieren nur einmal:
@@ -66,6 +69,7 @@ class Config {
 console.log(Config.getTimeout()); // 3000
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Das Singleton-Pattern — GoF 1995**
 >
 > Die Gang of Four beschrieb 1995 das **Singleton-Pattern**: Eine Klasse,
@@ -83,8 +87,12 @@ console.log(Config.getTimeout()); // 3000
 
 ---
 
+<!-- /depth -->
 ## Das Singleton-Pattern in TypeScript
+<!-- section:summary -->
+So implementierst du ein klassisches Singleton:
 
+<!-- depth:standard -->
 So implementierst du ein klassisches Singleton:
 
 ```typescript annotated
@@ -119,6 +127,7 @@ const db2 = Database.getInstance();
 console.log(db1 === db2); // true — DIESELBE Instanz!
 ```
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:** Angular nutzt `providedIn: 'root'` statt das
 > Singleton-Pattern direkt. Warum?
 >
@@ -133,8 +142,12 @@ console.log(db1 === db2); // true — DIESELBE Instanz!
 
 ---
 
+<!-- /depth -->
 ## Parameter Properties: Die Kurzschreibweise
+<!-- section:summary -->
+Dieses Feature spart dir enorm viel Boilerplate. Statt Felder zu
 
+<!-- depth:standard -->
 Dieses Feature spart dir enorm viel Boilerplate. Statt Felder zu
 deklarieren UND im Constructor zuzuweisen, machst du beides in
 einem Schritt:
@@ -172,6 +185,7 @@ console.log(user.id);    // 42
 // user.email;            // FEHLER: private
 ```
 
+<!-- depth:vollstaendig -->
 > **Erklaere dir selbst:** Warum ist `constructor(private name: string)` eine
 > Kurzschreibweise? Was genau passiert hinter den Kulissen — welche drei
 > Dinge erledigt TypeScript fuer dich?
@@ -200,8 +214,12 @@ class Product {
 
 ---
 
+<!-- /depth -->
 ## Das Factory-Pattern: Kluge Konstruktion
+<!-- section:summary -->
+Manchmal reicht ein einfacher Constructor nicht aus — du brauchst
 
+<!-- depth:standard -->
 Manchmal reicht ein einfacher Constructor nicht aus — du brauchst
 **verschiedene Wege**, ein Objekt zu erstellen. Hier kommt das
 Factory-Pattern:
@@ -258,6 +276,7 @@ const green = Color.fromName("green");
 - **Caching**: Factories koennen Instanzen wiederverwenden
 - **Polymorphie**: Die Factory kann verschiedene Subklassen zurueckgeben
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Erweitere die `Color`-Klasse um eine Factory-Methode
 > `Color.fromHSL(h, s, l)`. Du musst HSL zu RGB konvertieren — die
 > genaue Formel ist hier nicht wichtig. Wichtig ist: Die Konvertierungslogik
@@ -265,8 +284,12 @@ const green = Color.fromName("green");
 
 ---
 
+<!-- /depth -->
 ## Static Blocks: Initialisierung (TS 4.6+)
+<!-- section:summary -->
+Seit TypeScript 4.6 kannst du **static Blocks** verwenden — Code,
 
+<!-- depth:standard -->
 Seit TypeScript 4.6 kannst du **static Blocks** verwenden — Code,
 der einmal beim Laden der Klasse ausgefuehrt wird:
 
@@ -292,8 +315,12 @@ console.log(Environment.isProduction); // false
 
 ---
 
+<!-- /depth -->
 ## Klassen als Typ-Parameter uebergeben
+<!-- section:summary -->
+Manchmal brauchst du eine Funktion, die **eine Klasse selbst** als
 
+<!-- depth:standard -->
 Manchmal brauchst du eine Funktion, die **eine Klasse selbst** als
 Parameter akzeptiert — nicht eine Instanz:
 
@@ -322,6 +349,7 @@ const product = createInstance(Product, "TypeScript-Buch", 29.99);
 console.log(product.title); // "TypeScript-Buch"
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt** nutzt das DI-System genau dieses Muster:
 > Du uebergibst eine KLASSE als Token an den Injector, und der Injector
 > erstellt die Instanz fuer dich:
@@ -339,6 +367,7 @@ console.log(product.title); // "TypeScript-Buch"
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Static + Parameter Properties
 
 | Feature | Was es tut | Beispiel |

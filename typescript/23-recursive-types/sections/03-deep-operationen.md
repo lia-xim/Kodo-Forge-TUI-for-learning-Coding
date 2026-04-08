@@ -1,4 +1,4 @@
-# Sektion 3: Deep-Operationen
+﻿# Sektion 3: Deep-Operationen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Warum gibt es kein eingebautes DeepPartial?
+<!-- section:summary -->
+Du kennst `Partial<T>` aus Lektion 15 — es macht alle Properties
 
+<!-- depth:standard -->
 Du kennst `Partial<T>` aus Lektion 15 — es macht alle Properties
 eines Typs optional. Aber `Partial` ist **flach**: Es wirkt nur
 auf der ersten Ebene.
@@ -47,6 +50,7 @@ type PartialUser = Partial<User>;
 // }
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Warum TypeScript kein DeepPartial eingebaut hat**
 >
 > Das TypeScript-Team hat diese Designentscheidung bewusst getroffen.
@@ -60,8 +64,12 @@ type PartialUser = Partial<User>;
 
 ---
 
+<!-- /depth -->
 ## DeepPartial: Schritt fuer Schritt
+<!-- section:summary -->
+1. **Mapped Type** iteriert ueber alle Schluessel
 
+<!-- depth:standard -->
 ```typescript annotated
 type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends object
@@ -98,8 +106,12 @@ Die Logik ist einfach:
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Wie funktioniert DeepPartial?
+<!-- section:summary -->
+Ohne die Bedingung wuerde TypeScript versuchen, `DeepPartial<string>`
 
+<!-- depth:standard -->
 > **Erklaere dir selbst:**
 >
 > Warum brauchen wir `T[K] extends object ? DeepPartial<T[K]> : T[K]`?
@@ -115,8 +127,12 @@ Felder. Das ist **nicht** was wir wollen!
 
 ---
 
+<!-- /depth -->
 ## Das Array-Problem
+<!-- section:summary -->
+Die naive Version hat ein Problem: `Array` ist auch ein `object`!
 
+<!-- depth:standard -->
 Die naive Version hat ein Problem: `Array` ist auch ein `object`!
 
 ```typescript annotated
@@ -155,8 +171,12 @@ type Fixed = DeepPartialFixed<{ tags: string[]; nested: { items: number[] } }>;
 
 ---
 
+<!-- /depth -->
 ## Denkfrage: Was passiert mit Arrays in DeepReadonly?
+<!-- section:summary -->
+Es gibt keine "richtige" Antwort — es haengt von deinem Kontext ab.
 
+<!-- depth:standard -->
 > **Denkfrage:**
 >
 > Wenn du `DeepReadonly<{ data: string[] }>` baust:
@@ -172,6 +192,7 @@ Genau deshalb hat TypeScript kein eingebautes DeepReadonly.
 
 ---
 
+<!-- /depth -->
 ## DeepReadonly: Immutable Daten
 
 ```typescript annotated
@@ -220,7 +241,10 @@ declare const cfg: ReadonlyConfig;
 ---
 
 ## DeepRequired und DeepMutable
+<!-- section:summary -->
+Das Pattern ist immer dasselbe — nur der Modifier aendert sich:
 
+<!-- depth:standard -->
 Das Pattern ist immer dasselbe — nur der Modifier aendert sich:
 
 ```typescript annotated
@@ -257,6 +281,7 @@ type DeepMutable<T> = {
 
 ---
 
+<!-- /depth -->
 ## Experiment: DeepPartial selbst bauen
 
 > **Experiment:**

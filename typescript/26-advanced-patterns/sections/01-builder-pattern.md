@@ -1,4 +1,4 @@
-# Sektion 1: Das Builder Pattern
+﻿# Sektion 1: Das Builder Pattern
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -36,7 +36,10 @@
 ---
 
 ## Das Problem: Komplexe Objekte erstellen
+<!-- section:summary -->
+Stell dir eine Konfiguration mit Pflicht- und optionalen Feldern vor:
 
+<!-- depth:standard -->
 Stell dir eine Konfiguration mit Pflicht- und optionalen Feldern vor:
 
 ```typescript annotated
@@ -69,6 +72,7 @@ createServerPartial({}); // Kein Fehler! Aber host und port fehlen.
 
 ---
 
+<!-- /depth -->
 ## Der klassische Builder (ohne Typsicherheit)
 
 ```typescript annotated
@@ -104,7 +108,10 @@ new ServerConfigBuilder().ssl(true).build();
 ---
 
 ## Der typsichere Builder mit Generics
+<!-- section:summary -->
+Die Kernidee: Wir tracken im **Generic-Parameter**, welche Felder
 
+<!-- depth:standard -->
 Die Kernidee: Wir tracken im **Generic-Parameter**, welche Felder
 schon gesetzt wurden:
 
@@ -144,6 +151,7 @@ class TypedConfigBuilder<Set extends string = never> {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere diese Aufrufe im Kopf durch — welche kompilieren?
 >
 > ```typescript
@@ -168,8 +176,12 @@ class TypedConfigBuilder<Set extends string = never> {
 
 ---
 
+<!-- /depth -->
 ## Alternative: Builder mit Mapped Types
+<!-- section:summary -->
+Ein eleganterer Ansatz nutzt Mapped Types um das Tracking zu automatisieren:
 
+<!-- depth:standard -->
 Ein eleganterer Ansatz nutzt Mapped Types um das Tracking zu automatisieren:
 
 Das `[K in keyof T]`-Konstrukt kennst du aus L16 (Mapped Types). Die Generic-Akkumulation baut auf L13 (Generics Basics) und L22 (Advanced Generics) auf. Und `type` als einziges Werkzeug fuer Mapped Types — das war schon das Kernthema in L08.
@@ -211,8 +223,12 @@ type Builder<T, Required extends keyof T, Set extends keyof T = never> = {
 
 ---
 
+<!-- /depth -->
 ## Wann Builder, wann nicht?
+<!-- section:summary -->
+| Situation | Builder sinnvoll? | Alternative |
 
+<!-- depth:standard -->
 | Situation | Builder sinnvoll? | Alternative |
 |---|---|---|
 | 3-4 Felder, alle Pflicht | Nein — Overkill | Direktes Objekt |
@@ -223,6 +239,7 @@ type Builder<T, Required extends keyof T, Set extends keyof T = never> = {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Das **klassische Builder Pattern** validiert Pflichtfelder nur zur Laufzeit — der Typ "luegt"

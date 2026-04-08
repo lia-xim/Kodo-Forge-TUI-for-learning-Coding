@@ -1,4 +1,4 @@
-# Sektion 2: Higher-Order Types
+﻿# Sektion 2: Higher-Order Types
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Type Constructors: Typen die Typen brauchen
+<!-- section:summary -->
+Bevor wir Higher-Order Types verstehen, muessen wir einen fundamentalen
 
+<!-- depth:standard -->
 Bevor wir Higher-Order Types verstehen, muessen wir einen fundamentalen
 Unterschied klar machen:
 
@@ -77,8 +80,12 @@ type Z = Set<boolean>;       // Set: * → *
 
 ---
 
+<!-- /depth -->
 ## Das Problem in TypeScript
+<!-- section:summary -->
+Warum kann TypeScript nicht einfach "Typ ueber Typ" ausdruecken?
 
+<!-- depth:standard -->
 Warum kann TypeScript nicht einfach "Typ ueber Typ" ausdruecken?
 
 ```typescript annotated
@@ -109,8 +116,12 @@ type Apply<F, A> = F<A>;
 
 ---
 
+<!-- /depth -->
 ## Die Loesung: Interface-Map-Pattern (URI-to-Kind)
+<!-- section:summary -->
+Die TypeScript-Community hat einen cleveren Workaround gefunden. Statt
 
+<!-- depth:standard -->
 Die TypeScript-Community hat einen cleveren Workaround gefunden. Statt
 Higher-Kinded Types direkt zu verwenden, nutzt man ein Interface als
 **Lookup-Map**:
@@ -146,8 +157,12 @@ den Type Constructor.
 
 ---
 
+<!-- /depth -->
 ## Praktisches Beispiel: Generische `map`-Funktion
+<!-- section:summary -->
+Jetzt koennen wir die `map`-Funktion schreiben, die in Sektion 1 nicht
 
+<!-- depth:standard -->
 Jetzt koennen wir die `map`-Funktion schreiben, die in Sektion 1 nicht
 moeglich war:
 
@@ -180,8 +195,12 @@ const result = arrayMappable.map([1, 2, 3], x => x * 2);
 
 ---
 
+<!-- /depth -->
 ## Erweiterbarkeit: Declaration Merging
+<!-- section:summary -->
+Das Schoene am Interface-Map-Pattern: Es ist erweiterbar! Dank
 
+<!-- depth:standard -->
 Das Schoene am Interface-Map-Pattern: Es ist erweiterbar! Dank
 TypeScript's Declaration Merging kann jede Bibliothek neue Container
 registrieren:
@@ -229,6 +248,7 @@ interface URItoKind<A> {
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > ⚛️ **React:** `ComponentPropsWithRef<T>` ist ein Beispiel fuer einen
@@ -250,7 +270,10 @@ interface URItoKind<A> {
 ---
 
 ## Alternative: Conditional Type Dispatch
+<!-- section:summary -->
+Neben dem Interface-Map-Pattern gibt es noch Conditional Types als
 
+<!-- depth:standard -->
 Neben dem Interface-Map-Pattern gibt es noch Conditional Types als
 "Pattern-Matching" fuer Type Constructors:
 
@@ -283,6 +306,7 @@ meisten Anwendungen reicht es aus.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Type Constructors** (wie `Array`, `Promise`) sind Typen die ein Argument

@@ -1,4 +1,4 @@
-# Sektion 5: Abschluss-Challenge — Alles zusammen
+﻿# Sektion 5: Abschluss-Challenge — Alles zusammen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Die ultimative Challenge: Ein typsicheres Domain-Modell
+<!-- section:summary -->
+Stell dir vor, du baust ein Aufgabenverwaltungssystem. Wir nutzen
 
+<!-- depth:standard -->
 Stell dir vor, du baust ein Aufgabenverwaltungssystem. Wir nutzen
 ALLE Phase-3-Konzepte um es maximal typsicher zu machen.
 
@@ -214,8 +217,12 @@ declare module '@angular/router' {
 
 ---
 
+<!-- /depth -->
 ## Selbsteinschaetzung Phase 3
+<!-- section:summary -->
+Bewerte dein Verstaendnis fuer jedes Konzept auf einer Skala von
 
+<!-- depth:standard -->
 Bewerte dein Verstaendnis fuer jedes Konzept auf einer Skala von
 1 (unsicher) bis 4 (kann ich erklaren und anwenden):
 
@@ -240,8 +247,12 @@ Bewerte dein Verstaendnis fuer jedes Konzept auf einer Skala von
 
 ---
 
+<!-- /depth -->
 ## Ausblick: Was kommt in Phase 4?
+<!-- section:summary -->
+Phase 4 nimmt alles was du in Phase 1-3 gelernt hast und wendet
 
+<!-- depth:standard -->
 ```
 Phase 4: Real-World Mastery (L31-L40)
 ========================================
@@ -291,6 +302,7 @@ Performance und am Ende ein vollstaendiges Capstone-Projekt.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Alle Phase-3-Konzepte lassen sich in einem Domain-Modell kombinieren

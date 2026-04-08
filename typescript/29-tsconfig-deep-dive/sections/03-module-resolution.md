@@ -1,4 +1,4 @@
-# Sektion 3: Module Resolution
+﻿# Sektion 3: Module Resolution
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Das Raetsel der Modul-Aufloesung
+<!-- section:summary -->
+Wenn du `import { User } from './types'` schreibst, passiert etwas
 
+<!-- depth:standard -->
 Wenn du `import { User } from './types'` schreibst, passiert etwas
 Erstaunliches: TypeScript muss herausfinden, welche **Datei** sich
 hinter `'./types'` verbirgt. Ist es `types.ts`? `types/index.ts`?
@@ -52,8 +55,12 @@ ist die haeufigste Quelle von "Cannot find module"-Fehlern.
 
 ---
 
+<!-- /depth -->
 ## Die Resolution-Strategien
+<!-- section:summary -->
+### `"node"` — Das Legacy-System
 
+<!-- depth:standard -->
 ### `"node"` — Das Legacy-System
 
 Emuliert Node.js' CommonJS-Aufloesung. Sucht:
@@ -150,8 +157,12 @@ Datei finden — nur die Typen. Der Bundler findet die Datei.
 
 ---
 
+<!-- /depth -->
 ## `paths` und `baseUrl` — Pfad-Aliase
+<!-- section:summary -->
+Lange Import-Pfade wie `../../../shared/utils/format` sind unlesbar.
 
+<!-- depth:standard -->
 Lange Import-Pfade wie `../../../shared/utils/format` sind unlesbar.
 `paths` loest das:
 
@@ -227,8 +238,12 @@ unter `baseUrl`, gewinnt `baseUrl`. Das ist verwirrend.
 
 ---
 
+<!-- /depth -->
 ## `rootDir` und `rootDirs`
+<!-- section:summary -->
+### `rootDir` — Das Quellverzeichnis
 
+<!-- depth:standard -->
 ### `rootDir` — Das Quellverzeichnis
 
 ```typescript annotated
@@ -271,6 +286,7 @@ als laegen sie in `src/`. Nuetzlich fuer Code-Generatoren
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `moduleResolution` bestimmt, wie TypeScript Import-Pfade aufloest

@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum sind Type Assertions (`as`) bei externen Daten (API-Responses) gefaehrlich?",
     options: [
       "Der Compiler prueft NICHT ob die Daten tatsaechlich dem Typ entsprechen — falsche Daten fuehren zu Runtime-Crashes",
-      "Type Assertions sind langsamer als Type Guards",
-      "Type Assertions funktionieren nicht mit async/await",
-      "Type Assertions werden in JavaScript-Code uebersetzt und verlangsamen die Ausfuehrung",
+      "Type Assertions sind langsamer als Type Guards weil sie zur Laufzeit den Typ ueberpruefen muessen",
+      "Type Assertions funktionieren nicht mit async/await — sie brechen die Promise-Kette",
+      "Type Assertions werden in JavaScript-Code uebersetzt und verlangsamen die Ausfuehrung messbar",
     ],
     correct: 0,
     explanation:
@@ -36,9 +36,9 @@ export const questions: QuizQuestion[] = [
     question: "Was bedeutet es dass `any` 'ansteckend' ist?",
     options: [
       "Jeder Zugriff auf einen any-Wert ergibt wieder any — es breitet sich durch die gesamte Aufrufkette aus",
-      "any verlangsamt den Compiler fuer das gesamte Projekt",
-      "any verhindert dass andere Dateien korrekt typisiert werden",
-      "any macht den gesamten Code zu JavaScript",
+      "any verlangsamt den Compiler fuer das gesamte Projekt weil die Typ-Inferenz komplexer wird",
+      "any verhindert dass andere Dateien korrekt typisiert werden — der Fehler breitet sich ueber Imports aus",
+      "any macht den gesamten Code zu JavaScript — alle Typ-Informationen werden unwiderruflich geloescht",
     ],
     correct: 0,
     explanation:
@@ -55,9 +55,9 @@ export const questions: QuizQuestion[] = [
     question: "Wie erzwingt man exhaustive Switch-Statements mit TypeScript?",
     options: [
       "Mit einem default-Case der den Wert an never zuweist — Compile-Error wenn ein Case fehlt",
-      "Mit einer speziellen Compiler-Option 'exhaustiveSwitch'",
-      "Mit @ts-expect-error ueber dem Switch",
-      "Das geht nur mit ESLint, nicht mit dem Compiler",
+      "Mit einer speziellen Compiler-Option 'exhaustiveSwitch' die in der tsconfig aktiviert werden muss",
+      "Mit @ts-expect-error ueber dem Switch — der Compiler ignoriert fehlende Cases",
+      "Das geht nur mit ESLint, nicht mit dem Compiler — TypeScript hat keine native Unterstuetzung",
     ],
     correct: 0,
     explanation:
@@ -74,9 +74,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum sollten exportierte Funktionen einen expliziten Return Type haben?",
     options: [
       "Der Return Type ist ein Vertrag — Implementierungsaenderungen die den Typ veraendern werden sofort erkannt",
-      "TypeScript kann Return Types nicht inferieren",
-      "Explizite Return Types machen den Code schneller",
-      "Es ist eine reine Konvention ohne technischen Vorteil",
+      "TypeScript kann Return Types nicht inferieren — es braucht immer eine explizite Annotation",
+      "Explizite Return Types machen den Code schneller weil der Compiler weniger Inferenz-Arbeit hat",
+      "Es ist eine reine Konvention ohne technischen Vorteil — der Compiler ignoriert explizite Return Types",
     ],
     correct: 0,
     explanation:
@@ -92,10 +92,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann ist unknown NICHT die richtige Wahl und any akzeptabel?",
     options: [
-      "Bei jeder API-Response",
+      "Bei jeder API-Response — unknown ist immer die sicherste Wahl fuer externe Daten",
       "Bei temporaerer JS→TS Migration mit TODO-Kommentar und ESLint-Ausnahme",
-      "Bei allen Funktionsparametern",
-      "Bei Discriminated Unions",
+      "Bei allen Funktionsparametern — unknown ist immer die bessere Wahl als any",
+      "Bei Discriminated Unions — dort ist any manchmal noetig fuer die Typ-Inferenz",
     ],
     correct: 1,
     explanation:
@@ -111,10 +111,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann ist ein Generic Over-Engineering?",
     options: [
-      "Wenn T in mehreren Parametern und im Return-Typ vorkommt",
+      "Wenn T in mehreren Parametern und im Return-Typ vorkommt — dann verbindet es die Typen korrekt",
       "Wenn T nur einmal vorkommt und keinen Zusammenhang zwischen Input und Output herstellt",
-      "Wenn T einen Constraint hat",
-      "Wenn die Funktion mehr als 2 Parameter hat",
+      "Wenn T einen Constraint hat — dann ist ein Generic immer angemessen",
+      "Wenn die Funktion mehr als 2 Parameter hat — dann braucht man Generics fuer die Typ-Sicherheit",
     ],
     correct: 1,
     explanation:
@@ -131,10 +131,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bedeutet YAGNI fuer TypeScript-Typen?",
     options: [
-      "TypeScript sollte nicht verwendet werden",
+      "TypeScript sollte nicht verwendet werden — YAGNI bedeutet 'verwende das einfachste Tool'",
       "Schreibe den einfachsten Typ der den Job erledigt — nicht den allgemeinsten moeglichen",
-      "Verwende nie Generics",
-      "Verwende nur primitive Typen",
+      "Verwende nie Generics — sie sind immer Over-Engineering fuer die meisten Anwendungsfaelle",
+      "Verwende nur primitive Typen — komplexe Typen sind ein Zeichen von schlechtem Design",
     ],
     correct: 1,
     explanation:
@@ -150,10 +150,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen 'Validate' und 'Parse' im Kontext von TypeScript?",
     options: [
-      "Kein Unterschied — beides prueft Daten",
+      "Kein Unterschied — beides prueft Daten zur Compilezeit und zur Laufzeit gleichermassen",
       "Validate gibt boolean zurueck, Parse gibt den staerkeren Typ zurueck — der Typ BEWEIST die Validierung",
-      "Parse ist fuer JSON, Validate ist fuer Formulare",
-      "Parse ist schneller, Validate ist sicherer",
+      "Parse ist fuer JSON, Validate ist fuer Formulare — sie haben verschiedene Anwendungsbereiche",
+      "Parse ist schneller, Validate ist sicherer — sie sind Trade-offs zwischen Performance und Sicherheit",
     ],
     correct: 1,
     explanation:
@@ -170,10 +170,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wo sollte Runtime-Validierung (defensive Typing) stattfinden?",
     options: [
-      "In jeder Funktion",
-      "Nur in Test-Code",
+      "In jeder Funktion — defensive Programmierung sollte immer oberste Prioritaet haben",
+      "Nur in Test-Code — Produktionscode sollte sich auf das Typsystem verlassen",
       "An Systemgrenzen: API-Handler, Formulare, JSON.parse, externe Datenquellen",
-      "Nirgendwo — das Typsystem reicht",
+      "Nirgendwo — das Typsystem reicht vollstaendig aus um alle Fehler abzufangen",
     ],
     correct: 2,
     explanation:
@@ -189,10 +189,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen `value is T` und `asserts value is T`?",
     options: [
-      "Kein Unterschied — beides ist ein Type Guard",
-      "'is' ist fuer Klassen, 'asserts' ist fuer Interfaces",
+      "Kein Unterschied — beides ist ein Type Guard und funktioniert exakt gleich zur Laufzeit",
+      "'is' ist fuer Klassen, 'asserts' ist fuer Interfaces — sie haben verschiedene Anwendungsbereiche",
       "'is' gibt boolean zurueck (fuer if/else), 'asserts' wirft bei Fehler (Typ gilt danach direkt)",
-      "'is' funktioniert nur mit typeof, 'asserts' mit instanceof",
+      "'is' funktioniert nur mit typeof, 'asserts' mit instanceof — verschiedene Pruefungsmechanismen",
     ],
     correct: 2,
     explanation:
@@ -209,10 +209,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist `HttpClient.get<User>('/api/users')` in Angular keine echte Typsicherheit?",
     options: [
-      "HttpClient unterstuetzt keine Generics",
-      "Der Generic wird zur Laufzeit entfernt",
+      "HttpClient unterstuetzt keine Generics — die Syntax ist nur aus Gruenden der Abwaertskompatibilitaet vorhanden",
+      "Der Generic wird zur Laufzeit entfernt und kann nicht fuer Runtime-Checks verwendet werden",
       "Der Generic ist eine getarnte Assertion — TypeScript prueft NICHT ob die API wirklich User liefert",
-      "HttpClient gibt immer string zurueck",
+      "HttpClient gibt immer string zurueck — der Generic wird ignoriert und hat keine Auswirkung",
     ],
     correct: 2,
     explanation:
@@ -228,10 +228,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann sind Branded Types NICHT sinnvoll?",
     options: [
-      "Fuer Entity-IDs die verwechselt werden koennten",
-      "Fuer Waehrungsbetraege verschiedener Waehrungen",
+      "Fuer Entity-IDs die verwechselt werden koennten — hier sind Brands immer sinnvoll",
+      "Fuer Waehrungsbetraege verschiedener Waehrungen — USD und EUR sollten nicht vertauscht werden",
       "Fuer lokale Formularfelder die nur in einer Komponente existieren",
-      "Fuer validierte Werte wie Email oder URL",
+      "Fuer validierte Werte wie Email oder URL — hier schuetzt der Brand vor falschen Zuweisungen",
     ],
     correct: 2,
     explanation:
@@ -248,9 +248,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welches Refactoring-Pattern hat den groessten Impact auf Typsicherheit?",
     options: [
-      "String-IDs → Branded Types",
-      "Optional Chaining statt Non-null Assertion",
-      "Index Signature → Record/Map",
+      "String-IDs → Branded Types — verhindert ID-Verwechslungen aber betrifft nur wenige Stellen",
+      "Optional Chaining statt Non-null Assertion — entfernt Runtime-Crash-Risiken aber ist syntaktisch",
+      "Index Signature → Record/Map — verbessert die Typ-Sicherheit von Dictionary-Objekten",
       "Boolean-Flags → Discriminated Union (verhindert unmoegliche Zustaende)",
     ],
     correct: 3,
@@ -268,9 +268,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist eine sinnvolle Metrik fuer TypeScript-Code-Qualitaet?",
     options: [
-      "Anzahl der Zeilen TypeScript-Code",
-      "Anzahl der verwendeten Generics",
-      "Anzahl der Type Guards pro Datei",
+      "Anzahl der Zeilen TypeScript-Code — mehr Code bedeutet automatisch bessere Typ-Abdeckung",
+      "Anzahl der verwendeten Generics — viele Generics zeigen fortgeschrittene Typ-Nutzung",
+      "Anzahl der Type Guards pro Datei — je mehr Guards desto besser die Laufzeit-Sicherheit",
       "any-Dichte: Anzahl 'any' pro 1000 Zeilen (Ziel: < 1 in neuem Code)",
     ],
     correct: 3,
@@ -287,9 +287,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist die wichtigste einzelne Best Practice fuer TypeScript?",
     options: [
-      "Moeglichst viele Generics verwenden",
-      "Jeden Typ explizit annotieren",
-      "Immer die neueste TypeScript-Version verwenden",
+      "Moeglichst viele Generics verwenden — das zeigt fortgeschrittene TypeScript-Kenntnisse",
+      "Jeden Typ explizit annotieren — Inferenz ist faul und sollte vermieden werden",
+      "Immer die neueste TypeScript-Version verwenden — alte Versionen sind unsicher",
       "Dem Compiler vertrauen — 'as' und 'any' nicht nutzen um ihn zum Schweigen zu bringen",
     ],
     correct: 3,

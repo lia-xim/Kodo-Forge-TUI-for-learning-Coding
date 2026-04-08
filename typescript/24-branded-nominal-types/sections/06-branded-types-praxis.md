@@ -1,4 +1,4 @@
-# Sektion 6: Branded Types in Angular & React — Praxis
+﻿# Sektion 6: Branded Types in Angular & React — Praxis
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -17,10 +17,14 @@
 ---
 
 ## Branded Types in Angular-Services
+<!-- section:summary -->
+Angular-Services sind ein natürlicher Ort für Branded Types — sie definieren
 
+<!-- depth:standard -->
 Angular-Services sind ein natürlicher Ort für Branded Types — sie definieren
 die Grenze zwischen externen Daten (HTTP-Responses) und internem typsicherem Code.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Domain-Driven Design und Anti-Corruption Layers**
 >
 > In Domain-Driven Design (DDD) gibt es das Konzept des **Anti-Corruption Layers
@@ -126,8 +130,12 @@ export class UserDetailComponent {
 
 ---
 
+<!-- /depth -->
 ## Branded Types mit React Query und React Hook Form
+<!-- section:summary -->
+In React-Projekten glänzen Branded Types besonders in Query-Keys und Form-Handling:
 
+<!-- depth:standard -->
 In React-Projekten glänzen Branded Types besonders in Query-Keys und Form-Handling:
 
 ```typescript annotated
@@ -200,6 +208,7 @@ function RegisterForm() {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Öffne `examples/04-angular-react.ts` und implementiere:
 > 1. Einen vollständigen `ProductService` mit `ProductId = Brand<string, 'ProductId'>`.
 > 2. `getProduct(id: ProductId)` und `deleteProduct(id: ProductId)`.
@@ -207,8 +216,12 @@ function RegisterForm() {
 
 ---
 
+<!-- /depth -->
 ## Wann Branded Types sich NICHT lohnen
+<!-- section:summary -->
+Over-Engineering Warning: Nicht überall sind Branded Types sinnvoll.
 
+<!-- depth:standard -->
 Over-Engineering Warning: Nicht überall sind Branded Types sinnvoll.
 
 ```typescript annotated
@@ -254,8 +267,12 @@ function simpleArea(w: number, h: number): number {
 
 ---
 
+<!-- /depth -->
 ## Vollständige Architektur-Entscheidung
+<!-- section:summary -->
+Hier ist eine pragmatische Strategie für ein echtes Projekt:
 
+<!-- depth:standard -->
 Hier ist eine pragmatische Strategie für ein echtes Projekt:
 
 ```typescript
@@ -292,6 +309,7 @@ interface DeleteUserCommand {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt** kannst du das sofort anwenden:
 >
 > ```typescript
@@ -308,6 +326,7 @@ interface DeleteUserCommand {
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Branded Types — Wann was?
 
 | Situation | Empfehlung |

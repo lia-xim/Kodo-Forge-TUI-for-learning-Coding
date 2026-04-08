@@ -57,6 +57,13 @@ function createOrderId(): OrderId {
 > First-Class-Citizens im Typsystem. Das verhindert nicht nur
 > Verwechslungen sondern macht den Code zum ausfuehrbaren
 > Glossar der Geschaeftssprache.
+>
+> 💡 **Analogie:** Branded Types sind wie Etiketten auf
+> Medikamentenflaschen. Ohne Etikett sehen alle weissen Pillen
+> gleich aus (`string`). Mit Etikett (`UserId`, `ProductId`)
+> weisst du sofort welche gemeint ist. Ein Vertauschen wird
+> zur Compilezeit erkannt — nicht erst wenn der Patient
+> das falsche Medikament nimmt.
 
 ---
 
@@ -103,6 +110,23 @@ const priceInCents = cents(1999);
 const taxInCents = multiplyMoney(priceInCents, 0.19);
 // ^ Math.round(1999 * 0.19) = 380 → cents(380) → "3.80 EUR"
 ```
+
+> 💡 **Analogie:** Der Money-Typ ist wie ein Tresor fuer Bargeld.
+> Du wuerdest Banknoten nie einfach auf den Tisch legen — du
+> sperrst sie in einen Tresor mit definierten Zugaengen. Cents
+> sperrt Geldwerte in einen Typ mit definierten Operationen.
+> Niemand kann versehentlich "19.99 + 0.19" rechnen und sich
+> wundern dass 20.17999999999999999999 herauskommt.
+
+> ⚡ **Framework-Bezug:** In Angular Enterprise-Anwendungen wird
+> der Money-Typ typischerweise in einem shared/ Verzeichnis als
+> Barrel Export bereitgestellt. Jede Feature-Module importiert
+> `Cents` von `@app/shared/money`. In React/Next.js Full-Stack
+> Projekten wird derselbe Typ sowohl auf Server (API Routes) als
+> auch Client (Components) verwendet — das ist der Vorteil von
+> framework-agnostischen Typen. Stripe's eigene TypeScript-Binding
+> verwenden das gleiche Prinzip: Alle Betaege sind in Cents/Smallest
+> Currency Unit spezifiziert.
 
 > 🧠 **Erklaere dir selbst:** Warum ist `addMoney` noetig statt
 > einfach `a + b` zu schreiben? Was passiert mit dem Brand bei
@@ -174,6 +198,13 @@ function transitionOrder<S extends Order["status"]>(
 > die einzige Moeglichkeit Aenderungen vorzunehmen eine neue
 > Order mit den aktualisierten Werten zu erstellen — und dabei
 > MUSS der neue `total` berechnet werden.
+>
+> 💡 **Analogie:** `readonly` ist wie ein Museumsexponat hinter
+> Glas. Du kannst es anschauen und beschreiben aber nicht
+> anfassen. Wenn du es aendern willst musst du es fotografieren
+> (kopieren), das Foto bearbeiten und als neues Exponat
+> praesentieren. So bleibt die Historie erhalten und niemand
+> kann heimlich etwas veraendern.
 
 ---
 
@@ -244,6 +275,15 @@ function getOrderDisplayText(order: Order): string {
 > Das ist die Synthese — einzelne Bausteine zu einem Ganzen
 
 **Kernkonzept zum Merken:** Ein gutes Domain Model ist wie ein Vertrag: Es definiert was moeglich ist und was nicht. TypeScript macht diesen Vertrag zur Compilezeit ueberpruefbar — nicht erst zur Laufzeit.
+
+> 💭 **Denkfrage:** Wenn du dein aktuelles Projekt durchgehst —
+> welche drei Domain-Konzepte wuerdest du sofort als Branded Types
+> umwandeln? Welche wuerden am meisten von Discriminated Unions
+> profitieren?
+> **Kernpunkte:** IDs sind die einfachsten Kandidaten (UserId,
+> OrderId, ProductId) | Status-Felder mit Boolean-Flags sind
+> die besten DU-Kandidaten | Geldwerte sollten immer als Cents
+> modelliert werden
 
 ---
 

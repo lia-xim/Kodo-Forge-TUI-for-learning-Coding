@@ -1,4 +1,4 @@
-# Sektion 1: tsconfig-Grundstruktur
+﻿# Sektion 1: tsconfig-Grundstruktur
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Die Zentrale deines TypeScript-Projekts
+<!-- section:summary -->
+Jedes TypeScript-Projekt hat eine `tsconfig.json`. Sie ist nicht nur
 
+<!-- depth:standard -->
 Jedes TypeScript-Projekt hat eine `tsconfig.json`. Sie ist nicht nur
 eine Konfigurationsdatei — sie ist der **Vertrag zwischen dir und dem
 Compiler**. Hier definierst du: Welche Dateien werden kompiliert?
@@ -61,8 +64,12 @@ kaufen und nie die Spiegel einstellen.
 
 ---
 
+<!-- /depth -->
 ## Die Top-Level-Felder im Detail
+<!-- section:summary -->
+### `compilerOptions` — Das Herzsstueck
 
+<!-- depth:standard -->
 ### `compilerOptions` — Das Herzsstueck
 
 Hier stecken ueber 100 Flags, die das Verhalten des Compilers steuern.
@@ -107,8 +114,12 @@ brauchst. In der Praxis dominiert `include`.
 
 ---
 
+<!-- /depth -->
 ## `extends` — Konfiguration erben
+<!-- section:summary -->
+Stell dir vor, du hast ein Team mit 5 Frontend-Projekten. Alle
 
+<!-- depth:standard -->
 Stell dir vor, du hast ein Team mit 5 Frontend-Projekten. Alle
 sollen dieselben Grundregeln haben: strict, ES2022, ModuleResolution
 NodeNext. Ohne `extends` muesstest du diese Optionen in jeder
@@ -177,8 +188,12 @@ Beliebte Basis-Konfigurationen:
 
 ---
 
+<!-- /depth -->
 ## `references` — Project References
+<!-- section:summary -->
+Project References sind TypeScripts Antwort auf Monorepos. Sie
 
+<!-- depth:standard -->
 Project References sind TypeScripts Antwort auf Monorepos. Sie
 ermoeglichen es, ein grosses Projekt in kleinere "Teilprojekte"
 aufzuteilen, die unabhaengig kompiliert und gecached werden.
@@ -261,8 +276,12 @@ abhaengt, wird `core` zuerst gebaut.
 
 ---
 
+<!-- /depth -->
 ## Haeufige Fehler bei der tsconfig
+<!-- section:summary -->
+Ohne `include` kompiliert TypeScript **alle** `.ts`-Dateien im Verzeichnis
 
+<!-- depth:standard -->
 ### 1. `include` vergessen
 
 Ohne `include` kompiliert TypeScript **alle** `.ts`-Dateien im Verzeichnis
@@ -297,6 +316,7 @@ aber bei tief verschachtelten Monorepos eine Fehlerquelle.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `tsconfig.json` hat fuenf Top-Level-Felder: `compilerOptions`, `include`, `exclude`, `files`, `extends` (plus `references`)

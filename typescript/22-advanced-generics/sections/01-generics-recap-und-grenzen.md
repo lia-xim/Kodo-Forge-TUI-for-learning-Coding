@@ -1,4 +1,4 @@
-# Sektion 1: Generics Recap & Grenzen
+﻿# Sektion 1: Generics Recap & Grenzen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Der Weg bis hierher
+<!-- section:summary -->
+In Lektion 13 hast du Generics kennengelernt: `<T>`, `extends`, `keyof`,
 
+<!-- depth:standard -->
 In Lektion 13 hast du Generics kennengelernt: `<T>`, `extends`, `keyof`,
 Default-Typparameter. In Lektion 14 hast du Patterns gesehen: Factories,
 Collections, Builder, Fluent APIs. Das war solide — aber es war erst der
@@ -45,8 +48,12 @@ Alles gut soweit. Aber jetzt kommt eine Aufgabe, die mit diesen Werkzeugen
 
 ---
 
+<!-- /depth -->
 ## Das Problem: "Irgendein Container"
+<!-- section:summary -->
+Stell dir vor, du schreibst eine Utility-Funktion die mit **verschiedenen
 
+<!-- depth:standard -->
 Stell dir vor, du schreibst eine Utility-Funktion die mit **verschiedenen
 Container-Typen** arbeiten soll: `Array<T>`, `Set<T>`, `Map<K,V>`,
 `Promise<T>`. Du willst eine `map`-Funktion die ueber *irgendeinen*
@@ -102,8 +109,12 @@ ein Argument gibt.
 
 ---
 
+<!-- /depth -->
 ## Warum reicht `<T>` nicht?
+<!-- section:summary -->
+Schauen wir uns die Grenzen systematisch an:
 
+<!-- depth:standard -->
 Schauen wir uns die Grenzen systematisch an:
 
 ```typescript annotated
@@ -137,8 +148,12 @@ interface Functor<F> {
 
 ---
 
+<!-- /depth -->
 ## Was TypeScript stattdessen bietet
+<!-- section:summary -->
+TypeScript hat kreative Wege gefunden, einige dieser Grenzen zu umgehen:
 
+<!-- depth:standard -->
 TypeScript hat kreative Wege gefunden, einige dieser Grenzen zu umgehen:
 
 ```typescript annotated
@@ -174,8 +189,12 @@ Loch im Typsystem das wir in den naechsten Sektionen schliessen werden.
 
 ---
 
+<!-- /depth -->
 ## Wann stoesst man in der Praxis an die Grenzen?
+<!-- section:summary -->
+Hier sind typische Szenarien in denen einfache Generics nicht ausreichen:
 
+<!-- depth:standard -->
 Hier sind typische Szenarien in denen einfache Generics nicht ausreichen:
 
 ```typescript annotated
@@ -224,6 +243,7 @@ loesen koennen.
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > 🅰️ **Angular:** `HttpClient.get<T>(url)` ist ein einfacher Generic —
@@ -242,7 +262,10 @@ loesen koennen.
 ---
 
 ## Die drei Saeulen von Advanced Generics
+<!-- section:summary -->
+In den naechsten fuenf Sektionen lernst du die Werkzeuge die ueber
 
+<!-- depth:standard -->
 In den naechsten fuenf Sektionen lernst du die Werkzeuge die ueber
 einfache Generics hinausgehen:
 
@@ -266,6 +289,7 @@ einfache Generics hinausgehen:
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Einfache Generics (`<T>`, `extends`, `keyof`) haben **konkrete Grenzen**:

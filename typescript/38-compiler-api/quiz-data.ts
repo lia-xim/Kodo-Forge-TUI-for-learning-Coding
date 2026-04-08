@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Abstract Syntax Tree (AST)?",
     options: [
       "Eine Baumstruktur die die Syntax des Quellcodes repraesentiert — die gemeinsame Sprache aller Tools",
-      "Ein Debugging-Tool fuer den TypeScript-Compiler",
-      "Eine Datenbank die Typ-Informationen speichert",
-      "Ein Build-Artefakt das beim Kompilieren entsteht",
+      "Ein Debugging-Tool fuer den TypeScript-Compiler das zur Laufzeit den Code analysiert",
+      "Eine Datenbank die Typ-Informationen speichert und bei jedem Build aktualisiert wird",
+      "Ein Build-Artefakt das beim Kompilieren entsteht und auf der Festplatte gespeichert wird",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Was gibt ts.createProgram zurueck?",
     options: [
       "Ein Program-Objekt mit Zugang zu SourceFiles, TypeChecker und Diagnostics",
-      "Den kompilierten JavaScript-Code als String",
-      "Eine Liste aller Dateien im Projekt",
-      "Ein Promise das auf die Kompilierung wartet",
+      "Den kompilierten JavaScript-Code als String — die Ausgabe des Compilers",
+      "Eine Liste aller Dateien im Projekt sortiert nach Abhaengigkeiten",
+      "Ein Promise das auf die Kompilierung wartet und dann das Ergebnis liefert",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist der Unterschied zwischen Node, Symbol und Type in der Compiler API?",
     options: [
       "Node = Syntax (wo im Code), Symbol = Semantik (was bedeutet der Name), Type = Typ-Information",
-      "Node = Datei, Symbol = Funktion, Type = Variable",
-      "Node = Ausdruck, Symbol = Statement, Type = Deklaration",
-      "Alle drei sind Synonyme fuer AST-Knoten",
+      "Node = Datei, Symbol = Funktion, Type = Variable — die drei Hauptelemente eines Programms",
+      "Node = Ausdruck, Symbol = Statement, Type = Deklaration — die Hierarchie der AST-Elemente",
+      "Alle drei sind Synonyme fuer AST-Knoten — sie bezeichnen dasselbe Konzept aus verschiedenen Perspektiven",
     ],
     correct: 0,
     explanation:
@@ -75,9 +75,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist die Einschraenkung von ts.forEachChild?",
     options: [
       "Es besucht nur die Direktkinder — fuer tiefere Nodes braucht man eigene Rekursion",
-      "Es kann nur SourceFile-Nodes besuchen",
-      "Es ist langsamer als manuelle Iteration",
-      "Es funktioniert nicht mit ClassDeclaration-Nodes",
+      "Es kann nur SourceFile-Nodes besuchen — andere Node-Typen werden ignoriert",
+      "Es ist langsamer als manuelle Iteration weil es einen Callback fuer jeden Node aufruft",
+      "Es funktioniert nicht mit ClassDeclaration-Nodes — die haben eine spezielle Struktur",
     ],
     correct: 0,
     explanation:
@@ -93,10 +93,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wofuer ist ts.visitEachChild konzipiert?",
     options: [
-      "Fuer das Lesen von AST-Nodes in der richtigen Reihenfolge",
+      "Fuer das Lesen von AST-Nodes in der richtigen Reihenfolge — von der Wurzel zu den Blaettern",
       "Fuer AST-Transformationen — es gibt neue Nodes zurueck statt die alten zu veraendern",
-      "Fuer das Zaehlen von Nodes im AST",
-      "Fuer die Suche nach bestimmten Node-Typen",
+      "Fuer das Zaehlen von Nodes im AST — es iteriert ueber den gesamten Baum und summiert",
+      "Fuer die Suche nach bestimmten Node-Typen — man kann nach SyntaxKind filtern",
     ],
     correct: 1,
     explanation:
@@ -112,10 +112,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was gibt checker.getTypeAtLocation(node) zurueck?",
     options: [
-      "Den annotierten Typ wie er im Quellcode steht",
+      "Den annotierten Typ wie er im Quellcode steht — also das was der Entwickler geschrieben hat",
       "Den aufgeloesten Typ nach Inferenz, Narrowing und Generics-Aufloesung",
-      "Einen String mit dem Typnamen",
-      "Ein boolean ob der Node einen Typ hat",
+      "Einen String mit dem Typnamen — z.B. 'string[]' statt dem internen Type-Objekt",
+      "Ein boolean ob der Node einen Typ hat — true fuer deklarierte Typen, false fuer implizite",
     ],
     correct: 1,
     explanation:
@@ -131,10 +131,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ein Before-Transformer?",
     options: [
-      "Ein Transformer der vor dem Parsing laeuft",
+      "Ein Transformer der vor dem Parsing laeuft und den rohen Quellcode veraendert bevor der AST entsteht",
       "Ein Transformer der VOR der Typ-Entfernung laeuft und Zugang zu TypeScript-Syntax hat",
-      "Ein Transformer der den Quellcode vor dem Compiler veraendert",
-      "Ein Transformer der nur .d.ts-Dateien veraendert",
+      "Ein Transformer der den Quellcode vor dem Compiler veraendert — wie ein Preprocessor",
+      "Ein Transformer der nur .d.ts-Dateien veraendert und den JavaScript-Output ignoriert",
     ],
     correct: 1,
     explanation:
@@ -151,10 +151,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Welche Information enthaelt ein Diagnostic-Objekt?",
     options: [
-      "Nur die Fehlermeldung als String",
+      "Nur die Fehlermeldung als String — mehr Informationen stellt ein Diagnostic nicht bereit",
       "Datei, Position, Laenge, Kategorie (Error/Warning), Code und Nachricht",
-      "Den gesamten AST der fehlerhaften Datei",
-      "Nur den Fehlercode und die Zeilennummer",
+      "Den gesamten AST der fehlerhaften Datei — damit kann man die Stelle im Code genau lokalisieren",
+      "Nur den Fehlercode und die Zeilennummer — die Spalte wird nicht gespeichert",
     ],
     correct: 1,
     explanation:
@@ -170,10 +170,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was unterscheidet den Language Service von ts.createProgram?",
     options: [
-      "Der Language Service ist schneller weil er weniger prueft",
-      "Der Language Service hat keinen Zugang zum Type Checker",
+      "Der Language Service ist schneller weil er weniger prueft und nur die offensichtlichen Fehler findet",
+      "Der Language Service hat keinen Zugang zum Type Checker — er arbeitet nur auf AST-Ebene",
       "Der Language Service arbeitet inkrementell — er aktualisiert nur geaenderte Dateien",
-      "Der Language Service kann nur .d.ts-Dateien lesen",
+      "Der Language Service kann nur .d.ts-Dateien lesen — er ist auf Bibliotheks-Typen beschraenkt",
     ],
     correct: 2,
     explanation:
@@ -189,10 +189,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ts.SyntaxKind?",
     options: [
-      "Ein Interface fuer benutzerdefinierte Node-Typen",
-      "Ein String der den Dateinamen enthaelt",
+      "Ein Interface fuer benutzerdefinierte Node-Typen — man kann eigene SyntaxKind-Werte definieren",
+      "Ein String der den Dateinamen enthaelt und fuer die Fehlerausgabe verwendet wird",
       "Ein Enum mit ueber 300 Eintraegen — einer fuer jeden moeglichen AST-Node-Typ",
-      "Eine Konfigurationsoption fuer den Parser",
+      "Eine Konfigurationsoption fuer den Parser die bestimmt wie strikt Syntax geprüft wird",
     ],
     correct: 2,
     explanation:
@@ -208,10 +208,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum ist checker.ts (~50.000 Zeilen) die groesste Datei im TypeScript-Compiler?",
     options: [
-      "Weil sie schlecht refactored ist",
-      "Weil sie auch den Parser enthaelt",
+      "Weil sie schlecht refactored ist — der Code stammt aus verschiedenen Epochen der TypeScript-Entwicklung",
+      "Weil sie auch den Parser enthaelt — beides ist in einer Datei zusammengefasst",
       "Weil der Type Checker die komplexeste Komponente ist — er loest Generics, Narrowing, Zuweisungskompatibilitaet und mehr",
-      "Weil sie Code fuer alle Zielplattformen enthaelt",
+      "Weil sie Code fuer alle Zielplattformen enthaelt — ES5, ES6, ESNext und mehr",
     ],
     correct: 2,
     explanation:
@@ -228,10 +228,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist ts.factory?",
     options: [
-      "Eine Build-Tool-Konfiguration",
-      "Ein Modul fuer Datei-Operationen",
+      "Eine Build-Tool-Konfiguration die TypeScript-Compiler-Optionen fuer verschiedene Umgebungen festlegt",
+      "Ein Modul fuer Datei-Operationen — es bietet Funktionen zum Lesen und Schreiben von Dateien",
       "Eine API zum Erstellen neuer immutabler AST-Nodes fuer Custom Transformers",
-      "Ein Pattern fuer Dependency Injection im Compiler",
+      "Ein Pattern fuer Dependency Injection im Compiler — es verwaltet die Abhaengigkeiten zwischen Modulen",
     ],
     correct: 2,
     explanation:
@@ -247,9 +247,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wo stehen Kommentare im TypeScript-AST?",
     options: [
-      "Als eigene Nodes im AST",
-      "Im Symbol jeder Deklaration",
-      "Im Type Checker als Metadaten",
+      "Als eigene Nodes im AST — Kommentare haben einen eigenen SyntaxKind wie alle anderen Code-Elemente",
+      "Im Symbol jeder Deklaration — sie werden der benannten Entity als Metadaten angehaengt",
+      "Im Type Checker als Metadaten — sie sind fuer die Typ-Inferenz relevant",
       "Als 'Trivia' an Nodes angehaengt — ueber getLeadingCommentRanges zugaenglich",
     ],
     correct: 3,
@@ -286,9 +286,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der beste Anwendungsfall fuer die direkte Nutzung der Compiler API?",
     options: [
-      "Einfache Syntax-Linting-Regeln (z.B. Naming Conventions)",
-      "Formatierung von TypeScript-Code",
-      "Unit Tests fuer TypeScript-Funktionen",
+      "Einfache Syntax-Linting-Regeln (z.B. Naming Conventions) — dafuer ist die Compiler API optimiert",
+      "Formatierung von TypeScript-Code — die Compiler API bietet AST-basierte Formatierungsfunktionen",
+      "Unit Tests fuer TypeScript-Funktionen — die API kann Testfaelle automatisch generieren",
       "Typ-basierte Code-Analyse und Code-Generierung die ESLint-Regeln nicht abdecken",
     ],
     correct: 3,

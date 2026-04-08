@@ -1,4 +1,4 @@
-# Sektion 7: NoInfer und Inferenz-Kontrolle
+﻿# Sektion 7: NoInfer und Inferenz-Kontrolle
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Das Problem: TypeScript inferiert zu viel
+<!-- section:summary -->
+In der letzten Sektion haben wir gelernt, wie man Inference *lenkt*.
 
+<!-- depth:standard -->
 In der letzten Sektion haben wir gelernt, wie man Inference *lenkt*.
 Jetzt gehen wir einen Schritt weiter: Manchmal muss man Inference an
 einer bestimmten Stelle *unterbinden*.
@@ -82,8 +85,12 @@ TypeScript sieht zwei Stellen, die `T` definieren könnten:
 
 ---
 
+<!-- /depth -->
 ## `NoInfer<T>` — Die TS 5.4-Lösung
+<!-- section:summary -->
+Die Regel ist einfach: **`NoInfer<T>` sagt dem Compiler, dass diese
 
+<!-- depth:standard -->
 ```typescript annotated
 function makeDefault<T = string>(options: {
   parse: (raw: string) => T;
@@ -123,8 +130,12 @@ Stelle `T` *verwenden*, aber nicht *definieren* darf.**
 
 ---
 
+<!-- /depth -->
 ## Praktische Patterns mit `NoInfer<T>`
+<!-- section:summary -->
+Das Muster taucht immer dann auf, wenn es eine **primäre Inference-Quelle**
 
+<!-- depth:standard -->
 Das Muster taucht immer dann auf, wenn es eine **primäre Inference-Quelle**
 und **sekundäre Stellen** gibt, die `T` nur *annehmen*, nicht *bestimmen*:
 
@@ -170,8 +181,12 @@ function createFormField<TValue>(
 
 ---
 
+<!-- /depth -->
 ## `infer T extends X` — Constraint in Infer-Klauseln
+<!-- section:summary -->
+Neben `NoInfer<T>` gibt es ein zweites, älteres Werkzeug zur
 
+<!-- depth:standard -->
 Neben `NoInfer<T>` gibt es ein zweites, älteres Werkzeug zur
 Inferenz-Kontrolle: **Constraints direkt in `infer`-Klauseln**.
 
@@ -242,8 +257,12 @@ Der Unterschied ist subtil, aber wichtig: Im alten Stil gibt der
 
 ---
 
+<!-- /depth -->
 ## `infer extends` für Template Literal und Enum-Extraktion
+<!-- section:summary -->
+Ein besonders nützliches Pattern: numerische Strings sicher extrahieren.
 
+<!-- depth:standard -->
 Ein besonders nützliches Pattern: numerische Strings sicher extrahieren.
 
 ```typescript annotated
@@ -279,6 +298,7 @@ type Params = RouteParams<"/users/:userId/posts/:postId">;
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > 🅰️ **In Angular-Projekten** begegnet dir das Problem der unerwünschten

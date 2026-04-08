@@ -1,4 +1,4 @@
-# Sektion 5: Praxis — Express und React erweitern
+﻿# Sektion 5: Praxis — Express und React erweitern
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -229,7 +229,10 @@ declare module "react" {
 ---
 
 ## Debugging: Wenn Augmentation nicht funktioniert
+<!-- section:summary -->
+Die haeufigsten Probleme und Loesungen:
 
+<!-- depth:standard -->
 Die haeufigsten Probleme und Loesungen:
 
 ```typescript annotated
@@ -276,6 +279,7 @@ export {}; // Am Anfang oder Ende der Datei einfuegen
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Declaration Merging in der Praxis
 
 | Use Case | Ansatz | Datei |

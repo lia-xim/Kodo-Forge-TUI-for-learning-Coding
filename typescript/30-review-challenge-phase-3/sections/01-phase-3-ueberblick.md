@@ -1,4 +1,4 @@
-# Sektion 1: Phase 3 Ueberblick — Die Konzeptlandkarte
+﻿# Sektion 1: Phase 3 Ueberblick — Die Konzeptlandkarte
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Die Reise durch Phase 3
+<!-- section:summary -->
+Phase 3 hat dich von "kann das Typsystem nutzen" zu "kann das
 
+<!-- depth:standard -->
 Phase 3 hat dich von "kann das Typsystem nutzen" zu "kann das
 Typsystem designen" gebracht. Hier ist die Landkarte:
 
@@ -60,8 +63,12 @@ L29: tsconfig Deep Dive ──────────────────�
 
 ---
 
+<!-- /depth -->
 ## Die drei roten Faeden
+<!-- section:summary -->
+Wenn du zurueckblickst, erkennst du drei grosse Themen die sich
 
+<!-- depth:standard -->
 Wenn du zurueckblickst, erkennst du drei grosse Themen die sich
 durch alle 9 Lektionen ziehen:
 
@@ -162,6 +169,7 @@ Libraries, Frameworks, Build-Tools — alles muss zusammenspielen.
 
 ---
 
+<!-- /depth -->
 ## Vernetzung: Was haengt wovon ab?
 
 ```
@@ -191,7 +199,10 @@ tsconfig (L29) → Alles konfigurieren und zusammenfuehren
 ---
 
 ## Der Wissenstest: Wie gut sitzt es?
+<!-- section:summary -->
+Bevor wir in die Details gehen, ein schneller Check. Kannst du
 
+<!-- depth:standard -->
 Bevor wir in die Details gehen, ein schneller Check. Kannst du
 diese Fragen spontan beantworten?
 
@@ -232,8 +243,12 @@ Rueckblick in die entsprechende Lektion.
 
 ---
 
+<!-- /depth -->
 ## Phase 3 vs. Phase 1 & 2: Was hat sich veraendert?
+<!-- section:summary -->
+| Phase 1 (L01-L10) | Grundlagen | "Wie schreibe ich Typen?" |
 
+<!-- depth:standard -->
 | Phase | Fokus | Denkweise |
 |-------|-------|-----------|
 | Phase 1 (L01-L10) | Grundlagen | "Wie schreibe ich Typen?" |
@@ -259,6 +274,7 @@ Code auszudruecken, die der Compiler durchsetzt.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Phase 3 hat drei rote Faeden: Typsicherheit durch Design, Abstraktion, Integration

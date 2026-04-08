@@ -1,4 +1,4 @@
-# Sektion 2: Class Decorators
+﻿# Sektion 2: Class Decorators
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -209,7 +209,10 @@ const post = new BlogPost("TypeScript Decorators", "...");
 ---
 
 ## Mehrere Decorators stapeln
+<!-- section:summary -->
+Decorators koennen kombiniert werden — die Reihenfolge ist wichtig:
 
+<!-- depth:standard -->
 Decorators koennen kombiniert werden — die Reihenfolge ist wichtig:
 
 ```typescript annotated
@@ -268,6 +271,7 @@ class MyClass2 {}
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Class Decorators bekommen den **Konstruktor** als Argument

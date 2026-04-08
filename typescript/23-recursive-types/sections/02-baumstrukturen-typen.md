@@ -1,4 +1,4 @@
-# Sektion 2: Baumstrukturen typen
+﻿# Sektion 2: Baumstrukturen typen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,11 +17,15 @@
 ---
 
 ## JSON: Der allgegenwaertige rekursive Typ
+<!-- section:summary -->
+Wenn du in deiner Karriere einen einzigen rekursiven Typ wirklich
 
+<!-- depth:standard -->
 Wenn du in deiner Karriere einen einzigen rekursiven Typ wirklich
 verinnerlichten solltest, dann ist es der **JSON-Typ**. Du verwendest
 JSON taeglich — und seine Struktur ist intrinsisch rekursiv.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Douglas Crockfords JSON-Spezifikation (2001)**
 >
 > Douglas Crockford "entdeckte" JSON in den fruehen 2000ern als
@@ -41,8 +45,12 @@ JSON taeglich — und seine Struktur ist intrinsisch rekursiv.
 
 ---
 
+<!-- /depth -->
 ## Der JSON-Typ in TypeScript
+<!-- section:summary -->
+So modellierst du die gesamte JSON-Spezifikation als TypeScript-Typ:
 
+<!-- depth:standard -->
 So modellierst du die gesamte JSON-Spezifikation als TypeScript-Typ:
 
 ```typescript annotated
@@ -67,8 +75,12 @@ die wiederum `JsonValue` referenzieren. TypeScript versteht das.
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Warum ist der JSON-Typ vollstaendig?
+<!-- section:summary -->
+Die Antwort: JSON kennt genau **sechs** Wert-Typen — String, Number,
 
+<!-- depth:standard -->
 > **Erklaere dir selbst:**
 >
 > Warum deckt `type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue }`
@@ -86,8 +98,12 @@ die vier Primitiven sind die Blaetter/Abbruchbedingungen.
 
 ---
 
+<!-- /depth -->
 ## JSON-Typ in der Praxis: Warum nicht `any`?
+<!-- section:summary -->
+Du fragst dich vielleicht: "Warum nicht einfach `any` fuer JSON?"
 
+<!-- depth:standard -->
 Du fragst dich vielleicht: "Warum nicht einfach `any` fuer JSON?"
 Hier ist der Grund:
 
@@ -124,8 +140,12 @@ function parsePort(json: string): { port: number } {
 
 ---
 
+<!-- /depth -->
 ## DOM-Baeume: Rekursion im Browser
+<!-- section:summary -->
+Der DOM (Document Object Model) ist ein Paradebeispiel fuer eine
 
+<!-- depth:standard -->
 Der DOM (Document Object Model) ist ein Paradebeispiel fuer eine
 rekursive Baumstruktur. Jedes Element kann Kind-Elemente enthalten,
 die wiederum Kind-Elemente haben:
@@ -181,8 +201,12 @@ kombiniert mit Rekursion — ein extrem haeufiges Pattern.
 
 ---
 
+<!-- /depth -->
 ## AST-Typen: Code der Code beschreibt
+<!-- section:summary -->
+Compiler und Linter arbeiten intern mit **Abstract Syntax Trees** (ASTs).
 
+<!-- depth:standard -->
 Compiler und Linter arbeiten intern mit **Abstract Syntax Trees** (ASTs).
 Auch diese sind rekursiv:
 
@@ -239,6 +263,7 @@ const ast: Expression = {
 };
 ```
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:**
 >
 > Wie wuerdest du eine `evaluate`-Funktion schreiben, die einen
@@ -247,8 +272,12 @@ const ast: Expression = {
 
 ---
 
+<!-- /depth -->
 ## Verschachtelte Menues und Konfigurationen
+<!-- section:summary -->
+Im Alltag begegnest du rekursiven Typen besonders bei **Navigations-
 
+<!-- depth:standard -->
 Im Alltag begegnest du rekursiven Typen besonders bei **Navigations-
 Menues** und **Konfigurationen**:
 
@@ -285,6 +314,7 @@ const navigation: MenuItem[] = [
 
 ---
 
+<!-- /depth -->
 ## Experiment: JSON-Typ testen
 
 > **Experiment:**

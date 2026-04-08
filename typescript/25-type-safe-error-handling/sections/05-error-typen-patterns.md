@@ -1,4 +1,4 @@
-# Sektion 5: Error-Typen Patterns
+﻿# Sektion 5: Error-Typen Patterns
 
 > Geschätzte Lesezeit: **9 Minuten**
 >
@@ -58,7 +58,10 @@ type ServiceError = DomainError | InfraError;
 ---
 
 ## Error-Konvertierung zwischen Ebenen
+<!-- section:summary -->
+In einer echten Anwendung haben verschiedene Schichten verschiedene Fehler-Typen.
 
+<!-- depth:standard -->
 In einer echten Anwendung haben verschiedene Schichten verschiedene Fehler-Typen.
 Ein Repository-Fehler sollte nicht rohe DB-Fehler nach oben durchleiten:
 
@@ -121,8 +124,12 @@ async function insertUserInDb(_e: string, _n: string): Promise<Result<User, DbEr
 
 ---
 
+<!-- /depth -->
 ## `class`-Fehler typsicher machen
+<!-- section:summary -->
+Manchmal braucht man Klassen (für `instanceof`, Stacktrace, interop):
 
+<!-- depth:standard -->
 Manchmal braucht man Klassen (für `instanceof`, Stacktrace, interop):
 
 ```typescript annotated
@@ -190,8 +197,12 @@ try {
 
 ---
 
+<!-- /depth -->
 ## Error-Boundary Pattern
+<!-- section:summary -->
+In React und Angular gibt es Error Boundaries — Stellen wo Fehler abgefangen werden:
 
+<!-- depth:standard -->
 In React und Angular gibt es Error Boundaries — Stellen wo Fehler abgefangen werden:
 
 ```typescript annotated
@@ -234,6 +245,7 @@ async function withErrorBoundary<T, E>(
 // );
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -269,6 +281,7 @@ async function withErrorBoundary<T, E>(
 
 ---
 
+<!-- /depth -->
 ## Fehler-Serialisierung für APIs
 
 ```typescript annotated

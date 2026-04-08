@@ -24,10 +24,10 @@ import { renderExerciseMenu, startHints } from "./tui-exercises.ts";
 import { renderMisconceptions } from "./tui-challenges.ts";
 import { renderPretest, renderQuiz } from "./tui-quiz.ts";
 import type { QuizQuestion } from "./quiz-runner.ts";
-import { getPretestQuestions } from "./pretest-engine.ts";
+import { getAllPretestQuestions } from "./pretest-engine.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { SHOW_CURSOR } from "./tui-render.ts";
-import { loadCompletionProblems, hasTakenPretest, sessionStats } from "./tui-state.ts";
+import { loadCompletionProblems, hasTakenLessonPretest, markLessonPretestTaken, sessionStats } from "./tui-state.ts";
 import { renderCompletionProblem } from "./tui-challenges.ts";
 
 export function renderLessonMenu(lessonIndex: number): void {
@@ -335,15 +335,17 @@ function openLessonItem(lessonIndex: number, selectedIndex: number): void {
   if (selectedIndex < lesson.sections.length) {
     const sKey = getSectionKey(lessonIndex, selectedIndex);
     const sectionStatus = getSectionStatus(sKey);
-    if (!sectionStatus && !hasTakenPretest(lessonIndex, selectedIndex)) {
+    // Lektions-Pretest starten (einmalig pro Lektion, vor der ersten ungelesenen Sektion)
+    if (!sectionStatus && !hasTakenLessonPretest(lessonIndex)) {
       const lessonDir = path.join(PROJECT_ROOT, lesson.dirName);
-      const pretestQs = getPretestQuestions(lessonDir, selectedIndex + 1);
-      if (pretestQs.length > 0) {
+      const allPretestQs = getAllPretestQuestions(lessonDir);
+      if (allPretestQs.length > 0) {
+        markLessonPretestTaken(lessonIndex);
         setCurrentScreen({
           type: "pretest",
           lessonIndex,
-          sectionIndex: selectedIndex,
-          questions: pretestQs,
+          sectionIndex: -1,
+          questions: allPretestQs,
           currentIndex: 0,
           answers: [],
           showingFeedback: false,
@@ -352,6 +354,7 @@ function openLessonItem(lessonIndex: number, selectedIndex: number): void {
           showingResult: false,
           recommendedDepth: "standard",
           score: 0,
+          sectionDepths: {},
         });
         renderPretest();
         return;

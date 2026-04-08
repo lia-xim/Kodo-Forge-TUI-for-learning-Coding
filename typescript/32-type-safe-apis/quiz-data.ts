@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist das Hauptproblem von HttpClient.get<User[]>('/api/users')?",
     options: [
       "TypeScript prueft nicht ob die API wirklich User[] liefert — es ist ein Compilezeit-Cast",
-      "HttpClient unterstuetzt keine Generics korrekt",
-      "Der Browser blockiert typisierte HTTP-Anfragen",
-      "User[] kann nicht als Typparameter verwendet werden",
+      "HttpClient unterstuetzt keine Generics korrekt — die Typ-Information geht bei der HTTP-Uebertragung verloren",
+      "Der Browser blockiert typisierte HTTP-Anfragen aus Sicherheitsgruenden und entfernt die Typ-Annotation",
+      "User[] kann nicht als Typparameter verwendet werden weil Arrays spezielle Behandlung brauchen",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum sind Derived Types (Pick, Partial, Omit) besser als manuell definierte Request-Typen?",
     options: [
       "Aenderungen am Basis-Typ propagieren automatisch — kein Out-of-Sync moeglich",
-      "Derived Types sind schneller zur Laufzeit",
-      "TypeScript kann nur Derived Types in HTTP-Aufrufen verwenden",
-      "Derived Types haben bessere IDE-Unterstuetzung",
+      "Derived Types sind schneller zur Laufzeit weil sie keine eigenen Speicherzuweisungen benoetigen",
+      "TypeScript kann nur Derived Types in HTTP-Aufrufen verwenden weil sie vom Compiler optimiert werden",
+      "Derived Types haben bessere IDE-Unterstuetzung weil sie direkt vom Language Service indiziert werden",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Was bedeutet 'Schema First' bei der API-Typisierung mit Zod?",
     options: [
       "Zuerst das Zod-Schema definieren, dann den TypeScript-Typ mit z.infer ableiten",
-      "Zuerst das TypeScript-Interface definieren, dann das Zod-Schema ableiten",
-      "Zuerst das OpenAPI-Schema definieren, dann TypeScript generieren",
-      "Zuerst die Datenbank modellieren, dann die API-Typen ableiten",
+      "Zuerst das TypeScript-Interface definieren, dann das Zod-Schema parallel dazu manuell schreiben",
+      "Zuerst das OpenAPI-Schema definieren, dann TypeScript generieren und das Zod-Schema daraus ableiten",
+      "Zuerst die Datenbank modellieren, dann die API-Typen ableiten und das Schema automatisch generieren",
     ],
     correct: 0,
     explanation:
@@ -75,10 +75,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie transportiert tRPC Typen vom Server zum Client?",
     options: [
-      "Durch Code-Generation in einem Build-Step",
+      "Durch Code-Generation in einem Build-Step der den Server-Code in den Client uebertraegt",
       "Durch 'import type' — der Client importiert nur den Router-TYP, keinen Runtime-Code",
-      "Durch ein gemeinsames npm-Package mit Typen",
-      "Durch JSON Schema das zur Laufzeit geprueft wird",
+      "Durch ein gemeinsames npm-Package mit Typen das sowohl vom Server als auch Client genutzt wird",
+      "Durch JSON Schema das zur Laufzeit geprueft wird und daraus die Client-Typen automatisch generiert",
     ],
     correct: 1,
     explanation:
@@ -95,10 +95,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen z.parse() und z.safeParse()?",
     options: [
-      "parse() gibt undefined bei Fehler zurueck, safeParse() wirft",
+      "parse() gibt undefined bei Fehler zurueck, safeParse() wirft eine Exception und beendet die Ausfuehrung",
       "parse() wirft bei ungueltigem Input, safeParse() gibt ein Result-Objekt zurueck",
-      "parse() validiert nur Typen, safeParse() validiert auch Werte",
-      "Es gibt keinen Unterschied — sie sind Aliase",
+      "parse() validiert nur Typen auf Compilezeit-Ebene, safeParse() validiert auch Werte zur Laufzeit",
+      "Es gibt keinen Unterschied — sie sind Aliase die dieselbe Funktion mit anderem Namen aufrufen",
     ],
     correct: 1,
     explanation:
@@ -115,10 +115,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum generiert graphql-codegen Typen PRO Query statt einen globalen User-Typ?",
     options: [
-      "Weil GraphQL keine globalen Typen unterstuetzt",
-      "Weil globale Typen mehr Speicher brauchen",
+      "Weil GraphQL keine globalen Typen unterstuetzt und jeden Query-Typ separat definieren muss",
+      "Weil globale Typen mehr Speicher brauchen und die Performance der GraphQL-Engine beeentraechtigen",
       "Weil jede Query nur bestimmte Felder anfordert — der Typ reflektiert exakt das",
-      "Weil TypeScript keine globalen Typen importieren kann",
+      "Weil TypeScript keine globalen Typen importieren kann und sie pro Datei neu definiert werden muessen",
     ],
     correct: 2,
     explanation:
@@ -135,10 +135,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was passiert wenn sich die API aendert aber du vergisst die OpenAPI-Typen neu zu generieren?",
     options: [
-      "TypeScript erkennt die Aenderung automatisch",
-      "Der Server verweigert Requests mit veralteten Typen",
+      "TypeScript erkennt die Aenderung automatisch und aktualisiert die generierten Typen im Hintergrund",
+      "Der Server verweigert Requests mit veralteten Typen weil er die Versionsnummer im Header prueft",
       "Die generierten Typen werden stale — Code kompiliert, aber stimmt nicht mit der API ueberein",
-      "openapi-typescript aktualisiert sich selbst bei jedem Build",
+      "openapi-typescript aktualisiert sich selbst bei jedem Build und laedt das neueste Schema automatisch",
     ],
     correct: 2,
     explanation:
@@ -155,9 +155,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Hauptvorteil von Valibot gegenueber Zod?",
     options: [
-      "Valibot hat eine bessere TypeScript-Integration",
-      "Valibot unterstuetzt mehr Datentypen als Zod",
-      "Valibot hat eine schnellere Validierung",
+      "Valibot hat eine bessere TypeScript-Integration weil es ausschliesslich fuer TypeScript entwickelt wurde",
+      "Valibot unterstuetzt mehr Datentypen als Zod und deckt damit ein breiteres Spektrum an Validierungsfaellen ab",
+      "Valibot hat eine schnellere Validierung weil es auf WebAssembly statt auf JavaScript basiert",
       "Valibot hat eine drastisch kleinere Bundle-Groesse (~1kb vs ~13kb)",
     ],
     correct: 3,
@@ -175,9 +175,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sollte man auch die API-RESPONSE validieren, nicht nur den Input?",
     options: [
-      "Weil der Browser die Response blockieren koennte",
-      "Weil TypeScript Responses anders behandelt als Requests",
-      "Weil Responses komprimiert uebertragen werden",
+      "Weil der Browser die Response blockieren koennte wenn die Content-Type-Header nicht uebereinstimmen",
+      "Weil TypeScript Responses anders behandelt als Requests und spezielle Typparameter fuer beide Richtungen braucht",
+      "Weil Responses komprimiert uebertragen werden und TypeScript die Dekomprimierung nicht korrekt handhabt",
       "Weil das Backend sein Schema aendern kann — ohne Response-Validierung merkst du es zu spaet",
     ],
     correct: 3,

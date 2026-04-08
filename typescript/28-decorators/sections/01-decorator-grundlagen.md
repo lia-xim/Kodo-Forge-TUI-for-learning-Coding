@@ -1,4 +1,4 @@
-# Sektion 1: Decorator-Grundlagen
+﻿# Sektion 1: Decorator-Grundlagen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -41,7 +41,10 @@
 ---
 
 ## Was ist ein Decorator?
+<!-- section:summary -->
+Ein Decorator ist eine **Funktion**, die eine Klasse, Methode, Property
 
+<!-- depth:standard -->
 Ein Decorator ist eine **Funktion**, die eine Klasse, Methode, Property
 oder einen Parameter **transformiert** oder **annotiert**:
 
@@ -262,6 +265,8 @@ class User {
 `@name` vor einer Deklaration steht. Sie kann das Verhalten aendern,
 Metadaten hinzufuegen oder den Wert komplett ersetzen — alles zur
 Compilezeit definiert, zur Laufzeit ausgefuehrt.
+
+<!-- /depth -->
 
 ---
 

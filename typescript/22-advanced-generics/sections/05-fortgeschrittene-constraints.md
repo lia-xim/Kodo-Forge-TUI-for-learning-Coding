@@ -1,4 +1,4 @@
-# Sektion 5: Fortgeschrittene Constraints
+﻿# Sektion 5: Fortgeschrittene Constraints
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Intersection-Constraints: Mehrere Anforderungen
+<!-- section:summary -->
+In Lektion 13 hast du einfache Constraints gelernt: `T extends HasId`.
 
+<!-- depth:standard -->
 In Lektion 13 hast du einfache Constraints gelernt: `T extends HasId`.
 Aber was wenn T mehrere Interfaces gleichzeitig erfuellen muss?
 
@@ -65,8 +68,12 @@ processEntity(user); // OK — hat alle drei Properties
 
 ---
 
+<!-- /depth -->
 ## Extra Properties sind erlaubt
+<!-- section:summary -->
+Ein oft uebersehener Aspekt: Bei generischen Constraints sind extra
 
+<!-- depth:standard -->
 Ein oft uebersehener Aspekt: Bei generischen Constraints sind extra
 Properties kein Problem (anders als bei direkter Objekt-Zuweisung):
 
@@ -91,8 +98,12 @@ greet(fullUser);
 
 ---
 
+<!-- /depth -->
 ## Recursive Constraints: F-bounded Polymorphism
+<!-- section:summary -->
+Eine der maechtigsten Constraint-Techniken: Der Typparameter referenziert
 
+<!-- depth:standard -->
 Eine der maechtigsten Constraint-Techniken: Der Typparameter referenziert
 sich **selbst** im Constraint.
 
@@ -144,8 +155,12 @@ const temps = sortItems([new Temperature(30), new Temperature(20)]);
 
 ---
 
+<!-- /depth -->
 ## Distributive Conditional Types: Kontrolle
+<!-- section:summary -->
+Du kennst Conditional Types aus Lektion 17. Hier die fortgeschrittene
 
+<!-- depth:standard -->
 Du kennst Conditional Types aus Lektion 17. Hier die fortgeschrittene
 Version: Distribution kontrollieren.
 
@@ -190,8 +205,12 @@ type G = IsStringStrict<never>;           // "yes"!
 
 ---
 
+<!-- /depth -->
 ## Bedingte Constraints mit Conditional Types
+<!-- section:summary -->
+Man kann Constraints auch dynamisch machen — basierend auf dem Typ:
 
+<!-- depth:standard -->
 Man kann Constraints auch dynamisch machen — basierend auf dem Typ:
 
 ```typescript annotated
@@ -244,8 +263,12 @@ validate(42, { min: 0, max: 100 }); // OK
 
 ---
 
+<!-- /depth -->
 ## Distributive Behavior unterdruecken
+<!-- section:summary -->
+Manchmal will man Distribution explizit **verhindern**. Hier sind die
 
+<!-- depth:standard -->
 Manchmal will man Distribution explizit **verhindern**. Hier sind die
 drei Methoden:
 
@@ -273,6 +296,7 @@ type E = HasNull<string>;        // false
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > 🅰️ **Angular:** Angular's Reactive Forms nutzen fortgeschrittene

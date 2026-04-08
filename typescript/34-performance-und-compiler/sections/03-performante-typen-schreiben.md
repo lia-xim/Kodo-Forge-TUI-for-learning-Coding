@@ -30,6 +30,12 @@
 > langsamen Projekte haben nicht zu viele Typen, sondern zu komplexe Typen.**
 > Ein Projekt mit 1000 einfachen Interfaces kompiliert schneller als eines
 > mit 100 tief verschachtelten Intersection-Types.
+>
+> In TypeScript 4.2 hat das Team einen neuen Profiling-Modus eingefuehrt,
+> der genau diese Messungen erlaubt. Die Ergebnisse flossen direkt in die
+> Compiler-Optimierungen von 4.5+ ein. Seitdem hat sich die Performance
+> bei Intersection-Types zwar verbessert, aber das Grundproblem bleibt:
+> Flache Typen sind immer noch messbar schneller.
 
 Die goldene Regel fuer performante Typen:
 
@@ -37,6 +43,28 @@ Die goldene Regel fuer performante Typen:
 
 Flach bedeutet: wenig Verschachtelung, wenig Indirektion, wenig
 Berechnung die der Checker zur Compile-Zeit durchfuehren muss.
+
+> 🏗️ **Analogie: Datenbank-Indizes und Typ-Performance**
+>
+> Performante Typen sind wie gut designte Datenbanktabellen. Eine Tabelle
+> mit 50 Spalten die alle direkt zugreifbar sind, ist schneller als eine
+> Tabelle mit 5 Spalten die jeweils JSON-Blobs mit verschachtelten Daten
+> enthalten. Die JSON-Variante erfordert erst Parsing (wie Intersection-
+> Merging) bevor du auf die eigentlichen Werte zugreifen kannst.
+>
+> Genauso ist ein Interface mit klaren Properties wie ein Tabellen-Design
+> mit festen Spalten: Der Compiler weiss genau wo was ist und muss nicht
+> erst Strukturen zusammenfuegen.
+
+> 🧠 **Erklaere dir selbst:** Wenn du ein Interface von drei anderen
+> Interfaces erben laesst — werden die Parent-Interfaces jedes Mal
+> neu berechnet oder gecacht?
+>
+> **Kernpunkte:** Interface extends wird EINMAL berechnet und gecacht |
+> Alle drei Parents werden zu einem einzigen Property-Merged zusammengefasst |
+> Dieser Merge wird gespeichert und bei jeder Verwendung wiederverwendet |
+> Im Gegensatz dazu: Intersection Types muessen bei jeder Verwendung neu
+> gemergt werden, weil der Compiler nicht weiss ob sie sich geaendert haben
 
 ---
 
@@ -146,6 +174,15 @@ type ApiResponse<T extends keyof ResponseMap> = {
 > uebrig sind (Narrowing). Im schlechtesten Fall: 100 + 99 + 98 + ... + 1 =
 > 5050 Pruefungen. Bei Mapped Types: 1 Lookup pro Case.
 
+> ⚡ **Framework-Bezug (React):** React Redux's `Action`-Typen sind ein
+> klassisches Beispiel fuer grosse Discriminated Unions. In einer mittleren
+> Applikation mit 50+ Action-Types wird der Reducer-Typecheck langsam.
+> Die Loesung: Statt einer riesigen `AppAction`-Union verwende separate
+> Reducer pro Domain (User, Posts, Comments) mit jeweils eigenen, kleinen
+> Unions. Redux Toolkit macht das automatisch mit `createSlice` — ein
+> weiterer Grund warum RTK nicht nur DX sondern auch Compile-Performance
+> verbessert.
+
 ---
 
 ## Conditional Types vereinfachen
@@ -182,6 +219,16 @@ type Get3<T, K1 extends keyof T, K2 extends keyof T[K1],
 > 50+ Formularen kann das die Compile-Zeit um 15-20% erhoehen. Der
 > Angular-Tipp: Verwende `FormRecord` statt tief verschachtelter
 > `FormGroup<{ nested: FormGroup<{ ... }> }>`.
+
+> 💭 **Denkfrage:** Warum sind Overloads fuer bekannte Tiefen schneller als
+> rekursive Template Literal Types?
+>
+> **Antwort:** Overloads sind diskrete, endgueltige Typen — der Compiler
+> kann sie alle im Voraus berechnen und cachen. Rekursive Template Literals
+> muessen zur Laufzeit des Type-Checkers "ausgerechnet" werden, inklusive
+> String-Verknuepfung und Pattern-Matching. Ein `Get1<T, K1>` ist ein
+> einfacher Lookup. `DeepExtract<T, "a.b.c">` erfordert Parsen des Strings,
+> Rekursion und mehrere Conditional-Evaluierungen.
 
 ---
 
@@ -231,6 +278,40 @@ type FlattenedItems = Flatten<Items>; // Einmal berechnen, ueberall nutzen
 >
 > In kleinen Beispielen ist der Unterschied minimal. In Projekten mit
 > Hunderten solcher Typen summiert es sich.
+
+> 🧪 **Zusatzexperiment: Union-Gruppierung messen**
+>
+> Teste den Unterschied zwischen einer grossen Union und gruppierten Unions:
+>
+> ```typescript
+> // Schlecht: Eine riesige Union
+> type AllRoutes =
+>   | { path: "/home"; component: HomePage }
+>   | { path: "/about"; component: AboutPage }
+>   | { path: "/users"; component: UsersPage }
+>   | { path: "/users/:id"; component: UserDetailPage }
+>   | { path: "/settings"; component: SettingsPage }
+>   | { path: "/settings/profile"; component: ProfilePage }
+>   | { path: "/settings/security"; component: SecurityPage }
+>   // ... 50 weitere Routen
+>   ;
+>
+> // Besser: Gruppiert nach Domains
+> type AuthRoutes =
+>   | { path: "/login"; component: LoginPage }
+>   | { path: "/register"; component: RegisterPage };
+>
+> type UserRoutes =
+>   | { path: "/users"; component: UsersPage }
+>   | { path: "/users/:id"; component: UserDetailPage };
+>
+> type AllRoutes = AuthRoutes | UserRoutes;
+> // ^ Der Compiler kann Domains separat evaluieren
+> ```
+>
+> Miss die IDE-Antwortzeit bei `const route: AllRoutes = ...` in beiden
+> Varianten. Der Unterschied ist in kleinen Projekten kaum sichtbar, aber
+> bei 100+ Routen wird er deutlich.
 
 ---
 

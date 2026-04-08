@@ -1,4 +1,4 @@
-# Sektion 2: Das State Machine Pattern
+﻿# Sektion 2: Das State Machine Pattern
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -111,7 +111,10 @@ function render(state: FetchState<User[]>): string {
 ---
 
 ## Zustandsuebergaenge typsicher machen
+<!-- section:summary -->
+Die Discriminated Union verhindert unmoegliche Zustaende. Aber was ist
 
+<!-- depth:standard -->
 Die Discriminated Union verhindert unmoegliche Zustaende. Aber was ist
 mit unmoeglichen **Uebergaengen**? Zum Beispiel: Von "idle" direkt
 nach "success" springen (ohne "loading" dazwischen).
@@ -147,6 +150,7 @@ transition("loading", "error");   // OK
 // ^ Von success nach error ist KEIN erlaubter Uebergang
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Erweitere die Transitions um einen neuen Zustand
 > "retrying". Ueberlege:
 >
@@ -169,8 +173,12 @@ transition("loading", "error");   // OK
 
 ---
 
+<!-- /depth -->
 ## State Machine als Klasse mit Methoden-Guards
+<!-- section:summary -->
+Fuer komplexere State Machines kann man die erlaubten Methoden
 
+<!-- depth:standard -->
 Fuer komplexere State Machines kann man die erlaubten Methoden
 pro Zustand einschraenken:
 
@@ -238,8 +246,12 @@ type AnyState = IdleState | LoadingState | SuccessState | ErrorState;
 
 ---
 
+<!-- /depth -->
 ## Praxis-Beispiel: Formular-Wizard
+<!-- section:summary -->
+Ein typischer Anwendungsfall: Ein mehrstufiges Formular, bei dem
 
+<!-- depth:standard -->
 Ein typischer Anwendungsfall: Ein mehrstufiges Formular, bei dem
 jeder Schritt bestimmte Aktionen erlaubt:
 
@@ -262,6 +274,7 @@ type WizardTransitions = {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Boolean-Flags** fuer Zustaende erzeugen unmoegliche Kombinationen (2^n Zustaende statt n)

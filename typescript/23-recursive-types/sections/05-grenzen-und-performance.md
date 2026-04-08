@@ -1,4 +1,4 @@
-# Sektion 5: Grenzen und Performance
+﻿# Sektion 5: Grenzen und Performance
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Das Rekursionslimit: Warum 50?
+<!-- section:summary -->
+TypeScript wertet Typen auf einem **Stack** aus — genau wie JavaScript
 
+<!-- depth:standard -->
 TypeScript wertet Typen auf einem **Stack** aus — genau wie JavaScript
 Funktionsaufrufe. Und genau wie bei Funktionen gibt es ein Limit:
 
@@ -34,6 +37,7 @@ type Fifty = Countdown<50>;  // OK (gerade noch)
 // Error: Type instantiation is excessively deep and possibly infinite.
 ```
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Warum TypeScript ein Rekursionslimit hat**
 >
 > Der TypeScript-Compiler wertet Typen **stack-basiert** aus.
@@ -52,8 +56,12 @@ type Fifty = Countdown<50>;  // OK (gerade noch)
 
 ---
 
+<!-- /depth -->
 ## Die Fehlermeldungen verstehen
+<!-- section:summary -->
+TypeScript hat mehrere Fehlermeldungen fuer Rekursionsprobleme:
 
+<!-- depth:standard -->
 TypeScript hat mehrere Fehlermeldungen fuer Rekursionsprobleme:
 
 ```typescript
@@ -74,8 +82,12 @@ type AllPaths<T> = /* ... tief verschachtelt ... */;
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Warum kann DeepPartial abstuerzen?
+<!-- section:summary -->
+Das Problem ist nicht nur die **Tiefe**, sondern auch die **Breite**.
 
+<!-- depth:standard -->
 > **Erklaere dir selbst:**
 >
 > Warum kann `DeepPartial<ExtremelyDeep>` den Compiler zum
@@ -97,8 +109,12 @@ Objekten** explodiert.
 
 ---
 
+<!-- /depth -->
 ## Tail Recursion Optimization (TS 4.5)
+<!-- section:summary -->
+TypeScript 4.5 (November 2021) brachte eine wichtige Optimierung:
 
+<!-- depth:standard -->
 TypeScript 4.5 (November 2021) brachte eine wichtige Optimierung:
 **Tail Recursion** fuer Conditional Types.
 
@@ -138,6 +154,7 @@ type NotTail<T> = T extends X ? [TailA<...>, string] : [];
 
 ---
 
+<!-- /depth -->
 ## Denkfrage: Countdown-Typ mit Tuple-Zaehler
 
 > **Denkfrage:**
@@ -163,7 +180,10 @@ type NotTail<T> = T extends X ? [TailA<...>, string] : [];
 ---
 
 ## Tuple-Arithmetik: Add und Subtract
+<!-- section:summary -->
+Mit dem Tuple-Trick kannst du sogar **Addition und Subtraktion**
 
+<!-- depth:standard -->
 Mit dem Tuple-Trick kannst du sogar **Addition und Subtraktion**
 auf Type-Level bauen:
 
@@ -193,8 +213,12 @@ type Diff = Subtract<10, 3>;  // 7
 
 ---
 
+<!-- /depth -->
 ## Performance-Fallen: Was du vermeiden solltest
+<!-- section:summary -->
+Hier sind die haeufigsten Performance-Killer:
 
+<!-- depth:standard -->
 Hier sind die haeufigsten Performance-Killer:
 
 ```typescript
@@ -226,6 +250,7 @@ type GoodPaths<T> = T extends object
 
 ---
 
+<!-- /depth -->
 ## Experiment: Finde das Rekursionslimit
 
 > **Experiment:**
@@ -268,7 +293,10 @@ type GoodPaths<T> = T extends object
 ---
 
 ## Wann rekursive Typen NICHT verwenden
+<!-- section:summary -->
+Rekursive Typen sind maechtig, aber nicht immer die beste Loesung:
 
+<!-- depth:standard -->
 Rekursive Typen sind maechtig, aber nicht immer die beste Loesung:
 
 ```typescript
@@ -289,6 +317,7 @@ type KnownPaths = "user.name" | "user.address.city";
 
 ---
 
+<!-- /depth -->
 ## Framework-Bezug: Compile-Zeit vs Nutzen
 
 > **In Angular und React:**

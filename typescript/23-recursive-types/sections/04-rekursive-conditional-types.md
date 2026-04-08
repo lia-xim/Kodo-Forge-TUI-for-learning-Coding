@@ -1,4 +1,4 @@
-# Sektion 4: Rekursive Conditional Types
+﻿# Sektion 4: Rekursive Conditional Types
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,12 +17,16 @@
 ---
 
 ## Die Koenigsklasse: Rekursion + Conditional Types
+<!-- section:summary -->
+In Sektion 3 hast du Mapped Types mit Rekursion kombiniert. Jetzt
 
+<!-- depth:standard -->
 In Sektion 3 hast du Mapped Types mit Rekursion kombiniert. Jetzt
 gehen wir einen Schritt weiter: **Conditional Types** die sich
 selbst aufrufen. Das ist die maechtigste Kombination in TypeScript's
 Typsystem.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: TypeScript 4.1 (November 2020)**
 >
 > Vor TypeScript 4.1 waren rekursive Conditional Types **verboten** —
@@ -39,8 +43,12 @@ Typsystem.
 
 ---
 
+<!-- /depth -->
 ## Flatten: Verschachtelte Arrays aufloesen
+<!-- section:summary -->
+Das einfachste Beispiel fuer rekursive Conditional Types ist **Flatten** —
 
+<!-- depth:standard -->
 Das einfachste Beispiel fuer rekursive Conditional Types ist **Flatten** —
 ein Typ der verschachtelte Arrays "flachklopft":
 
@@ -71,8 +79,12 @@ ein Nicht-Array-Typ uebrig bleibt.
 
 ---
 
+<!-- /depth -->
 ## Flatten mit Tiefen-Limit
+<!-- section:summary -->
+In der Praxis willst du oft nur **eine bestimmte Tiefe** flattenen
 
+<!-- depth:standard -->
 In der Praxis willst du oft nur **eine bestimmte Tiefe** flattenen
 (wie `Array.prototype.flat(depth)`):
 
@@ -104,6 +116,7 @@ type G = FlatArray<number[][][], 3>;  // number
 // ^ Drei Ebenen — komplett flach
 ```
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:**
 >
 > Warum ist `FlatArray` aus `lib.es2019.d.ts` nicht einfach
@@ -115,8 +128,12 @@ type G = FlatArray<number[][][], 3>;  // number
 
 ---
 
+<!-- /depth -->
 ## Paths\<T\>: Typsichere Objekt-Pfade
+<!-- section:summary -->
+Jetzt wird es richtig interessant. Stell dir vor, du willst alle
 
+<!-- depth:standard -->
 Jetzt wird es richtig interessant. Stell dir vor, du willst alle
 moeglichen Punkt-getrennten Pfade eines Objekts als Typ berechnen:
 
@@ -153,6 +170,7 @@ drei Features die zusammenarbeiten.
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Wie berechnet Paths die Pfade?
 
 > **Erklaere dir selbst:**
@@ -171,7 +189,10 @@ drei Features die zusammenarbeiten.
 ---
 
 ## PathValue\<T, P\>: Den Wert an einem Pfad holen
+<!-- section:summary -->
+Wenn wir Pfade berechnen koennen, koennen wir auch den **Typ des
 
+<!-- depth:standard -->
 Wenn wir Pfade berechnen koennen, koennen wir auch den **Typ des
 Wertes** an einem Pfad ermitteln:
 
@@ -207,8 +228,12 @@ type E = PathValue<User, "invalid">;                // never
 
 ---
 
+<!-- /depth -->
 ## Rekursive String-Manipulation
+<!-- section:summary -->
+Template Literal Types ermoeglichen auch **String-Manipulation auf
 
+<!-- depth:standard -->
 Template Literal Types ermoeglichen auch **String-Manipulation auf
 Type-Level**:
 
@@ -242,6 +267,7 @@ type Joined = Join<["a", "b", "c"], ".">;
 
 ---
 
+<!-- /depth -->
 ## Experiment: Paths in Aktion
 
 > **Experiment:**

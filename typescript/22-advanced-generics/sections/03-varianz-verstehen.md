@@ -1,4 +1,4 @@
-# Sektion 3: Varianz verstehen
+﻿# Sektion 3: Varianz verstehen
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Die Grundfrage
+<!-- section:summary -->
+Wenn `Cat` ein Subtyp von `Animal` ist (`Cat extends Animal`), was gilt
 
+<!-- depth:standard -->
 Wenn `Cat` ein Subtyp von `Animal` ist (`Cat extends Animal`), was gilt
 dann fuer Container die Cat oder Animal enthalten?
 
@@ -62,8 +65,12 @@ Frage anders.
 
 ---
 
+<!-- /depth -->
 ## Kovarianz: Die Subtyprichtung bleibt
+<!-- section:summary -->
+**Kovarianz** bedeutet: Wenn `Cat extends Animal`, dann gilt auch
 
+<!-- depth:standard -->
 **Kovarianz** bedeutet: Wenn `Cat extends Animal`, dann gilt auch
 `Container<Cat> extends Container<Animal>`. Die Richtung der Subtyp-
 beziehung bleibt gleich.
@@ -95,8 +102,12 @@ Callback-Rueckgabewerte.
 
 ---
 
+<!-- /depth -->
 ## Kontravarianz: Die Subtyprichtung kehrt sich um
+<!-- section:summary -->
+**Kontravarianz** ist das Gegenteil: Wenn `Cat extends Animal`, dann gilt
 
+<!-- depth:standard -->
 **Kontravarianz** ist das Gegenteil: Wenn `Cat extends Animal`, dann gilt
 `Handler<Animal> extends Handler<Cat>`. Die Richtung **kehrt sich um**.
 
@@ -133,8 +144,12 @@ declare const catOnlyHandler: Handler<Cat>;
 
 ---
 
+<!-- /depth -->
 ## Invarianz: Keine Richtung
+<!-- section:summary -->
+**Invarianz** entsteht wenn T sowohl in Input- als auch Output-Position
 
+<!-- depth:standard -->
 **Invarianz** entsteht wenn T sowohl in Input- als auch Output-Position
 steht. Dann gibt es keine sichere Subtyp-Beziehung in keine Richtung.
 
@@ -176,8 +191,12 @@ aus Pragmatismus. Das ist eine bewusste Unsicherheit.
 
 ---
 
+<!-- /depth -->
 ## Die Varianz-Tabelle
+<!-- section:summary -->
+Hier ist die Zusammenfassung aller Varianz-Arten:
 
+<!-- depth:standard -->
 Hier ist die Zusammenfassung aller Varianz-Arten:
 
 ```typescript annotated
@@ -235,8 +254,12 @@ interface MutableBox<T> { get(): T; set(value: T): void; }
 
 ---
 
+<!-- /depth -->
 ## Warum TypeScript bei Arrays "luegt"
+<!-- section:summary -->
+TypeScript erlaubt `Cat[] = Animal[]`-artige Zuweisungen, obwohl Arrays
 
+<!-- depth:standard -->
 TypeScript erlaubt `Cat[] = Animal[]`-artige Zuweisungen, obwohl Arrays
 invariant sein sollten. Warum?
 
@@ -261,6 +284,7 @@ Falsches reinschreiben wenn man nur lesen kann.
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > 🅰️ **Angular:** Mit `strictFunctionTypes` (Teil von `strict: true`)

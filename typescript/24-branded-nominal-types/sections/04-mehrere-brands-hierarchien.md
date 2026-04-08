@@ -1,4 +1,4 @@
-# Sektion 4: Mehrere Brands & Brand-Hierarchien
+﻿# Sektion 4: Mehrere Brands & Brand-Hierarchien
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -17,9 +17,13 @@
 ---
 
 ## Mehrere Brands kombinieren
-
+<!-- section:summary -->
 Brands können kombiniert werden — ein Wert kann mehrere Eigenschaften haben:
 
+<!-- depth:standard -->
+Brands können kombiniert werden — ein Wert kann mehrere Eigenschaften haben:
+
+<!-- depth:vollstaendig -->
 > **Hintergrund: Das Refinement-Pattern**
 >
 > Dieses Pattern kommt aus der Typentheorie: **Refinement Types** (auch:
@@ -91,8 +95,12 @@ search(createSearchQuery('  TypeScript  ')); // ✅ "typescript"
 
 ---
 
+<!-- /depth -->
 ## Brand-Hierarchien: Subtyping modellieren
+<!-- section:summary -->
+Das Wort "Hierarchy" bezieht sich darauf, dass ein speziellerer Brand
 
+<!-- depth:standard -->
 Das Wort "Hierarchy" bezieht sich darauf, dass ein speziellerer Brand
 automatisch auch einem allgemeineren Brand zuzuweisen ist:
 
@@ -156,8 +164,12 @@ function sendCriticalEmail(to: VerifiedEmail): void {
 
 ---
 
+<!-- /depth -->
 ## Number Brands: Physikalische Einheiten
+<!-- section:summary -->
+Brands glänzen besonders bei `number`-Typen — ein häufiger Bug-Herd:
 
+<!-- depth:standard -->
 Brands glänzen besonders bei `number`-Typen — ein häufiger Bug-Herd:
 
 ```typescript annotated
@@ -224,8 +236,12 @@ calculateBMI(myWeightKg, myHeightMeterConverted); // ✅ OK nach Konversion
 
 ---
 
+<!-- /depth -->
 ## Brands für Validierungszustände (State-Machines)
+<!-- section:summary -->
+Brands sind auch perfekt um **Verarbeitungszustände** zu modellieren:
 
+<!-- depth:standard -->
 Brands sind auch perfekt um **Verarbeitungszustände** zu modellieren:
 
 ```typescript annotated
@@ -265,6 +281,7 @@ if (validated) {
 // ^ TypeScript erzwingt die ganze Kette!
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt** kannst du dieses Pattern für HTTP-Interceptors nutzen:
 >
 > ```typescript
@@ -291,6 +308,7 @@ if (validated) {
 
 ---
 
+<!-- /depth -->
 ## Brands über mehrere Primitive hinweg
 
 ```typescript annotated

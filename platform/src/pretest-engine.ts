@@ -117,6 +117,32 @@ export function getPretestQuestions(
 }
 
 /**
+ * Lade ALLE Pre-Test-Fragen fuer eine gesamte Lektion.
+ *
+ * Im Gegensatz zu getPretestQuestions() wird nicht nach Sektion gefiltert —
+ * alle Fragen der Lektion werden zurueckgegeben.
+ *
+ * @param lessonDir - Absoluter Pfad zum Lektionsverzeichnis
+ * @returns Array mit allen Pre-Test-Fragen der Lektion
+ */
+export function getAllPretestQuestions(
+  lessonDir: string
+): PretestQuestion[] {
+  const pretestPath = path.join(lessonDir, "pretest-data.ts");
+
+  if (!fs.existsSync(pretestPath)) {
+    return [];
+  }
+
+  try {
+    const content = fs.readFileSync(pretestPath, "utf-8");
+    return parsePretestFile(content);
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Lade Pre-Test-Fragen asynchron (fuer Kontexte mit await).
  *
  * Nutzt dynamisches import() fuer korrekte TypeScript-Module.
@@ -192,6 +218,40 @@ export function calculateScore(
 
   const correctCount = results.filter((r) => r.correct && !r.skipped).length;
   return Math.round((correctCount / results.length) * 100);
+}
+
+/**
+ * Berechnet empfohlene Inhaltstiefen basierend auf Pre-Test-Ergebnissen.
+ *
+ * Logik:
+ * - >= 80% richtig → "kurz" (du kennst das schon)
+ * - >= 40% richtig → "standard" (Grundlagen da, Details fehlen)
+ * - < 40% richtig → "vollständig" (Neuland, tiefer einsteigen)
+ *
+ * @param lessonIndex - Index der Lektion
+ * @param sectionScores - Array mit Ergebnissen pro Sektion
+ * @returns Record mit Tiefen-Empfehlungen (key: "lessonIdx-sectionIdx")
+ */
+export function calculateDepthsFromPretest(
+  lessonIndex: number,
+  sectionScores: { sectionIndex: number; correct: number; total: number }[]
+): Record<string, "kurz" | "standard" | "vollständig"> {
+  const depths: Record<string, "kurz" | "standard" | "vollständig"> = {};
+
+  for (const { sectionIndex, correct, total } of sectionScores) {
+    const key = `${lessonIndex}-${sectionIndex}`;
+    const ratio = total > 0 ? correct / total : 0;
+
+    if (ratio >= 0.8) {
+      depths[key] = "kurz";
+    } else if (ratio >= 0.4) {
+      depths[key] = "standard";
+    } else {
+      depths[key] = "vollständig";
+    }
+  }
+
+  return depths;
 }
 
 /**

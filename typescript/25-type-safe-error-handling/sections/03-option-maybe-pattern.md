@@ -1,4 +1,4 @@
-# Sektion 3: Option/Maybe Pattern
+﻿# Sektion 3: Option/Maybe Pattern
 
 > Geschätzte Lesezeit: **9 Minuten**
 >
@@ -53,7 +53,10 @@ const none: None = { some: false };
 ---
 
 ## Wann Option, wann Result?
+<!-- section:summary -->
+Die entscheidende Frage: Was bedeutet das Fehlen eines Wertes?
 
+<!-- depth:standard -->
 Die entscheidende Frage: Was bedeutet das Fehlen eines Wertes?
 
 ```typescript annotated
@@ -91,8 +94,12 @@ function getFirstElement<T>(arr: T[]): T | null {
 
 ---
 
+<!-- /depth -->
 ## `strictNullChecks` als natives Option-System
+<!-- section:summary -->
+TypeScript's `strictNullChecks` ist faktisch ein eingebautes `Option`-System:
 
+<!-- depth:standard -->
 TypeScript's `strictNullChecks` ist faktisch ein eingebautes `Option`-System:
 
 ```typescript annotated
@@ -133,6 +140,7 @@ console.log(name ?? 'Unbekannt'); // ✅ 'Unbekannt' wenn null/undefined
 
 ---
 
+<!-- /depth -->
 ## Maybe<T> mit Chaining-Methoden
 
 ```typescript annotated

@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Was bedeutet es dass TypeScript's Typsystem Turing-vollstaendig ist?",
     options: [
       "Es kann jede berechenbare Funktion als Typ ausdruecken — mit Conditional Types, Rekursion und Mapped Types",
-      "Es kann JavaScript-Code schneller ausfuehren als andere Compiler",
-      "Es unterstuetzt alle JavaScript-Features ohne Einschraenkungen",
-      "Es kann Runtime-Typpruefungen durchfuehren",
+      "Es kann JavaScript-Code schneller ausfuehren als andere Compiler weil es zur Compilezeit optimiert",
+      "Es unterstuetzt alle JavaScript-Features ohne Einschraenkungen — es gibt keine Luecken im Typsystem",
+      "Es kann Runtime-Typpruefungen durchfuehren — die Typen werden zur Laufzeit ueberprueft",
     ],
     correct: 0,
     explanation:
@@ -36,9 +36,9 @@ export const questions: QuizQuestion[] = [
     question: "Wie repraesentiert man Zahlen auf Type-Level in TypeScript?",
     options: [
       "Durch Tuple-Laengen — ein Tuple [unknown, unknown, unknown] hat die Literal-Laenge 3",
-      "Durch numerische Literal Types wie type Three = 3",
-      "Durch String-Parsing von Zahlenwerten",
-      "TypeScript kann keine Zahlen auf Type-Level darstellen",
+      "Durch numerische Literal Types wie type Three = 3 — TypeScript rechnet direkt mit Zahlen",
+      "Durch String-Parsing von Zahlenwerten — die String-Repraesentation wird auf Type-Level geparst",
+      "TypeScript kann keine Zahlen auf Type-Level darstellen — dafuer braucht man externe Libraries",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Welche TypeScript-Features ermoeglichen String-Parsing auf Type-Level?",
     options: [
       "Template Literal Types kombiniert mit infer in Conditional Types",
-      "Regulaere Ausdruecke auf Type-Level",
-      "Die String.prototype Methoden in Type Utilities",
-      "Spezielle Compiler-Flags fuer String-Analyse",
+      "Regulaere Ausdruecke auf Type-Level — TypeScript unterstuetzt Regex-Pattern-Matching direkt im Typsystem",
+      "Die String.prototype Methoden in Type Utilities — TypeScript bildet sie auf Type-Level ab",
+      "Spezielle Compiler-Flags fuer String-Analyse — die muss man explizit in der tsconfig aktivieren",
     ],
     correct: 0,
     explanation:
@@ -76,9 +76,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum braucht BuildTuple<N> einen Accumulator-Parameter?",
     options: [
       "Weil TypeScript N-1 auf Type-Level nicht berechnen kann — der Accumulator zaehlt ueber seine Laenge",
-      "Weil TypeScript keine Rekursion ohne Accumulator unterstuetzt",
-      "Weil der Accumulator die Performance verbessert",
-      "Weil der Compiler sonst die Typinferenz nicht durchfuehren kann",
+      "Weil TypeScript keine Rekursion ohne Accumulator unterstuetzt — jeder rekursive Typ braucht einen Startwert",
+      "Weil der Accumulator die Performance verbessert und die Rekursionstiefe auf das Maximum erhoeht",
+      "Weil der Compiler sonst die Typinferenz nicht durchfuehren kann — der Accumulator gibt die Richtung vor",
     ],
     correct: 0,
     explanation:
@@ -94,10 +94,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen `T extends U ? X : Y` und `T extends infer U ? X : Y`?",
     options: [
-      "Es gibt keinen Unterschied",
+      "Es gibt keinen Unterschied — infer ist nur syntaktischer Zucker fuer bedingte Typ-Zuweisungen",
       "Ohne infer prueft man gegen einen bekannten Typ U — mit infer wird U aus T extrahiert",
-      "infer macht den Typ nullable",
-      "infer ist nur fuer Funktionstypen verfuegbar",
+      "infer macht den Typ nullable und erlaubt undefined als zusaetzlichen moeglichen Wert",
+      "infer ist nur fuer Funktionstypen verfuegbar — bei anderen Typen erzeugt es einen Compile-Fehler",
     ],
     correct: 1,
     explanation:
@@ -113,10 +113,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bewirkt `infer K extends string` (seit TypeScript 4.7)?",
     options: [
-      "Es erzwingt dass K ein String-Literal sein muss",
+      "Es erzwingt dass K ein String-Literal sein muss — generische Strings werden abgelehnt",
       "K wird inferiert UND muss gleichzeitig den Constraint string erfuellen",
-      "Es ist syntaktischer Zucker fuer eine Union mit string",
-      "Es schraenkt die Rekursionstiefe ein",
+      "Es ist syntaktischer Zucker fuer eine Union mit string — beide Varianten sind identisch",
+      "Es schraenkt die Rekursionstiefe ein und verhindert damit 'Type instantiation is excessively deep' Fehler",
     ],
     correct: 1,
     explanation:
@@ -132,10 +132,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Seit welcher TypeScript-Version wurde die Rekursionstiefe fuer Typen von ~50 auf ~1000 erhoeht?",
     options: [
-      "TypeScript 4.1 mit Template Literal Types",
+      "TypeScript 4.1 mit Template Literal Types — das war der erste Schritt zu Type-Level-String-Parsing",
       "TypeScript 4.5 mit Tail-Call Elimination fuer Conditional Types",
-      "TypeScript 5.0 mit Decorators",
-      "TypeScript 3.7 mit Recursive Type Aliases",
+      "TypeScript 5.0 mit Decorators — die neue Decorator-Syntax brachte auch Performance-Verbesserungen",
+      "TypeScript 3.7 mit Recursive Type Aliases — das erlaubte erstmals rekursive Typ-Definitionen",
     ],
     correct: 1,
     explanation:
@@ -170,10 +170,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Typ von NTuple<number, 3>?",
     options: [
-      "number[]",
-      "Array<number>",
+      "number[] — ein Array mit beliebiger Laenge, da TypeScript die genaue Anzahl nicht bestimmen kann",
+      "Array<number> — identisch mit number[], TypeScript inferiert den allgemeinsten moeglichen Typ",
       "[number, number, number]",
-      "[3, 3, 3]",
+      "[3, 3, 3] — ein Tuple mit drei Literal-Werten statt drei number-Slots",
     ],
     correct: 2,
     explanation:
@@ -189,10 +189,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wie funktioniert UnionToIntersection<A | B> technisch?",
     options: [
-      "Durch spezielle Compiler-Unterstuetzung fuer Union-Typen",
-      "Durch Mapped Types die ueber die Union iterieren",
+      "Durch spezielle Compiler-Unterstuetzung fuer Union-Typen — der Compiler hat eine eingebaute Funktion",
+      "Durch Mapped Types die ueber die Union iterieren und jedes Member einzeln extrahieren",
       "Durch kontravariante Position — Funktions-Parameter werden bei Union zu Intersection",
-      "Durch Template Literal Types die Unions zusammenfuegen",
+      "Durch Template Literal Types die Unions zusammenfuegen und daraus eine Intersection formen",
     ],
     correct: 2,
     explanation:
@@ -227,10 +227,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum muessen Funktionen in DeepReadonly<T> ausgenommen werden?",
     options: [
-      "Weil Funktionen nicht readonly sein koennen",
-      "Weil der Compiler Funktionen nicht rekursiv verarbeiten kann",
+      "Weil Funktionen nicht readonly sein koennen — das readonly-Keyword funktioniert nur bei Objekt-Properties",
+      "Weil der Compiler Funktionen nicht rekursiv verarbeiten kann — sie brechen die Typ-Inferenz ab",
       "Weil DeepReadonly die Funktionssignatur kaputt machen wuerde (length, name Properties)",
-      "Weil Funktionen immer immutable sind",
+      "Weil Funktionen immer immutable sind — es gibt keine Moeglichkeit sie nachtraeglich zu veraendern",
     ],
     correct: 2,
     explanation:
@@ -246,9 +246,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Unterschied zwischen `[...Reverse<Rest>, First]` und `Reverse<Rest, [First, ...Acc]>`?",
     options: [
-      "Kein Unterschied — beide erzeugen dasselbe Ergebnis",
-      "Das erste ist schneller, das zweite ist korrekt",
-      "Das erste funktioniert nur mit Arrays, das zweite mit Tuples",
+      "Kein Unterschied — beide erzeugen dasselbe Ergebnis und haben identische Performance-Charakteristiken",
+      "Das erste ist schneller, das zweite ist korrekt — das erste hat einen Bug bei leeren Arrays",
+      "Das erste funktioniert nur mit Arrays, das zweite mit Tuples — der Unterschied liegt im Input-Typ",
       "Das erste ist nicht tail-recursive, das zweite ist es — was eine 20x hoehere Rekursionstiefe ermoeglicht",
     ],
     correct: 3,

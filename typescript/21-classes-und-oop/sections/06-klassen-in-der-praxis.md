@@ -1,4 +1,4 @@
-# Sektion 6: Klassen in der Praxis
+﻿# Sektion 6: Klassen in der Praxis
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Klassen vs. Funktionen: Wann was?
+<!-- section:summary -->
+Die zentrale Frage in modernem TypeScript: **Wann schreibst du eine
 
+<!-- depth:standard -->
 Die zentrale Frage in modernem TypeScript: **Wann schreibst du eine
 Klasse, und wann reichen Funktionen + Closures?**
 
@@ -64,6 +67,7 @@ console.log(counter2.getCount()); // 1
 | Serialisierung noetig? | Schwieriger | Einfacher (Plain Objects) |
 | Framework-Anforderung? | Angular: **Ja** | React (Hooks): **Ja** |
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: React's Wechsel von Class Components zu Hooks (React 16.8, 2019)**
 >
 > Bis React 16.8 (Februar 2019) wurden React-Komponenten als **Klassen**
@@ -109,8 +113,12 @@ console.log(counter2.getCount()); // 1
 
 ---
 
+<!-- /depth -->
 ## Composition over Inheritance: Das Praxis-Beispiel
+<!-- section:summary -->
+Stell dir vor, du baust ein Spiel mit verschiedenen Charakteren:
 
+<!-- depth:standard -->
 Stell dir vor, du baust ein Spiel mit verschiedenen Charakteren:
 Krieger, Magier, Heiler. Jeder kann kaempfen, zaubern oder heilen —
 in verschiedenen Kombinationen.
@@ -177,8 +185,12 @@ console.log(mage.cast());  // "Feuerball!"
 
 ---
 
+<!-- /depth -->
 ## Mixins: Klassen-Features dynamisch hinzufuegen
+<!-- section:summary -->
+Mixins sind ein TypeScript-Pattern, das **Vererbung von mehreren
 
+<!-- depth:standard -->
 Mixins sind ein TypeScript-Pattern, das **Vererbung von mehreren
 Quellen** ermoeglicht — etwas, das `extends` allein nicht kann.
 Es nutzt Funktionen, die Klassen erweitern:
@@ -225,6 +237,7 @@ user.log("Eingeloggt");      // "[...] Eingeloggt" (von WithLogging)
 user.touch();                // Aktualisiert updatedAt (von WithTimestamp)
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Erstelle einen Mixin `WithValidation` der eine Methode
 > `validate(): boolean` hinzufuegt. Wende ihn zusammen mit `WithTimestamp`
 > auf eine `Product`-Klasse an. Beobachte: Beide Mixins fuegen
@@ -232,8 +245,12 @@ user.touch();                // Aktualisiert updatedAt (von WithTimestamp)
 
 ---
 
+<!-- /depth -->
 ## Der this-Kontext: Das groesste Stolperproblem
+<!-- section:summary -->
+Dies ist vermutlich die haeufigste Fehlerquelle bei Klassen in
 
+<!-- depth:standard -->
 Dies ist vermutlich die haeufigste Fehlerquelle bei Klassen in
 JavaScript/TypeScript. Wir haben es in Sektion 01 kurz angesprochen —
 hier die volle Erklaerung:
@@ -257,6 +274,7 @@ class Timer {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Erklaere dir selbst:** Warum verliert eine Methode ihren this-Kontext
 > als Callback? Was genau passiert, wenn du `const fn = obj.method`
 > schreibst und dann `fn()` aufrufst?
@@ -324,8 +342,12 @@ class Timer {
 
 ---
 
+<!-- /depth -->
 ## Klassen und Type Narrowing
+<!-- section:summary -->
+Klassen sind die einzigen TypeScript-Typen, die `instanceof` fuer
 
+<!-- depth:standard -->
 Klassen sind die einzigen TypeScript-Typen, die `instanceof` fuer
 Type Narrowing unterstuetzen (weil sie zur Laufzeit existieren):
 
@@ -353,6 +375,7 @@ Das funktioniert NICHT mit Interfaces — weil Interfaces zur Laufzeit
 nicht existieren (Type Erasure, Lektion 02). Wenn du `instanceof` brauchst,
 muessen es Klassen sein.
 
+<!-- depth:vollstaendig -->
 > **In React** verwendest du Klassen seltener, aber fuer Error Boundaries
 > sind sie **immer noch erforderlich**. React hat keine Hook-basierte
 > Alternative fuer Error Boundaries — `componentDidCatch` erfordert eine
@@ -365,8 +388,12 @@ muessen es Klassen sein.
 
 ---
 
+<!-- /depth -->
 ## Best Practices: Klassen in TypeScript
+<!-- section:summary -->
+1. **Bevorzuge Komposition** ueber Vererbung. Nutze Interfaces + Injection.
 
+<!-- depth:standard -->
 1. **Bevorzuge Komposition** ueber Vererbung. Nutze Interfaces + Injection.
 2. **Parameter Properties** verwenden — weniger Code, weniger Fehler.
 3. **readonly** fuer alles, was sich nicht aendern soll.
@@ -378,6 +405,7 @@ muessen es Klassen sein.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Klassen vs. Funktionen**: Klassen fuer Frameworks (Angular), `instanceof`,

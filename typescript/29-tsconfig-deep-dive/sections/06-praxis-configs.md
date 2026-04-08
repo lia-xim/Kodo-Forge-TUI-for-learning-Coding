@@ -1,4 +1,4 @@
-# Sektion 6: Praxis — Monorepo und Framework-Configs
+﻿# Sektion 6: Praxis — Monorepo und Framework-Configs
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Die Angular-Konfiguration im Detail
+<!-- section:summary -->
+Angular-Projekte haben typischerweise **drei** tsconfig-Dateien.
 
+<!-- depth:standard -->
 Angular-Projekte haben typischerweise **drei** tsconfig-Dateien.
 Das ist kein Zufall — es spiegelt die drei verschiedenen Kontexte
 wider, in denen TypeScript-Code laeuft:
@@ -108,8 +111,12 @@ wider, in denen TypeScript-Code laeuft:
 
 ---
 
+<!-- /depth -->
 ## Die React/Next.js-Konfiguration
+<!-- section:summary -->
+React-Projekte sind einfacher — meistens eine einzige tsconfig:
 
+<!-- depth:standard -->
 React-Projekte sind einfacher — meistens eine einzige tsconfig:
 
 ```typescript annotated
@@ -194,8 +201,12 @@ React-Projekte sind einfacher — meistens eine einzige tsconfig:
 
 ---
 
+<!-- /depth -->
 ## Das Monorepo-Setup
+<!-- section:summary -->
+Ein Monorepo mit Project References verbindet alles, was du in
 
+<!-- depth:standard -->
 Ein Monorepo mit Project References verbindet alles, was du in
 dieser Lektion gelernt hast:
 
@@ -283,8 +294,12 @@ dieser Lektion gelernt hast:
 
 ---
 
+<!-- /depth -->
 ## Die "goldene tsconfig" fuer neue Projekte
+<!-- section:summary -->
+Basierend auf allem was du gelernt hast, hier die empfohlene
 
+<!-- depth:standard -->
 Basierend auf allem was du gelernt hast, hier die empfohlene
 Basis-Konfiguration fuer ein neues TypeScript-Projekt in 2025:
 
@@ -341,6 +356,7 @@ Basis-Konfiguration fuer ein neues TypeScript-Projekt in 2025:
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Framework-Empfehlungen
 
 | Flag | Angular | React/Vite | Next.js | Node.js | Library |

@@ -1,4 +1,4 @@
-# Sektion 2: Die Strict-Mode-Familie
+﻿# Sektion 2: Die Strict-Mode-Familie
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Das `strict`-Flag: Ein Buendel, kein einzelnes Flag
+<!-- section:summary -->
+Wenn du `"strict": true` setzt, aktivierst du nicht ein einzelnes
 
+<!-- depth:standard -->
 Wenn du `"strict": true` setzt, aktivierst du nicht ein einzelnes
 Verhalten — du aktivierst **8 einzelne Flags gleichzeitig**. Das ist
 wie ein "Alles anschalten"-Schalter fuer Typsicherheit.
@@ -55,8 +58,12 @@ wie ein "Alles anschalten"-Schalter fuer Typsicherheit.
 
 ---
 
+<!-- /depth -->
 ## Die 8 Flags im Detail
+<!-- section:summary -->
+### 1. `strictNullChecks` — Das wichtigste Flag
 
+<!-- depth:standard -->
 ### 1. `strictNullChecks` — Das wichtigste Flag
 
 Ohne `strictNullChecks` ist jeder Typ automatisch auch `null` und
@@ -270,8 +277,12 @@ gelernt, warum `throw` beliebige Werte werfen kann, nicht nur `Error`.
 
 ---
 
+<!-- /depth -->
 ## Strict-Flags einzeln ueberschreiben
+<!-- section:summary -->
+Du kannst `strict: true` setzen und einzelne Flags wieder
 
+<!-- depth:standard -->
 Du kannst `strict: true` setzen und einzelne Flags wieder
 deaktivieren. Das ist nuetzlich bei Migrationen:
 
@@ -298,6 +309,7 @@ ist eine potenzielle Fehlerquelle.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `strict: true` aktiviert 8 einzelne Flags gleichzeitig

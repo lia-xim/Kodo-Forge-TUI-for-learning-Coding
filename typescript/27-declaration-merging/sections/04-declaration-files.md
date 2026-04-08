@@ -1,4 +1,4 @@
-# Sektion 4: Declaration Files (.d.ts)
+﻿# Sektion 4: Declaration Files (.d.ts)
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -80,7 +80,10 @@ type Operation = "add" | "subtract" | "multiply" | "divide";
 ---
 
 ## .d.ts automatisch generieren
+<!-- section:summary -->
+TypeScript kann `.d.ts`-Dateien automatisch aus deinem Code generieren:
 
+<!-- depth:standard -->
 TypeScript kann `.d.ts`-Dateien automatisch aus deinem Code generieren:
 
 ```typescript annotated
@@ -128,8 +131,12 @@ export interface CurrencyConfig {
 
 ---
 
+<!-- /depth -->
 ## Eigene .d.ts fuer JavaScript-Bibliotheken schreiben
+<!-- section:summary -->
+Manchmal gibt es kein `@types/*`-Paket. Dann musst du selbst ran:
 
+<!-- depth:standard -->
 Manchmal gibt es kein `@types/*`-Paket. Dann musst du selbst ran:
 
 ```typescript annotated
@@ -173,6 +180,7 @@ declare module "legacy-charts" {
 // ^ Voll typsicher!
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Schaue in einem deiner Projekte in `node_modules/@types/`.
 > Oeffne z.B. `@types/node/index.d.ts` oder `@types/express/index.d.ts`.
 > Du wirst sehen:
@@ -188,8 +196,12 @@ declare module "legacy-charts" {
 
 ---
 
+<!-- /depth -->
 ## Wildcards und Nicht-JS-Module
+<!-- section:summary -->
+Fuer Dateitypen die kein JavaScript sind:
 
+<!-- depth:standard -->
 Fuer Dateitypen die kein JavaScript sind:
 
 ```typescript annotated
@@ -250,6 +262,7 @@ declare module "*.json" {
 
 ---
 
+<!-- /depth -->
 ## tsconfig.json: Typ-Dateien einbinden
 
 ```typescript annotated

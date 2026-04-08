@@ -1,9 +1,9 @@
-# Sektion 4: Zustandsmodellierung mit Discriminated Unions
+# Sektion 5: Zustandsmodellierung mit Discriminated Unions
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
-> Vorherige Sektion: [03 - Algebraische Datentypen](./03-algebraische-datentypen.md)
-> Naechste Sektion: [05 - Praxis-Patterns](./05-praxis-patterns.md)
+> Vorherige Sektion: [04 - Option und Result Pattern](./04-option-und-result-pattern.md)
+> Naechste Sektion: [06 - Praxis-Patterns](./06-praxis-patterns.md)
 
 ---
 
@@ -354,4 +354,4 @@ function renderNew(state: AsyncState<string[]>) {
 > In der letzten Sektion schauen wir uns fortgeschrittene Praxis-Patterns
 > an: API Responses, Action Types fuer Redux/NgRx und Event Systeme.
 >
-> Weiter: [Sektion 05 - Praxis-Patterns](./05-praxis-patterns.md)
+> Weiter: [Sektion 06 - Praxis-Patterns](./06-praxis-patterns.md)

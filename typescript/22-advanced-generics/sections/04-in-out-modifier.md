@@ -1,4 +1,4 @@
-# Sektion 4: in/out Modifier (TS 4.7)
+﻿# Sektion 4: in/out Modifier (TS 4.7)
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Das Problem: Implizite Varianz
+<!-- section:summary -->
+In Sektion 3 hast du gelernt, dass Varianz davon abhaengt, WO ein
 
+<!-- depth:standard -->
 In Sektion 3 hast du gelernt, dass Varianz davon abhaengt, WO ein
 Typparameter verwendet wird. TypeScript berechnet das automatisch:
 
@@ -68,8 +71,12 @@ Das funktioniert, hat aber zwei Nachteile:
 
 ---
 
+<!-- /depth -->
 ## Die Syntax: `out` fuer Kovarianz
+<!-- section:summary -->
+Der `out`-Modifier deklariert: "Dieser Typparameter wird nur
 
+<!-- depth:standard -->
 ```typescript annotated
 // OHNE Modifier (funktioniert, aber implizit):
 interface ProducerOld<T> {
@@ -98,6 +105,7 @@ Der `out`-Modifier deklariert: "Dieser Typparameter wird nur
 
 ---
 
+<!-- /depth -->
 ## Die Syntax: `in` fuer Kontravarianz
 
 ```typescript annotated
@@ -156,7 +164,10 @@ interface WrongBox<out T> {
 ---
 
 ## Performance-Vorteile
+<!-- section:summary -->
+Die Modifier sind nicht nur fuer Klarheit — sie verbessern die
 
+<!-- depth:standard -->
 Die Modifier sind nicht nur fuer Klarheit — sie verbessern die
 Compile-Performance:
 
@@ -205,6 +216,7 @@ interface BigInterface<in out T> {
 
 ---
 
+<!-- /depth -->
 ## Praxisbeispiel: ReadonlyArray vs Array
 
 ```typescript annotated
@@ -234,7 +246,10 @@ interface MutableArray<in out T> {
 ---
 
 ## Wann Modifier verwenden?
+<!-- section:summary -->
+| Library/API | Immer Modifier verwenden — Klarheit und Performance |
 
+<!-- depth:standard -->
 | Situation | Empfehlung |
 |---|---|
 | Library/API | Immer Modifier verwenden — Klarheit und Performance |
@@ -246,6 +261,7 @@ interface MutableArray<in out T> {
 
 ---
 
+<!-- /depth -->
 ## Der Framework-Bezug
 
 > 🅰️ **Angular:** `ReadonlyArray<T>` ist natuerlich kovariant (`out T`).

@@ -1,4 +1,4 @@
-# Sektion 6: Error Handling in der Praxis — Angular & React
+﻿# Sektion 6: Error Handling in der Praxis — Angular & React
 
 > Geschätzte Lesezeit: **9 Minuten**
 >
@@ -177,7 +177,10 @@ async function loadUserData(userId: string) {
 ---
 
 ## Wann weiterhin `throw` verwenden
+<!-- section:summary -->
+Nicht alles muss `Result` sein. `throw` ist weiterhin richtig für:
 
+<!-- depth:standard -->
 Nicht alles muss `Result` sein. `throw` ist weiterhin richtig für:
 
 ```typescript annotated
@@ -224,6 +227,7 @@ function safeParseJson<T>(json: string): Result<T, string> {
 > Funktion ist ein Bug → throw. Die Frage: "Kann ein korrektes Programm
 > in diese Situation kommen?"
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -273,6 +277,7 @@ function safeParseJson<T>(json: string): Result<T, string> {
 
 ---
 
+<!-- /depth -->
 ## Vollständige Fehler-Architektur
 
 ```typescript

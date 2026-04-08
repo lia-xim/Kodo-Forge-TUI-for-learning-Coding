@@ -1,4 +1,4 @@
-# Sektion 6: Praxis-Kombination
+﻿# Sektion 6: Praxis-Kombination
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -37,7 +37,10 @@
 ---
 
 ## Praxis-Beispiel: Typsicherer HTTP-Client
+<!-- section:summary -->
+Wir kombinieren Builder + State Machine + Newtypes:
 
+<!-- depth:standard -->
 Wir kombinieren Builder + State Machine + Newtypes:
 
 ```typescript annotated
@@ -100,6 +103,7 @@ interface ReadyStep {
 
 ---
 
+<!-- /depth -->
 ## Die Implementierung
 
 ```typescript annotated

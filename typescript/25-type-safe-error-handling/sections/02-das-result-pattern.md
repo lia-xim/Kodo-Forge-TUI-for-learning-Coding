@@ -1,4 +1,4 @@
-# Sektion 2: Das Result-Pattern
+﻿# Sektion 2: Das Result-Pattern
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -113,7 +113,10 @@ if (result.ok) {
 ---
 
 ## `as const` für exaktere Typen
+<!-- section:summary -->
+Ein häufiger Fallstrick bei Result-Objekten:
 
+<!-- depth:standard -->
 Ein häufiger Fallstrick bei Result-Objekten:
 
 ```typescript annotated
@@ -157,8 +160,12 @@ function divide(a: number, b: number): Result<number, string> {
 
 ---
 
+<!-- /depth -->
 ## Chaining mit Result: `map` und `flatMap`
+<!-- section:summary -->
+Result-Typen werden erst wirklich elegant mit Chaining-Methoden:
 
+<!-- depth:standard -->
 Result-Typen werden erst wirklich elegant mit Chaining-Methoden:
 
 ```typescript annotated
@@ -207,6 +214,7 @@ function processInput(raw: string): Result<number, string> {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -256,8 +264,12 @@ function processInput(raw: string): Result<number, string> {
 
 ---
 
+<!-- /depth -->
 ## Typisierte Fehler: Error-Discriminated-Unions
+<!-- section:summary -->
+Statt `string` als Fehler-Typ sind **spezifische Fehler-Typen** mächtiger:
 
+<!-- depth:standard -->
 Statt `string` als Fehler-Typ sind **spezifische Fehler-Typen** mächtiger:
 
 ```typescript annotated
@@ -314,6 +326,7 @@ if (result.ok) {
 }
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt:**
 >
 > ```typescript
@@ -342,6 +355,7 @@ if (result.ok) {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `Result<T, E>` ist eine Discriminated Union: `{ ok: true; value: T } | { ok: false; error: E }`

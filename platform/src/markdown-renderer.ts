@@ -770,11 +770,13 @@ export function validateDepthMarkers(markdown: string): string | null {
     if (trimmed === "<!-- /depth -->") closeCount++;
   }
 
+  const totalOpen = depthCount + summaryCount;
+
   if (depthCount > 0 && summaryCount === 0) {
     return "Depth-Marker vorhanden aber kein <!-- section:summary --> gefunden.";
   }
-  if (depthCount !== closeCount) {
-    return `Unausgeglichene Depth-Marker: ${depthCount} oeffnende, ${closeCount} schliessende.`;
+  if (totalOpen !== closeCount) {
+    return `Unausgeglichene Depth-Marker: ${totalOpen} oeffnende, ${closeCount} schliessende.`;
   }
 
   return null; // Alles OK

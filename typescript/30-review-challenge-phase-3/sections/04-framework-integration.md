@@ -1,4 +1,4 @@
-# Sektion 4: Framework-Integration — Angular und React
+﻿# Sektion 4: Framework-Integration — Angular und React
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## Angular: Phase-3-Konzepte in der Praxis
+<!-- section:summary -->
+### Branded Types fuer Angular Services (L24)
 
+<!-- depth:standard -->
 ### Branded Types fuer Angular Services (L24)
 
 In deinem Angular-Projekt hast du vermutlich Services, die mit
@@ -133,8 +136,12 @@ declare module '@angular/router' {
 
 ---
 
+<!-- /depth -->
 ## React: Phase-3-Konzepte in der Praxis
+<!-- section:summary -->
+### Generische Components mit Varianz (L22)
 
+<!-- depth:standard -->
 ### Generische Components mit Varianz (L22)
 
 ```typescript annotated
@@ -221,8 +228,12 @@ function checkoutReducer(
 
 ---
 
+<!-- /depth -->
 ## Framework-uebergreifende Patterns
+<!-- section:summary -->
+Manche Phase-3-Konzepte sind framework-agnostisch:
 
+<!-- depth:standard -->
 Manche Phase-3-Konzepte sind framework-agnostisch:
 
 ### tsconfig-Optimierung (L29)
@@ -275,8 +286,12 @@ type DeepReadonly<T> =
 
 ---
 
+<!-- /depth -->
 ## Angular vs React: Wo liegen die Unterschiede?
+<!-- section:summary -->
+| Konzept | Angular-Eigenheit | React-Eigenheit |
 
+<!-- depth:standard -->
 | Konzept | Angular-Eigenheit | React-Eigenheit |
 |---------|-------------------|-----------------|
 | Decorators (L28) | Kernfeature (@Component etc.) | Nicht verwendet (Hooks statt Decorators) |
@@ -297,6 +312,7 @@ type DeepReadonly<T> =
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Branded Types (L24) und Result-Pattern (L25) sind in Angular sofort einsetzbar

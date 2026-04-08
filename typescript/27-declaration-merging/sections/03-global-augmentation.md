@@ -1,4 +1,4 @@
-# Sektion 3: Global Augmentation
+﻿# Sektion 3: Global Augmentation
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -113,7 +113,10 @@ declare global {
 ---
 
 ## Praxis: NodeJS.ProcessEnv typsicher machen
+<!-- section:summary -->
+Ein sehr haeufiger Use Case in Node.js/Angular/Next.js-Projekten:
 
+<!-- depth:standard -->
 Ein sehr haeufiger Use Case in Node.js/Angular/Next.js-Projekten:
 
 ```typescript annotated
@@ -149,6 +152,7 @@ const port = process.env.PORT ?? "3000";
 // Das verhindert Tippfehler in Environment-Variablen-Namen!
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Probiere folgendes im TypeScript Playground aus:
 >
 > ```typescript
@@ -187,8 +191,12 @@ const port = process.env.PORT ?? "3000";
 
 ---
 
+<!-- /depth -->
 ## Array.prototype erweitern
+<!-- section:summary -->
+Ein weiterer haeufiger Use Case: Built-in-Typen um Methoden erweitern:
 
+<!-- depth:standard -->
 Ein weiterer haeufiger Use Case: Built-in-Typen um Methoden erweitern:
 
 ```typescript annotated
@@ -254,8 +262,12 @@ const uniqueNumbers = numbers.unique(); // [1, 2, 3]
 
 ---
 
+<!-- /depth -->
 ## Best Practices fuer globale Augmentations
+<!-- section:summary -->
+| In eigener `.d.ts`-Datei | Trennung von Code und Typ-Erweiterung |
 
+<!-- depth:standard -->
 | Regel | Grund |
 |---|---|
 | In eigener `.d.ts`-Datei | Trennung von Code und Typ-Erweiterung |
@@ -267,6 +279,7 @@ const uniqueNumbers = numbers.unique(); // [1, 2, 3]
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `declare global { }` erweitert den globalen Scope (window, globalThis, process)

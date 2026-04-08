@@ -1,4 +1,4 @@
-# Sektion 2: Module Augmentation
+﻿# Sektion 2: Module Augmentation
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -80,7 +80,10 @@ declare module "express-serve-static-core" {
 ---
 
 ## Wichtige Regeln
+<!-- section:summary -->
+### Regel 1: Die Datei muss ein Modul sein
 
+<!-- depth:standard -->
 ### Regel 1: Die Datei muss ein Modul sein
 
 ```typescript annotated
@@ -148,6 +151,7 @@ declare module "express-serve-static-core" { // RICHTIG
 
 ---
 
+<!-- /depth -->
 ## Praxis: React Types erweitern
 
 ```typescript annotated
@@ -187,7 +191,10 @@ declare module "react" {
 ---
 
 ## Augmentation fuer eigene Module
+<!-- section:summary -->
+Module Augmentation funktioniert auch mit eigenen Modulen:
 
+<!-- depth:standard -->
 Module Augmentation funktioniert auch mit eigenen Modulen:
 
 ```typescript annotated
@@ -232,8 +239,12 @@ declare module "./math-utils" {
 
 ---
 
+<!-- /depth -->
 ## Augmentation vs. Wrapper vs. Fork
+<!-- section:summary -->
+| Ansatz | Wann verwenden? | Nachteile |
 
+<!-- depth:standard -->
 | Ansatz | Wann verwenden? | Nachteile |
 |---|---|---|
 | **Augmentation** | Neue Properties/Methoden hinzufuegen | Nur Interface-Erweiterung, kein Override |
@@ -243,6 +254,7 @@ declare module "./math-utils" {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `declare module "paketname"` erweitert die Typen eines fremden Moduls

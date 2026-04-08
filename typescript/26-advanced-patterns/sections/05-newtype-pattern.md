@@ -1,4 +1,4 @@
-# Sektion 5: Das Newtype Pattern
+﻿# Sektion 5: Das Newtype Pattern
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -139,7 +139,10 @@ createOrder(uid, pid, 3, price); // OK
 ---
 
 ## Operationen auf Newtypes
+<!-- section:summary -->
+Der Kern-Vorteil von Newtypes: Eigene Operationen definieren:
 
+<!-- depth:standard -->
 Der Kern-Vorteil von Newtypes: Eigene Operationen definieren:
 
 ```typescript annotated
@@ -168,6 +171,7 @@ function formatCents(amount: CentsAmount): string {
 console.log(formatCents(CentsAmount(1999))); // "19.99 EUR"
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Baue ein Newtype-System fuer Temperatur:
 >
 > ```typescript
@@ -190,8 +194,12 @@ console.log(formatCents(CentsAmount(1999))); // "19.99 EUR"
 
 ---
 
+<!-- /depth -->
 ## Opaque Types: Newtypes in grossen Codebases
+<!-- section:summary -->
+In grossen Projekten verwendet man oft das **Opaque Type Pattern**:
 
+<!-- depth:standard -->
 In grossen Projekten verwendet man oft das **Opaque Type Pattern**:
 Der Typ ist nur innerhalb eines Moduls bekannt:
 
@@ -250,8 +258,12 @@ export function userIdToString(id: UserId): string {
 
 ---
 
+<!-- /depth -->
 ## Entscheidungsmatrix: Welches Pattern wann?
+<!-- section:summary -->
+| Kriterium | Branded Type | Phantom Type | Newtype |
 
+<!-- depth:standard -->
 | Kriterium | Branded Type | Phantom Type | Newtype |
 |---|---|---|---|
 | Verwechslung verhindern | Ja | Ja | Ja |
@@ -263,6 +275,7 @@ export function userIdToString(id: UserId): string {
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - Das **Newtype Pattern** erstellt semantisch verschiedene Typen aus dem gleichen Basistyp

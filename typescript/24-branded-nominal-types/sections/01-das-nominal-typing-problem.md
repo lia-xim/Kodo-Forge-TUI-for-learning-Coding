@@ -1,4 +1,4 @@
-# Sektion 1: Das Nominal-Typing-Problem
+﻿# Sektion 1: Das Nominal-Typing-Problem
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -43,7 +43,10 @@
 ---
 
 ## Das Problem: Type Aliases helfen nicht
+<!-- section:summary -->
+Stell dir vor, du hast eine Benutzer-Management-API:
 
+<!-- depth:standard -->
 Stell dir vor, du hast eine Benutzer-Management-API:
 
 ```typescript annotated
@@ -117,8 +120,12 @@ validateSession(userId); // KEIN FEHLER! Literal string
 
 ---
 
+<!-- /depth -->
 ## Warum Structural Typing dieses Problem erzeugt
+<!-- section:summary -->
+Das Problem liegt nicht darin, dass Structural Typing schlecht waere — es liegt
 
+<!-- depth:standard -->
 Das Problem liegt nicht darin, dass Structural Typing schlecht waere — es liegt
 darin, dass **primitive Typen keine innere Struktur haben**.
 
@@ -160,8 +167,12 @@ wo es keine Struktur zum Vergleichen gibt — bei primitiven Aliases.
 
 ---
 
+<!-- /depth -->
 ## Reale Bugs durch Typ-Verwechslung
+<!-- section:summary -->
+Das ist kein theoretisches Problem. Es passiert in der Praxis:
 
+<!-- depth:standard -->
 Das ist kein theoretisches Problem. Es passiert in der Praxis:
 
 ```typescript annotated
@@ -204,8 +215,12 @@ deleteProduct(coupon);
 
 ---
 
+<!-- /depth -->
 ## Nominal Typing in anderen Sprachen
+<!-- section:summary -->
+Zum Vergleich: In Java wäre das Problem nicht möglich:
 
+<!-- depth:standard -->
 Zum Vergleich: In Java wäre das Problem nicht möglich:
 
 ```java
@@ -246,8 +261,12 @@ TypeScript sagt: `UserId = OrderId`, weil beide strukturell `string` sind.
 
 ---
 
+<!-- /depth -->
 ## Das Structural Typing Dilemma
+<!-- section:summary -->
+Wir wollen das Beste aus beiden Welten:
 
+<!-- depth:standard -->
 Das Problem ist klar:
 
 ```
@@ -266,6 +285,7 @@ Wir wollen das Beste aus beiden Welten:
 
 Das ist genau das, was **Branded Types** liefern.
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt** sind Typ-Verwechslungen besonders gefährlich
 > bei Services die IDs verarbeiten. Wenn du einen `HttpClient`-Service hast
 > der `getUserById(id: string)` und `deleteAccount(userId: string)` hat,
@@ -286,6 +306,7 @@ Das ist genau das, was **Branded Types** liefern.
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung: Was fehlt
 
 | Ansatz | Typsicherheit | Ergonomie | Problem |

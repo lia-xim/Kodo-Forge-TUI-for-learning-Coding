@@ -1,4 +1,4 @@
-# Sektion 5: Fortgeschrittene Flags
+﻿# Sektion 5: Fortgeschrittene Flags
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,7 +17,10 @@
 ---
 
 ## `skipLibCheck` — Der pragmatische Kompromiss
+<!-- section:summary -->
+Klingt gefaehrlich — warum sollte man Typ-Pruefung ueberspringen?
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -59,8 +62,12 @@ Pruefung deines Codes GEGEN diese `.d.ts`-Dateien.
 
 ---
 
+<!-- /depth -->
 ## `isolatedModules` — Einzeldatei-Kompatibilitaet
+<!-- section:summary -->
+Dieses Flag ist **Pflicht** fuer alle Projekte, die nicht `tsc` als
 
+<!-- depth:standard -->
 Dieses Flag ist **Pflicht** fuer alle Projekte, die nicht `tsc` als
 Transpiler verwenden (also: Babel, esbuild, swc, Vite, SWC).
 
@@ -109,8 +116,12 @@ const x = 42;
 
 ---
 
+<!-- /depth -->
 ## `verbatimModuleSyntax` — Der Nachfolger von isolatedModules
+<!-- section:summary -->
+Seit TypeScript 5.0 gibt es ein neues Flag, das `isolatedModules`
 
+<!-- depth:standard -->
 Seit TypeScript 5.0 gibt es ein neues Flag, das `isolatedModules`
 und zwei weitere Flags ersetzt:
 
@@ -166,8 +177,12 @@ import type { UserRole } from './types';
 
 ---
 
+<!-- /depth -->
 ## `esModuleInterop` — Die CommonJS/ESM-Bruecke
+<!-- section:summary -->
+### `allowSyntheticDefaultImports`
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -208,6 +223,7 @@ ein. Nuetzlich wenn der Bundler die Kompatibilitaet uebernimmt.
 
 ---
 
+<!-- /depth -->
 ## `resolveJsonModule` — JSON importieren
 
 ```typescript annotated
@@ -241,7 +257,10 @@ import config from './config.json';
 ---
 
 ## `incremental` — Schnellere Builds
+<!-- section:summary -->
+TypeScript erzeugt eine `.tsbuildinfo`-Datei, die den Build-Zustand
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -263,6 +282,7 @@ einzelne Projekte ohne Project References.
 
 ---
 
+<!-- /depth -->
 ## `jsx` — React-Support
 
 ```typescript annotated
@@ -288,7 +308,10 @@ einzelne Projekte ohne Project References.
 ---
 
 ## `allowImportingTsExtensions` — TS-Endungen in Imports
+<!-- section:summary -->
+Dieses Flag ist fuer Projekte, in denen ein anderes Tool (Deno,
 
+<!-- depth:standard -->
 ```typescript annotated
 {
   "compilerOptions": {
@@ -321,6 +344,7 @@ der Output `.js`-Dateien haette und der Import nicht stimmen wuerde.
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - `skipLibCheck` ueberspringt `.d.ts`-Pruefung — dein Code wird trotzdem geprueft

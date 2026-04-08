@@ -14,6 +14,12 @@
 - Warum TS 5.5 **Inferred Type Predicates** ein Gamechanger fuer `.filter()` ist
 - Wie du **eigene Type Guards** schreibst (`value is Type`)
 
+> **Hinweis:** Eigene Type Guards (`value is Type`) sind hier erstmals
+> erwaehnt. In **Lektion 11 (Type Narrowing)** wirst du sie im Detail
+> lernen — mit allen Varianten, Best Practices und Fallstricken.
+> Fuer jetzt reicht es zu wissen: Du kannst TypeScript explizit sagen
+> "dieser Wert hat diesen Typ" — und der Compiler vertraut dir.
+
 ---
 
 ## Das Problem: Union Types sind zu breit
@@ -209,8 +215,10 @@ function isUser(value: unknown): value is User {
     value !== null &&
     "name" in value &&
     "email" in value &&
-    typeof (value as User).name === "string" &&
-    typeof (value as User).email === "string"
+    // SICHER: Wir casten zu Record<string, unknown> statt zu User
+    // — wir pruefen den Typ zur Laufzeit, wir vertrauen NICHT blind
+    typeof (value as Record<string, unknown>).name === "string" &&
+    typeof (value as Record<string, unknown>).email === "string"
   );
 }
 
@@ -223,6 +231,21 @@ function greet(input: unknown): string {
   return "Unbekannter Besucher";
 }
 ```
+
+> **Kritisch:** Warum `(value as Record<string, unknown>)` statt
+> `(value as User)`? Ein `as User` Cast wuerde zur Laufzeit crashen
+> wenn `value` kein User ist — der Cast ueberzeugt nur den Compiler,
+> aendert aber nichts am tatsaechlichen Wert.
+> `Record<string, unknown>` ist sicherer: Wir sagen TypeScript nur
+> "dieser Wert hat String-Keys mit unknown-Werten" — und pruefen dann
+> den Typ zur Laufzeit mit `typeof`.
+>
+> In **Lektion 42 (TypeScript Security)** lernst du warum `as`-Casts
+> zu den haeufigsten Problemen in TypeScript gehoeren.
+>
+> **Faustregel:** Ein Type Guard MUSS den Wert zur Laufzeit pruefen.
+> Der Return-Typ `value is User` ist nur das *Versprechen* an den
+> Compiler — die eigentliche Arbeit machen die `typeof`/`in`-Checks.
 
 ---
 

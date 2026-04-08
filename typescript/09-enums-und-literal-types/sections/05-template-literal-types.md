@@ -14,6 +14,13 @@
 - Wie du mit Template Literal Types **kombinatorische Explosionen** erzeugst
 - Wie dieses Feature **IDE Autocomplete** revolutioniert
 
+> **Hinweis:** Template Literal Types sind hier als **Vorschau** enthalten.
+> In **Lektion 18** bekommst du eine volle, tiefe Behandlung — mit
+> `infer` in Template Literals, fortgeschrittenen String-Manipulationen,
+> und realen Anwendungsfällen wie tRPC-Router-Definitionen.
+> Hier reicht es, das Grundkonzept zu verstehen: TypeScript kann
+> Strings auf Type-Level kombinieren.
+
 ---
 
 ## String-Manipulation auf Type-Level

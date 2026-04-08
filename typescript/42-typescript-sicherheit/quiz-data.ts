@@ -19,9 +19,9 @@ export const questions: QuizQuestion[] = [
       "Warum kann TypeScript einen Angriff wie den event-stream Supply-Chain-Hack von 2018 nicht verhindern?",
     options: [
       "TypeScript prueft nur zur Compile-Zeit — der Schadcode lief zur Laufzeit mit korrekten Typ-Signaturen",
-      "TypeScript unterstuetzt kein Dependency-Scanning — dafuer braucht man npm audit",
-      "Der Angriff nutzte JavaScript-Klassen die TypeScript nicht kennt",
-      "TypeScript haette es verhindert wenn strictMode aktiviert gewesen waere",
+      "TypeScript unterstuetzt kein Dependency-Scanning — dafuer braucht man npm audit oder aehnliche Tools",
+      "Der Angriff nutzte JavaScript-Klassen die TypeScript nicht kennt und deshalb nicht pruefen kann",
+      "TypeScript haette es verhindert wenn strictMode aktiviert gewesen waere — strenge Checks blockieren Angriffe",
     ],
     correct: 0,
     explanation:
@@ -49,10 +49,10 @@ export const questions: QuizQuestion[] = [
       "    && typeof (value as any).id === 'string';\n" +
       "}",
     options: [
-      "Es wirft einen Fehler wenn value kein User ist",
+      "Es wirft einen Fehler wenn value kein User ist — die Funktion agiert wie eine Runtime-Pruefung",
       "TypeScript verengt den Typ von value zu User wenn die Funktion true zurueckgibt",
-      "Es konvertiert value automatisch zum User-Typ",
-      "Es ist nur eine Dokumentations-Annotation ohne Auswirkung auf TypeScript",
+      "Es konvertiert value automatisch zum User-Typ — der Cast passiert implizit im Hintergrund",
+      "Es ist nur eine Dokumentations-Annotation ohne Auswirkung auf TypeScript — wie ein JSDoc-Kommentar",
     ],
     correct: 1,
     explanation:
@@ -76,8 +76,8 @@ export const questions: QuizQuestion[] = [
     question:
       "Was ist der Hauptunterschied zwischen dem 'Validate'-Ansatz (boolean) und dem 'Parse'-Ansatz (T | Fehler)?",
     options: [
-      "Parse ist schneller weil es keinen boolean erzeugt",
-      "Validate ist sicherer weil es explizit true/false kommuniziert",
+      "Parse ist schneller weil es keinen boolean erzeugt — der Typ wird direkt zurueckgegeben",
+      "Validate ist sicherer weil es explizit true/false kommuniziert — der boolean ist klarer als ein Typ",
       "Beim Validate-Ansatz ist das Wissen 'gueltig' vom Objekt getrennt — es kann verloren gehen",
       "Parse und Validate sind funktional identisch, nur die Benennung unterscheidet sich",
     ],
@@ -103,9 +103,9 @@ export const questions: QuizQuestion[] = [
     question:
       "Warum ist `Object.assign({}, defaults, userInput)` bei unvalidiertem userInput gefaehrlich?",
     options: [
-      "Weil Object.assign tiefer als eine Ebene kopiert und dabei Typen verliert",
-      "Weil defaults ueberschrieben werden koennen wenn userInput gleiche Keys hat",
-      "Weil TypeScript Object.assign nicht typsicher behandeln kann",
+      "Weil Object.assign tiefer als eine Ebene kopiert und dabei Typen verliert die nicht wiederherstellbar sind",
+      "Weil defaults ueberschrieben werden koennen wenn userInput gleiche Keys hat — das ist ein Feature",
+      "Weil TypeScript Object.assign nicht typsicher behandeln kann — es gibt immer any zurueck",
       "Weil userInput ein __proto__-Key enthalten koennte, der Object.prototype vergiftet",
     ],
     correct: 3,
@@ -131,9 +131,9 @@ export const questions: QuizQuestion[] = [
       "Welche zwei Probleme hat `JSON.parse(localStorage.getItem('config') || '{}') as AppConfig`?",
     options: [
       "JSON.parse kann eine SyntaxError-Exception werfen, und 'as AppConfig' prueft die Struktur nicht",
-      "localStorage.getItem gibt null zurueck, und JSON.parse akzeptiert kein null",
-      "as AppConfig macht den Wert readonly, und spaetera Aenderungen schlagen fehl",
-      "JSON.parse ist asynchron und das as-Cast wartet nicht auf das Ergebnis",
+      "localStorage.getItem gibt null zurueck, und JSON.parse akzeptiert kein null als Eingabewert",
+      "as AppConfig macht den Wert readonly, und spaetera Aenderungen schlagen mit einem Compile-Fehler fehl",
+      "JSON.parse ist asynchron und das as-Cast wartet nicht auf das Ergebnis — es kann zu Race Conditions kommen",
     ],
     correct: 0,
     explanation:
@@ -158,10 +158,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Wann ist `DomSanitizer.bypassSecurityTrustHtml()` in Angular legitim?",
     options: [
-      "Immer, wenn der HTML-Inhalt von einer vertrauenswuerdigen API kommt",
+      "Immer, wenn der HTML-Inhalt von einer vertrauenswuerdigen API kommt — externe Quellen sind sicher",
       "Wenn der Inhalt von eigenem Code erzeugt wurde (z.B. eigener Markdown-Renderer)",
       "Immer, wenn man DomSanitizer.sanitize() vorher aufgerufen hat — bypass ist dann der zweite Schritt",
-      "Wenn der Benutzer ein Admin ist und daher als vertrauenswuerdig gilt",
+      "Wenn der Benutzer ein Admin ist und daher als vertrauenswuerdig gilt — Admins koennen kein XSS",
     ],
     correct: 1,
     explanation:
@@ -192,10 +192,10 @@ export const questions: QuizQuestion[] = [
       "  ctx.fillRect(0, 0, 100, 100);\n" +
       "}",
     options: [
-      "canvas muss als public deklariert sein um in ngOnInit zugaenglich zu sein",
-      "getContext('2d') sollte '2d' als Konstante deklariert haben",
+      "canvas muss als public deklariert sein um in ngOnInit zugaenglich zu sein — private Properties sind nicht sichtbar",
+      "getContext('2d') sollte '2d' als Konstante deklariert haben — Literal-Types sind hier unsicher",
       "@ViewChild ist in ngOnInit noch nicht initialisiert — this.canvas ist undefined",
-      "fillRect akzeptiert keine number-Parameter in TypeScript",
+      "fillRect akzeptiert keine number-Parameter in TypeScript — sie muessen als string uebergeben werden",
     ],
     correct: 2,
     explanation:
@@ -220,9 +220,9 @@ export const questions: QuizQuestion[] = [
     question:
       "Wo sollte laut 'Parse at the boundary'-Prinzip die Runtime-Validierung stattfinden?",
     options: [
-      "In jeder Funktion die das Datenobjekt verwendet — maximale Sicherheit",
-      "Nur in Unit-Tests die spezifisch Validierung testen",
-      "Tief im Domaenen-Code — dort wo der Wert tatsaechlich benutzt wird",
+      "In jeder Funktion die das Datenobjekt verwendet — maximale Sicherheit durch redundante Pruefungen",
+      "Nur in Unit-Tests die spezifisch Validierung testen — der Produktionscode sollte auf Typen vertrauen",
+      "Tief im Domaenen-Code — dort wo der Wert tatsaechlich benutzt wird, ist die Pruefung am sinnvollsten",
       "Direkt am Systemrand: API-Calls, localStorage, URL-Parameter — einmal, dann vertrauen",
     ],
     correct: 3,

@@ -1,9 +1,9 @@
 # Sektion 3: Algebraische Datentypen
 
-> Geschaetzte Lesezeit: **10 Minuten**
+> Geschaetzte Lesezeit: **12 Minuten**
 >
 > Vorherige Sektion: [02 - Pattern Matching](./02-pattern-matching.md)
-> Naechste Sektion: [04 - Zustandsmodellierung](./04-zustandsmodellierung.md)
+> Naechste Sektion: [04 - Option und Result Pattern](./04-option-und-result-pattern.md)
 
 ---
 
@@ -11,9 +11,9 @@
 
 - Was **Algebraische Datentypen (ADTs)** sind und warum sie wichtig sind
 - Wie TypeScript ADTs aus Haskell und Rust uebernimmt
-- Das **Option-Pattern** (Some/None) als null-sichere Alternative
-- Das **Result-Pattern** (Ok/Err) fuer elegante Fehlerbehandlung
+- **Sum Types** (ODER) vs. **Product Types** (UND)
 - Die historischen Wurzeln in der Typentheorie
+- Warum TypeScript dafuer keine neue Syntax braucht
 
 ---
 
@@ -54,16 +54,53 @@ gleichzeitig vorhanden:
 ```typescript annotated
 // Product Type: x UND y UND z — alle gleichzeitig
 type Point3D = { x: number; y: number; z: number };
-// Moegliche Werte = number x number x number (Multiplikation)
+// Moegliche Werte = number × number × number (Multiplikation)
 ```
 
 Der Name "Product" kommt daher, dass die Anzahl moeglicher Werte
 das **Produkt** der einzelnen Typen ist.
 
+#### Warum "Produkt"? Die Kardinalitaets-Mathematik
+
+Betrachten wir die moeglichen Werte eines Product Types mathematisch:
+
+```typescript
+type Bool = true | false;                    // 2 moegliche Werte
+type TriState = "low" | "medium" | "high";   // 3 moegliche Werte
+```
+
+Kombiniert zu einem Product Type:
+
+```typescript
+type Config = { flag: Bool; level: TriState };
+// Moegliche Werte: 2 × 3 = 6
+// (true,low), (true,medium), (true,high), (false,low), (false,medium), (false,high)
+```
+
+Die Kardinalitaet ist das **Produkt** der Einzeltypen: `|A × B| = |A| × |B|`.
+
+> **Analogie 1 — Meal-Combo:** Ein Menu hat Vorspeise UND Hauptgericht UND Dessert.
+> Bei 3 Vorspeisen, 5 Hauptgerichten und 4 Desserts gibt es
+> `3 × 5 × 4 = 60` Combos. Die Kombination multipliziert die Wahlmoeglichkeiten.
+
+#### Produkt-Typen im Alltag
+
+Jedes Interface in TypeScript ist ein Product Type:
+
+```typescript
+interface User { id: number; name: string; isActive: boolean; }
+// Gesamt: |number| × |string| × 2
+```
+
+> **Denkpause (30 Sek.):** Wie viele Werte hat `{a: boolean; b: boolean}`?
+>
+> **Loesung:** 2 × 2 = 4: `{a:T,b:T}`, `{a:T,b:F}`, `{a:F,b:T}`, `{a:F,b:F}`
+
+---
+
 ### Sum Types (ODER)
 
-Ein Sum Type kombiniert Varianten mit ODER — **genau eine** ist
-aktiv:
+Ein Sum Type kombiniert Varianten mit ODER — **genau eine** ist aktiv:
 
 ```typescript annotated
 // Sum Type: Circle ODER Rectangle ODER Triangle — genau eins
@@ -77,293 +114,183 @@ type Shape =
 Der Name "Sum" kommt daher, dass die Anzahl moeglicher Werte
 die **Summe** der Varianten ist.
 
-> **Erklaere dir selbst:** Warum heisst ein Interface "Product Type"
-> und eine Discriminated Union "Sum Type"? Denke an die Anzahl
-> moeglicher Werte.
-> **Kernpunkte:** Product = Multiplikation der Moeglichkeiten | Sum = Addition der Varianten | Beides zusammen = Algebraische Datentypen
+#### Warum "Summe"? Die Kardinalitaets-Mathematik
+
+Bei einem Sum Type waehlst du **eine** Variante — nicht mehrere:
+
+```typescript
+type EmailStatus = "sent" | "draft" | "failed";
+// Kardinalitaet: 1 + 1 + 1 = 3 — niemals zwei gleichzeitig
+```
+
+Mit zusaetzlichen Daten:
+
+```typescript annotated
+type LoginState =
+  | { status: "loggedOut" }                  // 1 Moeglichkeit
+  | { status: "loggedIn"; user: User }       // |User| Moeglichkeiten
+  | { status: "error"; message: string };    // |string| Moeglichkeiten
+// Gesamt: 1 + |User| + |string| = Addition!
+```
+
+Die Kardinalitaet ist die **Summe**: `|A + B| = |A| + |B|`.
+
+> **Analogie 2 — Restaurant-Menü:** Du darfst dir **genau ein** Gericht
+> aussuchen — entweder Suppe ODER Salat ODER Pasta. Bei 3 Suppen,
+> 4 Salaten, 5 Pastas: `3 + 4 + 5 = 12` Wahlmoeglichkeiten.
+
+> **Analogie 3 — Ampel:** Eine Ampel zeigt **genau eine** Farbe:
+> Rot ODER Gelb ODER Gruen. Der Zustand ist ein Sum Type mit drei Varianten.
+
+#### Warum hat TypeScript keine nativen Sum Types?
+
+TypeScript hat kein `enum`-Pattern Matching wie Rust. Stattdessen
+**simuliert** es Sum Types durch drei bestehende Features:
+
+```
+Union Types (|)    +    Literal Types    +    Control Flow Analysis
+  "Eins davon"           "Welches?"           "Compiler prueft alle"
+```
+
+Kein neues Keyword noetig — aber Exhaustiveness-Checks erfordern den `never`-Trick.
 
 ---
 
-## Vergleich: Haskell, Rust und TypeScript
+### Experiment: Kardinalitaet selbst berechnen
 
-Dasselbe Konzept, drei Sprachen:
-
-### Haskell
-
-```haskell
--- data = neuer Typ, | = ODER
-data Shape = Circle Double
-           | Rectangle Double Double
-           | Triangle Double Double
-
-area :: Shape -> Double
-area (Circle r)      = pi * r * r
-area (Rectangle w h) = w * h
-area (Triangle b h)  = b * h / 2
+```typescript
+// 1. Product: {a: bool; b: bool; c: bool} → 2 × 2 × 2 = 8
+// 2. Sum: {kind:"a"} | {kind:"b"} | {kind:"c"} → 1 + 1 + 1 = 3
+// 3. Kombiniert: {type:"simple"} | {type:"flag"; v: boolean} → 1 + 2 = 3
 ```
 
-### Rust
+> **Probier es aus:** Erstelle `{kind: "x"; v: 1|2|3}`. Kardinalitaet? `1 × 3 = 3`.
+
+---
+
+### Selbst-Erklaerung: Product vs. Sum
+
+**Versuche laut zu erklaeren:** Warum heisst ein Interface "Product Type"
+und eine Discriminated Union "Sum Type"?
+
+**Kernpunkte:**
+- Product = Multiplikation: `|{a:A; b:B}| = |A| × |B|`
+- Sum = Addition: `|A | B| = |A| + |B|`
+- Beides = **Algebraische** Datentypen (Algebra = + und ×)
+
+> **Analogie 4 — Lego:** Product Types = fertiges Modell, **alle** Teile
+> gleichzeitig. Sum Types = Auswahlbox, du spielst mit **einem** Set.
+
+---
+
+## Historischer Exkurs: Von ML bis TypeScript
+
+### ML (1973) — Die Geburt
+
+Robin Milner entwickelte ML in Edinburgh. Das `datatype`-Keyword war
+der erste algebraische Datentyp in einer Programmiersprache:
+
+```ml
+(* ML, 1973 — datatype + Pattern Matching *)
+datatype shape = Circle of real | Rectangle of real * real;
+fun area (Circle r) = Math.pi * r * r
+  | area (Rectangle (w, h)) = w * h;
+```
+
+ML bewies: Datenvarianten + exhaustiver Check = typsichere Verarbeitung.
+
+### Rust (2010) — ADTs fuer die Systemprogrammierung
+
+Rusts `enum` ist weit maechtiger als C-Enums:
 
 ```rust
 enum Shape {
     Circle { radius: f64 },
     Rectangle { width: f64, height: f64 },
-    Triangle { base: f64, height: f64 },
 }
-
-fn area(shape: &Shape) -> f64 {
-    match shape {
+fn area(s: &Shape) -> f64 {
+    match s {
         Shape::Circle { radius } => std::f64::consts::PI * radius * radius,
         Shape::Rectangle { width, height } => width * height,
-        Shape::Triangle { base, height } => base * height / 2.0,
     }
 }
 ```
 
-### TypeScript
+Rust zwingt zum exhaustiven `match` — sonst kein Kompilieren.
 
-```typescript
-type Shape =
-  | { kind: "circle"; radius: number }
-  | { kind: "rectangle"; width: number; height: number }
-  | { kind: "triangle"; base: number; height: number };
+### TypeScript (2016) — ADTs ohne neue Syntax
+
+```typescript annotated
+type Shape =                                    // Discriminated Union
+  | { kind: "circle"; radius: number }          // Variante 1
+  | { kind: "rectangle"; width: number; height: number }; // Variante 2
 
 function area(shape: Shape): number {
-  switch (shape.kind) {
-    case "circle": return Math.PI * shape.radius ** 2;
-    case "rectangle": return shape.width * shape.height;
-    case "triangle": return (shape.base * shape.height) / 2;
+  switch (shape.kind) {                         // Discriminant
+    case "circle": return Math.PI * shape.radius ** 2;   // Narrowing aktiv
+    case "rectangle": return shape.width * shape.height; // Narrowing aktiv
   }
 }
 ```
 
-**Alle drei drucken dasselbe Konzept aus.** TypeScript braucht dafuer
-kein spezielles Keyword — es nutzt Union Types, Literal Types und
-Control Flow Analysis, die du bereits kennst.
+**Alle vier Sprachen, dasselbe Konzept.** Andere Syntax, gleiche Idee.
 
 ---
 
-## Das Option-Pattern: Some / None
+## ADTs in Frameworks die du kennst
 
-Eines der wichtigsten ADT-Patterns: **Option** (auch: Maybe in Haskell)
-repraesentiert einen Wert, der da sein kann oder nicht.
+### Angular: NgRx Actions
 
-### Das Problem mit null/undefined
-
-```typescript annotated
-// Klassisch — null/undefined sind unsichtbare Fallstricke:
-function findUser(id: string): User | null {
-  // ...
-}
-
-const user = findUser("123");
-// user.name; // Runtime Error wenn null!
-// Man MUSS pruefen, vergisst es aber leicht.
-```
-
-### Die ADT-Loesung: Option<T>
-
-```typescript annotated
-type Option<T> =
-  | { tag: "some"; value: T }
-  | { tag: "none" };
-
-// Konstruktor-Funktionen:
-function some<T>(value: T): Option<T> {
-  return { tag: "some", value };
-}
-
-function none<T>(): Option<T> {
-  return { tag: "none" };
-}
-
-// Verwendung:
-function findUser(id: string): Option<User> {
-  const user = database.get(id);
-  return user ? some(user) : none();
-}
-
-const result = findUser("123");
-
-// TypeScript ERZWINGT die Pruefung:
-if (result.tag === "some") {
-  console.log(result.value.name); // Sicher!
-} else {
-  console.log("Benutzer nicht gefunden");
-}
-```
-
-> **Vorteil gegenueber null:** Du kannst `result.value` nicht aufrufen,
-> ohne vorher den Tag zu pruefen. Der Compiler erzwingt die Behandlung
-> beider Faelle.
-
----
-
-## Das Result-Pattern: Ok / Err
-
-Noch maechtiger: **Result** (in Rust das Standardpattern) repraesentiert
-eine Operation, die erfolgreich sein kann oder fehlschlagen:
-
-```typescript annotated
-type Result<T, E> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
-
-// Konstruktor-Funktionen:
-function ok<T>(value: T): Result<T, never> {
-  return { ok: true, value };
-}
-
-function err<E>(error: E): Result<never, E> {
-  return { ok: false, error };
-}
-
-// Anwendung: Parsen ohne Exceptions
-function parseAge(input: string): Result<number, string> {
-  const age = parseInt(input, 10);
-
-  if (isNaN(age)) {
-    return err(`"${input}" ist keine gueltige Zahl`);
-  }
-  if (age < 0 || age > 150) {
-    return err(`Alter ${age} ist nicht realistisch`);
-  }
-
-  return ok(age);
-}
-
-// Verwendung:
-const result = parseAge("abc");
-
-if (result.ok) {
-  console.log(`Alter: ${result.value}`);  // Typ: number
-} else {
-  console.log(`Fehler: ${result.error}`); // Typ: string
-}
-```
-
-### Warum Result statt try/catch?
-
-| Aspekt | try/catch | Result<T, E> |
-|--------|-----------|--------------|
-| Sichtbarkeit | Error ist unsichtbar in der Signatur | Error ist Teil des Typs |
-| Erzwungene Behandlung | Nein — catch ist optional | Ja — Compiler erzwingt Pruefung |
-| Typsicherheit | Error ist `unknown` im catch | Error hat konkreten Typ E |
-| Komposition | Schwer zu verketten | Map/flatMap-Ketten moeglich |
-
-> **Wichtig:** Result ersetzt NICHT alle Exceptions. Fuer
-> unerwartete Programmierfehler (Bugs) sind Exceptions richtig.
-> Result ist fuer **erwartbare Fehlerfaelle** — Validierung,
-> Parsing, Netzwerk-Timeouts.
-
----
-
-## Utility-Funktionen fuer Result
-
-In der Praxis schreibt man Hilfsfunktionen, um Result-Werte
-elegant zu verarbeiten:
-
-```typescript annotated
-// map: Transformiere den Erfolgs-Wert
-function mapResult<T, U, E>(
-  result: Result<T, E>,
-  fn: (value: T) => U
-): Result<U, E> {
-  if (result.ok) {
-    return ok(fn(result.value));
-  }
-  return result;
-}
-
-// Verwendung:
-const ageResult = parseAge("25");
-const doubledAge = mapResult(ageResult, age => age * 2);
-// Result<number, string> — Fehler wird durchgereicht!
-```
-
-> **Experiment:** Probiere das Result-Pattern direkt aus — ohne externe Bibliothek, alles inline:
->
-> ```typescript
-> type Result<T, E> =
->   | { ok: true; value: T }
->   | { ok: false; error: E };
->
-> function divide(a: number, b: number): Result<number, string> {
->   if (b === 0) return { ok: false, error: "Division durch null!" };
->   return { ok: true, value: a / b };
-> }
->
-> const result = divide(10, 0);
->
-> // Versuche: result.value ohne if-Pruefung zu verwenden.
-> // Was sagt TypeScript?
-> if (result.ok) {
->   console.log(result.value); // Hier sicher!
-> } else {
->   console.log(result.error); // Hier sicher!
-> }
-> ```
->
-> Versuche nun `divide(10, 2)` und `divide(10, 0)` — was wird jeweils ausgegeben? Was waere mit einem `try/catch`-Ansatz anders?
-
----
-
-**In deinem Angular-Projekt:** Das Result-Pattern eignet sich hervorragend fuer HTTP-Calls. Statt try/catch in jedem Component kannst du einen zentralen Service schreiben, der `Result<T, ApiError>` zurueckgibt:
+NgRx Actions sind Discriminated Unions:
 
 ```typescript
-type ApiError =
-  | { kind: "network"; message: string }
-  | { kind: "unauthorized" }
-  | { kind: "not_found"; resource: string }
-  | { kind: "server_error"; statusCode: number };
-
-@Injectable({ providedIn: 'root' })
-class ApiService {
-  constructor(private http: HttpClient) {}
-
-  getUser(id: string): Observable<Result<User, ApiError>> {
-    return this.http.get<User>(`/api/users/${id}`).pipe(
-      map(user => ({ ok: true as const, value: user })),
-      catchError(err => {
-        if (err.status === 401) return of({ ok: false as const, error: { kind: "unauthorized" as const } });
-        if (err.status === 404) return of({ ok: false as const, error: { kind: "not_found" as const, resource: "User" } });
-        return of({ ok: false as const, error: { kind: "server_error" as const, statusCode: err.status } });
-      })
-    );
-  }
-}
-
-// Im Component: kein try/catch, kein isError-Boolean — klare Fallunterscheidung:
-this.apiService.getUser("123").subscribe(result => {
-  if (result.ok) {
-    this.user = result.value; // User
-  } else if (result.error.kind === "unauthorized") {
-    this.router.navigate(['/login']);
-  } else {
-    this.errorMessage = `Fehler: ${result.error.kind}`;
-  }
-});
+type Action =
+  | { type: "[User] Load" }
+  | { type: "[User] Load Success"; user: User }
+  | { type: "[User] Load Failure"; error: string };
 ```
 
-**In React:** Dasselbe Pattern funktioniert in einem `useQuery`-aehnlichen Hook — der Rueckgabewert ist `Result<T, ApiError>` statt die ueblichen `{ data, error, isLoading }`-Properties.
+Der `type`-String ist der Discriminant — im Reducer per `switch` getrennt.
+
+### React: useReducer Actions
+
+```typescript
+type CounterAction =
+  | { type: "INCREMENT" }
+  | { type: "DECREMENT" }
+  | { type: "SET"; value: number };
+```
+
+> **Erkenntnis:** Du hast ADTs schon benutzt — du wusstest es nur nicht.
 
 ---
 
 ## Was du gelernt hast
 
-- **Algebraische Datentypen (ADTs)** kommen aus ML (1973) und durchziehen Haskell, Rust und TypeScript — ein jahrzehnteraltes, bewaehrtes Konzept
-- **Product Types** (Interfaces/Objects) kombinieren Werte mit UND — alle Felder sind gleichzeitig vorhanden
-- **Sum Types** (Discriminated Unions) kombinieren Varianten mit ODER — genau eine ist aktiv
-- Das **Option-Pattern** (`Some<T> | None`) ersetzt `null`/`undefined` typsicher und erzwingt die Behandlung beider Faelle
-- Das **Result-Pattern** (`Ok<T> | Err<E>`) macht Fehlerfaelle sichtbar in der Typsignatur — kein verstecktes `throw` mehr
+- **Algebraische Datentypen (ADTs)** kommen aus ML (1973) und durchziehen Haskell, Rust und TypeScript
+- **Product Types** (Interfaces): UND-Kombination, Kardinalitaet = Produkt der Einzeltypen
+- **Sum Types** (Discriminated Unions): ODER-Kombination, Kardinalitaet = Summe der Varianten
+- TypeScript simuliert Sum Types durch Union Types + Literal Types + Control Flow Analysis
+- **ADTs sind ueberall:** NgRx Actions, React Reducer, Rust Enums, Haskell data declarations
 
-**Kernkonzept:** Sum Types machen das Unmoegliche unrepresentierbar — wenn eine Funktion `Result<T, E>` zurueckgibt, ist der Fehlerfall nicht mehr versteckt oder optional, sondern ein expliziter Teil des Typs.
+**Kernkonzept:** Sum Types machen das Unmoegliche unrepresentierbar — TypeScript druckt dieses uralte Konzept aus der Typentheorie ohne neue Syntax aus.
 
 ---
 
-> **Pausenpunkt:** Du verstehst jetzt die theoretischen Grundlagen
-> und zwei der wichtigsten ADT-Patterns. In der naechsten Sektion
-> wenden wir das auf einen der haeufigsten Praxisfaelle an:
-> Zustandsmodellierung mit Loading/Error/Success.
+## Selbst-Erklaerung vor dem Weitergehen
+
+**Nimm dir 2 Minuten.** Beantworte aus dem Gedaechtnis:
+
+> *"Was ist der Unterschied zwischen Sum Type und Product Type?
+> Erklaere es anhand der Kardinalitaet mit je einem TypeScript-Beispiel.
+> Warum nennt man sie 'algebraisch'?"*
+
+Wenn das klar ist — weiter zu Sektion 4.
+
+---
+
+> **Pausenpunkt:** Du verstehst jetzt die theoretischen Grundlagen von ADTs.
+> In der naechsten Sektion wenden wir das auf zwei der praktischsten
+> Patterns an: Option (Some/None) und Result (Ok/Err).
 >
-> Weiter: [Sektion 04 - Zustandsmodellierung](./04-zustandsmodellierung.md)
+> Weiter: [Sektion 04 - Option und Result Pattern](./04-option-und-result-pattern.md)

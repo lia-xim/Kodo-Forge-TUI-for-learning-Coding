@@ -1,4 +1,4 @@
-# Sektion 2: Die Brand-Technik
+﻿# Sektion 2: Die Brand-Technik
 
 > Geschätzte Lesezeit: **10 Minuten**
 >
@@ -17,13 +17,17 @@
 ---
 
 ## Die Idee: Struktur künstlich machen
+<!-- section:summary -->
+Das Problem aus Sektion 01: `type UserId = string` ist strukturell identisch
 
+<!-- depth:standard -->
 Das Problem aus Sektion 01: `type UserId = string` ist strukturell identisch
 mit `string`. TypeScript kann sie nicht unterscheiden.
 
 Die Lösung: Wir machen die Struktur *künstlich verschieden*, indem wir ein
 einzigartiges "Brand"-Property hinzufügen.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Woher kommt die Brand-Technik?**
 >
 > Die Brand-Technik wurde in der TypeScript-Community entwickelt als
@@ -40,8 +44,12 @@ einzigartiges "Brand"-Property hinzufügen.
 
 ---
 
+<!-- /depth -->
 ## Die Brand-Technik im Detail
+<!-- section:summary -->
+### Warum Intersection (`&`) und nicht Interface?
 
+<!-- depth:standard -->
 ```typescript annotated
 // Schritt 1: Brand-Typ als Intersection definieren
 type UserId = string & { readonly __brand: 'UserId' };
@@ -92,6 +100,7 @@ interface UserId {
 
 ---
 
+<!-- /depth -->
 ## Das vollständige Beispiel
 
 ```typescript annotated
@@ -131,7 +140,10 @@ getUser(orderId);
 ---
 
 ## Smart Constructors: Das richtige Casting
+<!-- section:summary -->
+Eine Frage bleibt: Wie erstellt man eigentlich einen `UserId`-Wert?
 
+<!-- depth:standard -->
 Eine Frage bleibt: Wie erstellt man eigentlich einen `UserId`-Wert?
 Wir brauchen **Smart Constructors** — Funktionen die aus einem `string`
 einen validierten `UserId` machen.
@@ -167,6 +179,7 @@ getUser(userId); // ✅ Funktioniert!
 getOrder(userId); // ❌ COMPILE-ERROR — perfekt!
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Öffne `examples/01-brand-basics.ts` und versuche folgendes:
 > 1. Erstelle einen `UserId` mit `asUserId('user-123')`.
 > 2. Versuche den gleichen Wert direkt (ohne Cast) an `getUser()` zu übergeben.
@@ -174,8 +187,12 @@ getOrder(userId); // ❌ COMPILE-ERROR — perfekt!
 
 ---
 
+<!-- /depth -->
 ## Das `as`-Casting Problem einschränken
+<!-- section:summary -->
+Ein gutes Design-Prinzip: `as Brand` sollte **nur** in Smart Constructors
 
+<!-- depth:standard -->
 Ein gutes Design-Prinzip: `as Brand` sollte **nur** in Smart Constructors
 vorkommen, nie im Business-Code. Um das erzuzwingen, können wir auf zwei
 Arten vorgehen:
@@ -211,8 +228,12 @@ export function createUserId(value: string): UserId {
 
 ---
 
+<!-- /depth -->
 ## Branded Types verhalten sich wie primitive Typen
+<!-- section:summary -->
+Ein wichtiger Vorteil: Branded Types sind immer noch der Basis-Typ!
 
+<!-- depth:standard -->
 Ein wichtiger Vorteil: Branded Types sind immer noch der Basis-Typ!
 
 ```typescript annotated
@@ -240,6 +261,7 @@ const rawStr = "user-456";
 // logUserId(rawStr); // ❌ COMPILE-ERROR
 ```
 
+<!-- depth:vollstaendig -->
 > **In deinem Angular-Projekt:** Du kannst Branded Types direkt in
 > HttpClient-Aufrufen verwenden:
 >
@@ -271,8 +293,12 @@ const rawStr = "user-456";
 
 ---
 
+<!-- /depth -->
 ## Zero Runtime Overhead
+<!-- section:summary -->
+Ein entscheidender Vorteil der Brand-Technik: **Kein Runtime-Overhead**.
 
+<!-- depth:standard -->
 Ein entscheidender Vorteil der Brand-Technik: **Kein Runtime-Overhead**.
 
 Das `__brand`-Property existiert **nur zur Compilezeit**. Nach der Kompilierung
@@ -296,6 +322,7 @@ const id = new UserId('user-123'); // Objekt-Allokation!
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Brand-Technik**: `type UserId = string & { readonly __brand: 'UserId' }` macht Typen

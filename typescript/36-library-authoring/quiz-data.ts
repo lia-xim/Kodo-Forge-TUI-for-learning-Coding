@@ -17,9 +17,9 @@ export const questions: QuizQuestion[] = [
     question: "Warum muss 'types' im exports-Feld VOR 'import' und 'require' stehen?",
     options: [
       "TypeScript liest das exports-Objekt von oben nach unten — die erste passende Bedingung gewinnt",
-      "Node.js sortiert die Felder alphabetisch",
-      "'types' ueberschreibt die anderen Felder",
-      "Es ist eine Konvention, aber technisch egal",
+      "Node.js sortiert die Felder alphabetisch und ignoriert die Reihenfolge im JSON-Objekt",
+      "'types' ueberschreibt die anderen Felder — es hat Vorrang vor allen anderen Bedingungen",
+      "Es ist eine Konvention, aber technisch egal — die Reihenfolge hat keinen Einfluss auf das Verhalten",
     ],
     correct: 0,
     explanation:
@@ -37,9 +37,9 @@ export const questions: QuizQuestion[] = [
     question: "Was erzeugt 'declaration: true' in der tsconfig?",
     options: [
       ".d.ts-Dateien die die oeffentliche API als Typ-Deklarationen beschreiben",
-      "Automatische JSDoc-Kommentare im JavaScript-Output",
-      "Eine package.json mit korrektem types-Feld",
-      "Typ-sichere Test-Dateien fuer die Library",
+      "Automatische JSDoc-Kommentare im JavaScript-Output — der Compiler generiert sie aus den Typ-Annotationen",
+      "Eine package.json mit korrektem types-Feld — die Konfiguration wird automatisch angepasst",
+      "Typ-sichere Test-Dateien fuer die Library — damit Konsumenten die API validieren koennen",
     ],
     correct: 0,
     explanation:
@@ -56,9 +56,9 @@ export const questions: QuizQuestion[] = [
     question: "Was ist das 'Dual Package Hazard'?",
     options: [
       "CJS und ESM laden verschiedene Instanzen desselben Moduls — interner State ist nicht geteilt",
-      "Das Paket ist doppelt so gross weil es zwei Formate enthaelt",
-      "TypeScript kann nicht entscheiden welches Format es nutzen soll",
-      "npm installiert zwei Kopien des Pakets",
+      "Das Paket ist doppelt so gross weil es zwei Formate enthaelt und beide im npm-Paket landen",
+      "TypeScript kann nicht entscheiden welches Format es nutzen soll und waehlt zufaellig eines aus",
+      "npm installiert zwei Kopien des Pakets — einmal fuer CJS und einmal fuer ESM-Konsumenten",
     ],
     correct: 0,
     explanation:
@@ -76,9 +76,9 @@ export const questions: QuizQuestion[] = [
     question: "Ist das Entfernen einer optionalen Property aus einem Rueckgabetyp ein Breaking Change?",
     options: [
       "Ja — Konsumenten die auf die Property zugreifen bekommen einen Compile-Error",
-      "Nein — optionale Properties koennen jederzeit entfernt werden",
-      "Nur wenn die Property required war",
-      "Nur bei Libraries mit strict: true",
+      "Nein — optionale Properties koennen jederzeit entfernt werden ohne dass es als Breaking gilt",
+      "Nur wenn die Property required war — optionale Properties sind keine API-Garantie",
+      "Nur bei Libraries mit strict: true — ohne Strict-Mode ist es kein Breaking Change",
     ],
     correct: 0,
     explanation:
@@ -95,10 +95,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ermoeglicht 'declarationMap: true' fuer Konsumenten deiner Library?",
     options: [
-      "Schnellere Compile-Zeiten bei Konsumenten",
+      "Schnellere Compile-Zeiten bei Konsumenten weil weniger Datei-Operationen durchgefuehrt werden",
       "'Go to Definition' springt in den TypeScript-Quellcode statt in die .d.ts-Datei",
-      "Automatisches Refactoring ueber Paketgrenzen hinweg",
-      "Type-Checking der Library-Interna durch Konsumenten",
+      "Automatisches Refactoring ueber Paketgrenzen hinweg — VS Code kann die Library refactoren",
+      "Type-Checking der Library-Interna durch Konsumenten — sie sehen den kompletten Quellcode",
     ],
     correct: 1,
     explanation:
@@ -115,10 +115,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Wann nutzt du 'emitDeclarationOnly: true'?",
     options: [
-      "Wenn du keine .d.ts-Dateien brauchst",
+      "Wenn du keine .d.ts-Dateien brauchst — sie sind nur fuer Bibliotheks-Autoren relevant",
       "Wenn ein Bundler (tsup, esbuild) den JavaScript-Output erzeugt und tsc nur fuer .d.ts zustaendig ist",
-      "Wenn du nur JavaScript ohne TypeScript-Typen liefern willst",
-      "Wenn das Projekt keine Generics verwendet",
+      "Wenn du nur JavaScript ohne TypeScript-Typen liefern willst — die .d.ts-Dateien sind optional",
+      "Wenn das Projekt keine Generics verwendet — dann brauchst du keine Typ-Deklarationen",
     ],
     correct: 1,
     explanation:
@@ -134,10 +134,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sieht der Konsument die Implementation-Signatur einer Overloaded-Funktion NICHT?",
     options: [
-      "Die Implementation wird automatisch entfernt",
+      "Die Implementation wird automatisch entfernt — der Compiler filtert sie aus den .d.ts-Dateien",
       "Die Implementation ist zu breit — nur die praezisen Overload-Signaturen sind nuetzlich fuer Konsumenten",
-      "TypeScript verbietet den Zugriff auf Implementations",
-      "Overloads ersetzen die Implementation zur Compile-Zeit",
+      "TypeScript verbietet den Zugriff auf Implementations — sie sind als internal markiert",
+      "Overloads ersetzen die Implementation zur Compile-Zeit — der Compiler entfernt sie automatisch",
     ],
     correct: 1,
     explanation:
@@ -154,10 +154,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was signalisiert die Version 0.x.y bei einem npm-Paket?",
     options: [
-      "Das Paket ist deprecated und sollte nicht mehr verwendet werden",
+      "Das Paket ist deprecated und sollte nicht mehr verwendet werden — 0.x signalisiert veralteten Code",
       "Das Paket ist in der Entwicklungsphase — die API kann sich jederzeit aendern",
-      "Das Paket hat keine Tests",
-      "Das Paket unterstuetzt nur Node.js (nicht den Browser)",
+      "Das Paket hat keine Tests — deshalb wird keine stabile Version veroeffentlicht",
+      "Das Paket unterstuetzt nur Node.js (nicht den Browser) — 0.x ist ein Node.js-spezifisches Flag",
     ],
     correct: 1,
     explanation:
@@ -174,10 +174,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was ist der Vorteil von Conditional Return Types in Library-APIs?",
     options: [
-      "Sie machen die Library schneller zur Laufzeit",
-      "Sie reduzieren die Bundle-Groesse",
+      "Sie machen die Library schneller zur Laufzeit weil Conditional Types zur Compilezeit ausgewertet werden",
+      "Sie reduzieren die Bundle-Groesse weil ungenutzte Code-Pfade automatisch entfernt werden",
       "Der Rueckgabetyp passt sich automatisch an den Input an — praeziser als ein fester Typ",
-      "Sie ersetzen Generics komplett",
+      "Sie ersetzen Generics komplett — Conditional Types sind die modernere Alternative",
     ],
     correct: 2,
     explanation:
@@ -194,10 +194,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was kontrolliert das 'files'-Feld in der package.json?",
     options: [
-      "Welche Dateien TypeScript kompiliert",
-      "Welche Dateien in .gitignore stehen",
+      "Welche Dateien TypeScript kompiliert — es ist die Include-Liste fuer den Compiler",
+      "Welche Dateien in .gitignore stehen — das files-Feld synchronisiert sich mit Git",
       "Welche Dateien in das npm-Paket aufgenommen werden (bei npm publish)",
-      "Welche Dateien Tests enthalten",
+      "Welche Dateien Tests enthalten — nur Test-Dateien werden fuer die Paketverteilung markiert",
     ],
     correct: 2,
     explanation:
@@ -214,10 +214,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sollten React und Angular als peerDependencies deklariert werden?",
     options: [
-      "Weil sie zu gross sind um gebundelt zu werden",
-      "Weil npm sie automatisch installiert",
+      "Weil sie zu gross sind um gebundelt zu werden — das wuerde das Bundle massiv aufblaehen",
+      "Weil npm sie automatisch installiert und sie deshalb nicht als Dependency noetig sind",
       "Damit das Projekt des Konsumenten nur EINE Instanz des Frameworks hat — nicht zwei",
-      "Weil Frameworks keine normalen Dependencies sein koennen",
+      "Weil Frameworks keine normalen Dependencies sein koennen — sie haben spezielle Anforderungen",
     ],
     correct: 2,
     explanation:
@@ -234,10 +234,10 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum solltest du 'npm pack' vor 'npm publish' ausfuehren?",
     options: [
-      "npm pack optimiert die Paketgroesse",
-      "npm pack ist Pflicht vor npm publish",
+      "npm pack optimiert die Paketgroesse — es entfernt unnoetige Dateien automatisch",
+      "npm pack ist Pflicht vor npm publish — ohne .tgz-Datei kann nicht veroeffentlicht werden",
       "npm pack erzeugt lokal eine .tgz-Datei die GENAU dem npm-Paket entspricht — zum Testen",
-      "npm pack installiert fehlende Dependencies",
+      "npm pack installiert fehlende Dependencies — es prueft die package.json auf Vollstaendigkeit",
     ],
     correct: 2,
     explanation:
@@ -254,9 +254,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Warum sollten Libraries NICHT minifiziert veroeffentlicht werden?",
     options: [
-      "Minifizierter Code ist langsamer",
-      "TypeScript kann minifizierten Code nicht lesen",
-      "npm lehnt minifizierte Pakete ab",
+      "Minifizierter Code ist langsamer — die Lesbarkeit leidet und die Ausfuehrungsgeschwindigkeit sinkt",
+      "TypeScript kann minifizierten Code nicht lesen — die Typ-Information geht bei der Minifikation verloren",
+      "npm lehnt minifizierte Pakete ab — die Registry akzeptiert nur lesbaren Source-Code",
       "Minification ist Sache des Konsumenten-Bundlers — Library-Code soll lesbar und debuggbar bleiben",
     ],
     correct: 3,
@@ -294,9 +294,9 @@ export const questions: QuizQuestion[] = [
   {
     question: "Was bewirkt '\"type\": \"module\"' in der package.json?",
     options: [
-      "Es aktiviert TypeScript-Typen fuer das Paket",
-      "Es deaktiviert CommonJS komplett",
-      "Es setzt den Strict Mode fuer alle Dateien",
+      "Es aktiviert TypeScript-Typen fuer das Paket — ohne dieses Feld funktionieren .d.ts-Dateien nicht",
+      "Es deaktiviert CommonJS komplett — das Paket kann nur noch als ES Module verwendet werden",
+      "Es setzt den Strict Mode fuer alle Dateien — alle .js-Dateien erhalten strenge Typ-Checks",
       ".js-Dateien werden als ES Modules interpretiert statt als CommonJS",
     ],
     correct: 3,

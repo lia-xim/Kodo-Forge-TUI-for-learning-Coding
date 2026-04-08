@@ -18,7 +18,7 @@ import {
   adaptiveState, STATE_DIR, getCompletedLessonIndices, markPretestTaken,
 } from "./tui-state.ts";
 import { updateConceptScore, saveAdaptiveState, setSectionDepth, type ContentDepth } from "./adaptive-engine.ts";
-import { calculateDepth } from "./pretest-engine.ts";
+import { calculateDepth, calculateDepthsFromPretest } from "./pretest-engine.ts";
 import type { ParsedKey, Screen } from "./tui-types.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { renderLessonMenu } from "./tui-lesson-menu.ts";
@@ -188,29 +188,80 @@ export function renderPretest(): void {
   const h = H();
 
   const lesson = lessons[lessonIndex];
-  const section = lesson?.sections[sectionIndex];
-  const sectionTitle = section ? section.title : `Sektion ${sectionIndex + 1}`;
+
+  // Lektionsweiter Pretest (sectionIndex === -1) mit Per-Sektion-Empfehlungen
+  const isLessonPretest = sectionIndex === -1;
 
   if (showingResult) {
-    lines.push(renderHeader(` Pre-Test Ergebnis`, ``));
+    lines.push(renderHeader(` Pre-Test Ergebnis`, `${score}% richtig `));
     lines.push(boxTop(w)); lines.push(bEmpty(w));
-    lines.push(bLine(`  ${c.bold}Ergebnis: ${score}% richtig${c.reset}`, w));
-    lines.push(bEmpty(w));
 
-    let depthLabel: string, depthHint: string;
-    if (recommendedDepth === "kurz") { depthLabel = `${c.green}Schnelldurchlauf${c.reset}`; depthHint = "Du kennst das Thema schon gut!"; }
-    else if (recommendedDepth === "standard") { depthLabel = `${c.yellow}Normale Tiefe${c.reset}`; depthHint = "Du hast Grundkenntnisse — lies aufmerksam."; }
-    else { depthLabel = `${c.cyan}Vollstaendige Tiefe${c.reset}`; depthHint = "Dieses Thema scheint neu fuer dich zu sein."; }
+    if (isLessonPretest && Object.keys(screen.sectionDepths).length > 0) {
+      // Per-Sektion Aufschluesselung
+      lines.push(bLine(`  ${c.bold}Empfehlungen pro Sektion:${c.reset}`, w));
+      lines.push(bEmpty(w));
 
-    lines.push(bLine(`  Empfehlung: ${depthLabel}`, w));
-    lines.push(bLine(`  ${c.dim}(${depthHint})${c.reset}`, w));
+      // Sammle Sektionen aus den Fragen
+      const sectionMap = new Map<number, { correct: number; total: number }>();
+      for (let i = 0; i < screen.questions.length; i++) {
+        const q = screen.questions[i];
+        const si = q.sectionIndex;
+        if (!sectionMap.has(si)) sectionMap.set(si, { correct: 0, total: 0 });
+        const entry = sectionMap.get(si)!;
+        entry.total++;
+        if (i < screen.answers.length && screen.answers[i].correct) entry.correct++;
+      }
+
+      for (const [si, { correct, total }] of sectionMap) {
+        const zeroBasedSi = si - 1; // 1-basiert -> 0-basiert
+        const key = `${lessonIndex}-${zeroBasedSi}`;
+        const depth = screen.sectionDepths[key] || "standard";
+        const section = lesson?.sections[zeroBasedSi];
+        const sectionTitle = section ? section.title : `Sektion ${si}`;
+
+        let depthIcon: string, depthColor: string;
+        if (depth === "kurz") { depthIcon = c.green; depthColor = "Schnelldurchlauf"; }
+        else if (depth === "standard") { depthIcon = c.yellow; depthColor = "Standard"; }
+        else { depthIcon = c.cyan; depthColor = "Vollstaendig"; }
+
+        const pctStr = `${correct}/${total}`;
+        const depthLabel = `${depthIcon}${depthColor}${c.reset}`;
+        const line = `  S${si}: ${truncate(sectionTitle, Math.max(10, w - 40))}  ${c.dim}[${pctStr}]${c.reset}  -> ${depthLabel}`;
+        lines.push(bLine(line, w));
+      }
+
+      lines.push(bEmpty(w));
+      lines.push(bLine(`  ${c.dim}[Enter] = Empfehlungen uebernehmen  [A] = Alle auf Standard  [S] = Ueberspringen${c.reset}`, w));
+    } else {
+      // Einzelner Sektions-Pretest (legacy)
+      lines.push(bLine(`  ${c.bold}Ergebnis: ${score}% richtig${c.reset}`, w));
+      lines.push(bEmpty(w));
+
+      let depthLabel: string, depthHint: string;
+      if (recommendedDepth === "kurz") { depthLabel = `${c.green}Schnelldurchlauf${c.reset}`; depthHint = "Du kennst das Thema schon gut!"; }
+      else if (recommendedDepth === "standard") { depthLabel = `${c.yellow}Normale Tiefe${c.reset}`; depthHint = "Du hast Grundkenntnisse — lies aufmerksam."; }
+      else { depthLabel = `${c.cyan}Vollstaendige Tiefe${c.reset}`; depthHint = "Dieses Thema scheint neu fuer dich zu sein."; }
+
+      lines.push(bLine(`  Empfehlung: ${depthLabel}`, w));
+      lines.push(bLine(`  ${c.dim}(${depthHint})${c.reset}`, w));
+    }
+
     lines.push(bEmpty(w));
     const footerStart = h - 3;
     while (lines.length < footerStart) lines.push(bEmpty(w));
-    lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Sektion lesen`, `${c.bold}[S]${c.reset} Ueberspringen`]));
+    if (isLessonPretest && Object.keys(screen.sectionDepths).length > 0) {
+      lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Empfehlungen`, `${c.bold}[A]${c.reset} Alle Standard`, `${c.bold}[S]${c.reset} Ueberspringen`]));
+    } else {
+      lines.push(...renderFooter([`${c.bold}[Enter]${c.reset} Sektion lesen`, `${c.bold}[S]${c.reset} Ueberspringen`]));
+    }
     flushScreen(lines);
     return;
   }
+
+  const section = isLessonPretest ? null : lesson?.sections[sectionIndex];
+  const sectionTitle = isLessonPretest
+    ? lesson?.title || `Lektion ${lessonIndex + 1}`
+    : (section ? section.title : `Sektion ${sectionIndex + 1}`);
 
   lines.push(renderHeader(` Pre-Test: ${truncate(sectionTitle, w - 40)}`, `Frage ${currentIndex + 1}/${questions.length} `));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
@@ -271,17 +322,57 @@ export function handlePretestInput(key: ParsedKey): void {
   const screen = currentScreen as Extract<Screen, { type: "pretest" }>;
 
   if (screen.showingResult) {
+    const isLessonPretest = screen.sectionIndex === -1;
+
     if (key.name === "enter") {
-      markPretestTaken(screen.lessonIndex, screen.sectionIndex);
-      setSectionDepth(adaptiveState, screen.lessonIndex, screen.sectionIndex, screen.recommendedDepth as ContentDepth);
-      saveAdaptiveState(STATE_DIR, adaptiveState);
-      openSection(screen.lessonIndex, screen.sectionIndex);
+      if (isLessonPretest && Object.keys(screen.sectionDepths).length > 0) {
+        // Empfehlungen uebernehmen: alle sectionDepths speichern
+        // sectionDepths keys sind "lessonIdx-pretestSectionIdx" (1-basiert)
+        // setSectionDepth erwartet 0-basierten sectionIndex
+        for (const [key, depth] of Object.entries(screen.sectionDepths)) {
+          const parts = key.split("-");
+          const li = parseInt(parts[0], 10);
+          const pretestSi = parseInt(parts[1], 10); // 1-basiert aus pretest-data
+          const zeroBasedSi = pretestSi - 1; // zu 0-basiert konvertieren
+          setSectionDepth(adaptiveState, li, zeroBasedSi, depth as ContentDepth);
+        }
+        saveAdaptiveState(STATE_DIR, adaptiveState);
+        // Zur Lektion zurueck
+        setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: 0 });
+        renderLessonMenu(screen.lessonIndex);
+      } else {
+        markPretestTaken(screen.lessonIndex, screen.sectionIndex);
+        setSectionDepth(adaptiveState, screen.lessonIndex, screen.sectionIndex, screen.recommendedDepth as ContentDepth);
+        saveAdaptiveState(STATE_DIR, adaptiveState);
+        openSection(screen.lessonIndex, screen.sectionIndex);
+      }
       return;
     }
+
+    if (key.name === "a") {
+      // Alle Sektionen auf Standard setzen
+      if (isLessonPretest) {
+        for (const q of screen.questions) {
+          const zeroBasedSi = q.sectionIndex - 1; // 1-basiert -> 0-basiert
+          setSectionDepth(adaptiveState, screen.lessonIndex, zeroBasedSi, "standard");
+          const key = `${screen.lessonIndex}-${q.sectionIndex}`;
+          screen.sectionDepths[key] = "standard";
+        }
+        saveAdaptiveState(STATE_DIR, adaptiveState);
+        renderPretest();
+      }
+      return;
+    }
+
     if (key.name === "s") {
-      markPretestTaken(screen.lessonIndex, screen.sectionIndex);
-      setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: screen.sectionIndex });
-      renderLessonMenu(screen.lessonIndex);
+      if (isLessonPretest) {
+        setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: 0 });
+        renderLessonMenu(screen.lessonIndex);
+      } else {
+        markPretestTaken(screen.lessonIndex, screen.sectionIndex);
+        setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: screen.sectionIndex });
+        renderLessonMenu(screen.lessonIndex);
+      }
       return;
     }
     return;
@@ -311,14 +402,48 @@ export function handlePretestInput(key: ParsedKey): void {
         const correctCount = screen.answers.filter((a) => a.correct).length;
         const score2 = screen.questions.length > 0 ? Math.round((correctCount / screen.questions.length) * 100) : 0;
         screen.showingResult = true; screen.score = score2;
-        screen.recommendedDepth = calculateDepth(screen.answers);
+
+        const isLessonPretest = screen.sectionIndex === -1;
+        if (isLessonPretest) {
+          // Per-Sektion Ergebnisse sammeln
+          const sectionMap = new Map<number, { correct: number; total: number }>();
+          for (let i = 0; i < screen.questions.length; i++) {
+            const q = screen.questions[i];
+            const si = q.sectionIndex;
+            if (!sectionMap.has(si)) sectionMap.set(si, { correct: 0, total: 0 });
+            const entry = sectionMap.get(si)!;
+            entry.total++;
+            if (i < screen.answers.length && screen.answers[i].correct) entry.correct++;
+          }
+
+          const sectionScores = Array.from(sectionMap.entries()).map(([sectionIndex, data]) => ({
+            sectionIndex: sectionIndex - 1, // 1-basiert -> 0-basiert fuer setSectionDepth-Kompatibilitaet
+            correct: data.correct,
+            total: data.total,
+          }));
+
+          screen.sectionDepths = calculateDepthsFromPretest(screen.lessonIndex, sectionScores);
+          screen.recommendedDepth = "standard"; // Fallback, wird nicht mehr einzeln genutzt
+        } else {
+          screen.recommendedDepth = calculateDepth(screen.answers);
+        }
       }
       renderPretest();
     }
     return;
   }
 
-  if (key.name === "s") { markPretestTaken(screen.lessonIndex, screen.sectionIndex); openSection(screen.lessonIndex, screen.sectionIndex); return; }
+  if (key.name === "s") {
+    if (screen.sectionIndex === -1) {
+      // Lektions-Pretest ueberspringen -> zurueck zum Lektionsmenue
+      setCurrentScreen({ type: "lesson", lessonIndex: screen.lessonIndex, selectedIndex: 0 });
+      renderLessonMenu(screen.lessonIndex);
+    } else {
+      markPretestTaken(screen.lessonIndex, screen.sectionIndex);
+      openSection(screen.lessonIndex, screen.sectionIndex);
+    }
+    return;
+  }
 
   if (key.name === "?") {
     sessionStats.questionsAnswered++;

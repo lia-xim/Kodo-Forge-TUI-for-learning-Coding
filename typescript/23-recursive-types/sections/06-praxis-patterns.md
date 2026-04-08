@@ -1,4 +1,4 @@
-# Sektion 6: Praxis-Patterns
+﻿# Sektion 6: Praxis-Patterns
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -17,10 +17,14 @@
 ---
 
 ## Zod: Rekursive Schema-Validierung
+<!-- section:summary -->
+Zod ist eine der populaersten TypeScript-Validierungsbibliotheken.
 
+<!-- depth:standard -->
 Zod ist eine der populaersten TypeScript-Validierungsbibliotheken.
 Fuer rekursive Schemas hat Zod eine spezielle API: `z.lazy()`.
 
+<!-- depth:vollstaendig -->
 > **Hintergrund: Warum Zod `z.lazy()` braucht**
 >
 > TypeScript-Typen werden **lazy** ausgewertet — der Compiler
@@ -56,8 +60,12 @@ Fuer rekursive Schemas hat Zod eine spezielle API: `z.lazy()`.
 
 ---
 
+<!-- /depth -->
 ## Erklaere dir selbst: Warum braucht Zod z.lazy()?
+<!-- section:summary -->
+Die Antwort: TypeScript-Typen werden **lazy** ausgewertet — der
 
+<!-- depth:standard -->
 > **Erklaere dir selbst:**
 >
 > Warum braucht Zod `z.lazy()` fuer rekursive Schemas, obwohl
@@ -77,8 +85,12 @@ Deklaration zu verwenden.
 
 ---
 
+<!-- /depth -->
 ## Prisma: Rekursive Includes und Selects
+<!-- section:summary -->
+Prisma's Type-System nutzt rekursive Typen fuer verschachtelte
 
+<!-- depth:standard -->
 Prisma's Type-System nutzt rekursive Typen fuer verschachtelte
 Datenbank-Abfragen:
 
@@ -118,8 +130,12 @@ const user = await prisma.user.findFirst({
 
 ---
 
+<!-- /depth -->
 ## Config-Objekte mit rekursiven Typen
+<!-- section:summary -->
+Ein haeufiges Pattern: Eine Konfiguration die beliebig tief
 
+<!-- depth:standard -->
 Ein haeufiges Pattern: Eine Konfiguration die beliebig tief
 verschachtelt sein kann, aber nur bestimmte Wert-Typen erlaubt:
 
@@ -158,8 +174,12 @@ const appConfig: ConfigSection = {
 
 ---
 
+<!-- /depth -->
 ## Der typsichere deep-get: Das Meisterstueck
+<!-- section:summary -->
+Jetzt bauen wir das Paradeprojekt dieser Lektion — eine `get`-Funktion
 
+<!-- depth:standard -->
 Jetzt bauen wir das Paradeprojekt dieser Lektion — eine `get`-Funktion
 die **typsicher** auf verschachtelte Objekte zugreift:
 
@@ -226,6 +246,7 @@ const level = deepGet(config, "logging.level");
 
 ---
 
+<!-- /depth -->
 ## Denkfrage: Wo ist die Grenze?
 
 > **Denkfrage:**
@@ -307,7 +328,10 @@ const level = deepGet(config, "logging.level");
 ---
 
 ## Router-Typen: Verschachtelte Routen typsicher
+<!-- section:summary -->
+Ein fortgeschrittenes Praxis-Pattern: **Typsichere Router-Definitionen**:
 
+<!-- depth:standard -->
 Ein fortgeschrittenes Praxis-Pattern: **Typsichere Router-Definitionen**:
 
 ```typescript annotated
@@ -350,6 +374,7 @@ type AllPaths = ExtractPaths<AppRoutes>;
 
 ---
 
+<!-- /depth -->
 ## Framework-Bezug: Typsichere Navigation
 
 > **In React mit React Router:**
@@ -393,7 +418,10 @@ type AllPaths = ExtractPaths<AppRoutes>;
 ---
 
 ## Checkliste: Wann rekursive Typen einsetzen?
+<!-- section:summary -->
+| Situation | Rekursiver Typ? | Warum? |
 
+<!-- depth:standard -->
 | Situation | Rekursiver Typ? | Warum? |
 |-----------|----------------|--------|
 | JSON-Daten typisieren | ✅ Ja | JSON ist per Definition rekursiv |
@@ -406,6 +434,7 @@ type AllPaths = ExtractPaths<AppRoutes>;
 
 ---
 
+<!-- /depth -->
 ## Zusammenfassung
 
 ### Was du gelernt hast
@@ -428,7 +457,10 @@ Du hast rekursive Typen in der **realen Praxis** gesehen:
 ---
 
 ## Ende der Lektion: Rekursive Types
+<!-- section:summary -->
+Du hast alle sechs Sektionen durchgearbeitet und verstehst jetzt:
 
+<!-- depth:standard -->
 Du hast alle sechs Sektionen durchgearbeitet und verstehst jetzt:
 
 1. **Grundlagen:** Selbstreferenz + Abbruchbedingung
@@ -447,3 +479,5 @@ Du hast alle sechs Sektionen durchgearbeitet und verstehst jetzt:
 > **Naechste Lektion:** 24 — Type-Level Programming
 > Dort gehst du noch tiefer: String-Parser, State Machines
 > und vollstaendige Programme auf Type-Level.
+
+<!-- /depth -->

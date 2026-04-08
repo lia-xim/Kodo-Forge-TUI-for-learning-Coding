@@ -234,22 +234,26 @@ Baue einen Typ der sicherstellt dass `page` und `pageSize` zusammen
 nicht das Limit ueberschreiten:
 
 ```typescript
-// Schritt 1: Multiplikation (vereinfacht mit bekannten Werten)
-// ⚠️ Dieses Beispiel ist bewusst unvollständig — MultLookup ist nicht definiert
-// Es zeigt das Konzept, kompiliert aber nicht ohne die vollständige Lookup-Tabelle
-type Multiply<A extends number, B extends number> =
-  MultLookup extends Record<`${A}x${B}`, number>
-    ? MultLookup[`${A}x${B}`]
-    : number;
+// Multiplikation durch wiederholte Addition (funktioniert bis ~N=40)
+type BuildTuple<N extends number, Acc extends unknown[] = []> =
+  Acc["length"] extends N
+    ? Acc
+    : BuildTuple<N, [...Acc, unknown]>;
 
-// Fuer echte Multiplikation braeuchte man wiederholte Addition:
-type MultiplyReal<A extends number, B extends number, Acc extends unknown[] = [], Count extends unknown[] = []> =
+type Multiply<A extends number, B extends number, Acc extends unknown[] = [], Count extends unknown[] = []> =
   Count["length"] extends B
     ? Acc["length"]
-    : MultiplyReal<A, B, [...Acc, ...BuildTuple<A>], [...Count, unknown]>;
+    : Multiply<A, B, [...Acc, ...BuildTuple<A>], [...Count, unknown]>;
 
-type Product = MultiplyReal<3, 4, [], []>;  // 12
-type Product2 = MultiplyReal<5, 5, [], []>; // 25
+// Tests:
+type Product = Multiply<3, 4>;   // 12
+type Product2 = Multiply<5, 5>;  // 25
+type Product3 = Multiply<0, 5>;  // 0
+
+// ⚠️ ACHTUNG: Rekursive Typen haben ein Limit (~1000 Instantiierungen).
+// Bei grossen Zahlen wird TypeScript mit "Type instantiation is excessively
+// deep and possibly infinite" abbrechen. In tsconfig:
+//   "compilerOptions": { "typeParameterBoundedArity": 1000 }
 
 // Experiment: Implementiere IsEven<N> das prueft ob eine Zahl gerade ist.
 // Tipp: Eine gerade Zahl laesst sich in zwei gleiche Haelften teilen.
@@ -258,7 +262,7 @@ type Product2 = MultiplyReal<5, 5, [], []>; // 25
 // type E2 = IsEven<5>;  // false
 ```
 
-Probiere aus: Kannst du `IsEven<N>` mit dem Subtraktions-Typ
+Probiere aus: Kannst du `IsEven<N>` mit dem Multiplikations-Typ
 implementieren? Was passiert bei `IsEven<0>`?
 
 ---

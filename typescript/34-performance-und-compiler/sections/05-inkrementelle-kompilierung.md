@@ -30,11 +30,39 @@
 > (2019) brachte inkrementelles Build. Zusammen reduzierten diese Features
 > die Rekompilierungszeit in solchen Monorepos auf 5-15 Sekunden. Das war
 > ein Gamechanger fuer grosse Teams.
+>
+> Besonders Google selbst profitierte davon: Das Angular-Team bei Google
+> arbeitet mit einem der groessten TypeScript-Monorepos der Welt. Ohne
+> inkrementelle Kompilierung waere die Entwicklungsgeschwindigkeit
+> drastisch eingebrochen. Die interne Tooling-Infrastruktur (genannt
+> "ts_library" im Build-System Bazel) war der Vorlaeufer fuer das was
+> heute Project References sind.
 
 Die Grundidee ist simpel: Warum alles neu kompilieren, wenn sich nur
 eine Datei geaendert hat? Inkrementelle Kompilierung merkt sich, was
 sich seit dem letzten Build geaendert hat, und kompiliert nur das
 Noetige.
+
+> 🏗️ **Analogie: Inkrementelles Build und Git**
+>
+> Inkrementelle Kompilierung funktioniert aehnlich wie Git Commits. Ein
+> Commit speichert nicht das gesamte Repository neu — er speichert nur
+> den **Diff** (die Unterschiede) zum vorherigen Commit.
+>
+> Die `.tsbuildinfo`-Datei ist wie ein Commit-Log: Sie weiss, welchen
+> Stand jede Datei hatte und was sich seit dem letzten Build geaendert hat.
+> Bei einem inkrementellen Build vergleicht der Compiler die aktuellen
+> Hashes mit den gespeicherten Hashes — genau wie `git status` die
+> Arbeitskopie mit dem letzten Commit vergleicht.
+
+> 🧠 **Erklaere dir selbst:** Was passiert wenn du die `.tsbuildinfo`-Datei
+> loeschst? Muss der Compiler dann wirklich alles neu bauen?
+>
+> **Kernpunkte:** Ja, ohne `.tsbuildinfo` macht der Compiler einen Full Build |
+> Das ist der "worst case" und dauert genauso lange wie ohne `incremental: true` |
+> Deshalb: `.tsbuildinfo` NIEMALS loeschen im laufenden Betrieb |
+> Ausnahme: Bei verdächtigen Compiler-Fehlern kann `--clean` + Full Build
+> helfen um korrupte Caches zu beseitigen
 
 ---
 
@@ -138,6 +166,17 @@ Einheiten zu teilen:
 > References basieren darauf, dass referenzierte Projekte ihre
 > .d.ts-Dateien bereitstellen statt den Quellcode direkt zu pruefen.
 
+> 💭 **Denkfrage:** Was ist der Unterschied zwischen `composite: true` und
+> `incremental: true`? Brauchst du beides?
+>
+> **Antwort:** `incremental: true` aktiviert den `.tsbuildinfo`-Cache fuer
+> ein einzelnes Projekt. `composite: true` ist strenger — es erzwingt
+> `declaration: true` und strukturiert das Projekt als eigenstaendige
+> Compilation Unit. Jedes `composite`-Projekt ist automatisch inkrementell,
+> aber nicht jedes inkrementelle Projekt ist `composite`. Fuer ein Monorepo
+> mit Project References brauchst du `composite`. Fuer ein einzelnes Projekt
+> reicht `incremental`.
+
 ---
 
 ## Der Build-Modus: tsc --build
@@ -187,6 +226,14 @@ Mit Project References:
 > richtigen Reihenfolge und cached die Ergebnisse. Die `angular.json`
 > Konfiguration mappt auf Project References. Nx erweitert das mit
 > einem verteilten Cache ueber Maschinen hinweg.
+
+> ⚡ **Framework-Bezug (React/Vite):** Vite unterstuetzt Project References
+> seit Version 4 automatisch. Wenn dein `tsconfig.json` `references` enthaelt,
+> erkennt Vite die Abhaengigkeiten und baut Packages in der korrekten
+> Reihenfolge. Zusammen mit Vite's schnellem HMR (Hot Module Replacement)
+> ergibt das eine Entwicklungserfahrung bei der sich Aenderungen in einer
+> Library sofort im Browser widerspiegeln — ohne dass das gesamte Projekt
+> neu gebaut werden muss.
 
 ---
 
@@ -248,6 +295,37 @@ Mit Project References:
 // → Unuebersichtlich und Probleme mit include
 // Loesung: Immer "outDir": "./dist" setzen
 ```
+
+> 🧠 **Erklaere dir selbst:** Warum ist es problematisch wenn `.tsbuildinfo`
+> in Git committet wird? Was passiert bei Merge-Konflikten?
+>
+> **Kernpunkte:** Die Datei enthaelt maschinenspezifische Pfade und Hashes |
+> Zwei Entwickler auf verschiedenen Betriebssystemen haben unterschiedliche
+> Pfad-Trennzeichen (`\` vs `/`) | Ein Merge-Konflikt in `.tsbuildinfo` ist
+> schwer manuell zu loesen | Die Loesung ist einfach: Naechster Build
+> erstellt sie neu | Deshalb IMMER in `.gitignore` aufnehmen
+
+> 🧪 **Zusatzexperiment: Watch-Mode mit inkrementellem Build**
+>
+> Der `--watch`-Modus kombiniert mit `incremental` ist besonders effektiv:
+>
+> ```bash
+> # Watch-Mode starten:
+> npx tsc --build --watch
+>
+> # Jetzt aendere eine Datei und speichere:
+> # Du siehst im Terminal:
+> # "File change detected. Starting incremental compilation..."
+> # "Found 0 errors. Watching for file changes."
+> #
+> # Die Zeit zwischen "change detected" und "Found 0 errors" ist
+> # die inkrementelle Build-Zeit — meist 100-500ms statt 10-30s
+> ```
+>
+> Im Watch-Mode bleibt der Compiler-Prozess aktiv und behaelt den
+> Type-Checker im Speicher. Das ist noch schneller als einzelne
+> `tsc --build` Aufrufe, weil nicht jedes Mal der Cache von der
+> Festplatte geladen werden muss.
 
 ---
 

@@ -1,4 +1,4 @@
-# Sektion 1: Interface Merging Basics
+﻿# Sektion 1: Interface Merging Basics
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -83,7 +83,10 @@ const user: User = {
 ---
 
 ## Konflikte beim Merging
+<!-- section:summary -->
+Was passiert wenn beide Deklarationen das **gleiche Property** haben?
 
+<!-- depth:standard -->
 Was passiert wenn beide Deklarationen das **gleiche Property** haben?
 
 ```typescript annotated
@@ -129,8 +132,12 @@ interface Serializer {
 
 ---
 
+<!-- /depth -->
 ## Praktische Anwendung: Window erweitern
+<!-- section:summary -->
+Das haeufigste Beispiel fuer Interface Merging in der Praxis:
 
+<!-- depth:standard -->
 Das haeufigste Beispiel fuer Interface Merging in der Praxis:
 
 ```typescript annotated
@@ -161,6 +168,7 @@ window.__APP_CONFIG__.apiUrl; // string — typsicher!
 // (window as any).analytics.track(...); // Unsicher!
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Oeffne eine beliebige TypeScript-Datei und tippe
 > `window.` — schau dir die Autocomplete-Liste an. Jetzt fuege
 > dieses Interface Merging hinzu:
@@ -176,8 +184,12 @@ window.__APP_CONFIG__.apiUrl; // string — typsicher!
 
 ---
 
+<!-- /depth -->
 ## Enum Merging
+<!-- section:summary -->
+Weniger bekannt: Auch Enums koennen gemergt werden:
 
+<!-- depth:standard -->
 Weniger bekannt: Auch Enums koennen gemergt werden:
 
 ```typescript annotated
@@ -227,8 +239,12 @@ const d: Direction = Direction.Left; // OK
 
 ---
 
+<!-- /depth -->
 ## Namespace Merging
+<!-- section:summary -->
+Namespaces koennen ebenfalls gemergt werden — und sogar mit
 
+<!-- depth:standard -->
 Namespaces koennen ebenfalls gemergt werden — und sogar mit
 Klassen, Funktionen oder Enums kombiniert werden:
 
@@ -254,6 +270,7 @@ jQuery.version;          // "3.7.1"
 
 ---
 
+<!-- /depth -->
 ## Was du gelernt hast
 
 - **Declaration Merging** vereint mehrere gleichnamige Deklarationen automatisch

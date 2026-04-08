@@ -64,6 +64,9 @@ ihrer Eigenheiten.
 
 ## Deine erste TypeScript-Klasse
 
+<!-- section:summary -->
+TypeScript-Klassen erfordern explizite Feld-Deklarationen mit Typ-Annotationen und zwingen via `strictPropertyInitialization` zur korrekten Initialisierung — alles Compilezeit-Sicherheit, die zur Laufzeit verschwindet.
+<!-- depth:standard -->
 In TypeScript deklarierst du Felder **mit Typ-Annotationen** — etwas,
 das reines JavaScript nicht kennt. TypeScript prueft dann zur Compilezeit,
 ob du die Felder korrekt initialisierst und verwendest.
@@ -109,10 +112,94 @@ JavaScript beschwert sich nicht. TypeScript hingegen verlangt, dass du
 oder in Methoden verwendest. Das verhindert Tippfehler wie
 `this.naem = name` (statt `this.name`).
 
+<!-- depth:vollstaendig -->
+> **Hintergrund: Von Prototypen zu Klassen**
+>
+> JavaScript wurde 1995 von Brendan Eich in 10 Tagen entworfen.
+> Er waehlte **Prototype-basierte Vererbung** statt der klassischen
+> Klassen-Vererbung von Java oder C++. In JavaScript hatte jedes Objekt
+> eine versteckte `[[Prototype]]`-Referenz auf ein anderes Objekt —
+> das war die gesamte "OOP".
+>
+> Erst **ES2015 (ES6)** brachte 2015 das `class`-Schluesselwort.
+> Aber Achtung: Das ist **nur syntaktischer Zucker** ueber dem
+> Prototype-System! Unter der Haube passiert genau dasselbe wie vorher.
+> TypeScript ging einen Schritt weiter: Es fuegt **Typ-Annotationen**,
+> **Access Modifiers** und **Interfaces** hinzu — alles Compilezeit-Features,
+> die zur Laufzeit verschwinden (Type Erasure, Lektion 02).
+>
+> ```javascript
+> // SO sah OOP vor ES2015 aus:
+> function Person(name, age) {
+>   this.name = name;
+>   this.age = age;
+> }
+> Person.prototype.greet = function() {
+>   return "Hallo, ich bin " + this.name;
+> };
+>
+> // SO sieht es seit ES2015 aus:
+> class Person {
+>   constructor(name, age) {
+>     this.name = name;
+>     this.age = age;
+>   }
+>   greet() {
+>     return `Hallo, ich bin ${this.name}`;
+>   }
+> }
+> // Unter der Haube: DASSELBE Prototype-System!
+> ```
+
+> **Analogie:** Eine TypeScript-Klasse ist wie ein Bauplan mit praezisen
+> Materialvorgaben. JavaScript akzeptiert "irgendwas das haelt", TypeScript
+> besteht auf "Beton Klasse C20/25, Stahl B500B". Der Bauplan (Typen)
+> verschwindet nach der Abnahme — das Gebaeude (JS-Code) bleibt.
+
+> **Experiment:** Erstelle eine Klasse ohne Feld-Deklarationen und aktiviere
+> `strict: true`. Welche Fehlermeldungen siehst du? Loese sie nacheinander
+> mit den vier Wegen aus dem naechsten Abschnitt.
+
+> **Framework-Referenz (Angular):** Angular Components sind Klassen mit dem
+> `@Component`-Decorator. Jedes `@Injectable()` Service ist eine Klasse.
+> Angular nutzt Klassen intensiv fuer Dependency Injection — der
+> DI-Container identifiziert Services anhand ihrer Klasse (als Token).
+> TypeScript's Structural Typing spielt hier normalerweise keine Rolle,
+> weil Angular's DI nominal arbeitet (ueber die Konstruktorreferenz).
+>
+> ```typescript
+> @Injectable({ providedIn: 'root' })
+> class UserService {
+>   private users: User[] = [];
+>   getAll(): User[] { return this.users; }
+> }
+>
+> @Component({ selector: 'app-user-list', template: '...' })
+> class UserListComponent {
+>   constructor(private userService: UserService) {}
+>   // ^ Angular injiziert hier die KLASSE UserService — nicht irgendein
+>   //   Objekt mit der gleichen Struktur.
+> }
+> ```
+
+> **Selbsterklaerung:** Wenn TypeScript Structural Typing verwendet, warum
+> braucht man dann ueberhaupt Klassen? Koennte man nicht alles mit Interfaces
+> und Objekt-Literalen machen? Was bieten Klassen, das Interfaces nicht koennen?
+>
+> **Kernpunkte:** Klassen existieren zur Laufzeit (instanceof) |
+> Klassen haben Konstruktoren fuer Initialisierungslogik |
+> Klassen koennen private Felder (#) haben |
+> Klassen ermoeglichen Vererbung mit konkretem Code
+
+<!-- /depth -->
+
 ---
 
 ## strictPropertyInitialization — TypeScript passt auf
 
+<!-- section:summary -->
+`strictPropertyInitialization` verhindert uninitialisierte Felder — vier Loesungswege: Constructor-Zuweisung, Default-Wert, optional (`?`), oder Definite Assignment Assertion (`!`).
+<!-- depth:standard -->
 Mit `strict: true` in deiner `tsconfig.json` (was du seit Lektion 01
 verwendest) ist automatisch `strictPropertyInitialization` aktiv.
 Das bedeutet: **Jedes Feld muss im Constructor initialisiert werden**
@@ -159,7 +246,8 @@ class D {
 }
 ```
 
-> **Erklaere dir selbst:** Warum ist `class Foo { name: string }` in TypeScript
+<!-- depth:vollstaendig -->
+> **Denkfrage:** Warum ist `class Foo { name: string }` in TypeScript
 > ein Fehler ohne Initialisierung (`strictPropertyInitialization`)? Was wuerde
 > passieren, wenn TypeScript das zuliesse — welchen Wert haette `name` zur
 > Laufzeit?
@@ -168,10 +256,32 @@ class D {
 > TypeScript wuerde aber denken, es sei `string` | Das waere eine Luege im Typsystem |
 > `strictPropertyInitialization` verhindert genau diese Luege
 
+> **Analogie:** `strictPropertyInitialization` ist wie ein Sicherheitsgurt-
+> Sensor: Das Auto faehrt auch ohne, aber das Warnpiepen erinnert dich daran,
+> dass etwas fehlt. Der `!`-Operator ist wie den Sensor ausschalten — du
+> weisst was du tust, aber die Verantwortung liegt bei dir.
+
+> **Framework-Referenz (Angular):** Der `!`-Operator (Definite Assignment)
+> ist in Angular bei `@ViewChild()` und `@ContentChild()` haeufig:
+>
+> ```typescript
+> @Component({ ... })
+> class MyComponent {
+>   @ViewChild('myInput') inputRef!: ElementRef;
+>   // ^ Angular setzt das erst in ngAfterViewInit.
+>   //   TypeScript kann das nicht wissen, also !
+> }
+> ```
+
+<!-- /depth -->
+
 ---
 
 ## Methoden und der this-Kontext
 
+<!-- section:summary -->
+Methoden haben Zugriff auf `this`, aber dieser geht bei Callback-Uebergabe verloren — Arrow-Functions als Klassen-Felder loesen das Problem durch lexikalisches Binding.
+<!-- depth:standard -->
 Methoden in Klassen haben Zugriff auf `this` — aber dieser Zugriff
 kann **verloren gehen**, wenn du eine Methode als Callback uebergibst.
 Das ist eine der haeufigsten Fehlerquellen in TypeScript/JavaScript:
@@ -212,6 +322,7 @@ safeFn(); // OK! Arrow-Function behaelt 'this'.
 console.log(counter.getCount()); // 2
 ```
 
+<!-- depth:vollstaendig -->
 > **Denkfrage:** Was ist der Unterschied zwischen einem Interface und einer Klasse?
 > Beide definieren eine Struktur — aber Interfaces existieren nur zur Compilezeit
 > (Type Erasure), waehrend Klassen zur Laufzeit als JavaScript-Konstruktorfunktionen
@@ -222,10 +333,40 @@ console.log(counter.getCount()); // 2
 > die Prototype-Kette prueft. Interfaces existieren zur Laufzeit nicht —
 > `value instanceof MyInterface` waere ein Fehler.
 
+> **Analogie:** `this` ist wie ein Namensschild. Wenn du `counter.increment()`
+> rufst, traegt die Methode das Schild "Counter". Wenn du sie als Callback
+> uebergibst, verliert sie das Schild — sie weiss nicht mehr, wer sie ist.
+> Die Arrow-Function naeht das Namensschild fest an die Jacke.
+
+> **Framework-Referenz (React):** In React Class Components war dieses
+> Problem allgegenwaertig. Einer der Hauptgruende fuer den Wechsel zu Hooks
+> war die ständige `this`-Verwirrung:
+>
+> ```typescript
+> // React Class Component — das beruechtigte this-Problem
+> class MyButton extends React.Component {
+>   state = { count: 0 };
+>   // Loesung: Arrow-Function als Klassen-Feld
+>   handleClick = () => { this.setState({ count: this.state.count + 1 }); };
+>   render() { return <button onClick={this.handleClick}>Click</button>; }
+> }
+> // Hooks loesen das komplett:
+> function MyButton() {
+>   const [count, setCount] = useState(0);
+>   const handleClick = () => setCount(count + 1); // Kein this-Problem!
+>   return <button onClick={handleClick}>Click</button>;
+> }
+> ```
+
+<!-- /depth -->
+
 ---
 
 ## Klassen und Typen: Structural Typing
 
+<!-- section:summary -->
+TypeScript verwendet Structural Typing auch fuer Klassen: Ein Objekt mit passender Struktur kann als Klassen-Instanz behandelt werden — im Gegensatz zu nominalem Typing in Java oder C#.
+<!-- depth:standard -->
 Einer der ueberraschendsten Aspekte von TypeScript ist, dass Klassen
 dem **Structural Typing** unterliegen — genau wie Interfaces.
 Das erinnerst du vielleicht aus L05 (Objekt-Typen) und L08 (Type Aliases): TypeScript prueft nie den *Namen* eines Typs, sondern seine *Struktur*. Klassen sind da keine Ausnahme.
@@ -252,6 +393,7 @@ printPoint({ x: 10, y: 20 });
 //   also passt es zum Typ 'Point'. Kein extends, kein implements noetig.
 ```
 
+<!-- depth:vollstaendig -->
 > **Experiment:** Erstelle eine Klasse `Dog` mit einem Feld `name: string`
 > und einer Methode `bark(): string`. Dann erstelle ein einfaches Objekt
 > `{ name: "Bello", bark: () => "Wuff!" }` und uebergib es an eine Funktion
@@ -261,32 +403,15 @@ Das ist ein fundamentaler Unterschied zu Java oder C#, wo Klassen
 **nominal** getypt sind: Dort muesste ein Objekt explizit von `Point`
 erben oder `Point` implementieren.
 
-> **In deinem Angular-Projekt** sind Components Klassen mit dem
-> `@Component`-Decorator. Jedes `@Injectable()` Service ist eine Klasse.
-> Angular nutzt Klassen intensiv fuer Dependency Injection — der
-> DI-Container identifiziert Services anhand ihrer Klasse (als Token).
-> TypeScript's Structural Typing spielt hier normalerweise keine Rolle,
-> weil Angular's DI nominal arbeitet (ueber die Konstruktorreferenz).
->
-> ```typescript
-> @Injectable({ providedIn: 'root' })
-> class UserService {
->   private users: User[] = [];
->   getAll(): User[] { return this.users; }
-> }
->
-> @Component({ selector: 'app-user-list', template: '...' })
-> class UserListComponent {
->   constructor(private userService: UserService) {}
->   // ^ Angular injiziert hier die KLASSE UserService — nicht irgendein
->   //   Objekt mit der gleichen Struktur.
-> }
-> ```
+<!-- /depth -->
 
 ---
 
 ## Der Typ einer Klasse: Instanz-Typ vs. Konstruktor-Typ
 
+<!-- section:summary -->
+TypeScript unterscheidet den Instanz-Typ (`Animal`) vom Konstruktor-Typ (`typeof Animal`) — ersteres beschreibt Objekte, letzteres die Klasse selbst als Parameter.
+<!-- depth:standard -->
 TypeScript unterscheidet zwei Arten von Typen bei Klassen — ein
 Detail, das oft uebersehen wird aber wichtig ist:
 
@@ -309,8 +434,15 @@ const pet2 = new AnimalClass("Buddy");
 // ^ Funktioniert! AnimalClass ist der Konstruktor.
 ```
 
+<!-- depth:vollstaendig -->
+> **Analogie:** Der Instanz-Typ ist wie der Grundriss eines fertigen Hauses —
+> du beschreibst, was im Haus ist (Zimmer, Tueren). Der Konstruktor-Typ
+> ist wie der Bauplan + die Baufirma — er beschreibt, WIE man das Haus baut.
+
 Das wird wichtig, wenn du **Klassen als Parameter** uebergeben willst —
 etwa in einer Factory-Funktion (mehr dazu in Sektion 05).
+
+<!-- /depth -->
 
 ---
 

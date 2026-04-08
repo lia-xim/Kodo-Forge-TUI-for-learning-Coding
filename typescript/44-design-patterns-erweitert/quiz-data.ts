@@ -22,9 +22,9 @@ export const questions: QuizQuestion[] = [
       "Wann setzt du das Adapter Pattern ein?",
     options: [
       "Wenn du ein inkompatibles Interface einer Drittanbieterbibliothek an dein eigenes Interface anpassen musst",
-      "Wenn du mehrere Objekte hinter einer vereinfachten API verstecken willst",
-      "Wenn du auswechselbare Algorithmen fuer denselben Schritt kapseln willst",
-      "Wenn du sicherstellen willst, dass eine Klasse nur einmal instanziiert wird",
+      "Wenn du mehrere Objekte hinter einer vereinfachten API verstecken willst — das Facade Pattern",
+      "Wenn du auswechselbare Algorithmen fuer denselben Schritt kapseln willst — das Strategy Pattern",
+      "Wenn du sicherstellen willst, dass eine Klasse nur einmal instanziiert wird — das Singleton Pattern",
     ],
     correct: 0,
     explanation:
@@ -48,10 +48,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Was ist der Hauptvorteil des Strategy Patterns gegenueber einer if-else-Kaskade?",
     options: [
-      "Es ist schneller zur Laufzeit, weil keine Verzweigungen ausgefuehrt werden",
+      "Es ist schneller zur Laufzeit, weil keine Verzweigungen ausgefuehrt werden — der Strategy ruft direkt die Methode auf",
       "Neue Strategien koennen hinzugefuegt werden ohne bestehenden Code zu aendern (Open/Closed)",
-      "Es erzeugt weniger Objekte im Heap und spart damit Speicher",
-      "Es funktioniert nur mit TypeScript-Interfaces, nicht mit abstrakten Klassen",
+      "Es erzeugt weniger Objekte im Heap und spart damit Speicher — die Strategie-Objekte werden gemeinsam genutzt",
+      "Es funktioniert nur mit TypeScript-Interfaces, nicht mit abstrakten Klassen — es braucht strukturelle Typen",
     ],
     correct: 1,
     explanation:
@@ -74,10 +74,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Welchen konkreten Vorteil hat ein In-Memory-Repository in Tests gegenueber einem Mock?",
     options: [
-      "In-Memory-Repositories sind schneller als Mocks, weil sie keinen Overhead haben",
+      "In-Memory-Repositories sind schneller als Mocks, weil sie keinen Overhead haben und direkt auf Daten zugreifen",
       "Mocks koennen keine Interfaces implementieren — nur In-Memory-Repositories koennen das",
       "Das In-Memory-Repository ist eine echte Implementierung des Contracts — es testet auch die Interaktion mehrerer Methoden (z.B. save dann findById)",
-      "In-Memory-Repositories brauchen kein TypeScript-Interface da sie duck-typed sind",
+      "In-Memory-Repositories brauchen kein TypeScript-Interface da sie duck-typed sind und automatisch kompatibel",
     ],
     correct: 2,
     explanation:
@@ -101,7 +101,7 @@ export const questions: QuizQuestion[] = [
     question:
       "Wie prueft TypeScript das Liskov Substitution Principle (L in SOLID) automatisch?",
     options: [
-      "Durch Laufzeit-Checks die sicherstellen, dass Subklassen korrekt erben",
+      "Durch Laufzeit-Checks die sicherstellen, dass Subklassen korrekt erben und alle Methoden ueberschreiben",
       "Durch den `extends`-Keyword der pruefte ob die Basisklasse korrekt implementiert wird",
       "Durch den `override`-Keyword der seit TypeScript 4.3 verfuegbar ist",
       "Durch `implements`: TypeScript prueft, dass alle Methoden mit korrekten Typen vorhanden sind — falsche Signaturen sind Compile-Fehler",
@@ -130,9 +130,9 @@ export const questions: QuizQuestion[] = [
       "Welches Design-Prinzip verletzt sie, wenn sie gleichzeitig die Businesslogik enthaelt?",
     options: [
       "Single Responsibility — die Facade orchestriert UND entscheidet Businesslogik",
-      "Open/Closed — die Facade ist geschlossen fuer Erweiterung",
-      "Liskov Substitution — weil die Facade kein Interface implementiert",
-      "Interface Segregation — die Facade hat zu viele Methoden",
+      "Open/Closed — die Facade ist geschlossen fuer Erweiterung und kann nicht modifiziert werden",
+      "Liskov Substitution — weil die Facade kein Interface implementiert und somit nicht ersetzbar ist",
+      "Interface Segregation — die Facade hat zu viele Methoden und verletzt das Prinzip der kleinen Interfaces",
     ],
     correct: 0,
     explanation:
@@ -157,10 +157,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Welches Feature des Command Patterns erklaert, warum NgRx 'Time-Travel Debugging' unterstuetzt?",
     options: [
-      "Commands speichern alle Daten als unveraenderliche Snapshots im Arbeitsspeicher",
+      "Commands speichern alle Daten als unveraenderliche Snapshots im Arbeitsspeicher fuer spaeteren Zugriff",
       "Jede Action (Command) ist ein unveraenderliches Objekt — der gesamte Zustand entsteht durch Replay aller Commands von Anfang",
-      "NgRx speichert automatisch alle Actions in einer Datenbank fuer spaetere Analyse",
-      "TypeScript-Generics erlauben es, Commands zur Compile-Zeit zu serialisieren",
+      "NgRx speichert automatisch alle Actions in einer Datenbank fuer spaetere Analyse und Debugging",
+      "TypeScript-Generics erlauben es, Commands zur Compile-Zeit zu serialisieren und damit State zu persistieren",
     ],
     correct: 1,
     explanation:
@@ -185,10 +185,10 @@ export const questions: QuizQuestion[] = [
     question:
       "Du schreibst zum zweiten Mal fast denselben HTTP-Fetch-Code. Was empfiehlt die 'Rule of Three'?",
     options: [
-      "Sofort abstrahieren — bereits das zweite Mal zeigt, dass Duplikation entsteht",
-      "Immer direkt schreiben — Abstraktionen erhoehen Komplexitaet ohne Nutzen",
+      "Sofort abstrahieren — bereits das zweite Mal zeigt, dass Duplikation entsteht und vermieden werden sollte",
+      "Immer direkt schreiben — Abstraktionen erhoehen Komplexitaet ohne nachweisbaren Nutzen",
       "Warte auf das dritte Mal — erst dann weisst du, was wirklich wiederverwendet wird",
-      "Abstrahiere wenn die Funktion mehr als 10 Zeilen hat",
+      "Abstrahiere wenn die Funktion mehr als 10 Zeilen hat — das ist der Schwellenwert fuer Wiederverwendung",
     ],
     correct: 2,
     explanation:
