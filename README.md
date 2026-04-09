@@ -9,7 +9,7 @@
 <br>
 
 <p align="center">
-  <img src="kodo_screen_1.png" alt="Kodo Forge Terminal App" width="800">
+  <img src="screenshots/kodo_screen_1.png" alt="Kodo Forge Terminal App" width="800">
 </p>
 
 ## What is this?
