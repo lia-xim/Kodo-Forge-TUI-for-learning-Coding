@@ -1,0 +1,8 @@
+{
+  "name": "kodo-forge-workspace",
+  "private": true,
+  "scripts": {
+    "release": "cd platform && npm run release",
+    "start": "cd platform && npm start"
+  }
+}
