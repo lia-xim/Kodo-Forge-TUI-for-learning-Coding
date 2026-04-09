@@ -20,6 +20,7 @@ import {
   hasResumeTarget, courseInfoRenderedLines, setCourseInfoRenderedLines,
   COURSES_ROOT, PROJECT_ROOT,
   getDueReviewCount, getReviewStreak, getRecentActivityValues,
+  SESSION_START, sessionStats,
 } from "./tui-state.ts";
 import { progressBar as fineProgressBar, sparkline } from "./visual-utils.ts";
 import type { ParsedKey, PlatformCourse, Screen } from "./tui-types.ts";
@@ -36,13 +37,14 @@ import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, renderDivid
 
 // ─── Layout-Typen ──────────────────────────────────────────────────────────
 
-type LayoutMode = "grid-2x2" | "column-1" | "ultra-compact";
+type LayoutMode = "grid-2x2" | "column-1" | "ultra-compact" | "list";
 
 function getLayoutMode(): LayoutMode {
   const w = process.stdout.columns || 80;
-  if (w >= 100) return "grid-2x2";
-  if (w >= 80) return "column-1";
-  return "ultra-compact";
+  if (w >= 130) return "grid-2x2";
+  if (w >= 80)  return "column-1";
+  if (w >= 55)  return "ultra-compact";
+  return "list";
 }
 
 const courseColorMap: Record<string, string> = {
@@ -94,10 +96,6 @@ export function renderPlatformScreen(): void {
   const timerStr = formatSessionTime();
   const dueCount = getDueReviewCount();
   const streak = getReviewStreak();
-  const activityVals = getRecentActivityValues(14);
-  const activeCourse = courses.find(co => co.id === platformConfig.activeCourse);
-  const activePr = activeCourse ? getCourseProgressSummary(activeCourse) : null;
-  const totalHours = activePr?.actualHours ?? 0;
 
   const headerRightParts: string[] = [];
   if (streak > 0) {
@@ -112,10 +110,17 @@ export function renderPlatformScreen(): void {
   const headerRight = ` ${headerRightParts.join("  ")} `;
   lines.push(renderHeaderBar(` Kodo Forge`, headerRight, w));
 
-  // ─── Section B: Logo Area ───
-  if (w >= 88 && h >= 30) {
+  // ─── Responsive breakpoints ───────────────────────────────────────────────
+  const W_XL  = w >= 130;   // 2x2 grid + full logo + horizontal lernpfad
+  const W_L   = w >= 88;    // single column + ASCII logo + horizontal lernpfad
+  const W_M   = w >= 55;    // single column + wordmark + vertical lernpfad
+  // W_S = w < 55           // ultra-minimal course list only
+  const H_TALL = h >= 30;   // enough vertical room for logo
+
+  // ─── Section B: Logo / Wordmark ─────────────────────────────────────────
+  if (W_L && H_TALL) {
+    // Full 6-line ASCII art (fits at w≥88, logo is ~82 chars wide)
     lines.push("");
-    // Logo with subtle vertical gradient: bold amber → dimmer amber
     const logoColors = [
       `${t.mod.bold}${t.fg.accent}`,
       `${t.mod.bold}${t.fg.accent}`,
@@ -134,59 +139,131 @@ export function renderPlatformScreen(): void {
     lines.push(`${" ".repeat(tagPad)}${t.fg.secondary}${tagline}${reset}`);
     lines.push("");
     lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
-  } else {
-    lines.push(`  ${t.mod.bold}${t.fg.accent}KODO FORGE${reset}  ${t.fg.secondary}Deep Learning Platform${reset}`);
+    lines.push("");
+  } else if (W_M) {
+    // Compact wordmark on one line
+    lines.push(`  ${t.mod.bold}${t.fg.accent}KODO FORGE${reset}   ${t.fg.secondary}Deep Learning Platform${reset}`);
     lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
-  }
-  lines.push("");
-
-  // ─── Section C: Overall Progress Chart ───
-  lines.push(`  ${t.mod.bold}GESAMTFORTSCHRITT${reset}`);
-  lines.push("");
-
-  const labelW = 14;
-  const barW = Math.min(32, Math.max(14, w - 55));
-
-  for (const co of courses) {
-    const pr = getCourseProgressSummary(co);
-    const unlocked = isCourseUnlocked(co);
-    const isActiveCourse = co.id === platformConfig.activeCourse;
-
-    const labelRaw = padR(co.name, labelW);
-    const labelColored = unlocked
-      ? `${t.fg.primary}${labelRaw}${reset}`
-      : `${t.fg.muted}${labelRaw}${reset}`;
-
-    let barStr: string;
-    if (unlocked) {
-      barStr = smoothProgress(pr.percent, barW);
-    } else {
-      barStr = `${t.fg.muted}${"░".repeat(barW)}${reset}`;
-    }
-
-    let pctStrColored: string;
-    if (!unlocked) {
-      pctStrColored = `${t.fg.muted} – ${reset}`;
-    } else if (pr.percent > 0) {
-      pctStrColored = `${t.fg.accent}${String(pr.percent).padStart(3)}%${reset}`;
-    } else {
-      pctStrColored = `${t.fg.muted}${String(pr.percent).padStart(3)}%${reset}`;
-    }
-
-    let trailing: string;
-    if (unlocked) {
-      const total = co.totalLessons ?? pr.totalLessons;
-      trailing = `${t.fg.secondary}L${pr.completedLessons}/${total}${reset}`;
-    } else {
-      trailing = `${t.fg.muted}gesperrt${reset}`;
-    }
-
-    const activeSuffix = isActiveCourse && unlocked ? `  ${t.fg.accent}◀ aktiv${reset}` : "";
-
-    lines.push(`  ${labelColored}  ${barStr}  ${pctStrColored}  ${trailing}${activeSuffix}`);
+    lines.push("");
+  } else {
+    // S: header already shows "Kodo Forge", just a separator
+    lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
+    lines.push("");
   }
 
-  lines.push("");
+  // ─── Section C: Learning Path + Activity Stats ───
+
+  // Shared stats data
+  const activityVals = getRecentActivityValues(28);
+  const spark = sparkline(activityVals.slice(-14));
+  const actStreak = getReviewStreak();
+  const actDueCount = getDueReviewCount();
+  const today = activityVals[activityVals.length - 1] ?? 0;
+  const weekTotal = activityVals.slice(-7).reduce((a, b) => a + b, 0);
+  const elapsed = Date.now() - SESSION_START;
+  const sessionMins = Math.floor(elapsed / 60000);
+  const sessionTime = sessionMins >= 60
+    ? `${Math.floor(sessionMins / 60)}h ${sessionMins % 60}m`
+    : `${sessionMins}m`;
+  const statParts = [
+    actStreak > 0 ? `${t.fg.accent}★ ${actStreak}d${reset}` : `${t.fg.secondary}–${reset}`,
+    `${t.fg.info}⏱ ${sessionTime}${reset}`,
+    today > 0 ? `${t.fg.success}↗ ${today} heute${reset}` : `${t.fg.secondary}0 heute${reset}`,
+    `${t.fg.secondary}∑ ${weekTotal}/Woche${reset}`,
+    actDueCount > 0
+      ? `${t.fg.warning}● ${actDueCount} fällig${reset}`
+      : `${t.fg.success}✓ aktuell${reset}`,
+  ];
+
+  if (W_L) {
+    // C1: Horizontal Lernpfad-Flowchart
+    const nodeCount = courses.length;
+    const arrowStr = ` ──▶ `;
+    const arrowVis = 5;
+    const nodeW = Math.max(12, Math.floor((w - 4 - arrowVis * (nodeCount - 1)) / nodeCount));
+
+    let topLine = "  ";
+    let botLine = "  ";
+
+    for (let i = 0; i < nodeCount; i++) {
+      const co = courses[i];
+      const pr = getCourseProgressSummary(co);
+      const unlocked = isCourseUnlocked(co);
+      const isActive = co.id === platformConfig.activeCourse;
+
+      const borderCol = isActive ? t.border.active : unlocked ? t.border.default : t.border.muted;
+      const textCol   = isActive ? t.fg.accent     : unlocked ? t.fg.primary    : t.fg.muted;
+
+      const name = truncate(co.name, nodeW - 2);
+      const nameVis = stripAnsi(name).length;
+      const namePad = " ".repeat(Math.max(0, nodeW - 2 - nameVis));
+      topLine += `${borderCol}[${reset}${textCol}${name}${reset}${namePad}${borderCol}]${reset}`;
+
+      let statusStr: string;
+      if (isActive && unlocked) {
+        const total = co.totalLessons ?? pr.totalLessons;
+        statusStr = `${t.fg.accent}▸ L${pr.completedLessons}/${total}${reset}`;
+      } else if (unlocked) {
+        const total = co.totalLessons ?? pr.totalLessons;
+        statusStr = `${t.fg.secondary}  L${pr.completedLessons}/${total}${reset}`;
+      } else {
+        statusStr = `${t.fg.muted}  gesperrt${reset}`;
+      }
+      const statusVis = stripAnsi(statusStr).length;
+      const statusPad = " ".repeat(Math.max(0, nodeW - statusVis));
+      botLine += `${statusStr}${statusPad}`;
+
+      if (i < nodeCount - 1) {
+        const arrowCol = unlocked ? t.fg.accentDim : t.fg.muted;
+        topLine += `${arrowCol}${arrowStr}${reset}`;
+        botLine += " ".repeat(arrowVis);
+      }
+    }
+
+    lines.push(`  ${t.fg.secondary}LERNPFAD${reset}`);
+    lines.push("");
+    lines.push(topLine);
+    lines.push(botLine);
+    lines.push("");
+
+    // C2: Full stats strip with sparkline
+    const statsRow = `  ${t.fg.secondary}AKTIVITÄT${reset}  ${t.fg.accent}${spark}${reset}    ${statParts.join("   ")}`;
+    lines.push(statsRow);
+
+  } else if (W_M) {
+    // C1: Compact vertical Lernpfad list
+    lines.push(`  ${t.fg.secondary}LERNPFAD${reset}`);
+    lines.push("");
+    for (let i = 0; i < courses.length; i++) {
+      const co = courses[i];
+      const pr = getCourseProgressSummary(co);
+      const unlocked = isCourseUnlocked(co);
+      const isActive = co.id === platformConfig.activeCourse;
+      const borderCol = isActive ? t.border.active : unlocked ? t.fg.accentDim : t.border.muted;
+      const textCol   = isActive ? t.fg.accent     : unlocked ? t.fg.primary   : t.fg.muted;
+      const treeChar  = i < courses.length - 1 ? "├─" : "└─";
+      let statusStr: string;
+      if (isActive && unlocked) {
+        const total = co.totalLessons ?? pr.totalLessons;
+        statusStr = `${t.fg.accent}▸ L${pr.completedLessons}/${total}${reset}`;
+      } else if (unlocked) {
+        const total = co.totalLessons ?? pr.totalLessons;
+        statusStr = `${t.fg.secondary}L${pr.completedLessons}/${total}${reset}`;
+      } else {
+        statusStr = `${t.fg.muted}gesperrt${reset}`;
+      }
+      lines.push(`  ${borderCol}${treeChar}${reset} ${textCol}${co.icon} ${co.name}${reset}  ${statusStr}`);
+    }
+    lines.push("");
+
+    // C2: 3 key stats only (no sparkline)
+    lines.push(`  ${statParts[0]}   ${statParts[2]}   ${statParts[4]}`);
+
+  } else {
+    // W_S: Just a minimal one-line stat strip, no lernpfad
+    lines.push(`  ${statParts[1]}   ${statParts[0]}`);
+  }
+
   lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
   lines.push("");
 
@@ -346,6 +423,39 @@ export function renderPlatformScreen(): void {
       if (row < rowCount - 1) lines.push("");
     }
 
+  } else if (mode === "list") {
+    // ─── Ultra-compact list rows (w < 55) ───
+    for (let i = 0; i < courses.length; i++) {
+      const co = courses[i];
+      const pr = getCourseProgressSummary(co);
+      const unlocked = isCourseUnlocked(co);
+      const isSel = i === selectedIdx;
+      const isActive = co.id === platformConfig.activeCourse;
+
+      const selMark = isSel ? `${t.fg.accent}▸ ${reset}` : `  `;
+      const textCol = isSel && isActive ? t.fg.accent
+                    : isSel             ? getCourseColor(co)
+                    : isActive          ? t.fg.accentDim
+                    : unlocked          ? t.fg.primary
+                    :                    t.fg.muted;
+
+      const nameRaw = truncate(co.name, 14);
+      const nameVis = stripAnsi(nameRaw).length;
+      const namePad = " ".repeat(Math.max(0, 14 - nameVis));
+
+      let rightPart: string;
+      if (unlocked) {
+        const barW = Math.max(4, w - 22);
+        const bar = smoothProgress(pr.percent, barW);
+        rightPart = `${bar} ${t.fg.secondary}${String(pr.percent).padStart(3)}%${reset}`;
+      } else {
+        rightPart = `${t.fg.muted}gesperrt${reset}`;
+      }
+
+      lines.push(`${selMark}${textCol}${nameRaw}${reset}${namePad}  ${rightPart}`);
+      if (i < courses.length - 1) lines.push("");
+    }
+
   } else {
     // ─── Column / Ultra-Compact ───
     const margin = mode === "ultra-compact" ? 1 : 2;
@@ -361,25 +471,9 @@ export function renderPlatformScreen(): void {
     }
   }
 
-  // ─── Activity Sparkline ───
-  const hasActivity = activityVals.some(v => v > 0);
-  if (hasActivity && w >= 80) {
-    lines.push("");
-    const spark = sparkline(activityVals);
-    const todayCount = activityVals[activityVals.length - 1] ?? 0;
-    const todayText = todayCount > 0 ? `  Heute: ${todayCount} Sektionen` : "";
-    const sparkLine = ` ${t.fg.secondary}14 Tage:${reset}  ${t.fg.accent}${spark}${reset}${t.fg.secondary}${todayText}${reset}`;
-    const sparkInner = w - 4;
-    const sparkVis = stripAnsi(sparkLine).length;
-    const sparkPad = " ".repeat(Math.max(0, sparkInner - sparkVis));
-    lines.push(`  ${t.border.muted}╭${"─".repeat(sparkInner)}╮${reset}`);
-    lines.push(`  ${t.border.muted}│${reset}${sparkLine}${sparkPad}${t.border.muted}│${reset}`);
-    lines.push(`  ${t.border.muted}╰${"─".repeat(sparkInner)}╯${reset}`);
-  }
-
   // ─── Recommendation Panel ───
   const rec = getRecommendedCourse();
-  if (rec) {
+  if (rec && W_M) {
     const recCourse = platformConfig.courses.find(co => co.id === rec.courseId);
     if (recCourse) {
       lines.push("");
