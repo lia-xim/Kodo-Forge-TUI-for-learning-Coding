@@ -4,7 +4,7 @@
   <br>
 </h1>
 
-<h4 align="center">A high-fidelity, distraction-free terminal learning platform for Software Developers.</h4>
+<h4 align="center">A terminal-native learning platform for developers who hate browser distractions.</h4>
 
 <br>
 
@@ -12,76 +12,63 @@
   <img src="kodo_screen_1.png" alt="Kodo Forge Terminal App" width="800">
 </p>
 
-## Overview
+## What is this?
 
-**Kodo Forge** is an open-source, terminal-native educational engine. Why the terminal? Because browsers are noisy. Social media, notifications, and 50 open tabs destroy deep work. Kodo Forge is a specialized TUI (Terminal User Interface) built to help developers master complex technologies with pure, distraction-free focus.
+Browsers are noisy. Between social media, notifications, and 50 open tabs, it's hard to focus on deep technical learning. **Kodo Forge** is an open-source, terminal-based learning engine. It runs purely in powershell, bash, or zsh, so you can learn complex topics like TypeScript or React without leaving your terminal.
 
-Our courses combine rigorous didactic methodology (the LEARN cycle) with gamification, spaced repetition, and interactive quizzes—all rendered natively in your command line, requiring zero internet connection once downloaded.
+There are no databases or cloud backends required to run it. The engine just parses local Markdown files and turns them into an interactive TUI (Terminal User Interface).
 
-## Key Features
+## Features
 
-- **No Browser Required:** Runs purely in powershell, zsh, or bash.
-- **Spaced Repetition Engine:** Automatically calculates memory decay and prompts you to review previously learned concepts.
-- **Kinetic Reading:** Intelligent scrolling that prevents text-walls. Content is unlocked dynamically to keep you engaged.
-- **Annotated Code Trees:** Code examples are parsed and aligned with inline comments for side-by-side reading in the terminal.
-- **Open-Source & Markdown Driven:** Courses aren't locked in a database. They are standard `git` directories full of simple Markdown files.
-- **Adaptive Difficulty:** Automatically switches depth (Detailed vs. Fast-track) based on your performance in quizzes.
+- **No browser needed:** Run the executable directly in your command line.
+- **Spaced Repetition:** The app remembers when you last reviewed a concept and automatically schedules reviews.
+- **Side-by-side code annotations:** Add special tags to your markdown and the engine splits the view, placing comments right next to the code.
+- **Adaptive difficulty:** If you nail the quizzes, the text adjusts to be faster. If you struggle, it provides deeper explanations.
+- **Offline first:** Download it once, learn anywhere.
 
-## Getting Started
+## Try it out (No installation needed)
 
-### Play it right now (No installation required)
+Check out our [Releases](https://github.com/lia-xim/Learning/releases) for the standalone executable. 
 
-Check out our [Releases](https://github.com/lia-xim/Learning/releases) for the latest executable. 
 - **Windows:** Download `kodo-forge.exe` and execute it.
 - **Linux/Mac:** Download the binary and run `./kodo-forge`
 
-*(Note: The platform expects the `platform.json` and course folders like `typescript/` to be adjacent to the executable.)*
+*(Note: Keep the downloaded executable in the same directory as the `platform.json` and course folders, like `typescript/`)*
 
-### Build from source
+## Building from source
 
-If you want to contribute to the engine or run it directly via Node/Bun:
+If you want to poke around the Node/Bun codebase:
 
 ```bash
-# Clone the repository
+# Clone it
 git clone https://github.com/lia-xim/Learning.git
 
-# Enter the platform folder
+# Go to the platform folder
 cd Learning/platform
 
 # Install dependencies
 npm install
 
-# Start the TUI
+# Start the dev environment
 npm run start
 ```
 
-## Community-Driven & Create Your Own Course! 🤝
+## Adding your own courses & PRs 🤝
 
-Kodo Forge is a **community-driven project**. We actively welcome contributions, new courses, and extensions to the engine!
+Kodo Forge is a **community-driven project**. If you want to contribute, fix a bug, or write a tutorial, Pull Requests are highly welcome.
 
-You can author your own interactive courses using nothing but Standard Markdown. No proprietary editors. No databases. Just create a folder, add your markdown files to `platform.json`, and our engine parses it into a beautiful Terminal application automatically.
+You don't need to know React or TypeScript to build a course. Courses are literally just Markdown files structured in folders. You edit a single `platform.json` file, add your `.md` files, and the engine automatically handles the syntax highlighting, UI, and quizzes.
 
-We even provide an **AI Course Creator Workflow**: You can feed our instruction set ([`create-kodo-course.md`](.agent/workflows/create-kodo-course.md)) to an AI, and it will generate structurally perfect, Kodo-Forge-compatible courses for you.
+If you want to write a course fast, we have an instruction file at [`.agent/workflows/create-kodo-course.md`](.agent/workflows/create-kodo-course.md). You can drop that file into Claude or ChatGPT and have them perfectly format your markdown based on our platform's structure.
 
-Want to contribute a fix or a new course? **Pull Requests are highly welcome and appreciated!**
+## Official Courses
 
-## Course Catalog
+Currently bundled in this repository:
 
-Currently, Kodo Forge supports the following official curriculum tracks:
-
-- **TypeScript Deep Learning:** From primitive types to Compiler API and AST parsing (44 Lessons, 82h).
+- **TypeScript Deep Learning:** 44 lessons covering fundamentals up to the Compiler API. 
 - **Angular Mastery** *(Coming Soon)* 
 - **React with TypeScript** *(Coming Soon)*
 
-## Scripts & Automation
-
-For Maintainers:
-To release a new version of the binaries (via GitHub Actions):
-```bash
-npm run release
-```
-*This bumps the package version, creates a Git Tag, and pushes it, triggering the Release workflow.*
-
 ## License
 
-MIT License - Use it, fork it, build on it!
+MIT License. Hack on it, fork it, make it yours.
