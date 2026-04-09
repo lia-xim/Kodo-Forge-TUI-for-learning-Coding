@@ -1,0 +1,134 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { FolderOpen, PlusSquare, Brain, Terminal, FileCode2, Command, Sparkles, HelpCircle } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5 },
+  }),
+};
+
+export default function CreateCoursePage() {
+  return (
+    <article className="min-h-screen py-20 px-6 max-w-6xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-center mb-20"
+      >
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Terminal size={24} className="text-[#FFB000]" />
+          <h1 className="text-4xl sm:text-6xl font-bold text-white tracking-tighter" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            Author Your Own <span className="text-[#FFB000]">Course</span>
+          </h1>
+        </div>
+        <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
+          Kodo Forge isn't just a learning platform—it's an open-source, data-driven reading engine. 
+          You can create stunning interactive terminal courses using nothing but simple Markdown files.
+        </p>
+      </motion.div>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24 items-center">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0}>
+          <h2 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            How does it work?
+          </h2>
+          <div className="space-y-6 text-zinc-400 leading-relaxed">
+            <p>
+              The Kodo Forge engine knows absolutely nothing about TypeScript or React. It purely reads a <code className="text-[#FFB000] bg-zinc-800/50 px-2 py-0.5 rounded font-mono text-sm">platform.json</code> file and parses the folders you define inside it.
+            </p>
+            <p>
+              A course is simply a folder on your computer. Inside that folder, you create numbered subfolders for your lessons (e.g. <code className="text-zinc-300 font-mono text-sm">01-foundations/</code>). Inside those are your Markdown files.
+            </p>
+            <p>
+              When you launch Kodo Forge, the engine compiles your Markdown into a highly optimized terminal experience—complete with syntax highlighting, annotated code, adaptive depth modes, and auto-generated quizzes.
+            </p>
+          </div>
+        </motion.div>
+        
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={1} className="retro-glass rounded-lg border border-zinc-800/80 p-6 overflow-hidden">
+          <div className="flex items-center gap-2 mb-4 border-b border-zinc-800/60 pb-3">
+            <FolderOpen size={16} className="text-[#FFB000]" />
+            <span className="text-xs font-mono text-zinc-400 tracking-wider">DIRECTORY STRUCTURE</span>
+          </div>
+          <pre className="text-sm font-mono text-zinc-300 leading-relaxed">
+<span className="text-zinc-500">my-course/</span>
+├── <span className="text-green-400">platform.json</span>
+└── <span className="text-blue-400">01-getting-started/</span>
+    ├── <span className="text-green-400">README.md</span> <span className="text-zinc-600 italic"># Lesson metadata</span>
+    └── <span className="text-blue-400">sections/</span>
+        ├── 01-intro.md
+        ├── 02-setup.md
+        └── 03-first-code.md
+          </pre>
+        </motion.div>
+      </section>
+
+      <section className="mb-24">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            The Creator Experience
+          </h2>
+          <div className="w-16 h-1 bg-[#FFB000] mx-auto rounded-full shadow-[0_0_10px_#FFB000]" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: <FileCode2 size={24} />,
+              title: "Write in Markdown",
+              desc: "No proprietary builders. Just write standard Github Flavored Markdown. We support code fences, bold, italic, tables, and blockquotes."
+            },
+            {
+              icon: <Command size={24} />,
+              title: "Terminal Native UI",
+              desc: "Kodo Forge automatically parses your files into a beautiful TUI context, turning blockquotes into Callout Boxes and headings into semantic dividers."
+            },
+            {
+              icon: <Sparkles size={24} />,
+              title: "Annotated Code Blocks",
+              desc: "Add `[annotated]` to your code fences, and the engine splits the view to show your inline `// comments` as beautiful side-by-side explanations."
+            }
+          ].map((feature, i) => (
+            <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i} className="retro-glass p-8 rounded-lg group">
+              <div className="text-[#FFB000] mb-4 group-hover:scale-110 origin-left transition-transform duration-300">{feature.icon}</div>
+              <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="retro-glass rounded-xl p-8 sm:p-12 border border-[#FFB000]/20 text-center relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFB000] rounded-full blur-[150px] opacity-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFB000] rounded-full blur-[150px] opacity-10 pointer-events-none" />
+
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="relative z-10">
+          <Brain size={48} className="mx-auto text-[#FFB000] mb-6" />
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            The AI Course Creator Skill
+          </h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto mb-8 text-lg">
+            We've developed a deterministic AI Workflow instruction set to help you rapidly prototype courses. Give the prompt to AI tools like Claude, Gemini, or ChatGPT, and they will fully generate Kodo Forge compatible directory structures and Markdown files for any topic you want to teach!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/docs#create-content">
+              <div className="inline-flex items-center gap-3 px-8 py-4 bg-[#FFB000] text-[#09090b] font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-amber-400 transition-colors">
+                <HelpCircle size={18} /> View Tutorial
+              </div>
+            </Link>
+            <a href="https://github.com/lia-xim/Learning/blob/main/.agent/workflows/create-kodo-course.md" target="_blank" className="inline-flex items-center gap-3 px-8 py-4 retro-glass text-white font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-zinc-800/40 transition-colors border border-zinc-700/50">
+              <PlusSquare size={18} /> Get AI Workflow
+            </a>
+          </div>
+        </motion.div>
+      </section>
+    </article>
+  );
+}

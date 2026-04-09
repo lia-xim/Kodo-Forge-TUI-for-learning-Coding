@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-amber: #FFB000;
+  --color-neon-amber-dim: rgba(255, 176, 0, 0.4);
+  --color-obsidian: #09090b;
+
+  --animate-scanline: scanline 8s linear infinite;
+  --animate-flicker: flicker 0.15s infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  @keyframes flicker {
+    0% { opacity: 0.95; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px rgba(255, 176, 0, 0.2), 0 0 20px rgba(255, 176, 0, 0.2); }
+    to { text-shadow: 0 0 20px rgba(255, 176, 0, 0.6), 0 0 30px rgba(255, 176, 0, 0.4); }
+  }
+}
+
+:root {
+  --background: #09090b;
+  --foreground: #e4e4e7;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  overflow-x: hidden;
+}
+
+/* Authentic CRT Scanline Overlay */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Glassmorphism Panel styles for UI blocks */
+.retro-glass {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 176, 0, 0.15);
+}
+
+.retro-glass-hover:hover {
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 176, 0, 0.4);
+  box-shadow: 0px 0px 20px rgba(255, 176, 0, 0.1);
+}
+
+/* Base scrollbar styling for extra flavor */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 176, 0, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 176, 0, 0.6);
+}
