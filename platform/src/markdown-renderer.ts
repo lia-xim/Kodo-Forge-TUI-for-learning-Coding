@@ -367,17 +367,20 @@ function renderAnnotatedCodeBlock(
 ): string[] {
   const output: string[] = [];
 
-  // Breite fuer Code und Annotation berechnen
-  const codeWidth = Math.floor((contentWidth - 4) * 0.55);
-  const annotationSep = " \u2576\u2500 "; // ╶─
-  const annotationSepLen = 4; // sichtbare Laenge von " ╶─ "
+  // Each output line must be exactly contentWidth visible chars:
+  //   "  │ " (4) + inner + " │" (2) = 6 overhead → inner = contentWidth - 6
+  const innerWidth = Math.max(10, contentWidth - 6);
+  const annotationSep = " \u2576\u2500 "; // " ╶─ "
+  const annotationSepLen = 4;
+  // Code takes ~55% of inner, annotation the rest minus the separator
+  const codeWidth = Math.floor(innerWidth * 0.55);
 
-  // Header
+  // Header: "  ╭─ label ─...─╮" = 2 + 1 + 1 + label + dashes + 1 = contentWidth
   const langLabel = " typescript (annotiert) ";
   output.push("");
   output.push(
     `  ${c.dim}\u250C\u2500${langLabel}${"\u2500".repeat(
-      Math.max(0, contentWidth - 4 - langLabel.length)
+      Math.max(0, contentWidth - 5 - langLabel.length)
     )}\u2510${c.reset}`
   );
 
@@ -396,22 +399,16 @@ function renderAnnotatedCodeBlock(
     const visibleCodeLen = stripAnsi(codeLine).length;
 
     if (annotationsEnabled && line.annotation) {
-      // Code + Annotation
+      // Code + Annotation — inner = code(codeWidth) + sep(4) + annotation
       const codePadding = Math.max(0, codeWidth - visibleCodeLen);
-      const availAnnotation =
-        contentWidth - 4 - codeWidth - annotationSepLen;
+      const availAnnotation = Math.max(0, innerWidth - codeWidth - annotationSepLen);
       const truncatedAnnotation =
         line.annotation.length > availAnnotation
-          ? line.annotation.slice(0, availAnnotation - 3) + "..."
+          ? line.annotation.slice(0, Math.max(0, availAnnotation - 3)) + "..."
           : line.annotation;
       const annotationPadding = Math.max(
         0,
-        contentWidth -
-          4 -
-          visibleCodeLen -
-          codePadding -
-          annotationSepLen -
-          truncatedAnnotation.length
+        innerWidth - codeWidth - annotationSepLen - truncatedAnnotation.length
       );
 
       output.push(
@@ -422,17 +419,17 @@ function renderAnnotatedCodeBlock(
         }${" ".repeat(annotationPadding)} ${c.dim}\u2502${c.reset}`
       );
     } else {
-      // Nur Code (keine Annotation oder Annotationen deaktiviert)
-      const padding = Math.max(0, contentWidth - 4 - visibleCodeLen);
+      // Code only — pad to innerWidth
+      const padding = Math.max(0, innerWidth - visibleCodeLen);
       output.push(
         `  ${c.dim}\u2502${c.reset} ${highlighted}${" ".repeat(padding)} ${c.dim}\u2502${c.reset}`
       );
     }
   }
 
-  // Footer
+  // Footer: "  └─...─┘" = 2 + 1 + dashes + 1 = contentWidth → dashes = contentWidth - 4
   output.push(
-    `  ${c.dim}\u2514${"\u2500".repeat(contentWidth - 2)}\u2518${c.reset}`
+    `  ${c.dim}\u2514${"\u2500".repeat(Math.max(0, contentWidth - 4))}\u2518${c.reset}`
   );
   output.push("");
 
@@ -579,10 +576,14 @@ function renderTable(table: TableData, maxWidth: number): string[] {
   const colCount = table.headers.length;
   const colWidths: number[] = new Array(colCount).fill(0);
 
-  // Messe maximale Spaltenbreite
+  // Pre-render inline so we measure VISIBLE length (strips ** ` * markers)
+  const renderedHeaders = table.headers.map((h) => renderInline(h));
+  const renderedRows = table.rows.map((row) => row.map((cell) => renderInline(cell)));
+
+  // Messe maximale sichtbare Spaltenbreite (nach Inline-Rendering)
   for (let col = 0; col < colCount; col++) {
-    colWidths[col] = stripAnsi(table.headers[col]).length;
-    for (const row of table.rows) {
+    colWidths[col] = stripAnsi(renderedHeaders[col]).length;
+    for (const row of renderedRows) {
       if (col < row.length) {
         const cellLen = stripAnsi(row[col]).length;
         if (cellLen > colWidths[col]) colWidths[col] = cellLen;
@@ -590,10 +591,10 @@ function renderTable(table: TableData, maxWidth: number): string[] {
     }
   }
 
-  // Kuerze Spalten wenn noetig
+  // Kuerze Spalten wenn noetig (2 spaces indent + borders)
   const totalWidth = colWidths.reduce((a, b) => a + b, 0) + colCount * 3 + 1;
-  if (totalWidth > maxWidth - 4) {
-    const available = maxWidth - 4 - colCount * 3 - 1;
+  if (totalWidth > maxWidth - 2) {
+    const available = maxWidth - 2 - colCount * 3 - 1;
     const perCol = Math.max(8, Math.floor(available / colCount));
     for (let i = 0; i < colWidths.length; i++) {
       if (colWidths[i] > perCol) colWidths[i] = perCol;
@@ -610,19 +611,22 @@ function renderTable(table: TableData, maxWidth: number): string[] {
   output.push(`  ${c.dim}${sepLine}${c.reset}`);
   let headerLine = "|";
   for (let col = 0; col < colCount; col++) {
-    const text = truncateVisible(table.headers[col], colWidths[col]);
-    headerLine += ` ${c.bold}${renderInline(text)}${c.reset}${" ".repeat(Math.max(0, colWidths[col] - stripAnsi(text).length))} |`;
+    const rendered = renderedHeaders[col];
+    const text = truncateVisible(rendered, colWidths[col]);
+    const vis = stripAnsi(text).length;
+    headerLine += ` ${c.bold}${text}${c.reset}${" ".repeat(Math.max(0, colWidths[col] - vis))} |`;
   }
   output.push(`  ${c.dim}${headerLine}${c.reset}`);
   output.push(`  ${c.dim}${sepLine}${c.reset}`);
 
   // Rows
-  for (const row of table.rows) {
+  for (const renderedRow of renderedRows) {
     let rowLine = "|";
     for (let col = 0; col < colCount; col++) {
-      const cellText = col < row.length ? row[col] : "";
-      const text = truncateVisible(cellText, colWidths[col]);
-      rowLine += ` ${renderInline(text)}${" ".repeat(Math.max(0, colWidths[col] - stripAnsi(text).length))} |`;
+      const rendered = col < renderedRow.length ? renderedRow[col] : "";
+      const text = truncateVisible(rendered, colWidths[col]);
+      const vis = stripAnsi(text).length;
+      rowLine += ` ${text}${" ".repeat(Math.max(0, colWidths[col] - vis))} |`;
     }
     output.push(`  ${c.dim}${rowLine}${c.reset}`);
   }
@@ -912,14 +916,16 @@ export function renderMarkdown(
 
         output.push("");
         const langLabel = codeBlockLang ? ` ${codeBlockLang} ` : "";
+        // Header: "  ┌─langLabel─...─┐" = 2+1+1+label+dashes+1 = contentWidth → dashes = contentWidth-5-label
         output.push(
-          `  ${c.dim}┌─${langLabel}${"─".repeat(Math.max(0, contentWidth - 4 - langLabel.length))}┐${c.reset}`
+          `  ${c.dim}┌─${langLabel}${"─".repeat(Math.max(0, contentWidth - 5 - langLabel.length))}┐${c.reset}`
         );
         continue;
       } else {
         // Ende eines Code-Blocks
+        // Footer: "  └─...─┘" = 2+1+dashes+1 = contentWidth → dashes = contentWidth-4
         output.push(
-          `  ${c.dim}└${"─".repeat(contentWidth - 2)}┘${c.reset}`
+          `  ${c.dim}└${"─".repeat(Math.max(0, contentWidth - 4))}┘${c.reset}`
         );
         output.push("");
         inCodeBlock = false;
@@ -930,9 +936,10 @@ export function renderMarkdown(
 
     if (inCodeBlock) {
       // Code-Zeile rendern
+      // Body: "  │ code padding │" = 2+1+1+code+padding+1+1 = contentWidth → padding = contentWidth-6-code
       const codeLine =
-        line.length > contentWidth - 4
-          ? line.slice(0, contentWidth - 7) + "..."
+        line.length > contentWidth - 6
+          ? line.slice(0, contentWidth - 9) + "..."
           : line;
 
       const highlighted =
@@ -944,7 +951,7 @@ export function renderMarkdown(
 
       const padding = Math.max(
         0,
-        contentWidth - 4 - stripAnsi(codeLine).length
+        contentWidth - 6 - stripAnsi(codeLine).length
       );
       output.push(
         `  ${c.dim}│${c.reset} ${highlighted}${" ".repeat(padding)} ${c.dim}│${c.reset}`
