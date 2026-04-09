@@ -28,6 +28,7 @@ import { cleanup, loadPlatformConfig, exitTui } from "./tui-utils.ts";
 import { renderPlatformScreen } from "./tui-platform.ts";
 import { redraw } from "./tui-redraw.ts";
 import { detectTtsEngine } from "./tui-tts.ts";
+import { showSplash } from "./tui-splash.ts";
 
 // ─── Cleanup — IMMER alternate buffer verlassen ────────────────────────────
 
@@ -117,7 +118,9 @@ function main(): void {
     selectedIndex: Math.max(0, activeCourseIdx),
     scrollOffset: 0,
   });
-  renderPlatformScreen();
+  showSplash(1400, () => {
+    renderPlatformScreen();
+  });
 }
 
 // ─── Start ─────────────────────────────────────────────────────────────────

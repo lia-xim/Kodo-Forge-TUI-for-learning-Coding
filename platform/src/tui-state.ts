@@ -118,6 +118,7 @@ export function setCourseInfoRenderedLines(lines: string[]): void {
 
 // Section reader state — rendered lines (full document)
 export let sectionRenderedLines: string[] = [];
+export let sectionRevealedLines = 0;
 export let sectionReadTime = 1;
 export let sectionMermaidBlocks: string[] = [];
 export let sectionSelfExplainPrompts: SelfExplanationPrompt[] = [];
@@ -126,6 +127,9 @@ export let sectionRawMarkdown = ""; // Raw Markdown fuer TTS-Extraktion
 
 export function setSectionRenderedLines(lines: string[]): void {
   sectionRenderedLines = lines;
+}
+export function setSectionRevealedLines(n: number): void {
+  sectionRevealedLines = n;
 }
 export function setSectionReadTime(t: number): void {
   sectionReadTime = t;

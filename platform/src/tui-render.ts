@@ -1,36 +1,58 @@
 /**
  * tui-render.ts — Shared Rendering Utilities (Farben, Box-Drawing, Layout, flushScreen)
+ *
+ * The `c` object below is the LEGACY color API. It is backed by tui-theme.ts
+ * tokens for consistency, but maintains the old API surface so every existing
+ * file continues to work without modification during gradual migration.
+ *
+ * NEW CODE should import from tui-theme.ts and tui-components.ts directly.
  */
 
 import { stripAnsi } from "./markdown-renderer.ts";
+import { theme } from "./tui-theme.ts";
 
-// ─── ANSI-Farben & Escape Codes ────────────────────────────────────────────
+// ─── ANSI-Farben & Escape Codes (Legacy Compat Layer) ──────────────────────
+//
+// This `c` object re-exports theme tokens as the old flat API.
+// It ensures all 15+ existing tui-*.ts files keep working unchanged.
 
 export const c = {
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
-  dim: "\x1b[2m",
-  italic: "\x1b[3m",
-  underline: "\x1b[4m",
-  inverse: "\x1b[7m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-  magenta: "\x1b[35m",
-  cyan: "\x1b[36m",
-  white: "\x1b[37m",
-  gray: "\x1b[90m",
-  bgBlack: "\x1b[40m",
-  bgRed: "\x1b[41m",
-  bgGreen: "\x1b[42m",
-  bgYellow: "\x1b[43m",
-  bgBlue: "\x1b[44m",
+  // Modifiers
+  reset:     theme.mod.reset,
+  bold:      theme.mod.bold,
+  dim:       theme.mod.dim,
+  italic:    theme.mod.italic,
+  underline: theme.mod.underline,
+  inverse:   theme.mod.inverse,
+  // Standard colors (mapped to theme compat)
+  red:       theme.compat.red,
+  green:     theme.compat.green,
+  yellow:    theme.compat.yellow,
+  blue:      theme.compat.blue,
+  magenta:   theme.compat.magenta,
+  cyan:      theme.compat.cyan,
+  white:     theme.compat.white,
+  gray:      theme.compat.gray,
+  // Backgrounds
+  bgBlack:   "\x1b[40m",
+  bgRed:     "\x1b[41m",
+  bgGreen:   "\x1b[42m",
+  bgYellow:  "\x1b[43m",
+  bgBlue:    "\x1b[44m",
   bgMagenta: "\x1b[45m",
-  bgCyan: "\x1b[46m",
-  bgWhite: "\x1b[47m",
-  bgGray: "\x1b[48;5;236m",
-  bgDarkGray: "\x1b[48;5;234m",
+  bgCyan:    "\x1b[46m",
+  bgWhite:   "\x1b[47m",
+  bgGray:    "\x1b[48;5;236m",
+  bgDarkGray:"\x1b[48;5;234m",
+  // ─── Muted Retro Palette (from theme tokens) ───
+  amber:     theme.fg.accent,
+  slate:     theme.fg.secondary,
+  paleWhite: theme.fg.primary,
+  mutedBlue: theme.fg.info,
+  mutedGreen:theme.fg.success,
+  mutedRed:  theme.fg.error,
+  bgSlate:   theme.bg.surface,
+  bgAmber:   theme.bg.accent,
 };
 
 // ─── Terminal Escape Sequences ─────────────────────────────────────────────
@@ -84,24 +106,24 @@ export function progressBar(
   total: number,
   barWidth: number = 16
 ): string {
-  if (total === 0) return `${c.dim}${"░".repeat(barWidth)}${c.reset}`;
+  if (total === 0) return `${c.slate}${"░".repeat(barWidth)}${c.reset}`;
   const pct = Math.min(1, done / total);
   const filled = Math.round(pct * barWidth);
   const empty = barWidth - filled;
-  const color = pct >= 1 ? c.green : pct > 0 ? c.yellow : c.dim;
-  return `${color}${"█".repeat(filled)}${c.dim}${"░".repeat(empty)}${c.reset}`;
+  const color = pct >= 1 ? c.mutedGreen : pct > 0 ? c.amber : c.slate;
+  return `${color}${"█".repeat(filled)}${c.slate}${"░".repeat(empty)}${c.reset}`;
 }
 
 /** Prozent-String */
 export function pctStr(pct: number): string {
-  const color = pct >= 100 ? c.green : pct > 0 ? c.yellow : c.dim;
+  const color = pct >= 100 ? c.mutedGreen : pct > 0 ? c.amber : c.slate;
   return `${color}${String(pct).padStart(3)}%${c.reset}`;
 }
 
 // ─── Box-Drawing ───────────────────────────────────────────────────────────
 
 export function boxHLine(width: number, left: string, fill: string, right: string): string {
-  return `${c.dim}${left}${fill.repeat(Math.max(0, width - 2))}${right}${c.reset}`;
+  return `${c.slate}${left}${fill.repeat(Math.max(0, width - 2))}${right}${c.reset}`;
 }
 
 export function boxTop(width: number): string {
@@ -121,12 +143,12 @@ export function bLine(content: string, width: number): string {
   const innerWidth = width - 2;
   const vis = visLen(content);
   const pad = Math.max(0, innerWidth - vis);
-  return `${c.dim}│${c.reset}${content}${" ".repeat(pad)}${c.dim}│${c.reset}`;
+  return `${c.slate}│${c.reset}${content}${" ".repeat(pad)}${c.slate}│${c.reset}`;
 }
 
 /** Erstelle eine leere Box-Zeile */
 export function bEmpty(width: number): string {
-  return `${c.dim}│${c.reset}${" ".repeat(width - 2)}${c.dim}│${c.reset}`;
+  return `${c.slate}│${c.reset}${" ".repeat(width - 2)}${c.slate}│${c.reset}`;
 }
 
 // ─── Scrollbar-Rendering ──────────────────────────────────────────────────
@@ -159,7 +181,7 @@ export function computeScrollbar(
 
 /** Rendert ein Scrollbar-Zeichen */
 export function scrollbarChar(type: "track" | "thumb"): string {
-  return type === "thumb" ? `${c.white}█${c.reset}` : `${c.dim}│${c.reset}`;
+  return type === "thumb" ? `${c.amber}█${c.reset}` : `${c.slate}│${c.reset}`;
 }
 
 // ─── Render-Pipeline ───────────────────────────────────────────────────────
@@ -198,7 +220,7 @@ export function renderHeader(leftText: string, rightText: string): string {
   const rightVis = visLen(rightText);
   const middlePad = Math.max(1, totalInner - leftVis - rightVis);
   const inner = `${leftText}${" ".repeat(middlePad)}${rightText}`;
-  return `${c.bgGray}${c.white}${c.bold} ${padR(inner, w - 2)}${c.reset}`;
+  return `${c.bgSlate}${c.paleWhite}${c.bold} ${padR(inner, w - 2)}${c.reset}`;
 }
 
 export function renderFooter(shortcuts: string[]): string[] {

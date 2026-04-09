@@ -1,4 +1,4 @@
-﻿# Sektion 6: Praxis-Patterns
+# Sektion 6: Praxis-Patterns
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -471,10 +471,9 @@ Du hast alle sechs Sektionen durchgearbeitet und verstehst jetzt:
 6. **Praxis:** Zod, Prisma, deep-get, Router-Typen
 
 **Empfohlener naechster Schritt:**
-1. Arbeite die Examples in `examples/` durch
-2. Loese die Exercises in `exercises/`
-3. Teste dein Wissen mit `npx tsx quiz.ts`
-4. Nutze `cheatsheet.md` als Schnellreferenz
+1. Schau dir die Konzepte noch einmal im `cheatsheet.md` an
+2. Teste dein Wissen direkt im TUI ueber den Punkt "Quiz starten"
+3. Mach erst nach einer Pause mit dem naechsten Thema weiter
 
 > **Naechste Lektion:** 24 — Type-Level Programming
 > Dort gehst du noch tiefer: String-Parser, State Machines

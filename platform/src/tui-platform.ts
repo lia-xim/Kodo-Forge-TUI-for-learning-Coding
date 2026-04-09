@@ -29,6 +29,9 @@ import {
 import { getWarmUpQuestions } from "./pretest-engine.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { renderWarmup } from "./tui-quiz.ts";
+import { ensureMenuBlink } from "./tui-animation.ts";
+import { theme, marker as themeMarker, box } from "./tui-theme.ts";
+import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, renderDivider, type FooterHint } from "./tui-components.ts";
 
 // ─── Layout-Typen ──────────────────────────────────────────────────────────
 
@@ -72,12 +75,28 @@ export function renderPlatformScreen(): void {
   const courses = platformConfig.courses;
   const w = W();
   const h = H();
+  const t = theme;
 
+  // ─── Header ───
   const timerStr = formatSessionTime();
-  lines.push(renderHeader(` LEARN Platform`, `\u23F1 ${timerStr} `));
+  lines.push(renderHeaderBar(` Kodo Forge`, `\u23F1 ${timerStr} `, w));
 
-  const contentHeight = h - 4;
+  // ─── ASCII Logo (Muted Retro Amber) ───
+  const logo = [
+    `  ${t.mod.bold}${t.fg.accent}    __ __          __         ____                           ${t.mod.reset}`,
+    `  ${t.mod.bold}${t.fg.accent}   / //_/____   __/ /____    / __/____   _____ ____ _ ___    ${t.mod.reset}`,
+    `  ${t.mod.bold}${t.fg.accent}  / ,<  / __ \\ / __  / __ \\  / /_ / __ \\ / ___// __ \`// _ \\   ${t.mod.reset}`,
+    `  ${t.mod.bold}${t.fg.accent} / /| |/ /_/ // /_/ / /_/ / / __// /_/ // /   / /_/ //  __/   ${t.mod.reset}`,
+    `  ${t.mod.bold}${t.fg.accent}/_/ |_|\\____/ \\__,_/\\____/ /_/   \\____//_/    \\__, / \\___/    ${t.mod.reset}`,
+    `  ${t.mod.bold}${t.fg.accent}                                             /____/          ${t.mod.reset}`,
+  ];
+  lines.push("");
+  lines.push(...logo);
+  lines.push("");
 
+  const contentHeight = h - 11;
+
+  // ─── Course Grid / List ───
   if (mode === "grid-2x2") {
     const margin = 2;
     const totalInner = w - margin * 2 - 3;
@@ -86,55 +105,55 @@ export function renderPlatformScreen(): void {
 
     function courseCell(idx: number): string[] {
       const co = courses[idx];
-      if (!co) return Array(5).fill("");
+      if (!co) return Array(6).fill("");
       const pr = getCourseProgressSummary(co);
       const unlocked = isCourseUnlocked(co);
       const isSel = idx === selectedIdx;
 
-      const marker = isSel ? "\u25B8" : " ";
-      const lockTxt = unlocked ? "" : "  \u2502 LOCKED";
-      const line1 = ` ${marker} ${co.icon}  ${co.name}${lockTxt}`;
-      const line2 = "";
+      const mk = themeMarker(isSel);
+      const lockBadge = unlocked ? "" : `  ${renderBadge("LOCKED", "locked")}`;
+      const line1 = ` ${mk}${co.icon}  ${isSel ? `${t.mod.bold}` : ""}${co.name}${t.mod.reset}${lockBadge}`;
 
       const isActive = co.status === "active" && unlocked;
       const barW = 12;
       const filled = Math.round(barW * pr.percent / 100);
-      const barStr = "\u2588".repeat(filled) + "\u2500".repeat(barW - filled);
+      const fillColor = pr.percent >= 100 ? t.fg.success : pr.percent > 0 ? t.fg.accent : t.fg.secondary;
+      const barStr = `${fillColor}${"\u2588".repeat(filled)}${t.fg.secondary}${"░".repeat(barW - filled)}${t.mod.reset}`;
+      const pctColor = pr.percent >= 100 ? t.fg.success : t.fg.accent;
       const statusTxt = isActive
-        ? `   Phase ${pr.currentPhase} \u00B7 ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen`
-        : `   ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen`;
-      const line3 = `   [${barStr}] ${String(pr.percent).padStart(3)}%${statusTxt}`;
+        ? `  ${t.fg.secondary}Phase ${pr.currentPhase} · ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}${t.mod.reset}`
+        : `  ${t.fg.secondary}${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen${t.mod.reset}`;
+      const line2 = `   ${barStr} ${pctColor}${String(pr.percent).padStart(3)}%${t.mod.reset}${statusTxt}`;
 
-      // Dynamische Werte aus der Berechnung nutzen (nicht statisch aus platform.json)
       const hours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
       const sects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
       const exCount = pr.actualExercises > 0 ? pr.actualExercises : null;
       let detail = "";
       if (!unlocked) {
-        detail = `   ~${hours}h \u00B7 ${sects} Sektionen \u00B7 Braucht: ${co.prerequisiteDescription ?? ""}`;
+        detail = `   ${t.fg.secondary}~${hours}h · ${sects} Sektionen · ${co.prerequisiteDescription ?? ""}${t.mod.reset}`;
       } else {
-        const exStr = exCount ? ` \u00B7 ${exCount} Uebungen` : "";
-        detail = `   ~${hours}h \u00B7 ${sects} Sektionen${exStr}`;
+        const exStr = exCount ? ` · ${exCount} Übungen` : "";
+        detail = `   ${t.fg.secondary}~${hours}h · ${sects} Sektionen${exStr}${t.mod.reset}`;
       }
-      const line4 = detail;
+      const line3 = detail;
 
-      let line5 = "";
+      let line4 = "";
       if (isActive && pr.lastLessonTitle) {
         const nextNum = String(pr.completedLessons + 1).padStart(2, "0");
-        line5 = `   \u25B8 Naechste: L${nextNum} ${pr.lastLessonTitle}`;
+        line4 = `   ${t.fg.info}▸ Nächste: L${nextNum} ${pr.lastLessonTitle}${t.mod.reset}`;
       } else {
         const topics = (co.topics ?? []).slice(0, 5);
         if (topics.length > 0) {
-          line5 = `   ${topics.join(", ")}`;
+          line4 = `   ${t.fg.secondary}${topics.join(", ")}${t.mod.reset}`;
         }
       }
 
-      return [line1, line2, line3, line4, line5];
+      return [line1, "", line2, line3, line4, ""];
     }
 
-    const ROWS_PER_CELL = 5;
-    const hLine = "\u2500".repeat(cellW);
-    lines.push(`${indent}\u250C${hLine}\u252C${hLine}\u2510`);
+    const ROWS_PER_CELL = 6;
+    const hLine = `${t.border.default}${"─".repeat(cellW)}${t.mod.reset}`;
+    lines.push(`${indent}${t.border.default}╭${"─".repeat(cellW)}┬${"─".repeat(cellW)}╮${t.mod.reset}`);
 
     const rowCount = Math.ceil(courses.length / 2);
     for (let row = 0; row < rowCount; row++) {
@@ -151,30 +170,30 @@ export function renderPlatformScreen(): void {
         const rText = plainCell(rightCell[ln] ?? "", cellW);
         let lStyle = "";
         let rStyle = "";
-        if (leftSel && ln === 0) lStyle = `${leftColor}${c.bold}`;
+        if (leftSel && ln === 0) lStyle = `${leftColor}${t.mod.bold}`;
         else if (leftSel) lStyle = leftColor;
-        if (rightSel && ln === 0) rStyle = `${rightColor}${c.bold}`;
+        if (rightSel && ln === 0) rStyle = `${rightColor}${t.mod.bold}`;
         else if (rightSel) rStyle = rightColor;
 
-        const lFinal = lStyle ? `${lStyle}${lText}${c.reset}` : lText;
-        const rFinal = rStyle ? `${rStyle}${rText}${c.reset}` : rText;
-        lines.push(`${indent}${c.dim}\u2502${c.reset}${lFinal}${c.dim}\u2502${c.reset}${rFinal}${c.dim}\u2502${c.reset}`);
+        const lFinal = lStyle ? `${lStyle}${lText}${t.mod.reset}` : lText;
+        const rFinal = rStyle ? `${rStyle}${rText}${t.mod.reset}` : rText;
+        lines.push(`${indent}${t.border.default}│${t.mod.reset}${lFinal}${t.border.default}│${t.mod.reset}${rFinal}${t.border.default}│${t.mod.reset}`);
       }
 
       if (row < rowCount - 1) {
-        lines.push(`${indent}${c.dim}\u251C${hLine}\u253C${hLine}\u2524${c.reset}`);
+        lines.push(`${indent}${t.border.default}├${"─".repeat(cellW)}┼${"─".repeat(cellW)}┤${t.mod.reset}`);
       }
     }
 
-    lines.push(`${indent}${c.dim}\u2514${hLine}\u2534${hLine}\u2518${c.reset}`);
+    lines.push(`${indent}${t.border.default}╰${"─".repeat(cellW)}┴${"─".repeat(cellW)}╯${t.mod.reset}`);
 
   } else {
+    // ─── Column / Ultra-Compact Mode ───
     const margin = mode === "ultra-compact" ? 1 : 2;
     const cellW = w - margin * 2 - 2;
     const indent = " ".repeat(margin);
-    const hLine = "\u2500".repeat(cellW);
 
-    lines.push(`${indent}${c.dim}\u250C${hLine}\u2510${c.reset}`);
+    lines.push(`${indent}${t.border.default}╭${"─".repeat(cellW)}╮${t.mod.reset}`);
 
     for (let i = 0; i < courses.length; i++) {
       const co = courses[i];
@@ -182,85 +201,91 @@ export function renderPlatformScreen(): void {
       const unlocked = isCourseUnlocked(co);
       const isSel = i === selectedIdx;
       const selColor = isSel ? getCourseColor(co) : "";
-      const marker = isSel ? "\u25B8" : " ";
-      const lockTxt = unlocked ? "" : "  LOCKED";
+      const mk = themeMarker(isSel);
+      const lockBadge = unlocked ? "" : `  ${renderBadge("LOCKED", "locked")}`;
       const isActive = co.status === "active" && unlocked;
 
-      const name = ` ${marker} ${co.icon}  ${co.name}${lockTxt}`;
+      const name = ` ${mk}${co.icon}  ${isSel ? t.mod.bold : ""}${co.name}${t.mod.reset}${lockBadge}`;
       const barW = 12;
       const filled = Math.round(barW * pr.percent / 100);
-      const barStr = "\u2588".repeat(filled) + "\u2500".repeat(barW - filled);
+      const fillColor = pr.percent >= 100 ? t.fg.success : pr.percent > 0 ? t.fg.accent : t.fg.secondary;
+      const barStr = `${fillColor}${"\u2588".repeat(filled)}${t.fg.secondary}${"░".repeat(barW - filled)}${t.mod.reset}`;
       const statusTxt = isActive
-        ? `Phase ${pr.currentPhase} \u00B7 ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}`
-        : `${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen`;
-      const info = `   [${barStr}] ${String(pr.percent).padStart(3)}%  ${statusTxt}`;
+        ? `${t.fg.secondary}Phase ${pr.currentPhase} · ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}${t.mod.reset}`
+        : `${t.fg.secondary}${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen${t.mod.reset}`;
+      const info = `   ${barStr} ${t.fg.accent}${String(pr.percent).padStart(3)}%${t.mod.reset}  ${statusTxt}`;
       const colHours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
       const colSects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
       const prereq = !unlocked ? `Braucht: ${co.prerequisiteDescription ?? ""}` : "";
       const detail = prereq
-        ? `   ~${colHours}h \u00B7 ${prereq}`
-        : `   ~${colHours}h \u00B7 ${colSects} Sektionen`;
+        ? `   ${t.fg.secondary}~${colHours}h · ${prereq}${t.mod.reset}`
+        : `   ${t.fg.secondary}~${colHours}h · ${colSects} Sektionen${t.mod.reset}`;
 
       const cellLines = mode === "ultra-compact" ? [name, info] : [name, info, detail];
 
       for (const cl of cellLines) {
         const txt = plainCell(cl, cellW);
-        const styled = selColor ? `${selColor}${txt}${c.reset}` : txt;
-        lines.push(`${indent}${c.dim}\u2502${c.reset}${styled}${c.dim}\u2502${c.reset}`);
+        const stl = selColor ? `${selColor}${txt}${t.mod.reset}` : txt;
+        lines.push(`${indent}${t.border.default}│${t.mod.reset}${stl}${t.border.default}│${t.mod.reset}`);
       }
 
       if (i < courses.length - 1) {
-        lines.push(`${indent}${c.dim}\u251C${hLine}\u2524${c.reset}`);
+        lines.push(`${indent}${t.border.default}├${"─".repeat(cellW)}┤${t.mod.reset}`);
       }
     }
 
-    lines.push(`${indent}${c.dim}\u2514${hLine}\u2518${c.reset}`);
+    lines.push(`${indent}${t.border.default}╰${"─".repeat(cellW)}╯${t.mod.reset}`);
   }
 
-  // Empfehlung
+  // ─── Recommendation Panel ───
   const rec = getRecommendedCourse();
   if (rec) {
     const recCourse = platformConfig.courses.find(co => co.id === rec.courseId);
     if (recCourse) {
       lines.push("");
-      const recText = ` Empfehlung: ${recCourse.name} -- ${rec.lessonTitle}  [Enter]`;
-      const recW = w - 6;
-      lines.push(`  ${c.dim}\u250C${"─".repeat(recW)}\u2510${c.reset}`);
-      lines.push(`  ${c.dim}\u2502${c.reset} ${plainCell(recText, recW - 2)} ${c.dim}\u2502${c.reset}`);
-      lines.push(`  ${c.dim}\u2514${"─".repeat(recW)}\u2518${c.reset}`);
+      const recLines = renderPanel("Empfehlung", [
+        `${t.fg.info}${recCourse.name}${t.mod.reset} ${t.fg.secondary}—${t.mod.reset} ${rec.lessonTitle}  ${t.mod.bold}[Enter]${t.mod.reset}`,
+      ], { width: w - 4, variant: "info", accentBorder: true, padding: 1 });
+      for (const rl of recLines) lines.push(`  ${rl}`);
     }
   }
 
-  // Bestaetigungs-Dialog
+  // ─── Unlock Confirmation Dialog ───
   if (screen.confirmUnlock) {
     const course = courses[selectedIdx];
     if (course) {
       const prereqName = course.prerequisiteDescription ?? "";
       lines.push("");
-      const dW = Math.min(w - 8, 60);
-      const dIndent = " ".repeat(Math.max(1, Math.floor((w - dW) / 2)));
-      lines.push(`${dIndent}${c.yellow}\u250C${"─".repeat(dW - 2)}\u2510${c.reset}`);
-      lines.push(`${dIndent}${c.yellow}\u2502${c.reset} ${plainCell(`Voraussetzung: ${prereqName}`, dW - 4)} ${c.yellow}\u2502${c.reset}`);
-      lines.push(`${dIndent}${c.yellow}\u2502${c.reset} ${plainCell("Trotzdem oeffnen? [J] Ja  [N] Nein", dW - 4)} ${c.yellow}\u2502${c.reset}`);
-      lines.push(`${dIndent}${c.yellow}\u2514${"─".repeat(dW - 2)}\u2518${c.reset}`);
+      const dLines = renderPanel("Voraussetzung", [
+        `${t.fg.warning}${prereqName}${t.mod.reset}`,
+        `Trotzdem oeffnen? ${t.mod.bold}[J]${t.mod.reset} Ja  ${t.mod.bold}[N]${t.mod.reset} Nein`,
+      ], { width: Math.min(w - 8, 60), variant: "warning", boxStyle: "rounded" });
+      const dIndent = " ".repeat(Math.max(1, Math.floor((w - Math.min(w - 8, 60)) / 2)));
+      for (const dl of dLines) lines.push(`${dIndent}${dl}`);
     }
   }
 
+  // ─── Pad to footer ───
   while (lines.length < h - 3) {
     lines.push("");
   }
 
-  const navHint = mode === "grid-2x2"
-    ? `${c.bold}[\u2191\u2193\u2190\u2192]${c.reset} Kurs waehlen`
-    : `${c.bold}[\u2191\u2193]${c.reset} Kurs waehlen`;
-  lines.push(...renderFooter([
-    navHint,
-    `${c.bold}[Enter]${c.reset} Oeffnen`,
-    `${c.bold}[?]${c.reset} Hilfe`,
-    `${c.bold}[Q]${c.reset} Beenden`,
-  ]));
+  // ─── Footer ───
+  const navKey = mode === "grid-2x2" ? "↑↓←→" : "↑↓";
+  const footerHints: FooterHint[] = [
+    { key: navKey, label: "Kurs wählen" },
+    { key: "Enter", label: "Öffnen", primary: true },
+    { key: "I", label: "Info" },
+    { key: "?", label: "Hilfe" },
+    { key: "Q", label: "Beenden" },
+  ];
+  lines.push(...renderFooterBar(footerHints, w));
 
   platformContentTotalLines = lines.length;
+
+  // ─── Animation ───
+  ensureMenuBlink();
+
   flushScreen(lines);
 }
 

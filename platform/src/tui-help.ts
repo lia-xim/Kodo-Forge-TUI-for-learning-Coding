@@ -12,6 +12,8 @@ import {
 } from "./tui-state.ts";
 import type { ParsedKey, Screen } from "./tui-types.ts";
 import { redraw } from "./tui-redraw.ts";
+import { theme } from "./tui-theme.ts";
+import { renderHeaderBar } from "./tui-components.ts";
 
 export function renderHelpOverlay(): void {
   updateTermSize();
@@ -21,8 +23,9 @@ export function renderHelpOverlay(): void {
   const w = W();
   const h = H();
 
+  const t = theme;
   const timerStr = formatSessionTime();
-  lines.push(renderHeader(` Tastenbelegung`, `\u23F1 ${timerStr} `));
+  lines.push(renderHeaderBar(` Tastenbelegung`, `\u23F1 ${timerStr} `, w));
 
   const boxW = Math.min(w, 62);
   const innerW = boxW - 2;
@@ -44,22 +47,22 @@ export function renderHelpOverlay(): void {
 
   const renderGroup = (title: string, items: { key: string; desc: string }[]): void => {
     if (items.length === 0) return;
-    lines.push(`${padStr}${bLine(`  ${c.bold}${c.cyan}${title}${c.reset}`, boxW)}`);
-    lines.push(`${padStr}${bLine(`  ${c.dim}${"─".repeat(Math.min(innerW - 4, title.length + 10))}${c.reset}`, boxW)}`);
+    lines.push(`${padStr}${bLine(`  ${t.mod.bold}${t.fg.info}${title}${t.mod.reset}`, boxW)}`);
+    lines.push(`${padStr}${bLine(`  ${t.border.default}${"─".repeat(Math.min(innerW - 4, title.length + 10))}${t.mod.reset}`, boxW)}`);
     for (const s of items) {
       const keyPad = 14;
-      const keyStr = padR(`  ${c.bold}${s.key}${c.reset}`, keyPad + 9);
+      const keyStr = padR(`  ${t.mod.bold}${s.key}${t.mod.reset}`, keyPad + 9);
       lines.push(`${padStr}${bLine(`${keyStr}${s.desc}`, boxW)}`);
     }
     lines.push(`${padStr}${bEmpty(boxW)}`);
   };
 
   renderGroup("Navigation", navKeys);
-  renderGroup(`Aktionen (${prevScreenType === "main" ? "Hauptmenue" : prevScreenType === "lesson" ? "Lektionsmenue" : prevScreenType})`, actionKeys);
+  renderGroup(`Aktionen (${prevScreenType === "main" ? "Hauptmenü" : prevScreenType === "lesson" ? "Lektionsmenü" : prevScreenType})`, actionKeys);
   renderGroup("Global", globalKeys);
 
   lines.push(`${padStr}${boxSep(boxW)}`);
-  lines.push(`${padStr}${bLine(`  ${c.dim}Druecke eine beliebige Taste um zurueckzukehren${c.reset}`, boxW)}`);
+  lines.push(`${padStr}${bLine(`  ${t.fg.muted}Drücke eine beliebige Taste um zurückzukehren${t.mod.reset}`, boxW)}`);
   lines.push(`${padStr}${boxBottom(boxW)}`);
 
   while (lines.length < h) { lines.push(""); }

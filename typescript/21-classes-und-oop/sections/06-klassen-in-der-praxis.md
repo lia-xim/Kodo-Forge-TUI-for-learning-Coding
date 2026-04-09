@@ -1,4 +1,4 @@
-﻿# Sektion 6: Klassen in der Praxis
+# Sektion 6: Klassen in der Praxis
 
 > Geschaetzte Lesezeit: **10 Minuten**
 >
@@ -436,9 +436,8 @@ sind Funktionen und Plain Objects oft die einfachere Wahl.
 > Sektionen zu Classes & OOP in TypeScript abgeschlossen.
 >
 > **Empfohlener naechster Schritt:**
-> 1. Arbeite die Examples in `examples/` durch
-> 2. Loese die Exercises in `exercises/`
-> 3. Teste dein Wissen mit `npx tsx quiz.ts`
-> 4. Nutze `cheatsheet.md` als Schnellreferenz
+> 1. Schau dir die Konzepte noch einmal im cheatsheet.md an
+> 2. Teste dein Wissen direkt im TUI ueber den Punkt "Quiz starten"
+> 3. Mach erst nach einer Pause mit dem naechsten Thema weiter
 >
 > Zurueck zur Uebersicht: [README.md](../README.md)

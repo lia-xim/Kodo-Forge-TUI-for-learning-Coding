@@ -15,6 +15,9 @@ import type { ParsedKey, SearchResult, Screen } from "./tui-types.ts";
 import { HIDE_CURSOR } from "./tui-render.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { openSection } from "./tui-section-reader.ts";
+import { theme, marker as themeMarker } from "./tui-theme.ts";
+import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
+import { getSpinner } from "./tui-animation.ts";
 
 function performSearch(query: string): SearchResult[] {
   if (!query || query.length < 2) return [];
@@ -56,19 +59,20 @@ export function renderSearchScreen(): void {
   const w = W();
   const h = H();
 
-  lines.push(renderHeader(" Suche", `[Esc] Abbrechen `));
+  const t = theme;
+  lines.push(renderHeaderBar(" Suche", `[Esc] Abbrechen `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
-  const queryDisplay = screen.query + "\u2588";
-  lines.push(bLine(`  ${c.bold}Suchbegriff:${c.reset} ${c.cyan}${queryDisplay}${c.reset}`, w));
+  const queryDisplay = screen.query + `${t.fg.accent}\u2588${t.mod.reset}`;
+  lines.push(bLine(`  ${t.mod.bold}Suchbegriff:${t.mod.reset} ${t.fg.info}${queryDisplay}${t.mod.reset}`, w));
   lines.push(bEmpty(w));
 
   if (screen.query.length < 2) {
-    lines.push(bLine(`  ${c.dim}Mindestens 2 Zeichen eingeben...${c.reset}`, w));
+    lines.push(bLine(`  ${t.fg.muted}Mindestens 2 Zeichen eingeben...${t.mod.reset}`, w));
   } else if (screen.results.length === 0) {
-    lines.push(bLine(`  ${c.dim}Keine Treffer gefunden.${c.reset}`, w));
+    lines.push(bLine(`  ${t.fg.muted}Keine Treffer gefunden.${t.mod.reset}`, w));
   } else {
-    lines.push(bLine(`  ${c.bold}Ergebnisse (${screen.results.length} Treffer):${c.reset}`, w));
+    lines.push(bLine(`  ${t.mod.bold}Ergebnisse (${screen.results.length} Treffer):${t.mod.reset}`, w));
     lines.push(bEmpty(w));
 
     const resultAreaHeight = h - 12;
@@ -78,17 +82,22 @@ export function renderSearchScreen(): void {
     for (let i = startIdx; i < Math.min(startIdx + visibleResults, screen.results.length); i++) {
       const result = screen.results[i];
       const isSelected = i === screen.selectedResult;
-      const marker = isSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
+      const mk = themeMarker(isSelected);
       const title = `L${result.lessonNumber} S${result.sectionNumber}: ${truncate(result.sectionTitle, w - 20)}`;
-      lines.push(bLine(`  ${marker} ${isSelected ? c.bold : ""}${title}${c.reset}`, w));
-      lines.push(bLine(`    ${c.dim}"...${truncate(result.contextLine, w - 12)}..."${c.reset}`, w));
+      lines.push(bLine(`  ${mk}${isSelected ? t.mod.bold : ""}${title}${t.mod.reset}`, w));
+      lines.push(bLine(`    ${t.fg.secondary}"...${truncate(result.contextLine, w - 12)}..."${t.mod.reset}`, w));
       lines.push(bEmpty(w));
     }
   }
 
   const footerStart = h - 3;
   while (lines.length < footerStart) { lines.push(bEmpty(w)); }
-  lines.push(...renderFooter([`${c.bold}[\u2191\u2193]${c.reset} Navigieren`, `${c.bold}[Enter]${c.reset} Oeffnen`, `${c.bold}[Esc]${c.reset} Zurueck`]));
+  const footerHints: FooterHint[] = [
+    { key: "↑↓", label: "Navigieren" },
+    { key: "Enter", label: "Öffnen", primary: true },
+    { key: "Esc", label: "Zurück" },
+  ];
+  lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);
 }
 

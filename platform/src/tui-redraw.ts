@@ -6,11 +6,12 @@ import {
   currentScreen, updateTermSize, sectionRenderedLines,
   cheatsheetRenderedLines,
 } from "./tui-state.ts";
+import { setForceRenderFn } from "./tui-animation.ts";
 import { clampScrollOffset } from "./tui-render.ts";
 import { renderPlatformScreen, renderCourseInfoScreen } from "./tui-platform.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { renderLessonMenu } from "./tui-lesson-menu.ts";
-import { renderSectionReader, loadSection, loadCheatsheet } from "./tui-section-reader.ts";
+import { renderSectionReader, loadSection, loadCheatsheet, openCheatsheet } from "./tui-section-reader.ts";
 import { renderStats, renderCompetenceDashboard } from "./tui-stats.ts";
 import { renderSearchScreen } from "./tui-search.ts";
 import { renderBookmarksScreen } from "./tui-bookmarks.ts";
@@ -67,14 +68,7 @@ export function redraw(): void {
       cs.totalLines = cheatsheetRenderedLines.length;
       cs.scrollOffset = clampScrollOffset(cs.scrollOffset, cs.totalLines);
       // Re-render by going back to the cheatsheet screen flow
-      // (renderCheatsheetReader is private, but opening the cheatsheet re-renders)
-      // We need to re-import and call directly — the handleCheatsheetInput sets screen
-      // Let's just re-set the screen and call redraw on the section reader module
-      // Actually, loadCheatsheet returns bool and the cheatsheet render is private
-      // Use a workaround: reset to lesson and back
-      // Simplest: just export a renderCheatsheet function
-      // For now, just re-open the cheatsheet
-      const { openCheatsheet } = require("./tui-section-reader.ts") as typeof import("./tui-section-reader.ts");
+      // openCheatsheet is already imported at the top from tui-section-reader.ts
       openCheatsheet(cs.lessonIndex);
       break;
     }
@@ -123,3 +117,6 @@ export function redraw(): void {
       break;
   }
 }
+
+// Hook up the animation engine's force-render callback
+setForceRenderFn(redraw);

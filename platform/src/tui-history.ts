@@ -14,6 +14,8 @@ import type { ParsedKey, Screen } from "./tui-types.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { openSection, openCheatsheet } from "./tui-section-reader.ts";
 import { redraw } from "./tui-redraw.ts";
+import { theme, marker as themeMarker } from "./tui-theme.ts";
+import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
 
 function getHistoryLabel(screen: Screen): string {
   switch (screen.type) {
@@ -40,30 +42,36 @@ export function renderHistoryScreen(): void {
   const w = W();
   const h = H();
 
+  const t = theme;
   const timerStr = formatSessionTime();
-  lines.push(renderHeader(` Letzte Stellen`, `\u23F1 ${timerStr} `));
+  lines.push(renderHeaderBar(` Letzte Stellen`, `\u23F1 ${timerStr} `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
   const screen = currentScreen as Extract<Screen, { type: "history" }>;
 
   if (navigationHistory.length === 0) {
-    lines.push(bLine(`  ${c.dim}Noch keine Navigation aufgezeichnet.${c.reset}`, w));
+    lines.push(bLine(`  ${t.fg.muted}Noch keine Navigation aufgezeichnet.${t.mod.reset}`, w));
   } else {
     const reversed = [...navigationHistory].reverse();
     for (let i = 0; i < reversed.length; i++) {
       const entry = reversed[i];
       const isSelected = i === screen.selectedIndex;
-      const marker = isSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
+      const mk = themeMarker(isSelected);
       const label = getHistoryLabel(entry);
-      const style = isSelected ? c.bold : "";
-      lines.push(bLine(`  ${marker} ${style}${truncate(label, w - 8)}${c.reset}`, w));
+      const style = isSelected ? t.mod.bold : "";
+      lines.push(bLine(`  ${mk}${style}${truncate(label, w - 8)}${t.mod.reset}`, w));
     }
   }
 
   lines.push(bEmpty(w));
   const footerStart = h - 3;
   while (lines.length < footerStart) lines.push(bEmpty(w));
-  lines.push(...renderFooter([`${c.bold}[\u2191\u2193]${c.reset} Navigieren`, `${c.bold}[Enter]${c.reset} Oeffnen`, `${c.bold}[Esc]${c.reset} Zurueck`]));
+  const footerHints: FooterHint[] = [
+    { key: "↑↓", label: "Navigieren" },
+    { key: "Enter", label: "Öffnen", primary: true },
+    { key: "Esc", label: "Zurück" },
+  ];
+  lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);
 }
 

@@ -707,6 +707,7 @@ export function filterByDepth(
   const lines = markdown.split("\n");
   const result: string[] = [];
   let currentDepth: string | null = null;
+  let blockOmitted = false;
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -714,18 +715,22 @@ export function filterByDepth(
     // Marker erkennen
     if (trimmed === "<!-- section:summary -->") {
       currentDepth = "summary";
+      blockOmitted = false;
       continue;
     }
     if (trimmed === "<!-- depth:standard -->") {
       currentDepth = "standard";
+      blockOmitted = false;
       continue;
     }
     if (trimmed === "<!-- depth:vollstaendig -->" || trimmed === "<!-- depth:vollständig -->") {
       currentDepth = "vollstaendig";
+      blockOmitted = false;
       continue;
     }
     if (trimmed === "<!-- /depth -->") {
       currentDepth = null;
+      blockOmitted = false;
       continue;
     }
 
@@ -740,11 +745,25 @@ export function filterByDepth(
       // Standard → sichtbar bei "standard" und "vollstaendig"
       if (depth === "standard" || depth === "vollständig") {
         result.push(line);
+      } else {
+        if (!blockOmitted) {
+          result.push("");
+          result.push("> *[... Standard-Details weggelassen (Drücke N für Standard, V für Vollständig)]*");
+          result.push("");
+          blockOmitted = true;
+        }
       }
     } else if (currentDepth === "vollstaendig") {
       // Vollstaendig → nur bei "vollständig"
       if (depth === "vollständig") {
         result.push(line);
+      } else {
+        if (!blockOmitted) {
+          result.push("");
+          result.push("> *[... Vertiefung übersprungen (Drücke V zum Erweitern)]*");
+          result.push("");
+          blockOmitted = true;
+        }
       }
     }
   }
@@ -976,12 +995,13 @@ export function renderMarkdown(
     }
 
     // ── Ueberschriften ────────────────────────────────────────────────
-
+    
     if (trimmed.startsWith("# ")) {
       output.push("");
-      output.push(`  ${c.bold}${c.cyan}${trimmed.slice(2)}${c.reset}`);
+      const text = trimmed.slice(2);
+      output.push(`  ${c.bold}${c.amber}█ ${text}${c.reset}`);
       output.push(
-        `  ${c.cyan}${"═".repeat(Math.min(stripAnsi(trimmed.slice(2)).length, contentWidth))}${c.reset}`
+        `  ${c.amber}${"▀".repeat(Math.min(stripAnsi(text).length + 2, contentWidth))}${c.reset}`
       );
       output.push("");
       continue;
@@ -989,9 +1009,10 @@ export function renderMarkdown(
 
     if (trimmed.startsWith("## ")) {
       output.push("");
-      output.push(`  ${c.bold}${c.yellow}${trimmed.slice(3)}${c.reset}`);
+      const text = trimmed.slice(3);
+      output.push(`  ${c.bold}${c.mutedBlue}▓ ${text}${c.reset}`);
       output.push(
-        `  ${c.yellow}${"─".repeat(Math.min(stripAnsi(trimmed.slice(3)).length, contentWidth))}${c.reset}`
+        `  ${c.mutedBlue}${"─".repeat(Math.min(stripAnsi(text).length + 2, contentWidth))}${c.reset}`
       );
       output.push("");
       continue;
@@ -999,7 +1020,8 @@ export function renderMarkdown(
 
     if (trimmed.startsWith("### ")) {
       output.push("");
-      output.push(`  ${c.bold}${c.magenta}${trimmed.slice(4)}${c.reset}`);
+      const text = trimmed.slice(4);
+      output.push(`  ${c.bold}${c.mutedGreen}▒ ${text}${c.reset}`);
       output.push("");
       continue;
     }
@@ -1043,24 +1065,24 @@ export function renderMarkdown(
 
       output.push("");
       output.push(
-        `  ${c.green}┌${"─".repeat(boxWidth)}┐${c.reset}`
+        `  ${c.slate}┌${"─".repeat(boxWidth)}┐${c.reset}`
       );
       for (const ql of quoteLines) {
         if (ql === "") {
-          output.push(`  ${c.green}│${c.reset}${" ".repeat(boxWidth)}${c.green}│${c.reset}`);
+          output.push(`  ${c.slate}│${c.reset}${" ".repeat(boxWidth)}${c.slate}│${c.reset}`);
         } else {
           const wrapped = wrapText(ql, boxInnerWidth);
           for (const wl of wrapped) {
             const vis = stripAnsi(wl).length;
             const pad = Math.max(0, boxWidth - 1 - vis);
             output.push(
-              `  ${c.green}│${c.reset} ${renderInline(wl)}${" ".repeat(pad)}${c.green}│${c.reset}`
+              `  ${c.slate}│${c.reset} ${c.paleWhite}${renderInline(wl)}${c.reset}${" ".repeat(pad)}${c.slate}│${c.reset}`
             );
           }
         }
       }
       output.push(
-        `  ${c.green}└${"─".repeat(boxWidth)}┘${c.reset}`
+        `  ${c.slate}└${"─".repeat(boxWidth)}┘${c.reset}`
       );
       output.push("");
       continue;

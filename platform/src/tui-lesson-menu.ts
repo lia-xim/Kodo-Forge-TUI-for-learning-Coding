@@ -27,8 +27,11 @@ import type { QuizQuestion } from "./quiz-runner.ts";
 import { getAllPretestQuestions } from "./pretest-engine.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { SHOW_CURSOR } from "./tui-render.ts";
-import { loadCompletionProblems, hasTakenLessonPretest, markLessonPretestTaken, sessionStats } from "./tui-state.ts";
+import { hasTakenLessonPretest, markLessonPretestTaken, sessionStats } from "./tui-state.ts";
 import { renderCompletionProblem } from "./tui-challenges.ts";
+import { registerAnimation, hasAnimation, ensureMenuBlink } from "./tui-animation.ts";
+import { theme, marker as themeMarker } from "./tui-theme.ts";
+import { renderFooterBar, renderHeaderBar, type FooterHint } from "./tui-components.ts";
 
 export function renderLessonMenu(lessonIndex: number): void {
   updateTermSize();
@@ -46,13 +49,15 @@ export function renderLessonMenu(lessonIndex: number): void {
   const w = W();
   const h = H();
 
+  const t = theme;
   const timerStr = formatSessionTime();
   const lessonBarW = Math.max(6, Math.floor(w * 0.12));
   const lessonBar = fineProgressBar(lpct, lessonBarW);
   lines.push(
-    renderHeader(
+    renderHeaderBar(
       ` ${getBreadcrumb(currentScreen)}: ${truncate(lesson.title, w - 50)}`,
-      `${lessonBar} ${pctStr(lpct)} \u23F1 ${timerStr} `
+      `${lessonBar} ${pctStr(lpct)} \u23F1 ${timerStr} `,
+      w
     )
   );
   lines.push(boxTop(w));
@@ -65,8 +70,8 @@ export function renderLessonMenu(lessonIndex: number): void {
   const leftLines: string[] = [];
   const rightLines: string[] = [];
 
-  leftLines.push(padR(`${c.bold}${c.cyan} Sektionen${c.reset}`, leftColW));
-  leftLines.push(`${c.dim} ${"─".repeat(leftColW - 1)}${c.reset}`);
+  leftLines.push(padR(`${t.mod.bold}${t.fg.info} Sektionen${t.mod.reset}`, leftColW));
+  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
 
   for (let s = 0; s < lesson.sections.length; s++) {
     const section = lesson.sections[s];
@@ -74,60 +79,60 @@ export function renderLessonMenu(lessonIndex: number): void {
     const status = getSectionStatus(key);
     const isSelected = s === selectedIdx;
 
-    let statusIcon: string;
+    let statusIc: string;
     if (status === "completed") {
-      statusIcon = `${c.green}\u2713${c.reset}`;
+      statusIc = `${t.fg.success}✓${t.mod.reset}`;
     } else if (status === "in_progress") {
-      statusIcon = `${c.yellow}\u25B6${c.reset}`;
+      statusIc = `${t.fg.accent}▶${t.mod.reset}`;
     } else {
-      statusIcon = `${c.dim}\u25CB${c.reset}`;
+      statusIc = `${t.fg.muted}○${t.mod.reset}`;
     }
 
     let readTime = "";
     try {
       const content = fs.readFileSync(section.filePath, "utf-8");
-      readTime = `${c.dim}~${estimateReadTime(content)}m${c.reset}`;
+      readTime = `${t.fg.muted}~${estimateReadTime(content)}m${t.mod.reset}`;
     } catch {
       // ignorieren
     }
 
-    const marker = isSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
+    const mk = themeMarker(isSelected);
     const titleMaxLen = Math.max(5, leftColW - 16);
     const displayTitle = truncate(section.title, titleMaxLen);
 
-    const line = `${marker} ${statusIcon} ${s + 1}  ${padR(displayTitle, titleMaxLen)} ${readTime}`;
+    const line = `${mk}${statusIc} ${s + 1}  ${padR(displayTitle, titleMaxLen)} ${readTime}`;
     leftLines.push(padR(line, leftColW));
   }
 
   leftLines.push(" ".repeat(leftColW));
-  leftLines.push(`${c.dim} ${"─".repeat(leftColW - 1)}${c.reset}`);
-  leftLines.push(padR(`${c.bold} Praxis${c.reset}`, leftColW));
-  leftLines.push(`${c.dim} ${"─".repeat(leftColW - 1)}${c.reset}`);
+  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
+  leftLines.push(padR(`${t.mod.bold}${t.fg.heading} Praxis${t.mod.reset}`, leftColW));
+  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
 
   const exProgress = countExerciseProgress(lesson);
   const exText =
     exProgress.total > 0
       ? `${exProgress.solved}/${exProgress.total} geloest`
-      : `${c.dim}keine${c.reset}`;
+      : `${t.fg.muted}keine${t.mod.reset}`;
   const exSelected = selectedIdx === lesson.sections.length;
-  const exMarker = exSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
-  leftLines.push(padR(`${exMarker} ${c.bold}[E]${c.reset} Exercises     ${exText}`, leftColW));
+  const exMk = themeMarker(exSelected);
+  leftLines.push(padR(`${exMk}${t.mod.bold}[E]${t.mod.reset} Exercises     ${exText}`, leftColW));
 
   if (lesson.hasQuiz) {
     const quizData = progress.quizzes[lesson.number];
     const quizText = quizData
       ? `Bestes: ${Math.round((quizData.score / quizData.total) * 100)}%`
-      : `${c.dim}noch offen${c.reset}`;
+      : `${t.fg.muted}noch offen${t.mod.reset}`;
     const qSelected = selectedIdx === lesson.sections.length + 1;
-    const qMarker = qSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
-    leftLines.push(padR(`${qMarker} ${c.bold}[Z]${c.reset} Quiz          ${quizText}`, leftColW));
+    const qMk = themeMarker(qSelected);
+    leftLines.push(padR(`${qMk}${t.mod.bold}[Z]${t.mod.reset} Quiz          ${quizText}`, leftColW));
   }
 
   if (lesson.hasHints) {
     const hIdx = lesson.sections.length + (lesson.hasQuiz ? 2 : 1);
     const hSelected = selectedIdx === hIdx;
-    const hMarker = hSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
-    leftLines.push(padR(`${hMarker} ${c.bold}[H]${c.reset} Hints`, leftColW));
+    const hMk = themeMarker(hSelected);
+    leftLines.push(padR(`${hMk}${t.mod.bold}[H]${t.mod.reset} Hints`, leftColW));
   }
 
   const hasMisconceptions = fs.existsSync(
@@ -139,8 +144,8 @@ export function renderLessonMenu(lessonIndex: number): void {
       (lesson.hasQuiz ? 2 : 1) +
       (lesson.hasHints ? 1 : 0);
     const mSelected = selectedIdx === mIdx;
-    const mMarker = mSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
-    leftLines.push(padR(`${mMarker} ${c.bold}[G]${c.reset} Misconceptions`, leftColW));
+    const mMk = themeMarker(mSelected);
+    leftLines.push(padR(`${mMk}${t.mod.bold}[G]${t.mod.reset} Misconceptions`, leftColW));
   }
 
   if (lesson.hasCheatsheet) {
@@ -150,8 +155,8 @@ export function renderLessonMenu(lessonIndex: number): void {
       (lesson.hasHints ? 1 : 0) +
       (hasMisconceptions ? 1 : 0);
     const cSelected = selectedIdx === cIdx;
-    const cMarker = cSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
-    leftLines.push(padR(`${cMarker} ${c.bold}[C]${c.reset} Cheatsheet`, leftColW));
+    const cMk = themeMarker(cSelected);
+    leftLines.push(padR(`${cMk}${t.mod.bold}[C]${t.mod.reset} Cheatsheet`, leftColW));
   }
 
   const minLeft = Math.max(leftLines.length, 14);
@@ -159,8 +164,8 @@ export function renderLessonMenu(lessonIndex: number): void {
     leftLines.push(" ".repeat(leftColW));
   }
 
-  rightLines.push(`${c.bold}${c.cyan} Vorschau${c.reset}`);
-  rightLines.push(`${c.dim} ${"─".repeat(rightColW - 1)}${c.reset}`);
+  rightLines.push(`${t.mod.bold}${t.fg.info} Vorschau${t.mod.reset}`);
+  rightLines.push(`${t.border.default} ${"─".repeat(rightColW - 1)}${t.mod.reset}`);
 
   if (selectedIdx < lesson.sections.length) {
     const section = lesson.sections[selectedIdx];
@@ -202,20 +207,24 @@ export function renderLessonMenu(lessonIndex: number): void {
     lines.push(bEmpty(w));
   }
 
-  const shortcuts: string[] = [
-    `${c.bold}[1-${lesson.sections.length}]${c.reset} Sektion`,
-    `${c.bold}[\u2191\u2193]${c.reset} Navigieren`,
-    `${c.bold}[Enter/\u2192]${c.reset} Oeffnen`,
-    `${c.bold}[E]${c.reset} Exercises`,
-    `${c.bold}[Z]${c.reset} Quiz`,
-    `${c.bold}[V]${c.reset} VS Code`,
+  const footerHints: FooterHint[] = [
+    { key: `1-${lesson.sections.length}`, label: "Sektion" },
+    { key: "↑↓", label: "Navigieren" },
+    { key: "Enter/→", label: "Öffnen", primary: true },
+    { key: "E", label: "Exercises" },
+    { key: "Z", label: "Quiz" },
+    { key: "V", label: "VS Code" },
   ];
-  if (lesson.hasHints) shortcuts.push(`${c.bold}[H]${c.reset} Hints`);
-  if (hasMisconceptions) shortcuts.push(`${c.bold}[G]${c.reset} Misconceptions`);
-  if (lesson.hasCheatsheet) shortcuts.push(`${c.bold}[C]${c.reset} Cheatsheet`);
-  shortcuts.push(`${c.bold}[\u2190/Esc]${c.reset} Zurueck`);
+  if (lesson.hasHints) footerHints.push({ key: "H", label: "Hints" });
+  if (hasMisconceptions) footerHints.push({ key: "G", label: "Misconceptions" });
+  if (lesson.hasCheatsheet) footerHints.push({ key: "C", label: "Cheatsheet" });
+  footerHints.push({ key: "←/Esc", label: "Zurück" });
 
-  lines.push(...renderFooter(shortcuts));
+  lines.push(...renderFooterBar(footerHints, w));
+  
+  // Ensure menu blink animation
+  ensureMenuBlink();
+  
   flushScreen(lines);
 }
 

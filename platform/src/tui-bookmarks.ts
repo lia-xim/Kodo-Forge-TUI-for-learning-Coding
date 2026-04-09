@@ -13,6 +13,8 @@ import {
 import type { ParsedKey, Screen } from "./tui-types.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { openSection } from "./tui-section-reader.ts";
+import { theme, marker as themeMarker } from "./tui-theme.ts";
+import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
 
 export function renderBookmarksScreen(): void {
   updateTermSize();
@@ -21,34 +23,42 @@ export function renderBookmarksScreen(): void {
   const w = W();
   const h = H();
 
-  lines.push(renderHeader(" Lesezeichen", `${progress.bookmarks.length} gespeichert `));
+  const t = theme;
+
+  lines.push(renderHeaderBar(" Lesezeichen", `${progress.bookmarks.length} gespeichert `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
   if (progress.bookmarks.length === 0) {
-    lines.push(bLine(`  ${c.dim}Keine Lesezeichen vorhanden.${c.reset}`, w));
+    lines.push(bLine(`  ${t.fg.muted}Keine Lesezeichen vorhanden.${t.mod.reset}`, w));
     lines.push(bEmpty(w));
-    lines.push(bLine(`  ${c.dim}Druecke [M] im Section-Reader um ein Lesezeichen zu setzen.${c.reset}`, w));
+    lines.push(bLine(`  ${t.fg.muted}Drücke [M] im Section-Reader um ein Lesezeichen zu setzen.${t.mod.reset}`, w));
   } else {
-    lines.push(bLine(`  ${c.bold}${c.cyan}Lesezeichen:${c.reset}`, w));
+    lines.push(bLine(`  ${t.mod.bold}${t.fg.info}Lesezeichen:${t.mod.reset}`, w));
     lines.push(bEmpty(w));
 
     for (let i = 0; i < progress.bookmarks.length; i++) {
       const bm = progress.bookmarks[i];
       const isSelected = i === screen.selectedIndex;
-      const marker = isSelected ? `${c.cyan}${c.bold}\u25B8${c.reset}` : " ";
+      const mk = themeMarker(isSelected);
       const lesson = lessons[bm.lessonIndex];
       const section = lesson?.sections[bm.sectionIndex];
       const title = section ? `L${lesson.number} S${bm.sectionIndex + 1}: ${truncate(section.title, w - 40)}` : `L?? S${bm.sectionIndex + 1}`;
       const dateStr = bm.created ? new Date(bm.created).toLocaleDateString("de-DE") : "";
-      const noteStr = bm.note ? ` ${c.dim}— ${bm.note}${c.reset}` : "";
-      const scrollInfo = `${c.dim}(Zeile ${bm.scrollOffset + 1})${c.reset}`;
-      lines.push(bLine(`  ${marker} ${isSelected ? c.bold : ""}${title}${c.reset} ${scrollInfo}  ${c.dim}${dateStr}${c.reset}${noteStr}`, w));
+      const noteStr = bm.note ? ` ${t.fg.secondary}— ${bm.note}${t.mod.reset}` : "";
+      const scrollInfo = `${t.fg.secondary}(Zeile ${bm.scrollOffset + 1})${t.mod.reset}`;
+      lines.push(bLine(`  ${mk}${isSelected ? t.mod.bold : ""}${title}${t.mod.reset} ${scrollInfo}  ${t.fg.muted}${dateStr}${t.mod.reset}${noteStr}`, w));
     }
   }
 
   const footerStart = h - 3;
   while (lines.length < footerStart) { lines.push(bEmpty(w)); }
-  lines.push(...renderFooter([`${c.bold}[\u2191\u2193]${c.reset} Navigieren`, `${c.bold}[Enter]${c.reset} Oeffnen`, `${c.bold}[X]${c.reset} Loeschen`, `${c.bold}[Esc]${c.reset} Zurueck`]));
+  const footerHints: FooterHint[] = [
+    { key: "↑↓", label: "Navigieren" },
+    { key: "Enter", label: "Öffnen", primary: true },
+    { key: "X", label: "Löschen" },
+    { key: "Esc", label: "Zurück" },
+  ];
+  lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);
 }
 

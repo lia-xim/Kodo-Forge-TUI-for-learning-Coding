@@ -28,6 +28,9 @@ import { renderBookmarksScreen } from "./tui-bookmarks.ts";
 import { renderPlatformScreen } from "./tui-platform.ts";
 import { renderInterleaved } from "./tui-quiz.ts";
 import { openSection } from "./tui-section-reader.ts";
+import { registerAnimation, hasAnimation, ensureMenuBlink } from "./tui-animation.ts";
+import { theme, marker as themeMarker } from "./tui-theme.ts";
+import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, type FooterHint } from "./tui-components.ts";
 
 export function renderMainMenu(): void {
   updateTermSize();
@@ -37,14 +40,16 @@ export function renderMainMenu(): void {
   const w = W();
   const h = H();
 
+  const t = theme;
   const overallPct = getOverallProgress();
   const timerStr = formatSessionTime();
   const headerBarWidth = Math.max(8, Math.floor(w * 0.20));
   const headerBar = fineProgressBar(overallPct, headerBarWidth);
   lines.push(
-    renderHeader(
+    renderHeaderBar(
       ` ${getBreadcrumb(currentScreen)}`,
-      `${headerBar} ${pctStr(overallPct)} \u23F1 ${timerStr} `
+      `${headerBar} ${pctStr(overallPct)} \u23F1 ${timerStr} `,
+      w
     )
   );
 
@@ -61,25 +66,25 @@ export function renderMainMenu(): void {
         : "";
     const resumeInnerW = w - 6;
     const resumeSelected = selectedIdx === -1;
-    const resumeMarker = resumeSelected
-      ? `${c.cyan}${c.bold}\u25B8${c.reset} `
-      : "  ";
+    
+    const mk = themeMarker(resumeSelected);
+      
     lines.push(
       bLine(
-        ` ${c.dim}┌─ Weitermachen ${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${c.reset}`,
+        ` ${t.border.muted}┌─ ${t.fg.heading}Weitermachen${t.mod.reset} ${t.border.muted}${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${t.mod.reset}`,
         w
       )
     );
-    const resumeText = `${resumeMarker}${c.bold}\u25B6 Lektion ${lesson?.number ?? "?"}: ${truncate(sectionTitle, Math.max(10, resumeInnerW - 40))}, Sektion ${si + 1}${c.reset}     ${c.dim}[Enter]${c.reset}`;
+    const resumeText = `${mk}${t.mod.bold}▶ Lektion ${lesson?.number ?? "?"}: ${truncate(sectionTitle, Math.max(10, resumeInnerW - 40))}, Sektion ${si + 1}${t.mod.reset}     ${t.fg.secondary}[Enter]${t.mod.reset}`;
     lines.push(
       bLine(
-        ` ${c.dim}│${c.reset} ${padR(resumeText, resumeInnerW - 2)}${c.dim}│${c.reset}`,
+        ` ${t.border.muted}│${t.mod.reset} ${padR(resumeText, resumeInnerW - 2)}${t.border.muted}│${t.mod.reset}`,
         w
       )
     );
     lines.push(
       bLine(
-        ` ${c.dim}└${"─".repeat(resumeInnerW)}┘${c.reset}`,
+        ` ${t.border.muted}└${"─".repeat(resumeInnerW)}┘${t.mod.reset}`,
         w
       )
     );
@@ -94,20 +99,20 @@ export function renderMainMenu(): void {
   const leftLines: string[] = [];
   const rightLines: string[] = [];
 
-  leftLines.push(padR(`${c.bold}${c.cyan} Lektionen${c.reset}`, leftColW));
-  leftLines.push(`${c.dim} ${"─".repeat(leftColW - 1)}${c.reset}`);
+  leftLines.push(padR(`${t.mod.bold}${t.fg.info} Lektionen${t.mod.reset}`, leftColW));
+  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
 
   for (let i = 0; i < lessons.length; i++) {
     const lesson = lessons[i];
     const isSelected = i === selectedIdx;
     const mastery = calculateMastery(i);
 
-    const marker = isSelected ? `${c.cyan}${c.bold} \u25B8${c.reset}` : "  ";
-    const num = `${isSelected ? c.bold : ""}${i + 1}${c.reset}`;
+    const mk = themeMarker(isSelected);
+    const num = `${isSelected ? t.mod.bold : ""}${i + 1}${t.mod.reset}`;
     const masteryStr = masteryBar(mastery);
     const titleMaxLen = Math.max(5, leftColW - 28);
     const displayTitle = truncate(lesson.title, titleMaxLen);
-    const line = `${marker} ${num}  ${padR(displayTitle, titleMaxLen)} ${masteryStr}`;
+    const line = `${mk}${num}  ${padR(displayTitle, titleMaxLen)} ${masteryStr}`;
     leftLines.push(padR(line, leftColW));
   }
 
@@ -117,10 +122,10 @@ export function renderMainMenu(): void {
   }
 
   rightLines.push(
-    `${c.bold}${c.cyan} Dein Fortschritt${c.reset}`
+    `${t.mod.bold}${t.fg.info} Dein Fortschritt${t.mod.reset}`
   );
   rightLines.push(
-    `${c.dim} ${"─".repeat(rightColW - 1)}${c.reset}`
+    `${t.border.default} ${"─".repeat(rightColW - 1)}${t.mod.reset}`
   );
 
   let totalSections = 0;
@@ -206,8 +211,11 @@ export function renderMainMenu(): void {
   const reviewInnerW = w - 6;
   if (dueCount > 0) {
     lines.push(bLine(` ${c.dim}┌${"─".repeat(reviewInnerW)}┐${c.reset}`, w));
+    const reviewSelected = selectedIdx === lessons.length;
+    const blinkFrame = Math.floor(Date.now() / 600) % 2 === 0;
+    const markerColor = blinkFrame ? c.amber : c.paleWhite;
     const reviewMarker = reviewSelected
-      ? `${c.cyan}${c.bold}\u25B8${c.reset} `
+      ? `${markerColor}${c.bold}\u25B8${c.reset} `
       : "  ";
     const reviewText = `${reviewMarker}${c.yellow}${c.bold}${dueCount} Fragen faellig${c.reset} ${c.dim}— Druecke [R] um die taegliche Wiederholung zu starten${c.reset}`;
     lines.push(bLine(` ${c.dim}│${c.reset} ${padR(reviewText, reviewInnerW - 2)}${c.dim}│${c.reset}`, w));
@@ -242,21 +250,25 @@ export function renderMainMenu(): void {
     lines.pop();
   }
 
-  const footerItems: string[] = [
-    `${c.bold}[1-${lessons.length}]${c.reset} Lektion`,
-    `${c.bold}[\u2191\u2193]${c.reset} Navigieren`,
-    `${c.bold}[Enter]${c.reset} Oeffnen`,
-    `${c.bold}[/]${c.reset} Suche`,
-    `${c.bold}[B]${c.reset} Lesezeichen`,
-    `${c.bold}[R]${c.reset} Review`,
-    `${c.bold}[I]${c.reset} Interleaved`,
-    `${c.bold}[K]${c.reset} Kompetenzen`,
-    `${c.bold}[P]${c.reset} Kursauswahl`,
-    `${c.bold}[?]${c.reset} Hilfe`,
-    `${c.bold}[Q]${c.reset} Beenden`,
+  const footerHints: FooterHint[] = [
+    { key: `1-${lessons.length}`, label: "Lektion" },
+    { key: "↑↓", label: "Navigieren" },
+    { key: "Enter", label: "Öffnen", primary: true },
+    { key: "/", label: "Suche" },
+    { key: "B", label: "Lesezeichen" },
+    { key: "R", label: "Review" },
+    { key: "I", label: "Interleaved" },
+    { key: "K", label: "Kompetenzen" },
+    { key: "P", label: "Kursauswahl" },
+    { key: "?", label: "Hilfe" },
+    { key: "Q", label: "Beenden" },
   ];
 
-  lines.push(...renderFooter(footerItems));
+  lines.push(...renderFooterBar(footerHints, w));
+  
+  // Ensure menu blink animation
+  ensureMenuBlink();
+  
   flushScreen(lines);
 }
 
