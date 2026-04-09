@@ -63,7 +63,7 @@ export function extractSelfExplanationPrompts(
   markdown: string
 ): SelfExplanationPrompt[] {
   const prompts: SelfExplanationPrompt[] = [];
-  const lines = markdown.split("\n");
+  const lines = markdown.split(/\r?\n/);
 
   let i = 0;
   let renderedLineIndex = 0;
@@ -683,7 +683,7 @@ function wrapText(text: string, maxWidth: number): string[] {
  */
 export function extractMermaidBlocks(markdown: string): string[] {
   const blocks: string[] = [];
-  const lines = markdown.split("\n");
+  const lines = markdown.split(/\r?\n/);
   let inMermaid = false;
   let currentBlock: string[] = [];
 
@@ -723,7 +723,7 @@ export function filterByDepth(
   markdown: string,
   depth: "kurz" | "standard" | "vollständig"
 ): string {
-  const lines = markdown.split("\n");
+  const lines = markdown.split(/\r?\n/);
   const result: string[] = [];
   let currentDepth: string | null = null;
   let blockOmitted = false;
@@ -795,7 +795,7 @@ export function filterByDepth(
  * Gibt eine Warnung zurueck wenn Marker unausgeglichen sind.
  */
 export function validateDepthMarkers(markdown: string): string | null {
-  const lines = markdown.split("\n");
+  const lines = markdown.split(/\r?\n/);
   let depthCount = 0;
   let summaryCount = 0;
   let closeCount = 0;
@@ -833,7 +833,7 @@ export function renderMarkdown(
   markdown: string,
   maxWidth: number = 72
 ): string[] {
-  const lines = markdown.split("\n");
+  const lines = markdown.split(/\r?\n/);
   const output: string[] = [];
   const contentWidth = Math.max(20, maxWidth - 4); // Rand links+rechts
 
