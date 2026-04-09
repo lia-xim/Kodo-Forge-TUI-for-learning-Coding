@@ -359,9 +359,18 @@ export function stopSpinner(id: string): void {
  * Ensures the menu blink animation is running.
  * Call this from any screen that has selectable items.
  */
+// Screens where the blink cursor is meaningful
+const BLINK_SCREENS = new Set(["platform", "main", "lesson", "courseinfo"]);
+
 export function ensureMenuBlink(): void {
   if (!hasAnimation("menuBlink")) {
     registerAnimation("menuBlink", 600, (fc) => {
+      // Auto-stop when the user navigates away from menu screens.
+      // Prevents periodic redraws (and flicker) in the section reader / quiz etc.
+      if (!BLINK_SCREENS.has(currentScreen.type)) {
+        stopAnimation("menuBlink");
+        return;
+      }
       _blinkPhase = fc % 2 === 0;
     });
   }

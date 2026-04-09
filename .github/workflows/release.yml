@@ -1,0 +1,47 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger z.B. bei einem Tag wie "v1.0.0"
+
+jobs:
+  release:
+    name: Build & Release Executables
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 'latest'
+          
+      - name: Install Dependencies
+        working-directory: ./platform
+        run: npm install # oder bun install
+        
+      - name: Build Windows Executable
+        working-directory: ./platform
+        run: bun run build:win
+        
+      - name: Build macOS Executable
+        working-directory: ./platform
+        run: bun run build:mac
+        
+      - name: Build Linux Executable
+        working-directory: ./platform
+        run: bun run build:linux
+        
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            platform/dist/kodo-forge.exe
+            platform/dist/kodo-forge
+            platform/dist/kodo-forge-linux
+          generate_release_notes: true

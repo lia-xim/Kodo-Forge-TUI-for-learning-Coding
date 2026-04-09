@@ -198,6 +198,15 @@ const TS_BUILTIN_TYPES = new Set([
 /**
  * Minimales Syntax-Highlighting fuer TypeScript Code-Bloecke.
  */
+// Bright syntax colors — guaranteed readable on dark backgrounds.
+// Standard ANSI colors (34m blue, 36m cyan) are near-invisible on dark themes.
+const SYN_KEYWORD  = "\x1b[94m";  // bright blue   — type, const, let, interface…
+const SYN_TYPE     = "\x1b[96m";  // bright cyan   — string, number, boolean…
+const SYN_STRING   = "\x1b[92m";  // bright green  — "…", '…', `…`
+const SYN_NUMBER   = "\x1b[95m";  // bright magenta — 42, 3.14…
+const SYN_OPERATOR = "\x1b[93m";  // bright yellow  — = < > ! + - …
+const SYN_COMMENT  = "\x1b[90m";  // dark gray      — // …
+
 function highlightTS(line: string): string {
   let result = "";
   let i = 0;
@@ -205,7 +214,7 @@ function highlightTS(line: string): string {
   while (i < line.length) {
     // Einzeilige Kommentare
     if (line[i] === "/" && line[i + 1] === "/") {
-      result += `${c.gray}${line.slice(i)}${c.reset}`;
+      result += `${SYN_COMMENT}${line.slice(i)}${c.reset}`;
       return result;
     }
 
@@ -218,7 +227,7 @@ function highlightTS(line: string): string {
         end++;
       }
       end = Math.min(end + 1, line.length);
-      result += `${c.green}${line.slice(i, end)}${c.reset}`;
+      result += `${SYN_STRING}${line.slice(i, end)}${c.reset}`;
       i = end;
       continue;
     }
@@ -227,7 +236,7 @@ function highlightTS(line: string): string {
     if (/\d/.test(line[i]) && (i === 0 || !/\w/.test(line[i - 1]))) {
       let end = i;
       while (end < line.length && /[\d.n]/.test(line[end])) end++;
-      result += `${c.magenta}${line.slice(i, end)}${c.reset}`;
+      result += `${SYN_NUMBER}${line.slice(i, end)}${c.reset}`;
       i = end;
       continue;
     }
@@ -239,9 +248,9 @@ function highlightTS(line: string): string {
       const word = line.slice(i, end);
 
       if (TS_KEYWORDS.has(word)) {
-        result += `${c.blue}${word}${c.reset}`;
+        result += `${SYN_KEYWORD}${word}${c.reset}`;
       } else if (TS_BUILTIN_TYPES.has(word)) {
-        result += `${c.cyan}${word}${c.reset}`;
+        result += `${SYN_TYPE}${word}${c.reset}`;
       } else {
         result += word;
       }
@@ -251,7 +260,7 @@ function highlightTS(line: string): string {
 
     // Operatoren und Sonderzeichen
     if (/[=<>!+\-*/%&|^~?:]/.test(line[i])) {
-      result += `${c.yellow}${line[i]}${c.reset}`;
+      result += `${SYN_OPERATOR}${line[i]}${c.reset}`;
       i++;
       continue;
     }

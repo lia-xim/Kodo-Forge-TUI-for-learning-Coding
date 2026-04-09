@@ -39,6 +39,7 @@ import { renderLessonMenu } from "./tui-lesson-menu.ts";
 import { HIDE_CURSOR, SHOW_CURSOR } from "./tui-render.ts";
 import { adaptiveState, TOOLS_DIR } from "./tui-state.ts";
 import { loadAdaptiveState, saveAdaptiveState } from "./adaptive-engine.ts";
+import { stopAnimation } from "./tui-animation.ts";
 
 // ─── Section laden ─────────────────────────────────────────────────────────
 
@@ -215,6 +216,8 @@ setRenderSectionReader(renderSectionReader);
 
 export function openSection(lessonIndex: number, sectionIndex: number, initialOffset?: number): void {
   stopTTS();
+  // Stop menu-blink animation — it's only needed on platform/menu screens, not while reading.
+  stopAnimation("menuBlink");
 
   const lesson = lessons[lessonIndex];
   if (!lesson || !lesson.sections[sectionIndex]) return;
