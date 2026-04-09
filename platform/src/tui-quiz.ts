@@ -12,6 +12,7 @@ import {
   c, padR, truncate, boxTop, bLine, bEmpty,
   flushScreen, renderHeader, renderFooter, wordWrap,
 } from "./tui-render.ts";
+import { renderHeaderBar, modePill } from "./tui-components.ts";
 import {
   currentScreen, setCurrentScreen, lessons, progress, updateTermSize, W, H,
   formatSessionTime, getBreadcrumb, getConfidenceFeedback, sessionStats,
@@ -37,7 +38,7 @@ export function renderWarmup(): void {
 
   if (done) {
     const correct = answers.filter((a) => a.correct).length;
-    lines.push(renderHeader(" Warm-Up Zusammenfassung", `${correct}/${answers.length} richtig `));
+    lines.push(renderHeaderBar(`${modePill("review")} Warm-Up Zusammenfassung`, `${correct}/${answers.length} richtig `));
     lines.push(boxTop(w));
     lines.push(bEmpty(w));
     lines.push(bLine(`  ${c.bold}Warm-Up abgeschlossen!${c.reset}`, w));
@@ -65,7 +66,7 @@ export function renderWarmup(): void {
   const lesson = lessons[q.lessonIndex];
   const lessonLabel = lesson ? `Lektion ${lesson.number}: ${lesson.title}` : `Lektion ${q.lessonIndex + 1}`;
 
-  lines.push(renderHeader(` Warm-Up`, `Frage ${currentIndex + 1}/${questions.length} `));
+  lines.push(renderHeaderBar(`${modePill("review")} Warm-Up`, `Frage ${currentIndex + 1}/${questions.length} `));
   lines.push(boxTop(w));
   lines.push(bEmpty(w));
   lines.push(bLine(`  ${c.dim}Aus ${lessonLabel}${c.reset}`, w));
@@ -193,7 +194,7 @@ export function renderPretest(): void {
   const isLessonPretest = sectionIndex === -1;
 
   if (showingResult) {
-    lines.push(renderHeader(` Pre-Test Ergebnis`, `${score}% richtig `));
+    lines.push(renderHeaderBar(`${modePill("pretest")} Pre-Test Ergebnis`, `${score}% richtig `));
     lines.push(boxTop(w)); lines.push(bEmpty(w));
 
     if (isLessonPretest && Object.keys(screen.sectionDepths).length > 0) {
@@ -263,7 +264,7 @@ export function renderPretest(): void {
     ? lesson?.title || `Lektion ${lessonIndex + 1}`
     : (section ? section.title : `Sektion ${sectionIndex + 1}`);
 
-  lines.push(renderHeader(` Pre-Test: ${truncate(sectionTitle, w - 40)}`, `Frage ${currentIndex + 1}/${questions.length} `));
+  lines.push(renderHeaderBar(`${modePill("pretest")} Pre-Test: ${truncate(sectionTitle, w - 50)}`, `Frage ${currentIndex + 1}/${questions.length} `));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
   lines.push(bLine(`  ${c.dim}Bevor du liest — was weisst du schon?${c.reset}`, w));
   lines.push(bLine(`  ${c.dim}(Falsche Antworten sind OK — sie helfen beim Lernen!)${c.reset}`, w));
@@ -480,7 +481,7 @@ export function renderInterleaved(): void {
   const h = H();
 
   if (items.length === 0) {
-    lines.push(renderHeader(" Interleaved Review", ""));
+    lines.push(renderHeaderBar(`${modePill("review")} Interleaved Review`, ""));
     lines.push(boxTop(w)); lines.push(bEmpty(w));
     lines.push(bLine(`  ${c.dim}Noch nicht genug Lektionen abgeschlossen.${c.reset}`, w));
     lines.push(bLine(`  ${c.dim}Du brauchst mindestens 3 abgeschlossene Lektionen.${c.reset}`, w));
@@ -493,7 +494,7 @@ export function renderInterleaved(): void {
 
   if (done) {
     const correct = answers.filter((a) => a.correct).length;
-    lines.push(renderHeader(" Interleaved Review — Ergebnis", `${correct}/${answers.length} `));
+    lines.push(renderHeaderBar(`${modePill("review")} Interleaved Review — Ergebnis`, `${correct}/${answers.length} `));
     lines.push(boxTop(w)); lines.push(bEmpty(w));
     lines.push(bLine(`  ${c.bold}Interleaved Review abgeschlossen!${c.reset}`, w));
     lines.push(bLine(`  Ergebnis: ${c.bold}${correct}${c.reset}/${answers.length} richtig`, w));
@@ -508,7 +509,7 @@ export function renderInterleaved(): void {
   }
 
   const item = items[currentIndex];
-  lines.push(renderHeader(` Interleaved Review`, `${currentIndex + 1}/${items.length}  Aus: L${item.lessonNumber} `));
+  lines.push(renderHeaderBar(`${modePill("review")} Interleaved Review`, `${currentIndex + 1}/${items.length}  Aus: L${item.lessonNumber} `));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
   lines.push(bLine(`  ${c.dim}Lektion ${item.lessonNumber}: ${item.lessonTitle}${c.reset}`, w));
   lines.push(bEmpty(w));
@@ -648,7 +649,7 @@ export function renderQuiz(): void {
   if (done) {
     const correctCount = answers.filter(a => a.correct).length;
     const pct = Math.round((correctCount / answers.length) * 100);
-    lines.push(renderHeader(` Quiz — ${truncate(lessonLabel, w - 40)}`, `${correctCount}/${answers.length} `));
+    lines.push(renderHeaderBar(`${modePill("quiz")} Quiz — ${truncate(lessonLabel, w - 48)}`, `${correctCount}/${answers.length} `));
     lines.push(boxTop(w));
     lines.push(bEmpty(w));
     lines.push(bLine(`  ${c.bold}Quiz abgeschlossen!${c.reset}`, w));
@@ -671,7 +672,7 @@ export function renderQuiz(): void {
   const qType = getQuestionType(q);
   const formatLabel = getFormatLabel(q);
 
-  lines.push(renderHeader(` Quiz — ${truncate(lessonLabel, w - 50)}`, `${currentIndex + 1}/${questions.length}  ${formatLabel} `));
+  lines.push(renderHeaderBar(`${modePill("quiz")} Quiz — ${truncate(lessonLabel, w - 58)}`, `${currentIndex + 1}/${questions.length}  ${formatLabel} `));
   lines.push(boxTop(w));
   lines.push(bEmpty(w));
 

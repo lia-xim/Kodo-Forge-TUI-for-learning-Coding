@@ -28,9 +28,9 @@ import { renderBookmarksScreen } from "./tui-bookmarks.ts";
 import { renderPlatformScreen } from "./tui-platform.ts";
 import { renderInterleaved } from "./tui-quiz.ts";
 import { openSection } from "./tui-section-reader.ts";
-import { registerAnimation, hasAnimation, ensureMenuBlink } from "./tui-animation.ts";
+import { registerAnimation, hasAnimation, ensureMenuBlink, getBlinkPhase } from "./tui-animation.ts";
 import { theme, marker as themeMarker } from "./tui-theme.ts";
-import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, type FooterHint } from "./tui-components.ts";
+import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, modePill, smoothProgress, type FooterHint } from "./tui-components.ts";
 
 export function renderMainMenu(): void {
   updateTermSize();
@@ -44,10 +44,10 @@ export function renderMainMenu(): void {
   const overallPct = getOverallProgress();
   const timerStr = formatSessionTime();
   const headerBarWidth = Math.max(8, Math.floor(w * 0.20));
-  const headerBar = fineProgressBar(overallPct, headerBarWidth);
+  const headerBar = smoothProgress(overallPct, headerBarWidth);
   lines.push(
     renderHeaderBar(
-      ` ${getBreadcrumb(currentScreen)}`,
+      `${modePill("menu")} ${getBreadcrumb(currentScreen)}`,
       `${headerBar} ${pctStr(overallPct)} \u23F1 ${timerStr} `,
       w
     )
@@ -212,8 +212,7 @@ export function renderMainMenu(): void {
   if (dueCount > 0) {
     lines.push(bLine(` ${c.dim}┌${"─".repeat(reviewInnerW)}┐${c.reset}`, w));
     const reviewSelected = selectedIdx === lessons.length;
-    const blinkFrame = Math.floor(Date.now() / 600) % 2 === 0;
-    const markerColor = blinkFrame ? c.amber : c.paleWhite;
+    const markerColor = getBlinkPhase() ? c.amber : c.paleWhite;
     const reviewMarker = reviewSelected
       ? `${markerColor}${c.bold}\u25B8${c.reset} `
       : "  ";

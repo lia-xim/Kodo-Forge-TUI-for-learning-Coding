@@ -165,6 +165,12 @@ const c = {
   white: "\x1b[37m",
   gray: "\x1b[90m",
   bgGray: "\x1b[48;5;236m",
+  // ─── Muted Retro Palette (matches tui-theme.ts tokens) ───
+  amber:      "\x1b[38;5;214m",
+  slate:      "\x1b[38;5;66m",
+  paleWhite:  "\x1b[38;5;253m",
+  mutedBlue:  "\x1b[38;5;110m",
+  mutedGreen: "\x1b[38;5;108m",
 };
 
 // ─── TypeScript Keyword-Highlighting ────────────────────────────────────────

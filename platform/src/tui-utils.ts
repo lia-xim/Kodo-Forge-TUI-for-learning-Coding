@@ -249,6 +249,26 @@ export function loadPlatformConfig(): void {
     } else {
       setPlatformConfig(getDefaultPlatformConfig());
       savePlatformConfig();
+
+      // Auto-Bootstrap sample course directory if we just created a fresh config
+      const sampleCourseDir = path.join(COURSES_ROOT, "typescript");
+      if (!fs.existsSync(sampleCourseDir)) {
+        try {
+          fs.mkdirSync(path.join(sampleCourseDir, "01-Welcome", "sections"), { recursive: true });
+          fs.writeFileSync(
+            path.join(sampleCourseDir, "01-Welcome", "README.md"),
+            "# Lektion 1: Willkommen bei Kodo Forge\n\nDies ist dein erster Demokurs.",
+            "utf-8"
+          );
+          fs.writeFileSync(
+            path.join(sampleCourseDir, "01-Welcome", "sections", "01-Intro.md"),
+            "# Willkommen\n\nDu hast Kodo Forge erfolgreich gestartet. Du kannst eigene Kurse erstellen, indem du Markdown-Dateien in dieses Verzeichnis legst.\n\nDruecke **Space** um fortzufahren.",
+            "utf-8"
+          );
+        } catch {
+          // ignore
+        }
+      }
     }
   } catch {
     setPlatformConfig(getDefaultPlatformConfig());

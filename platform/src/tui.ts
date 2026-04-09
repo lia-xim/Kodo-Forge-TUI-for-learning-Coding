@@ -26,7 +26,7 @@ import { loadAdaptiveState } from "./adaptive-engine.ts";
 import { handleInput } from "./tui-input.ts";
 import { cleanup, loadPlatformConfig, exitTui } from "./tui-utils.ts";
 import { renderPlatformScreen } from "./tui-platform.ts";
-import { redraw } from "./tui-redraw.ts";
+import { redraw, resizeRedraw } from "./tui-redraw.ts";
 import { detectTtsEngine } from "./tui-tts.ts";
 import { showSplash } from "./tui-splash.ts";
 
@@ -101,7 +101,7 @@ function main(): void {
   process.stdin.resume();
 
   // Terminal-Resize beobachten
-  process.stdout.on("resize", redraw);
+  process.stdout.on("resize", resizeRedraw);
 
   // Eingaben verarbeiten
   process.stdin.on("data", (data: Buffer | string) => {

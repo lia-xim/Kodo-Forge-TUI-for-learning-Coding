@@ -28,9 +28,10 @@ import {
   cheatsheetRenderedLines, setCheatsheetRenderedLines,
   pushHistory, markSectionCompleted, sessionStats, countExerciseProgress,
   ttsActive, ttsEngineLabel, ttsLoading, PROJECT_ROOT,
-  sectionRevealedLines, setSectionRevealedLines,
+
 } from "./tui-state.ts";
-import { registerAnimation, stopAnimation, hasAnimation } from "./tui-animation.ts";
+
+import { renderHeaderBar, modePill } from "./tui-components.ts";
 import type { ParsedKey, SectionProgress, Screen, Bookmark } from "./tui-types.ts";
 import { stopTTS, startTTSFromPosition, setRenderSectionReader } from "./tui-tts.ts";
 import { openMermaidDiagram, openInVSCode } from "./tui-utils.ts";
@@ -87,8 +88,6 @@ function loadSection(
   const renderWidth = Math.max(30, W() - 6);
   const rendered = renderMarkdown(content, renderWidth);
   setSectionRenderedLines(rendered);
-  // Start with 1.5 screens of content revealed
-  setSectionRevealedLines(Math.max(H() + 5, 25));
 }
 
 /**
@@ -141,42 +140,35 @@ export function renderSectionReader(
   const section = lesson.sections[sectionIndex];
   const w = W();
 
-  // Kinetic Scrolling (Pillar 1): Only show up to sectionRevealedLines
-  const maxPossibleLines = sectionRenderedLines.length;
-  const totalLines = Math.min(maxPossibleLines, sectionRevealedLines);
+  const totalLines = sectionRenderedLines.length;
   const contentHeight = getContentHeight();
   const offset = clampScrollOffset(scrollOffset, totalLines);
-  const pct = getScrollPercent(offset, maxPossibleLines); // Progress based on ACTUAL total
+  const pct = getScrollPercent(offset, totalLines);
 
   const sTimerStr = formatSessionTime();
-  const headerLeft = ` ${getBreadcrumb(currentScreen)}: ${truncate(section.title, w - 65)}`;
-  const headerRight = `${pct}% \u00B7 ~${sectionReadTime}m \u23F1 ${sTimerStr} `;
-  lines.push(renderHeader(headerLeft, headerRight));
+  const headerLeft = `${modePill("reading")} ${getBreadcrumb(currentScreen)}: ${truncate(section.title, w - 72)}`;
+  const headerRight = `${pct}% · ~${sectionReadTime}m ⏱ ${sTimerStr} `;
+  lines.push(renderHeaderBar(headerLeft, headerRight));
 
   const scrollbar = computeScrollbar(offset, totalLines, contentHeight);
   const visibleLines = sectionRenderedLines.slice(offset, offset + contentHeight);
 
-  const blinkFrame = Math.floor(Date.now() / 600) % 2 === 0;
-  const isFullyRevealed = sectionRevealedLines >= maxPossibleLines;
-
   for (let i = 0; i < contentHeight; i++) {
-    let contentLine = i < visibleLines.length ? visibleLines[i] : "";
-    
-    // Add Blinking Cursor to the very last revealed line
-    if (!isFullyRevealed && i === visibleLines.length - 1 && blinkFrame) {
-      contentLine += ` ${c.amber}█${c.reset}`;
-    }
-
+    const contentLine = i < visibleLines.length ? visibleLines[i] : "";
     const sb = scrollbarChar(scrollbar[i] ?? "track");
     const innerW = w - 4;
     const paddedContent = padR(` ${contentLine}`, innerW - 1);
     lines.push(`${c.dim}│${c.reset}${paddedContent}${sb}${c.dim}│${c.reset}`);
   }
 
-  const spaceColor = blinkFrame && !isFullyRevealed ? c.amber : c.white;
+  const atEnd = offset >= Math.max(0, totalLines - contentHeight);
+  const hasNextSection = lesson.sections.length > 1 && sectionIndex < lesson.sections.length - 1;
+  const spaceLabel = atEnd && hasNextSection
+    ? `${c.bold}${c.green}[Space/→]${c.reset} ${c.green}Nächste Sektion${c.reset}`
+    : `${c.bold}[Space]${c.reset} Seite vor`;
   const navParts: string[] = [
     `${c.bold}[\u2191\u2193]${c.reset} Scrollen`,
-    `${c.bold}${spaceColor}[Space] Weiterlesen${c.reset}`,
+    spaceLabel,
     `${c.bold}[Home/End]${c.reset} Anfang/Ende`,
   ];
   if (lesson.sections.length > 1) {
@@ -252,9 +244,7 @@ export function openSection(lessonIndex: number, sectionIndex: number, initialOf
   saveProgress();
 
   loadSection(lessonIndex, sectionIndex);
-  const maxPossibleLines = sectionRenderedLines.length;
-  // Kinetic Scrolling bounds
-  const totalLines = Math.min(maxPossibleLines, sectionRevealedLines);
+  const totalLines = sectionRenderedLines.length;
   const offset = clampScrollOffset(initialOffset ?? 0, totalLines);
 
   setCurrentScreen({
@@ -264,14 +254,7 @@ export function openSection(lessonIndex: number, sectionIndex: number, initialOf
     scrollOffset: offset,
     totalLines,
   });
-  
-  // Register background tick animation to drive the blinking cursor and spacebar hint
-  if (!hasAnimation("cursorBlink")) {
-    registerAnimation("cursorBlink", 600, () => {
-      // Empty tick fn. Forces global redraw every 600ms.
-    });
-  }
-  
+
   renderSectionReader(lessonIndex, sectionIndex, offset);
 }
 
@@ -359,52 +342,8 @@ export function handleSectionInput(key: ParsedKey): void {
     return;
   }
   if (key.name === "space" || key.name === "pagedown") {
-    const fullAbsolutTotalLines = sectionRenderedLines.length;
-
-    // Pillar 1: Kinetic Scanning / Progressive Disclosure
-    // If we haven't revealed the whole document yet, spacebar reveals the next chunk!
-    if (sectionRevealedLines < fullAbsolutTotalLines) {
-      if (scrollOffset < maxOffset) {
-         // Auto-scroll to bottom of what's currently revealed before revealing more
-         scrollTo(maxOffset);
-         return;
-      }
-
-      // We are at the bottom of the revealed zone. Let's reveal one more semantic block.
-      let chunk = 3; 
-      // Such weiter bis zur n\u00E4chsten Leerzeile
-      for (let i = sectionRevealedLines; i < Math.min(sectionRevealedLines + 15, fullAbsolutTotalLines); i++) {
-        // Strip ANSI removed for simplicity, but we look for empty-ish lines
-        if (sectionRenderedLines[i].replace(/\x1b\[[0-9;]*m/g, "").trim() === "") {
-          chunk = (i - sectionRevealedLines) + 1;
-          break;
-        }
-      }
-      const targetRevealed = Math.min(fullAbsolutTotalLines, sectionRevealedLines + Math.max(chunk, 5));
-      
-      // KINETIC ANIMATION (Phase 3)
-      if (hasAnimation("scrollReveal")) stopAnimation("scrollReveal");
-      
-      registerAnimation("scrollReveal", 20, (frame) => {
-        if (sectionRevealedLines >= targetRevealed) {
-          stopAnimation("scrollReveal");
-          return;
-        }
-        
-        // Reveal 1 line per tick for typewriter smoothness
-        const next = Math.min(targetRevealed, sectionRevealedLines + 1);
-        setSectionRevealedLines(next);
-        
-        // Update screen struct 
-        screen.totalLines = next;
-        // Scroll focus down
-        scrollTo(Math.max(0, next - contentHeight));
-      });
-      return;
-    }
-
-    // Standard behavior: if fully revealed and at bottom, go to next section
     if (scrollOffset >= maxOffset) {
+      // At the very bottom → go to next section
       if (lesson && sectionIndex < lesson.sections.length - 1) {
         const sKey = getSectionKey(lessonIndex, sectionIndex);
         markSectionCompleted(sKey);

@@ -19,8 +19,9 @@ import {
   getCompletedLessonIndices, warmupShownThisSession, setWarmupShownThisSession,
   hasResumeTarget, courseInfoRenderedLines, setCourseInfoRenderedLines,
   COURSES_ROOT, PROJECT_ROOT,
+  getDueReviewCount, getReviewStreak, getRecentActivityValues,
 } from "./tui-state.ts";
-import { progressBar as fineProgressBar } from "./visual-utils.ts";
+import { progressBar as fineProgressBar, sparkline } from "./visual-utils.ts";
 import type { ParsedKey, PlatformCourse, Screen } from "./tui-types.ts";
 import {
   getCourseProgressSummary, isCourseUnlocked, getRecommendedCourse,
@@ -31,7 +32,7 @@ import { renderMainMenu } from "./tui-main-menu.ts";
 import { renderWarmup } from "./tui-quiz.ts";
 import { ensureMenuBlink } from "./tui-animation.ts";
 import { theme, marker as themeMarker, box } from "./tui-theme.ts";
-import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, renderDivider, type FooterHint } from "./tui-components.ts";
+import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, renderDivider, smoothProgress, modePill, type FooterHint } from "./tui-components.ts";
 
 // ─── Layout-Typen ──────────────────────────────────────────────────────────
 
@@ -76,165 +77,224 @@ export function renderPlatformScreen(): void {
   const w = W();
   const h = H();
   const t = theme;
+  const reset = t.mod.reset;
 
   // ─── Header ───
   const timerStr = formatSessionTime();
   lines.push(renderHeaderBar(` Kodo Forge`, `\u23F1 ${timerStr} `, w));
 
-  // ─── ASCII Logo (Muted Retro Amber) ───
-  const logo = [
-    `  ${t.mod.bold}${t.fg.accent}    __ __          __         ____                           ${t.mod.reset}`,
-    `  ${t.mod.bold}${t.fg.accent}   / //_/____   __/ /____    / __/____   _____ ____ _ ___    ${t.mod.reset}`,
-    `  ${t.mod.bold}${t.fg.accent}  / ,<  / __ \\ / __  / __ \\  / /_ / __ \\ / ___// __ \`// _ \\   ${t.mod.reset}`,
-    `  ${t.mod.bold}${t.fg.accent} / /| |/ /_/ // /_/ / /_/ / / __// /_/ // /   / /_/ //  __/   ${t.mod.reset}`,
-    `  ${t.mod.bold}${t.fg.accent}/_/ |_|\\____/ \\__,_/\\____/ /_/   \\____//_/    \\__, / \\___/    ${t.mod.reset}`,
-    `  ${t.mod.bold}${t.fg.accent}                                             /____/          ${t.mod.reset}`,
-  ];
+  // ─── Stats Strip ───
+  const dueCount = getDueReviewCount();
+  const streak = getReviewStreak();
+  const activityVals = getRecentActivityValues(14);
+  const activeCourse = courses.find(co => co.id === platformConfig.activeCourse);
+  const activePr = activeCourse ? getCourseProgressSummary(activeCourse) : null;
+  const totalSections = activePr?.actualSections ?? 0;
+  const totalHours = activePr?.actualHours ?? 0;
+
+  const statParts: string[] = [
+    `  ${t.fg.secondary}Σ${reset} ${t.mod.bold}${totalSections}${reset}${t.fg.secondary} Sektionen${reset}`,
+    streak > 0
+      ? `  ${t.fg.accent}★${reset} ${t.mod.bold}${streak}${reset}${t.fg.secondary} Tage${reset}`
+      : "",
+    dueCount > 0
+      ? `  ${t.fg.warning}●${reset} ${t.mod.bold}${dueCount}${reset}${t.fg.warning} fällig${reset}`
+      : `  ${t.fg.success}✓${reset}${t.fg.secondary} aktuell${reset}`,
+    totalHours > 0
+      ? `  ${t.fg.info}⊙${reset} ${t.mod.bold}${totalHours}h${reset}${t.fg.secondary} gelernt${reset}`
+      : "",
+  ].filter(s => s.length > 0);
+
+  const statsLine = statParts.join("   ");
+  lines.push(statsLine.padEnd(w));
+  lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
   lines.push("");
-  lines.push(...logo);
-  lines.push("");
 
-  const contentHeight = h - 11;
+  // ─── Card Rendering Helpers ───
 
-  // ─── Course Grid / List ───
-  if (mode === "grid-2x2") {
-    const margin = 2;
-    const totalInner = w - margin * 2 - 3;
-    const cellW = Math.floor(totalInner / 2);
-    const indent = " ".repeat(margin);
+  const CARD_HEIGHT = 9; // top border + 7 content rows + bottom border
+  const GAP = 2; // space between cards in grid
 
-    function courseCell(idx: number): string[] {
-      const co = courses[idx];
-      if (!co) return Array(6).fill("");
-      const pr = getCourseProgressSummary(co);
-      const unlocked = isCourseUnlocked(co);
-      const isSel = idx === selectedIdx;
-
-      const mk = themeMarker(isSel);
-      const lockBadge = unlocked ? "" : `  ${renderBadge("LOCKED", "locked")}`;
-      const line1 = ` ${mk}${co.icon}  ${isSel ? `${t.mod.bold}` : ""}${co.name}${t.mod.reset}${lockBadge}`;
-
-      const isActive = co.status === "active" && unlocked;
-      const barW = 12;
-      const filled = Math.round(barW * pr.percent / 100);
-      const fillColor = pr.percent >= 100 ? t.fg.success : pr.percent > 0 ? t.fg.accent : t.fg.secondary;
-      const barStr = `${fillColor}${"\u2588".repeat(filled)}${t.fg.secondary}${"░".repeat(barW - filled)}${t.mod.reset}`;
-      const pctColor = pr.percent >= 100 ? t.fg.success : t.fg.accent;
-      const statusTxt = isActive
-        ? `  ${t.fg.secondary}Phase ${pr.currentPhase} · ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}${t.mod.reset}`
-        : `  ${t.fg.secondary}${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen${t.mod.reset}`;
-      const line2 = `   ${barStr} ${pctColor}${String(pr.percent).padStart(3)}%${t.mod.reset}${statusTxt}`;
-
-      const hours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
-      const sects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
-      const exCount = pr.actualExercises > 0 ? pr.actualExercises : null;
-      let detail = "";
-      if (!unlocked) {
-        detail = `   ${t.fg.secondary}~${hours}h · ${sects} Sektionen · ${co.prerequisiteDescription ?? ""}${t.mod.reset}`;
-      } else {
-        const exStr = exCount ? ` · ${exCount} Übungen` : "";
-        detail = `   ${t.fg.secondary}~${hours}h · ${sects} Sektionen${exStr}${t.mod.reset}`;
-      }
-      const line3 = detail;
-
-      let line4 = "";
-      if (isActive && pr.lastLessonTitle) {
-        const nextNum = String(pr.completedLessons + 1).padStart(2, "0");
-        line4 = `   ${t.fg.info}▸ Nächste: L${nextNum} ${pr.lastLessonTitle}${t.mod.reset}`;
-      } else {
-        const topics = (co.topics ?? []).slice(0, 5);
-        if (topics.length > 0) {
-          line4 = `   ${t.fg.secondary}${topics.join(", ")}${t.mod.reset}`;
-        }
-      }
-
-      return [line1, "", line2, line3, line4, ""];
+  // Render one self-contained course card (with borders) as an array of strings.
+  // cardW includes the border characters (so inner content = cardW - 2).
+  function renderCourseCard(idx: number, cardW: number): string[] {
+    const co = courses[idx];
+    if (!co) {
+      // Empty card placeholder
+      return Array(CARD_HEIGHT).fill(" ".repeat(cardW));
     }
 
-    const ROWS_PER_CELL = 6;
-    const hLine = `${t.border.default}${"─".repeat(cellW)}${t.mod.reset}`;
-    lines.push(`${indent}${t.border.default}╭${"─".repeat(cellW)}┬${"─".repeat(cellW)}╮${t.mod.reset}`);
+    const pr = getCourseProgressSummary(co);
+    const unlocked = isCourseUnlocked(co);
+    const isSel = idx === selectedIdx;
+    const isActiveCourse = co.id === platformConfig.activeCourse;
+
+    // Pick border style and color
+    const bSet = isSel && isActiveCourse ? box.heavy
+                : (isSel || isActiveCourse) ? box.rounded
+                : box.rounded;
+    const borderColor = isSel && isActiveCourse ? t.border.active
+                      : isActiveCourse           ? t.fg.accentDim
+                      : isSel                    ? getCourseColor(co)
+                      :                            t.border.muted;
+
+    const inner = cardW - 2;
+
+    // Helper: pad a content string to inner width
+    function padInner(s: string): string {
+      const vis = stripAnsi(s).length;
+      return s + " ".repeat(Math.max(0, inner - vis));
+    }
+
+    const cardLines: string[] = [];
+
+    // ─ Top border with title inset ─
+    const titleStr = `${co.icon}  ${isSel ? t.mod.bold : ""}${co.name}${reset}`;
+    const titleVis = stripAnsi(titleStr).length;
+    const titleFill = bSet.horizontal.repeat(Math.max(0, inner - titleVis - 4));
+    const activeMark = isSel ? `${t.fg.accent}▸${reset}` : " ";
+    cardLines.push(
+      `${borderColor}${bSet.topLeft}${bSet.horizontal}${bSet.horizontal} ${reset}` +
+      `${titleStr}` +
+      `${borderColor} ${titleFill}${bSet.topRight}${reset}`
+    );
+
+    // ─ Selection marker row ─
+    if (isSel) {
+      cardLines.push(
+        `${borderColor}${bSet.vertical}${reset}${padInner(` ${activeMark} ← ausgewählt`)}${borderColor}${bSet.vertical}${reset}`
+      );
+    } else {
+      cardLines.push(
+        `${borderColor}${bSet.vertical}${reset}${" ".repeat(inner)}${borderColor}${bSet.vertical}${reset}`
+      );
+    }
+
+    // ─ Progress bar ─
+    const barW = Math.max(8, Math.floor(inner * 0.45));
+    const bar = smoothProgress(pr.percent, barW);
+    const pctColor = pr.percent >= 100 ? t.fg.success : pr.percent > 0 ? t.fg.accent : t.fg.secondary;
+    const lessonCount = `L${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}`;
+    const barLine = ` ${bar}  ${pctColor}${String(pr.percent).padStart(3)}%${reset}  ${t.fg.secondary}${lessonCount}${reset}`;
+    cardLines.push(
+      `${borderColor}${bSet.vertical}${reset}${padInner(barLine)}${borderColor}${bSet.vertical}${reset}`
+    );
+
+    // ─ Segment dots + phase ─
+    if (unlocked) {
+      const total = Math.max(1, co.totalLessons ?? pr.totalLessons);
+      const maxDots = Math.min(20, Math.floor(inner * 0.55));
+      const filledDots = Math.round((pr.completedLessons / total) * maxDots);
+      const dotBar = `${t.fg.accent}${"●".repeat(filledDots)}${t.fg.secondary}${"○".repeat(maxDots - filledDots)}${reset}`;
+      const phaseText = pr.currentPhase ? `  Phase ${pr.currentPhase}` : "";
+      const dotsLine = ` ${dotBar}${t.fg.secondary}${phaseText}${reset}`;
+      cardLines.push(
+        `${borderColor}${bSet.vertical}${reset}${padInner(dotsLine)}${borderColor}${bSet.vertical}${reset}`
+      );
+    } else {
+      const prereq = co.prerequisiteDescription ?? "Voraussetzung: andere Kurse";
+      const lockLine = ` ${t.fg.muted}${prereq}${reset}`;
+      cardLines.push(
+        `${borderColor}${bSet.vertical}${reset}${padInner(lockLine)}${borderColor}${bSet.vertical}${reset}`
+      );
+    }
+
+    // ─ Stats row ─
+    let statsRow = "";
+    if (unlocked) {
+      const hours = pr.actualHours > 0 ? `~${pr.actualHours}h` : co.estimatedHours ? `~${co.estimatedHours}h` : "";
+      const sects = pr.actualSections > 0 ? `${pr.actualSections} Sektionen` : co.totalSections ? `${co.totalSections} Sektionen` : "";
+      statsRow = ` ${t.fg.secondary}${[hours, sects].filter(Boolean).join(" · ")}${reset}`;
+    } else {
+      const badge = renderBadge("LOCK", "locked");
+      statsRow = `  ${badge}`;
+    }
+    cardLines.push(
+      `${borderColor}${bSet.vertical}${reset}${padInner(statsRow)}${borderColor}${bSet.vertical}${reset}`
+    );
+
+    // ─ Next lesson or topics ─
+    let infoRow = "";
+    if (isActiveCourse && unlocked && pr.lastLessonTitle) {
+      const nextNum = String(pr.completedLessons + 1).padStart(2, "0");
+      infoRow = ` ${t.fg.info}▸ L${nextNum}: ${pr.lastLessonTitle}${reset}`;
+    } else if (!unlocked) {
+      const topics = (co.topics ?? []).slice(0, 3).join(", ");
+      if (topics) infoRow = ` ${t.fg.muted}${topics}${reset}`;
+    } else {
+      const topics = (co.topics ?? []).slice(0, 3).join(", ");
+      if (topics) infoRow = ` ${t.fg.secondary}${topics}${reset}`;
+    }
+    cardLines.push(
+      `${borderColor}${bSet.vertical}${reset}${padInner(infoRow)}${borderColor}${bSet.vertical}${reset}`
+    );
+
+    // ─ Empty row ─
+    cardLines.push(
+      `${borderColor}${bSet.vertical}${reset}${" ".repeat(inner)}${borderColor}${bSet.vertical}${reset}`
+    );
+
+    // ─ Bottom border ─
+    const sigText = isActiveCourse ? ` [ aktiv ] ` : "";
+    const sigVis = sigText.length;
+    const bottomFillLeft = Math.max(0, inner - sigVis);
+    cardLines.push(
+      `${borderColor}${bSet.bottomLeft}${bSet.horizontal.repeat(bottomFillLeft)}${reset}` +
+      (sigVis > 0 ? `${isActiveCourse ? t.fg.accent : t.fg.secondary}${sigText}${reset}` : "") +
+      `${borderColor}${bSet.bottomRight}${reset}`
+    );
+
+    return cardLines;
+  }
+
+  // ─── Grid Layout ───
+  if (mode === "grid-2x2") {
+    const margin = 2;
+    const totalAvail = w - margin * 2 - GAP;
+    const cardW = Math.floor(totalAvail / 2);
+    const indent = " ".repeat(margin);
 
     const rowCount = Math.ceil(courses.length / 2);
     for (let row = 0; row < rowCount; row++) {
-      const leftCell = courseCell(row * 2);
-      const rightCell = courseCell(row * 2 + 1);
-
-      const leftSel = row * 2 === selectedIdx;
-      const rightSel = row * 2 + 1 === selectedIdx;
-      const leftColor = leftSel ? getCourseColor(courses[row * 2]) : "";
-      const rightColor = rightSel && courses[row * 2 + 1] ? getCourseColor(courses[row * 2 + 1]) : "";
-
-      for (let ln = 0; ln < ROWS_PER_CELL; ln++) {
-        const lText = plainCell(leftCell[ln] ?? "", cellW);
-        const rText = plainCell(rightCell[ln] ?? "", cellW);
-        let lStyle = "";
-        let rStyle = "";
-        if (leftSel && ln === 0) lStyle = `${leftColor}${t.mod.bold}`;
-        else if (leftSel) lStyle = leftColor;
-        if (rightSel && ln === 0) rStyle = `${rightColor}${t.mod.bold}`;
-        else if (rightSel) rStyle = rightColor;
-
-        const lFinal = lStyle ? `${lStyle}${lText}${t.mod.reset}` : lText;
-        const rFinal = rStyle ? `${rStyle}${rText}${t.mod.reset}` : rText;
-        lines.push(`${indent}${t.border.default}│${t.mod.reset}${lFinal}${t.border.default}│${t.mod.reset}${rFinal}${t.border.default}│${t.mod.reset}`);
+      const leftCard = renderCourseCard(row * 2, cardW);
+      const rightCard = renderCourseCard(row * 2 + 1, cardW);
+      for (let ln = 0; ln < CARD_HEIGHT; ln++) {
+        const lLine = leftCard[ln] ?? " ".repeat(cardW);
+        const rLine = rightCard[ln] ?? " ".repeat(cardW);
+        lines.push(`${indent}${lLine}${" ".repeat(GAP)}${rLine}`);
       }
-
-      if (row < rowCount - 1) {
-        lines.push(`${indent}${t.border.default}├${"─".repeat(cellW)}┼${"─".repeat(cellW)}┤${t.mod.reset}`);
-      }
+      if (row < rowCount - 1) lines.push("");
     }
-
-    lines.push(`${indent}${t.border.default}╰${"─".repeat(cellW)}┴${"─".repeat(cellW)}╯${t.mod.reset}`);
 
   } else {
-    // ─── Column / Ultra-Compact Mode ───
+    // ─── Column / Ultra-Compact ───
     const margin = mode === "ultra-compact" ? 1 : 2;
-    const cellW = w - margin * 2 - 2;
+    const cardW = w - margin * 2;
     const indent = " ".repeat(margin);
 
-    lines.push(`${indent}${t.border.default}╭${"─".repeat(cellW)}╮${t.mod.reset}`);
-
     for (let i = 0; i < courses.length; i++) {
-      const co = courses[i];
-      const pr = getCourseProgressSummary(co);
-      const unlocked = isCourseUnlocked(co);
-      const isSel = i === selectedIdx;
-      const selColor = isSel ? getCourseColor(co) : "";
-      const mk = themeMarker(isSel);
-      const lockBadge = unlocked ? "" : `  ${renderBadge("LOCKED", "locked")}`;
-      const isActive = co.status === "active" && unlocked;
-
-      const name = ` ${mk}${co.icon}  ${isSel ? t.mod.bold : ""}${co.name}${t.mod.reset}${lockBadge}`;
-      const barW = 12;
-      const filled = Math.round(barW * pr.percent / 100);
-      const fillColor = pr.percent >= 100 ? t.fg.success : pr.percent > 0 ? t.fg.accent : t.fg.secondary;
-      const barStr = `${fillColor}${"\u2588".repeat(filled)}${t.fg.secondary}${"░".repeat(barW - filled)}${t.mod.reset}`;
-      const statusTxt = isActive
-        ? `${t.fg.secondary}Phase ${pr.currentPhase} · ${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons}${t.mod.reset}`
-        : `${t.fg.secondary}${pr.completedLessons}/${co.totalLessons ?? pr.totalLessons} Lektionen${t.mod.reset}`;
-      const info = `   ${barStr} ${t.fg.accent}${String(pr.percent).padStart(3)}%${t.mod.reset}  ${statusTxt}`;
-      const colHours = pr.actualHours > 0 ? pr.actualHours : (co.estimatedHours ?? "?");
-      const colSects = pr.actualSections > 0 ? pr.actualSections : (co.totalSections ?? "?");
-      const prereq = !unlocked ? `Braucht: ${co.prerequisiteDescription ?? ""}` : "";
-      const detail = prereq
-        ? `   ${t.fg.secondary}~${colHours}h · ${prereq}${t.mod.reset}`
-        : `   ${t.fg.secondary}~${colHours}h · ${colSects} Sektionen${t.mod.reset}`;
-
-      const cellLines = mode === "ultra-compact" ? [name, info] : [name, info, detail];
-
-      for (const cl of cellLines) {
-        const txt = plainCell(cl, cellW);
-        const stl = selColor ? `${selColor}${txt}${t.mod.reset}` : txt;
-        lines.push(`${indent}${t.border.default}│${t.mod.reset}${stl}${t.border.default}│${t.mod.reset}`);
+      const card = renderCourseCard(i, cardW);
+      for (const cl of card) {
+        lines.push(`${indent}${cl}`);
       }
-
-      if (i < courses.length - 1) {
-        lines.push(`${indent}${t.border.default}├${"─".repeat(cellW)}┤${t.mod.reset}`);
-      }
+      if (i < courses.length - 1) lines.push("");
     }
+  }
 
-    lines.push(`${indent}${t.border.default}╰${"─".repeat(cellW)}╯${t.mod.reset}`);
+  // ─── Activity Sparkline ───
+  const hasActivity = activityVals.some(v => v > 0);
+  if (hasActivity && w >= 80) {
+    lines.push("");
+    const spark = sparkline(activityVals);
+    const todayCount = activityVals[activityVals.length - 1] ?? 0;
+    const todayText = todayCount > 0 ? `  Heute: ${todayCount} Sektionen` : "";
+    const sparkLine = ` ${t.fg.secondary}14 Tage:${reset}  ${t.fg.accent}${spark}${reset}${t.fg.secondary}${todayText}${reset}`;
+    const sparkInner = w - 4;
+    const sparkVis = stripAnsi(sparkLine).length;
+    const sparkPad = " ".repeat(Math.max(0, sparkInner - sparkVis));
+    lines.push(`  ${t.border.muted}╭${"─".repeat(sparkInner)}╮${reset}`);
+    lines.push(`  ${t.border.muted}│${reset}${sparkLine}${sparkPad}${t.border.muted}│${reset}`);
+    lines.push(`  ${t.border.muted}╰${"─".repeat(sparkInner)}╯${reset}`);
   }
 
   // ─── Recommendation Panel ───
@@ -244,7 +304,7 @@ export function renderPlatformScreen(): void {
     if (recCourse) {
       lines.push("");
       const recLines = renderPanel("Empfehlung", [
-        `${t.fg.info}${recCourse.name}${t.mod.reset} ${t.fg.secondary}—${t.mod.reset} ${rec.lessonTitle}  ${t.mod.bold}[Enter]${t.mod.reset}`,
+        `${t.fg.info}${recCourse.name}${reset} ${t.fg.secondary}—${reset} ${rec.lessonTitle}  ${t.mod.bold}[Enter]${reset}`,
       ], { width: w - 4, variant: "info", accentBorder: true, padding: 1 });
       for (const rl of recLines) lines.push(`  ${rl}`);
     }
@@ -257,8 +317,8 @@ export function renderPlatformScreen(): void {
       const prereqName = course.prerequisiteDescription ?? "";
       lines.push("");
       const dLines = renderPanel("Voraussetzung", [
-        `${t.fg.warning}${prereqName}${t.mod.reset}`,
-        `Trotzdem oeffnen? ${t.mod.bold}[J]${t.mod.reset} Ja  ${t.mod.bold}[N]${t.mod.reset} Nein`,
+        `${t.fg.warning}${prereqName}${reset}`,
+        `Trotzdem öffnen? ${t.mod.bold}[J]${reset} Ja  ${t.mod.bold}[N]${reset} Nein`,
       ], { width: Math.min(w - 8, 60), variant: "warning", boxStyle: "rounded" });
       const dIndent = " ".repeat(Math.max(1, Math.floor((w - Math.min(w - 8, 60)) / 2)));
       for (const dl of dLines) lines.push(`${dIndent}${dl}`);
@@ -266,9 +326,7 @@ export function renderPlatformScreen(): void {
   }
 
   // ─── Pad to footer ───
-  while (lines.length < h - 3) {
-    lines.push("");
-  }
+  while (lines.length < h - 3) lines.push("");
 
   // ─── Footer ───
   const navKey = mode === "grid-2x2" ? "↑↓←→" : "↑↓";
@@ -282,10 +340,7 @@ export function renderPlatformScreen(): void {
   lines.push(...renderFooterBar(footerHints, w));
 
   platformContentTotalLines = lines.length;
-
-  // ─── Animation ───
   ensureMenuBlink();
-
   flushScreen(lines);
 }
 

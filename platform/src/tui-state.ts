@@ -24,17 +24,23 @@ import type { AdaptiveState } from "./adaptive-engine.ts";
 
 // ─── Konstanten ─────────────────────────────────────────────────────────────
 
-/** platform/ Ordner (Parent von src/) */
-export const PLATFORM_ROOT = path.resolve(
-  import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname),
-  ".."
-);
-/** Learning/ Ordner (Parent von platform/) — enthaelt alle Kursverzeichnisse */
-export const COURSES_ROOT = path.resolve(PLATFORM_ROOT, "..");
+export const IS_STANDALONE = !!(process as any).isBun || path.basename(process.argv[1] || "").endsWith(".exe");
+
+/** platform/ Ordner (Parent von src/ in dev, oder CWD in standalone) */
+const devPlatformRoot = import.meta.dirname
+  ? path.resolve(import.meta.dirname, "..")
+  : path.resolve(__dirname, ".."); // fallback for cjs environments if any
+
+export const PLATFORM_ROOT = IS_STANDALONE ? process.cwd() : devPlatformRoot;
+
+/** Learning/ Ordner — enthaelt alle Kursverzeichnisse */
+export const COURSES_ROOT = IS_STANDALONE ? process.cwd() : path.resolve(devPlatformRoot, "..");
+
 /** platform/platform.json */
 export const PLATFORM_FILE = path.join(PLATFORM_ROOT, "platform.json");
-/** platform/state/ — Runtime State (Progress, Review, Adaptive, etc.) */
-export const STATE_DIR = path.join(PLATFORM_ROOT, "state");
+
+/** platform/state/ — Runtime State */
+export const STATE_DIR = path.join(PLATFORM_ROOT, IS_STANDALONE ? ".kodo-state" : "state");
 
 /** Dynamisch pro Kurs: z.B. Learning/typescript/ */
 export let PROJECT_ROOT = path.join(COURSES_ROOT, "typescript");
