@@ -65,6 +65,17 @@ function gridPosition(index: number): { row: number; col: number } {
 
 let platformContentTotalLines = 0;
 
+// ─── ASCII Art Logo ────────────────────────────────────────────────────────
+
+const LOGO_LINES = [
+  `██╗  ██╗ ██████╗ ██████╗  ██████╗     ███████╗ ██████╗ ██████╗   ██████╗ ███████╗`,
+  `██║ ██╔╝██╔═══██╗██╔══██╗██╔═══██╗    ██╔════╝██╔═══██╗██╔══██╗ ██╔════╝ ██╔════╝`,
+  `█████╔╝ ██║   ██║██║  ██║██║   ██║    █████╗  ██║   ██║██████╔╝ ██║  ███╗█████╗  `,
+  `██╔═██╗ ██║   ██║██║  ██║██║   ██║    ██╔══╝  ██║   ██║██╔══██╗ ██║   ██║██╔══╝  `,
+  `██║  ██╗╚██████╔╝██████╔╝╚██████╔╝    ██║     ╚██████╔╝██║  ██║ ╚██████╔╝███████╗`,
+  `╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═╝  ╚═════╝ ╚══════╝`,
+];
+
 // ─── Platform-Screen Rendering ─────────────────────────────────────────────
 
 export function renderPlatformScreen(): void {
@@ -79,34 +90,103 @@ export function renderPlatformScreen(): void {
   const t = theme;
   const reset = t.mod.reset;
 
-  // ─── Header ───
+  // ─── Section A: Header with right-aligned stats ───
   const timerStr = formatSessionTime();
-  lines.push(renderHeaderBar(` Kodo Forge`, `\u23F1 ${timerStr} `, w));
-
-  // ─── Stats Strip ───
   const dueCount = getDueReviewCount();
   const streak = getReviewStreak();
   const activityVals = getRecentActivityValues(14);
   const activeCourse = courses.find(co => co.id === platformConfig.activeCourse);
   const activePr = activeCourse ? getCourseProgressSummary(activeCourse) : null;
-  const totalSections = activePr?.actualSections ?? 0;
   const totalHours = activePr?.actualHours ?? 0;
 
-  const statParts: string[] = [
-    `  ${t.fg.secondary}Σ${reset} ${t.mod.bold}${totalSections}${reset}${t.fg.secondary} Sektionen${reset}`,
-    streak > 0
-      ? `  ${t.fg.accent}★${reset} ${t.mod.bold}${streak}${reset}${t.fg.secondary} Tage${reset}`
-      : "",
-    dueCount > 0
-      ? `  ${t.fg.warning}●${reset} ${t.mod.bold}${dueCount}${reset}${t.fg.warning} fällig${reset}`
-      : `  ${t.fg.success}✓${reset}${t.fg.secondary} aktuell${reset}`,
-    totalHours > 0
-      ? `  ${t.fg.info}⊙${reset} ${t.mod.bold}${totalHours}h${reset}${t.fg.secondary} gelernt${reset}`
-      : "",
-  ].filter(s => s.length > 0);
+  const headerRightParts: string[] = [];
+  if (streak > 0) {
+    headerRightParts.push(`${t.fg.accent}★${reset} ${t.mod.bold}${streak}${reset}${t.fg.secondary}d${reset}`);
+  }
+  if (dueCount > 0) {
+    headerRightParts.push(`${t.fg.warning}●${reset} ${t.mod.bold}${dueCount}${reset}${t.fg.warning} fällig${reset}`);
+  } else {
+    headerRightParts.push(`${t.fg.success}✓${reset}${t.fg.secondary} aktuell${reset}`);
+  }
+  headerRightParts.push(`\u23F1 ${timerStr}`);
+  const headerRight = ` ${headerRightParts.join("  ")} `;
+  lines.push(renderHeaderBar(` Kodo Forge`, headerRight, w));
 
-  const statsLine = statParts.join("   ");
-  lines.push(statsLine.padEnd(w));
+  // ─── Section B: Logo Area ───
+  if (w >= 88 && h >= 30) {
+    lines.push("");
+    // Logo with subtle vertical gradient: bold amber → dimmer amber
+    const logoColors = [
+      `${t.mod.bold}${t.fg.accent}`,
+      `${t.mod.bold}${t.fg.accent}`,
+      `${t.fg.accent}`,
+      `${t.fg.accent}`,
+      `${t.fg.accentDim}`,
+      `${t.fg.accentDim}`,
+    ];
+    for (let i = 0; i < LOGO_LINES.length; i++) {
+      const ll = LOGO_LINES[i];
+      const leftPad = Math.max(0, Math.floor((w - ll.length) / 2));
+      lines.push(`${" ".repeat(leftPad)}${logoColors[i]}${ll}${reset}`);
+    }
+    const tagline = `Deep Learning Platform  ·  TypeScript  ·  Angular  ·  React  ·  Next.js`;
+    const tagPad = Math.max(0, Math.floor((w - tagline.length) / 2));
+    lines.push(`${" ".repeat(tagPad)}${t.fg.secondary}${tagline}${reset}`);
+    lines.push("");
+    lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
+  } else {
+    lines.push(`  ${t.mod.bold}${t.fg.accent}KODO FORGE${reset}  ${t.fg.secondary}Deep Learning Platform${reset}`);
+    lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
+  }
+  lines.push("");
+
+  // ─── Section C: Overall Progress Chart ───
+  lines.push(`  ${t.mod.bold}GESAMTFORTSCHRITT${reset}`);
+  lines.push("");
+
+  const labelW = 14;
+  const barW = Math.min(32, Math.max(14, w - 55));
+
+  for (const co of courses) {
+    const pr = getCourseProgressSummary(co);
+    const unlocked = isCourseUnlocked(co);
+    const isActiveCourse = co.id === platformConfig.activeCourse;
+
+    const labelRaw = padR(co.name, labelW);
+    const labelColored = unlocked
+      ? `${t.fg.primary}${labelRaw}${reset}`
+      : `${t.fg.muted}${labelRaw}${reset}`;
+
+    let barStr: string;
+    if (unlocked) {
+      barStr = smoothProgress(pr.percent, barW);
+    } else {
+      barStr = `${t.fg.muted}${"░".repeat(barW)}${reset}`;
+    }
+
+    let pctStrColored: string;
+    if (!unlocked) {
+      pctStrColored = `${t.fg.muted} – ${reset}`;
+    } else if (pr.percent > 0) {
+      pctStrColored = `${t.fg.accent}${String(pr.percent).padStart(3)}%${reset}`;
+    } else {
+      pctStrColored = `${t.fg.muted}${String(pr.percent).padStart(3)}%${reset}`;
+    }
+
+    let trailing: string;
+    if (unlocked) {
+      const total = co.totalLessons ?? pr.totalLessons;
+      trailing = `${t.fg.secondary}L${pr.completedLessons}/${total}${reset}`;
+    } else {
+      trailing = `${t.fg.muted}gesperrt${reset}`;
+    }
+
+    const activeSuffix = isActiveCourse && unlocked ? `  ${t.fg.accent}◀ aktiv${reset}` : "";
+
+    lines.push(`  ${labelColored}  ${barStr}  ${pctStrColored}  ${trailing}${activeSuffix}`);
+  }
+
+  lines.push("");
   lines.push(`${t.border.muted}${"─".repeat(w)}${reset}`);
   lines.push("");
 

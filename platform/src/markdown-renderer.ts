@@ -481,8 +481,8 @@ function renderSelfExplanationPrompt(
     }
   }
 
-  const boxInner = contentWidth - 4;
-  const boxWidth = Math.min(contentWidth, boxInner + 2);
+  const boxWidth = Math.max(4, contentWidth - 4);
+  const boxInner = Math.max(0, contentWidth - 6);
 
   // Header mit Brain-Emoji
   const headerText = " \u{1F9E0} Erklaere dir selbst ";
@@ -1072,9 +1072,9 @@ export function renderMarkdown(
         continue;
       }
 
-      // Dynamische Box-Breite basierend auf contentWidth
-      const boxInnerWidth = contentWidth - 4;
-      const boxWidth = Math.min(contentWidth, boxInnerWidth + 2);
+      // Box: "  │ content pad│" = 2+1+1+content+pad+1 = contentWidth → boxWidth = contentWidth-4, boxInnerWidth = contentWidth-6
+      const boxWidth = Math.max(4, contentWidth - 4);
+      const boxInnerWidth = Math.max(0, contentWidth - 6);
 
       output.push("");
       output.push(
