@@ -202,7 +202,7 @@ function discoverLessons(): LessonInfo[] {
     const readmePath = path.join(lessonDir, "README.md");
     if (fs.existsSync(readmePath)) {
       const firstLine = fs.readFileSync(readmePath, "utf-8").split("\n")[0];
-      const titleMatch = firstLine.match(/^#\s*Lektion\s*\d+:\s*(.+)/);
+      const titleMatch = firstLine.match(/^#\s*(?:Lektion|Lesson)\s*\d+:\s*(.+)/);
       if (titleMatch) {
         title = titleMatch[1].trim();
       }

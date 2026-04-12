@@ -11,7 +11,7 @@ import {
   isInAltScreen, setIsInAltScreen,
   platformConfig, setPlatformConfig, courseProgressCache,
   lessons, progress, saveProgress,
-  setProjectRoot, setActiveCourseId, ACTIVE_COURSE_ID,
+  setProjectRoot, setActiveCourseId, ACTIVE_COURSE_ID, resolveCoursePath,
   updateDerivedPaths, discoverLessons, loadProgress, setLessons,
   setWarmupShownThisSession, setAdaptiveState,
   SESSION_START, sessionStats,
@@ -355,7 +355,7 @@ export function getCourseProgressSummary(course: PlatformCourse): CourseProgress
           const readmePath = path.join(courseDir, lessonDir, "README.md");
           if (fs.existsSync(readmePath)) {
             const firstLine = fs.readFileSync(readmePath, "utf-8").split("\n")[0];
-            const titleMatch = firstLine.match(/^#\s*Lektion\s*\d+:\s*(.+)/);
+            const titleMatch = firstLine.match(/^#\s*(?:Lektion|Lesson)\s*\d+:\s*(.+)/);
             if (titleMatch) lastLessonTitle = titleMatch[1].trim();
           }
           if (!lastLessonTitle) {
@@ -460,7 +460,7 @@ export function switchToCourse(courseId: string): void {
   platformConfig.lastAccessed[courseId] = new Date().toISOString();
   savePlatformConfig();
 
-  setProjectRoot(path.join(COURSES_ROOT, course.directory));
+  setProjectRoot(resolveCoursePath(course.directory));
   setActiveCourseId(courseId);
   updateDerivedPaths();
 

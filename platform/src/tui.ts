@@ -19,7 +19,7 @@ import {
 import {
   updateTermSize, setCurrentScreen, setLessons, setIsInAltScreen,
   platformConfig, setAdaptiveState, setProjectRoot, setActiveCourseId,
-  updateDerivedPaths, discoverLessons, loadProgress,
+  updateDerivedPaths, discoverLessons, loadProgress, resolveCoursePath,
   PLATFORM_ROOT, COURSES_ROOT, STATE_DIR,
 } from "./tui-state.ts";
 import { loadAdaptiveState } from "./adaptive-engine.ts";
@@ -76,7 +76,7 @@ function main(): void {
     co => co.id === platformConfig.activeCourse
   );
   if (activeCourse) {
-    setProjectRoot(path.join(COURSES_ROOT, activeCourse.directory));
+    setProjectRoot(resolveCoursePath(activeCourse.directory));
     setActiveCourseId(activeCourse.id);
     updateDerivedPaths();
   }

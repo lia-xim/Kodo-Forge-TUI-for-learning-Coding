@@ -26,7 +26,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 // ─── Config ────────────────────────────────────────────────────────────────
 
@@ -77,7 +80,7 @@ function parseArgs(): CliArgs {
     to: "en",
     dryRun: false,
     model: "claude-sonnet-4-20250514",
-    concurrency: 3,
+    concurrency: 5,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -172,17 +175,32 @@ async function translateContent(
 ): Promise<{ translated: string; inputTokens: number; outputTokens: number }> {
   // Use Claude Code CLI in print mode — no API key needed
   const prompt = `${systemPrompt}\n\n---\n\n${content}`;
-  const translated = execFileSync("claude", ["-p", "--model", "sonnet", prompt], {
+  const { stdout } = await execFileAsync("claude", ["-p", "--model", "sonnet", prompt], {
     encoding: "utf-8",
     maxBuffer: 50 * 1024 * 1024, // 50 MB
-    timeout: 120_000, // 2 min per file
-  }).trim();
+    timeout: 300_000, // 5 min per file
+  });
+  const translated = stdout.trim();
 
   // Token counts not available via CLI — estimate from string lengths
   const inputTokens = Math.ceil(content.length / 4);
   const outputTokens = Math.ceil(translated.length / 4);
 
   return { translated, inputTokens, outputTokens };
+}
+
+/** Run tasks in batches of `concurrency` */
+async function runInBatches<T>(
+  tasks: (() => Promise<T>)[],
+  concurrency: number,
+): Promise<T[]> {
+  const results: T[] = [];
+  for (let i = 0; i < tasks.length; i += concurrency) {
+    const batch = tasks.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn => fn()));
+    results.push(...batchResults);
+  }
+  return results;
 }
 
 // ─── Directory Name Translation ────────────────────────────────────────────
@@ -276,16 +294,16 @@ async function processLesson(
   destDir: string,
   opts: CliArgs,
 ): Promise<TranslationResult[]> {
-  const results: TranslationResult[] = [];
+  const tasks: (() => Promise<TranslationResult>)[] = [];
 
-  // 1. Translate markdown files (sections/, cheatsheet.md, README.md)
+  // 1. Collect markdown files (sections/, cheatsheet.md, README.md)
   const sectionsDir = path.join(lessonDir, "sections");
   if (fs.existsSync(sectionsDir)) {
     const sections = fs.readdirSync(sectionsDir).filter((f) => f.endsWith(".md"));
     for (const section of sections) {
       const src = path.join(sectionsDir, section);
       const dest = path.join(destDir, "sections", section);
-      results.push(await translateFile(src, dest, false, opts));
+      tasks.push(() => translateFile(src, dest, false, opts));
     }
   }
 
@@ -294,20 +312,20 @@ async function processLesson(
     const src = path.join(lessonDir, mdFile);
     if (fs.existsSync(src)) {
       const dest = path.join(destDir, mdFile);
-      results.push(await translateFile(src, dest, false, opts));
+      tasks.push(() => translateFile(src, dest, false, opts));
     }
   }
 
-  // 2. Translate code data files (quiz, pretest, etc.)
+  // 2. Collect code data files (quiz, pretest, etc.)
   for (const codeFile of CODE_TRANSLATABLE) {
     const src = path.join(lessonDir, codeFile);
     if (fs.existsSync(src)) {
       const dest = path.join(destDir, codeFile);
-      results.push(await translateFile(src, dest, true, opts));
+      tasks.push(() => translateFile(src, dest, true, opts));
     }
   }
 
-  // 3. Copy files that don't need translation
+  // 3. Copy files that don't need translation (sync, no batching needed)
   for (const item of COPY_AS_IS) {
     const src = path.join(lessonDir, item);
     if (fs.existsSync(src)) {
@@ -316,7 +334,8 @@ async function processLesson(
     }
   }
 
-  return results;
+  // Run translation tasks in parallel batches
+  return runInBatches(tasks, opts.concurrency);
 }
 
 function copyRecursive(src: string, dest: string): void {

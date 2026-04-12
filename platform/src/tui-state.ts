@@ -52,14 +52,40 @@ export const STATE_DIR = path.join(PLATFORM_ROOT, IS_STANDALONE ? ".kodo-state" 
 // ─── i18n Initialization ──────────────────────────────────────────────────
 initI18n(loadLocalePreference(STATE_DIR));
 
-/** Switch the UI locale, persist it, and trigger a redraw */
+/** Switch the UI locale, persist it, and reload course directory */
 export function switchLocale(locale: Locale): void {
   setLocale(locale);
   saveLocalePreference(STATE_DIR, locale);
+  // Re-resolve course path for new locale and rediscover lessons
+  const courseDir = platformConfig?.courses?.find(
+    (c: { id: string }) => c.id === ACTIVE_COURSE_ID
+  )?.directory;
+  if (courseDir) {
+    PROJECT_ROOT = resolveCoursePath(courseDir);
+    updateDerivedPaths();
+    lessons = discoverLessons();
+  }
 }
 
 // Re-export for convenience
 export { t, getLocale, type Locale } from "./i18n.ts";
+
+/**
+ * Resolve a course directory path, using the locale-specific variant if available.
+ * e.g. "typescript" → "typescript-en" when locale is "en" and that directory exists.
+ * Falls back to the base directory (German original) if no translation exists.
+ */
+export function resolveCoursePath(courseDir: string): string {
+  const locale = getLocale();
+  if (locale !== "de") {
+    const localizedDir = `${courseDir}-${locale}`;
+    const localizedPath = path.join(COURSES_ROOT, localizedDir);
+    if (fs.existsSync(localizedPath)) {
+      return localizedPath;
+    }
+  }
+  return path.join(COURSES_ROOT, courseDir);
+}
 
 /** Dynamisch pro Kurs: z.B. Learning/typescript/ */
 export let PROJECT_ROOT = path.join(COURSES_ROOT, "typescript");
@@ -932,7 +958,7 @@ export function discoverLessons(): LessonInfo[] {
     const readmePath = path.join(lessonDir, "README.md");
     if (fs.existsSync(readmePath)) {
       const firstLine = fs.readFileSync(readmePath, "utf-8").split("\n")[0];
-      const titleMatch = firstLine.match(/^#\s*Lektion\s*\d+:\s*(.+)/);
+      const titleMatch = firstLine.match(/^#\s*(?:Lektion|Lesson)\s*\d+:\s*(.+)/);
       if (titleMatch) title = titleMatch[1].trim();
     }
 
@@ -953,7 +979,7 @@ export function discoverLessons(): LessonInfo[] {
           .replace(/\.md$/, "")
           .replace(/-/g, " ");
         const headerMatch = firstLine.match(
-          /^#\s*(?:Sektion\s*\d+:\s*)?(.+)/
+          /^#\s*(?:(?:Sektion|Section)\s*\d+:\s*)?(.+)/
         );
         if (headerMatch) sTitle = headerMatch[1].trim();
 
