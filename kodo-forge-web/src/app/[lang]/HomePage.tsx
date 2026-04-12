@@ -1,8 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import Script from "next/script";
 import {
   Terminal,
   Zap,
@@ -15,29 +13,41 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
-  ChevronDown,
 } from "lucide-react";
-import { courses } from "@/data/courses";
-import { useState } from "react";
-import Script from "next/script";
 
-const fadeUp: any = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: "easeOut" },
-  }),
-};
+import { courses } from "@/data/courses";
+import FaqAccordion from "@/components/FaqAccordion";
+import SectionHeader from "@/components/SectionHeader";
 
 const featureIcons = [
-  <Zap key="zap" size={28} />,
-  <BookOpen key="book" size={28} />,
-  <Brain key="brain" size={28} />,
-  <Shield key="shield" size={28} />,
-  <Layers key="layers" size={28} />,
-  <Sparkles key="sparkles" size={28} />,
+  <Zap key="zap" size={24} aria-hidden="true" />,
+  <BookOpen key="book" size={24} aria-hidden="true" />,
+  <Brain key="brain" size={24} aria-hidden="true" />,
+  <Shield key="shield" size={24} aria-hidden="true" />,
+  <Layers key="layers" size={24} aria-hidden="true" />,
+  <Sparkles key="sparkles" size={24} aria-hidden="true" />,
 ];
+
+/** Status → [label, Tailwind color classes for the badge]. */
+const COURSE_STATUS: Record<
+  "active" | "planned",
+  { label: string; classes: string }
+> = {
+  active: {
+    label: "SHIPPING",
+    classes: "text-[#33FF66]",
+  },
+  planned: {
+    label: "IN DEV  ",
+    classes: "text-zinc-500",
+  },
+};
+
+/** Render a fixed-width field, padding with spaces on the right. */
+function pad(value: string, width: number): string {
+  if (value.length >= width) return value.slice(0, width);
+  return value + " ".repeat(width - value.length);
+}
 
 interface HomePageProps {
   dict: Record<string, any>;
@@ -45,8 +55,6 @@ interface HomePageProps {
 }
 
 export default function HomePage({ dict, lang }: HomePageProps) {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -57,6 +65,11 @@ export default function HomePage({ dict, lang }: HomePageProps) {
     })),
   };
 
+  const faqItems = dict.faq.items.map((faq: any) => ({
+    question: faq.q,
+    answer: faq.a,
+  }));
+
   return (
     <>
       <Script
@@ -65,478 +78,496 @@ export default function HomePage({ dict, lang }: HomePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <article className="font-[family-name:var(--font-mono)]">
+      {/* CRT vignette + film-grain layers. The scanline .crt-overlay is
+          rendered once by the locale layout; these two add depth on top of it. */}
+      <div className="crt-vignette" aria-hidden="true" />
+      <div className="crt-grain" aria-hidden="true" />
+
+      <article className="relative font-mono">
         {/* ═══════════════ HERO ═══════════════ */}
-        <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        <section className="relative flex min-h-[90vh] items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
               src="/screenshots/kodo_screen_1.png"
               alt="Kodo Forge terminal learning platform running in a dark retro-futuristic environment"
               fill
-              className="object-cover opacity-30"
+              className="object-cover opacity-20"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/40 via-[#09090b]/70 to-[#09090b]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0b0b0d]/60 via-[#0b0b0d]/80 to-[#0b0b0d]" />
           </div>
 
-          <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -60 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="flex items-center gap-2 text-[#FFB000] font-bold text-sm mb-6 tracking-[0.3em] uppercase">
-                <Terminal size={16} />
-                <span className="animate-pulse">{dict.hero.badge}</span>
+          <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-16 px-6 py-24 lg:grid-cols-2">
+            <div className="anim-fade-up anim-delay-0">
+              <div className="mb-6 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.3em] text-amber-500">
+                <Terminal size={14} aria-hidden="true" />
+                <span>{dict.hero.badge}</span>
               </div>
 
-              <h1
-                className="text-5xl sm:text-7xl font-extrabold text-white tracking-tighter leading-[1.05] mb-6"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              {/* Full ASCII KODO logo — responsive monospace sizing. */}
+              <pre
+                aria-label="KODO"
+                className="mb-6 select-none font-mono text-[0.5rem] leading-none text-amber-500 sm:text-xs"
               >
+{`██╗  ██╗ ██████╗ ██████╗  ██████╗
+██║ ██╔╝██╔═══██╗██╔══██╗██╔═══██╗
+█████╔╝ ██║   ██║██║  ██║██║   ██║
+██╔═██╗ ██║   ██║██║  ██║██║   ██║
+██║  ██╗╚██████╔╝██████╔╝╚██████╔╝
+╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝`}
+              </pre>
+
+              <h1 className="mb-4 font-sans text-4xl font-semibold leading-[1.1] tracking-tight text-zinc-50 sm:text-6xl">
                 {dict.hero.title1}
                 <br />
-                <span className="text-[#FFB000] drop-shadow-[0_0_30px_rgba(255,176,0,0.4)]">
-                  {dict.hero.title2}
-                </span>
+                <span className="text-amber-500">{dict.hero.title2}</span>
               </h1>
 
+              {/* Secondary tagline in amber mono. */}
+              {dict.hero.tagline && (
+                <p className="mb-8 font-mono text-sm text-amber-500">
+                  &gt; {dict.hero.tagline}
+                </p>
+              )}
+
               <p
-                className="text-lg text-zinc-400 max-w-lg leading-relaxed mb-10 border-l-2 border-[#FFB000]/30 pl-5"
+                className="mb-10 max-w-lg border-l border-amber-500/30 pl-5 font-sans text-base leading-relaxed text-zinc-400"
                 dangerouslySetInnerHTML={{ __html: dict.hero.description }}
               />
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href={`/${lang}/download`}>
-                  <motion.div
-                    whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255,176,0,0.3)" }}
-                    whileTap={{ scale: 0.95 }}
-                    className="retro-glass flex items-center justify-center gap-3 px-8 py-4 text-[#FFB000] font-bold uppercase tracking-widest rounded-sm cursor-pointer border border-[#FFB000]/30 hover:border-[#FFB000]/60 transition-all"
-                  >
-                    <Download size={18} /> {dict.hero.downloadBtn}
-                  </motion.div>
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <Link
+                  href={`/${lang}/download`}
+                  className="inline-flex items-center justify-center gap-3 border border-amber-500/50 bg-[#141416] px-8 py-4 font-mono text-sm font-bold uppercase tracking-widest text-amber-500 transition-all hover:-translate-y-0.5 hover:border-amber-500 hover:bg-[#1c1c20] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                >
+                  <Download size={16} aria-hidden="true" />
+                  {dict.hero.downloadBtn}
                 </Link>
-                <Link href={`/${lang}/courses`}>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center gap-3 px-8 py-4 text-zinc-400 hover:text-white uppercase tracking-widest transition-colors font-bold cursor-pointer"
-                  >
-                    {dict.hero.browseBtn} <ArrowRight size={16} />
-                  </motion.div>
+                <Link
+                  href={`/${lang}/courses`}
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 font-mono text-sm font-bold uppercase tracking-widest text-zinc-400 transition-colors hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                >
+                  {dict.hero.browseBtn}
+                  <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Terminal mockup */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              className="hidden lg:block"
-            >
-              <motion.div
-                animate={{ y: [-8, 8] }}
-                transition={{ repeat: Infinity, repeatType: "mirror", duration: 4, ease: "easeInOut" }}
-                className="retro-glass rounded-lg p-1 shadow-[0_0_60px_rgba(255,176,0,0.1)]"
-              >
-                <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800/60">
-                  <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                  <span className="text-xs text-zinc-600 ml-3 font-mono">{dict.hero.terminalTitle}</span>
+            {/* Terminal mockup — flat, no blur, amber hairline. */}
+            <div className="anim-fade-up anim-delay-200 hidden lg:block">
+              <div className="border border-amber-500/25 bg-[#141416]">
+                <div className="flex items-center gap-2 border-b border-amber-500/20 px-4 py-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                  <span className="ml-3 font-mono text-xs text-zinc-500">
+                    {dict.hero.terminalTitle}
+                  </span>
                 </div>
-                <div className="p-5 font-mono text-sm space-y-1">
+                <div className="space-y-1 p-5 font-mono text-sm">
                   <p className="text-zinc-500">{dict.hero.terminalLines[0]}</p>
-                  <p className="text-[#FFB000] font-bold">
-                    ██╗  ██╗ ██████╗ ██████╗  ██████╗
+                  <pre className="text-amber-500" aria-hidden="true">
+{`██╗  ██╗ ██████╗ ██████╗  ██████╗
+██║ ██╔╝██╔═══██╗██╔══██╗██╔═══██╗
+█████╔╝ ██║   ██║██║  ██║██║   ██║`}
+                  </pre>
+                  <p className="mt-2 text-[#33FF66]">
+                    ✓ {dict.hero.terminalLines[1]?.replace(/^✓\s*/, "")}
                   </p>
-                  <p className="text-[#FFB000]/70">
-                    █████╔╝ ██║  ██║██║  ██║██║  ██║
+                  <p className="text-[#33FF66]">
+                    ✓ {dict.hero.terminalLines[2]?.replace(/^✓\s*/, "")}
                   </p>
-                  <p className="text-green-400 mt-1">✓ {dict.hero.terminalLines[1]?.replace(/^✓\s*/, "")}</p>
-                  <p className="text-green-400">✓ {dict.hero.terminalLines[2]?.replace(/^✓\s*/, "")}</p>
-                  <p className="text-zinc-500">✓ {dict.hero.terminalLines[3]?.replace(/^✓\s*/, "")}</p>
-                  <p className="text-cyan-400 mt-2">» {dict.hero.terminalLines[4]?.replace(/^»\s*/, "")}</p>
+                  <p className="text-zinc-500">
+                    ✓ {dict.hero.terminalLines[3]?.replace(/^✓\s*/, "")}
+                  </p>
+                  <p className="mt-2 text-[#00E5FF]">
+                    » {dict.hero.terminalLines[4]?.replace(/^»\s*/, "")}
+                  </p>
                   <p className="text-zinc-400">
-                    <span className="text-[#FFB000]">❯</span> {dict.hero.terminalLines[5]}
+                    <span className="text-amber-500">❯</span>{" "}
+                    {dict.hero.terminalLines[5]}
                   </p>
-                  <p className="text-zinc-600 animate-pulse">▮</p>
+                  <p className="text-zinc-600">
+                    <span className="terminal-cursor">▮</span>
+                  </p>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════════ STATS BAR ═══════════════ */}
-        <section className="border-y border-zinc-800/60 bg-zinc-950/50 backdrop-blur-sm" aria-label="Platform statistics">
-          <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <section
+          className="border-y border-amber-500/20 bg-[#141416]"
+          aria-label="Platform statistics"
+        >
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-8 text-center md:grid-cols-4">
             {[
-              { value: dict.stats.lessons.value, label: dict.stats.lessons.label, icon: <BookOpen size={18} /> },
-              { value: dict.stats.sections.value, label: dict.stats.sections.label, icon: <Layers size={18} /> },
-              { value: dict.stats.hours.value, label: dict.stats.hours.label, icon: <Clock size={18} /> },
-              { value: dict.stats.offline.value, label: dict.stats.offline.label, icon: <Shield size={18} /> },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                variants={fadeUp}
-                className="flex flex-col items-center gap-2"
-              >
-                <div className="text-[#FFB000]">{stat.icon}</div>
-                <div className="text-3xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  {stat.value}
+              {
+                value: dict.stats.lessons.value,
+                label: dict.stats.lessons.label,
+                icon: <BookOpen size={16} aria-hidden="true" />,
+              },
+              {
+                value: dict.stats.sections.value,
+                label: dict.stats.sections.label,
+                icon: <Layers size={16} aria-hidden="true" />,
+              },
+              {
+                value: dict.stats.hours.value,
+                label: dict.stats.hours.label,
+                icon: <Clock size={16} aria-hidden="true" />,
+              },
+              {
+                value: dict.stats.offline.value,
+                label: dict.stats.offline.label,
+                icon: <Shield size={16} aria-hidden="true" />,
+              },
+            ].map((stat, i) => {
+              const delay = (["anim-delay-0", "anim-delay-100", "anim-delay-200", "anim-delay-300"] as const)[i] ?? "anim-delay-0";
+              return (
+                <div
+                  key={stat.label}
+                  className={`anim-fade-up ${delay} flex flex-col items-center gap-2`}
+                >
+                  <div className="text-amber-500">{stat.icon}</div>
+                  <div className="font-mono text-3xl font-bold text-zinc-50">
+                    {stat.value}
+                  </div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-xs text-zinc-500 uppercase tracking-widest">{stat.label}</div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
         {/* ═══════════════ WHAT IS KODO FORGE ═══════════════ */}
-        <section className="max-w-6xl mx-auto px-6 py-28" aria-label="What is Kodo Forge">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={0}
-              variants={fadeUp}
-            >
-              <h2
-                className="text-3xl sm:text-4xl font-bold text-white mb-6"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
-                {dict.whatIs.title1}<span className="text-[#FFB000]">{dict.whatIs.titleHighlight}</span>{dict.whatIs.title2}
+        <section
+          className="mx-auto max-w-6xl px-6 py-28"
+          aria-label="What is Kodo Forge"
+        >
+          <SectionHeader
+            index="01"
+            label="What is Kodo Forge"
+            className="anim-fade-up mb-12"
+          />
+
+          <div className="grid grid-cols-1 items-start gap-16 lg:grid-cols-2">
+            <div className="anim-fade-up anim-delay-100">
+              <h2 className="mb-6 font-sans text-3xl font-semibold leading-tight text-zinc-50 sm:text-4xl">
+                {dict.whatIs.title1}
+                <span className="text-amber-500">
+                  {dict.whatIs.titleHighlight}
+                </span>
+                {dict.whatIs.title2}
               </h2>
-              <p className="text-zinc-400 leading-relaxed mb-4">
+              <p className="mb-4 font-sans leading-relaxed text-zinc-400">
                 {dict.whatIs.p1}
                 <strong className="text-zinc-200">{dict.whatIs.p1Bold}</strong>
               </p>
-              <p className="text-zinc-400 leading-relaxed mb-4">
+              <p className="mb-4 font-sans leading-relaxed text-zinc-400">
                 {dict.whatIs.p2}
               </p>
-              <p className="text-zinc-400 leading-relaxed">
-                {dict.whatIs.p3Start}<strong className="text-zinc-200">{dict.whatIs.p3Bold}</strong>{dict.whatIs.p3End}
+              <p className="font-sans leading-relaxed text-zinc-400">
+                {dict.whatIs.p3Start}
+                <strong className="text-zinc-200">{dict.whatIs.p3Bold}</strong>
+                {dict.whatIs.p3End}
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={1}
-              variants={fadeUp}
-              className="retro-glass rounded-lg p-6"
-            >
-              <h3 className="text-sm font-bold text-[#FFB000] uppercase tracking-widest mb-4">{dict.whatIs.learnCycleTitle}</h3>
-              <p className="text-xs text-zinc-500 mb-4">{dict.whatIs.learnCycleSubtitle}</p>
+            <div className="anim-fade-up anim-delay-200 border border-amber-500/20 bg-[#141416] p-6">
+              <h3 className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.3em] text-amber-500">
+                {dict.whatIs.learnCycleTitle}
+              </h3>
+              <p className="mb-6 font-sans text-xs text-zinc-500">
+                {dict.whatIs.learnCycleSubtitle}
+              </p>
               <div className="space-y-3">
                 {dict.whatIs.learnSteps.map((step: any) => (
                   <div key={step.letter} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded bg-[#FFB000]/10 border border-[#FFB000]/20 flex items-center justify-center text-[#FFB000] font-bold text-sm flex-shrink-0">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-amber-500/30 bg-[#1c1c20] font-mono text-sm font-bold text-amber-500">
                       {step.letter}
                     </div>
                     <div>
-                      <div className="text-sm text-white font-medium">{step.label}</div>
-                      <div className="text-xs text-zinc-500">{step.desc}</div>
+                      <div className="font-sans text-sm font-medium text-zinc-50">
+                        {step.label}
+                      </div>
+                      <div className="font-sans text-xs text-zinc-500">
+                        {step.desc}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ═══════════════ FEATURES ═══════════════ */}
-        <section className="max-w-6xl mx-auto px-6 py-28" aria-label="Features" id="features">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-            variants={fadeUp}
-            className="text-center mb-16"
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+        <section
+          className="mx-auto max-w-6xl px-6 py-28"
+          aria-label="Features"
+          id="features"
+        >
+          <SectionHeader
+            index="02"
+            label="Features"
+            className="anim-fade-up mb-12"
+          />
+
+          <div className="anim-fade-up anim-delay-100 mb-12 max-w-3xl">
+            <h2 className="mb-4 font-sans text-3xl font-semibold leading-tight text-zinc-50 sm:text-4xl">
               {dict.features.title}
             </h2>
-            <p className="text-zinc-500 max-w-2xl mx-auto">
-              {dict.features.subtitle}
-            </p>
-            <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
-          </motion.div>
+            <p className="font-sans text-zinc-400">{dict.features.subtitle}</p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dict.features.items.map((feature: any, i: number) => (
-              <motion.div
-                key={feature.title}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                variants={fadeUp}
-                className="retro-glass retro-glass-hover p-7 rounded-lg flex flex-col gap-4 group cursor-default"
-              >
-                <div className="text-[#FFB000] group-hover:scale-110 transition-transform origin-left">
-                  {featureIcons[i]}
+          <div className="grid grid-cols-1 gap-px bg-amber-500/10 md:grid-cols-2 lg:grid-cols-3">
+            {dict.features.items.map((feature: any, i: number) => {
+              const featureDelays = [
+                "anim-delay-0",
+                "anim-delay-75",
+                "anim-delay-150",
+                "anim-delay-200",
+                "anim-delay-300",
+                "anim-delay-400",
+              ] as const;
+              const delay = featureDelays[i] ?? "anim-delay-0";
+              return (
+                <div
+                  key={feature.title}
+                  className={`anim-fade-up ${delay} group flex flex-col gap-4 bg-[#141416] p-7 transition-colors hover:bg-[#1c1c20]`}
+                >
+                  <div className="text-amber-500 transition-transform duration-200 group-hover:translate-x-1">
+                    {featureIcons[i]}
+                  </div>
+                  <h3 className="font-mono text-sm font-bold uppercase tracking-[0.15em] text-zinc-50">
+                    {feature.title}
+                  </h3>
+                  <p className="font-sans text-sm leading-relaxed text-zinc-400 transition-colors group-hover:text-zinc-300">
+                    {feature.desc}
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-white uppercase tracking-wide">{feature.title}</h3>
-                <p className="text-zinc-500 group-hover:text-zinc-300 transition-colors text-sm leading-relaxed">
-                  {feature.desc}
-                </p>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
-        {/* ═══════════════ COURSE PREVIEWS ═══════════════ */}
-        <section className="max-w-6xl mx-auto px-6 py-28" aria-label="Course catalog">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-            variants={fadeUp}
-            className="text-center mb-16"
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+        {/* ═══════════════ COURSES — ls -la view ═══════════════ */}
+        <section
+          className="mx-auto max-w-6xl px-6 py-28"
+          aria-label="Course catalog"
+        >
+          <SectionHeader
+            index="03"
+            label="Courses"
+            className="anim-fade-up mb-12"
+          />
+
+          <div className="anim-fade-up anim-delay-100 mb-10 max-w-3xl">
+            <h2 className="mb-4 font-sans text-3xl font-semibold leading-tight text-zinc-50 sm:text-4xl">
               {dict.courses.title}
             </h2>
-            <p className="text-zinc-500 max-w-2xl mx-auto">
-              {dict.courses.subtitle}
-            </p>
-            <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {courses.map((course, i) => (
-              <motion.div
-                key={course.id}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                variants={fadeUp}
-              >
-                <Link href={`/${lang}/courses/${course.slug}`}>
-                  <div className="retro-glass rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-lg h-full">
-                    <div className="relative h-48 overflow-hidden">
-                      <Image
-                        src={course.image}
-                        alt={`${course.name} — terminal course for learning ${course.topics.join(", ")}`}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
-                      {course.status === "active" && (
-                        <div className="absolute top-4 right-4 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded text-xs text-green-400 font-bold uppercase tracking-wider">
-                          {dict.common.availableNow}
-                        </div>
-                      )}
-                      {course.status === "planned" && (
-                        <div className="absolute top-4 right-4 px-3 py-1 bg-zinc-500/20 border border-zinc-500/30 rounded text-xs text-zinc-400 font-bold uppercase tracking-wider">
-                          {dict.common.comingSoon}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-6">
-                      <h3
-                        className="text-xl font-bold text-white mb-1 group-hover:text-[#FFB000] transition-colors"
-                        style={{ color: course.status === "active" ? course.color : undefined }}
-                      >
-                        {course.name}
-                      </h3>
-                      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-3">{course.tagline}</p>
-                      <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-2">
-                        {course.description}
-                      </p>
-
-                      <div className="flex items-center gap-4 text-xs text-zinc-500 mb-4">
-                        <span>{course.totalLessons} {dict.common.lessons}</span>
-                        <span>·</span>
-                        <span>{course.estimatedHours}h {dict.common.content}</span>
-                        <span>·</span>
-                        <span>{course.phases.length} {dict.common.phases}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-zinc-800/60">
-                        <div className="flex gap-2 flex-wrap">
-                          {course.topics.slice(0, 3).map((t) => (
-                            <span key={t} className="px-2 py-1 text-[10px] rounded bg-zinc-800/60 text-zinc-400 uppercase tracking-wider">
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                        <ChevronRight size={16} className="text-zinc-600 group-hover:text-[#FFB000] transition-colors" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+            <p className="font-sans text-zinc-400">{dict.courses.subtitle}</p>
           </div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-            variants={fadeUp}
-            className="text-center mt-12"
-          >
+          {/* Terminal-style directory listing. */}
+          <div className="anim-fade-up anim-delay-200 border border-amber-500/25 bg-[#141416]">
+            <div className="flex items-center justify-between border-b border-amber-500/20 px-4 py-2 font-mono text-[11px] text-zinc-500">
+              <span>kodo@forge:~$ ls -la courses/</span>
+              <span className="text-amber-500/70">{courses.length} items</span>
+            </div>
+
+            <div className="divide-y divide-amber-500/10 p-2 font-mono text-[13px] sm:text-sm">
+              {/* Header row */}
+              <div className="hidden px-3 py-1.5 text-[10px] uppercase tracking-widest text-zinc-600 sm:grid sm:grid-cols-[auto_auto_auto_auto_1fr_auto] sm:gap-4">
+                <span>perms</span>
+                <span>lessons</span>
+                <span>owner</span>
+                <span>group</span>
+                <span>name</span>
+                <span>status</span>
+              </div>
+
+              {courses.map((course) => {
+                const status = COURSE_STATUS[course.status];
+                const lessonsField =
+                  course.status === "active"
+                    ? String(course.totalLessons).padStart(2, " ")
+                    : " -";
+
+                return (
+                  <Link
+                    key={course.id}
+                    href={`/${lang}/courses/${course.slug}`}
+                    className="block px-3 py-2.5 transition-colors hover:bg-[#1c1c20] focus:outline-none focus-visible:bg-[#1c1c20] focus-visible:ring-1 focus-visible:ring-amber-500/60"
+                  >
+                    <div className="flex items-center justify-between gap-4 sm:grid sm:grid-cols-[auto_auto_auto_auto_1fr_auto] sm:gap-4">
+                      <span className="text-zinc-500">drwxr-xr-x</span>
+                      <span className="hidden text-zinc-500 sm:inline">
+                        {lessonsField}
+                      </span>
+                      <span className="hidden text-zinc-500 sm:inline">
+                        kodo
+                      </span>
+                      <span className="hidden text-zinc-500 sm:inline">
+                        staff
+                      </span>
+                      <span className="flex-1 truncate font-bold text-amber-500">
+                        {pad(`${course.slug}/`, 14)}
+                        <span className="ml-2 hidden font-normal text-zinc-400 md:inline">
+                          {course.tagline}
+                        </span>
+                      </span>
+                      <span
+                        className={`whitespace-nowrap text-[11px] font-bold tracking-wider ${status.classes}`}
+                      >
+                        [ {status.label} ]
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="border-t border-amber-500/15 px-4 py-2 font-mono text-[11px] text-zinc-600">
+              total {courses.length} · typescript/ available · others in
+              development
+            </div>
+          </div>
+
+          <div className="anim-fade-up anim-delay-300 mt-10 text-center">
             <Link
               href={`/${lang}/courses`}
-              className="text-[#FFB000] hover:text-amber-300 font-bold uppercase tracking-widest text-sm transition-colors"
+              className="inline-flex items-center gap-2 font-mono text-sm font-bold uppercase tracking-[0.2em] text-amber-500 transition-colors hover:text-amber-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
               {dict.courses.viewAll}
+              <ChevronRight size={14} aria-hidden="true" />
             </Link>
-          </motion.div>
+          </div>
         </section>
 
         {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-        <section className="border-y border-zinc-800/60 bg-zinc-950/30" aria-label="How to get started">
-          <div className="max-w-6xl mx-auto px-6 py-28">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={0}
-              variants={fadeUp}
-              className="text-center mb-16"
-            >
-              <h2
-                className="text-3xl sm:text-4xl font-bold text-white mb-4"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
+        <section
+          className="border-y border-amber-500/15 bg-[#141416]"
+          aria-label="How to get started"
+        >
+          <div className="mx-auto max-w-6xl px-6 py-28">
+            <SectionHeader
+              index="04"
+              label="How it works"
+              className="anim-fade-up mb-12"
+            />
+
+            <div className="anim-fade-up anim-delay-100 mb-14 max-w-3xl">
+              <h2 className="mb-4 font-sans text-3xl font-semibold leading-tight text-zinc-50 sm:text-4xl">
                 {dict.howItWorks.title}
               </h2>
-              <p className="text-zinc-500 max-w-xl mx-auto">
+              <p className="font-sans text-zinc-400">
                 {dict.howItWorks.subtitle}
               </p>
-              <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
-            </motion.div>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {dict.howItWorks.steps.map((item: any, i: number) => (
-                <motion.div
-                  key={item.step}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  custom={i}
-                  variants={fadeUp}
-                  className="text-center"
-                >
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              {dict.howItWorks.steps.map((item: any, i: number) => {
+                const delays = [
+                  "anim-delay-0",
+                  "anim-delay-150",
+                  "anim-delay-300",
+                ] as const;
+                const delay = delays[i] ?? "anim-delay-0";
+                return (
                   <div
-                    className="text-5xl font-black text-[#FFB000]/20 mb-4"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    key={item.step}
+                    className={`anim-fade-up ${delay} border border-amber-500/20 bg-[#0b0b0d] p-6 transition-colors hover:border-amber-500/50`}
                   >
-                    {item.step}
+                    <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-amber-500/60">
+                      Step {item.step}
+                    </div>
+                    <h3 className="mb-3 font-mono text-sm font-bold uppercase tracking-[0.15em] text-zinc-50">
+                      {item.title}
+                    </h3>
+                    <p className="font-sans text-sm leading-relaxed text-zinc-400">
+                      {item.desc}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-white uppercase tracking-wider mb-3">{item.title}</h3>
-                  <p className="text-zinc-500 text-sm leading-relaxed">{item.desc}</p>
-                </motion.div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* ═══════════════ FAQ ═══════════════ */}
-        <section className="max-w-4xl mx-auto px-6 py-28" aria-label="Frequently asked questions" id="faq">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-            variants={fadeUp}
-            className="text-center mb-16"
-          >
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+        <section
+          className="mx-auto max-w-4xl px-6 py-28"
+          aria-label="Frequently asked questions"
+          id="faq"
+        >
+          <SectionHeader
+            index="05"
+            label="FAQ"
+            className="anim-fade-up mb-12"
+          />
+
+          <div className="anim-fade-up anim-delay-100 mb-12">
+            <h2 className="mb-2 font-sans text-3xl font-semibold leading-tight text-zinc-50 sm:text-4xl">
               {dict.faq.title}
             </h2>
-            <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
-          </motion.div>
+            <p className="font-mono text-xs tracking-widest text-amber-500/70">
+              ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+            </p>
+          </div>
 
-          <div className="space-y-3">
-            {dict.faq.items.map((faq: any, i: number) => (
-              <motion.div
-                key={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                variants={fadeUp}
-                className="retro-glass rounded-lg overflow-hidden"
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-zinc-800/30 transition-colors"
-                >
-                  <span className="font-bold text-white text-sm pr-4">{faq.q}</span>
-                  <ChevronDown
-                    size={18}
-                    className={`text-zinc-500 transition-transform flex-shrink-0 ${openFaq === i ? "rotate-180" : ""}`}
-                  />
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-zinc-800/40 pt-4">
-                    {faq.a}
-                  </div>
-                )}
-              </motion.div>
-            ))}
+          <div className="anim-fade-up anim-delay-200">
+            <FaqAccordion items={faqItems} />
           </div>
         </section>
 
         {/* ═══════════════ CTA ═══════════════ */}
-        <section className="max-w-4xl mx-auto px-6 py-28 text-center" aria-label="Call to action">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} variants={fadeUp}>
-            <h2
-              className="text-4xl sm:text-5xl font-bold text-white mb-6"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+        <section
+          className="mx-auto max-w-4xl px-6 py-28 text-center"
+          aria-label="Call to action"
+        >
+          <SectionHeader
+            index="06"
+            label="Get started"
+            className="anim-fade-up mb-12 justify-center"
+          />
+
+          <div className="anim-fade-up anim-delay-100">
+            <h2 className="mb-6 font-sans text-4xl font-semibold leading-tight text-zinc-50 sm:text-5xl">
               {dict.cta.title1}
-              <span className="text-[#FFB000] drop-shadow-[0_0_20px_rgba(255,176,0,0.4)]">{dict.cta.titleHighlight}</span>
+              <span className="text-amber-500">{dict.cta.titleHighlight}</span>
               {dict.cta.title2}
             </h2>
-            <p className="text-zinc-400 max-w-xl mx-auto mb-10">
+
+            <p className="mx-auto mb-4 font-mono text-xs tracking-widest text-amber-500/70">
+              ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+            </p>
+
+            <p className="mx-auto mb-10 max-w-xl font-sans text-zinc-400">
               {dict.cta.description}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href={`/${lang}/download`}>
-                <motion.div
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(255,176,0,0.3)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-10 py-5 bg-[#FFB000] text-[#09090b] font-bold uppercase tracking-widest rounded-sm cursor-pointer text-lg transition-all hover:bg-amber-400"
-                >
-                  <Download size={20} /> {dict.cta.downloadBtn}
-                </motion.div>
+
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              <Link
+                href={`/${lang}/download`}
+                className="inline-flex items-center justify-center gap-3 border border-amber-500 bg-amber-500 px-10 py-5 font-mono text-base font-bold uppercase tracking-widest text-[#0b0b0d] transition-all hover:-translate-y-0.5 hover:bg-amber-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0b0d]"
+              >
+                <Download size={18} aria-hidden="true" />
+                {dict.cta.downloadBtn}
               </Link>
-              <Link href={`/${lang}/docs`}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-10 py-5 text-zinc-400 hover:text-white font-bold uppercase tracking-widest cursor-pointer text-lg transition-colors"
-                >
-                  {dict.cta.docsBtn} <ArrowRight size={18} />
-                </motion.div>
+              <Link
+                href={`/${lang}/docs`}
+                className="inline-flex items-center justify-center gap-3 border border-amber-500/40 px-10 py-5 font-mono text-base font-bold uppercase tracking-widest text-zinc-300 transition-all hover:-translate-y-0.5 hover:border-amber-500/80 hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              >
+                {dict.cta.docsBtn}
+                <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
-          </motion.div>
+          </div>
         </section>
       </article>
     </>

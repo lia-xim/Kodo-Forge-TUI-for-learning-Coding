@@ -134,7 +134,7 @@ export default function CreatePage({ dict, lang }: CreatePageProps) {
                 <HelpCircle size={18} /> {t.viewTutorial}
               </div>
             </Link>
-            <a href="https://github.com/lia-xim/Learning/blob/main/.agent/workflows/create-kodo-course.md" target="_blank" className="inline-flex items-center gap-3 px-8 py-4 retro-glass text-white font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-zinc-800/40 transition-colors border border-zinc-700/50">
+            <a href="https://github.com/lia-xim/Learning/blob/main/.agent/workflows/create-kodo-course.md" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 retro-glass text-white font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-zinc-800/40 transition-colors border border-zinc-700/50">
               <PlusSquare size={18} /> {t.getAiWorkflow}
             </a>
           </div>

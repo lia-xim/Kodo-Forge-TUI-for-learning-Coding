@@ -1,12 +1,12 @@
 {
   "meta": {
-    "title": "Kodo Forge — Free Terminal Learning Platform for TypeScript, React & Angular",
+    "title": "Learn TypeScript in the Terminal — Free | Kodo Forge",
     "titleTemplate": "%s | Kodo Forge",
-    "description": "Kodo Forge is a free, open-source terminal learning platform (TUI) for mastering TypeScript, Angular, React, and Next.js. 144+ lessons, spaced repetition, kinetic reading, and gamified progress tracking — 100% offline, zero dependencies.",
-    "ogTitle": "Kodo Forge — Free Terminal Learning Platform",
-    "ogDescription": "Master TypeScript, React, Angular & Next.js from your terminal. 144+ lessons, zero dependencies, 100% offline. Free and open source.",
-    "twitterTitle": "Kodo Forge — Learn to Code in Your Terminal",
-    "twitterDescription": "A free, open-source TUI platform for mastering web development. 144+ lessons, spaced repetition, 100% offline."
+    "description": "Master TypeScript, React, Angular & Next.js in your terminal. 144+ free lessons, spaced repetition, 100% offline. Open source, zero dependencies.",
+    "ogTitle": "Kodo Forge — Master TypeScript in the Terminal",
+    "ogDescription": "Master TypeScript, React, Angular & Next.js from your terminal. 144 free lessons, spaced repetition, zero tracking. Download once, learn forever.",
+    "twitterTitle": "Kodo Forge — Learn TypeScript in your Terminal",
+    "twitterDescription": "The terminal-native learning platform. 144 lessons, spaced repetition, open source, offline. Stop scrolling tutorials — start retaining them."
   },
   "nav": {
     "home": "Home",
@@ -14,15 +14,17 @@
     "docs": "Docs",
     "createCourse": "Create Course",
     "download": "Download",
-    "starOnGithub": "★ Star on GitHub"
+    "starOnGithub": "★ Star on GitHub",
+    "toggleMenu": "Toggle navigation menu"
   },
   "hero": {
-    "badge": "open_source · free · offline",
-    "title1": "Learn TypeScript, React & Angular",
-    "title2": "in your terminal.",
-    "description": "Kodo Forge is a <strong>free, open-source learning platform</strong> that runs entirely in your command line. 144+ interactive lessons, spaced repetition, gamified progress — without browser, without internet, without distractions.",
+    "badge": "v1.0 · MIT · 144 lessons",
+    "title1": "Master TypeScript, React & Angular",
+    "title2": "in the terminal.",
+    "tagline": "The TypeScript course that remembers what you forget.",
+    "description": "A <strong>free, open-source TUI</strong> that teaches like a senior dev reviewing your code. 144+ interactive lessons, spaced repetition, adaptive depth — zero browsers, zero tracking, zero dependencies.",
     "downloadBtn": "Download Free",
-    "browseBtn": "Browse All 4 Courses",
+    "browseBtn": "View Courses",
     "terminalTitle": "kodo-forge — ~/typescript",
     "terminalLines": [
       "$ kodo-forge start",
@@ -34,10 +36,10 @@
     ]
   },
   "stats": {
-    "lessons": { "value": "144+", "label": "Interactive Lessons" },
+    "lessons": { "value": "144", "label": "Interactive Lessons" },
     "sections": { "value": "751", "label": "Learning Sections" },
     "hours": { "value": "350h", "label": "Total Content" },
-    "offline": { "value": "100%", "label": "Free & Offline" }
+    "offline": { "value": "0", "label": "Runtime Dependencies" }
   },
   "whatIs": {
     "title1": "What is a ",
@@ -45,35 +47,35 @@
     "title2": "?",
     "p1": "Most coding courses run in a browser — surrounded by notifications, social media, and infinite tabs.",
     "p1Bold": " Kodo Forge takes a radically different approach.",
-    "p2": "It runs as a native application inside your terminal (command line). The same tool that professional developers use every single day to write and deploy software. No ads, no accounts, no tracking. Just you and the code.",
+    "p2": "It runs as a native application inside your terminal — the same tool professional developers use every single day to write and deploy software. No ads, no accounts, no tracking. Just you and the code.",
     "p3Start": "Research shows that ",
     "p3Bold": "distraction-free environments dramatically improve learning retention",
-    "p3End": ". Kodo Forge combines this with science-backed techniques like spaced repetition and active recall to help you truly master — not just consume — TypeScript, React, Angular, and full-stack web development.",
+    "p3End": ". Kodo Forge combines this with techniques like spaced repetition (SM-2) and active recall — grounded in 12 learning theories from Sweller, Bjork, and Roediger — to help you truly master, not just consume, TypeScript, React, Angular, and full-stack web development.",
     "learnCycleTitle": "The LEARN Cycle",
     "learnCycleSubtitle": "Every lesson follows a proven 5-step methodology:",
     "learnSteps": [
-      { "letter": "L", "label": "Lesen & Verstehen", "desc": "Theory with diagrams and analogies" },
-      { "letter": "E", "label": "Erkunden", "desc": "Run live code examples" },
-      { "letter": "A", "label": "Anwenden", "desc": "Exercises with increasing difficulty" },
-      { "letter": "R", "label": "Reflektieren", "desc": "Interactive quizzes in the terminal" },
-      { "letter": "N", "label": "Nachschlagen", "desc": "Compact cheatsheet for reference" }
+      { "letter": "L", "label": "Learn", "desc": "Theory with diagrams and analogies" },
+      { "letter": "E", "label": "Explore", "desc": "Run live code examples" },
+      { "letter": "A", "label": "Apply", "desc": "Exercises with increasing difficulty" },
+      { "letter": "R", "label": "Reflect", "desc": "Interactive quizzes in the terminal" },
+      { "letter": "N", "label": "Notes", "desc": "Compact cheatsheet for reference" }
     ]
   },
   "features": {
-    "title": "Why Developers Choose Kodo Forge",
+    "title": "Built for the way devs actually learn",
     "subtitle": "Built from scratch for one purpose: deep-focus, distraction-free learning that actually sticks.",
     "items": [
       {
-        "title": "Instant Startup",
-        "desc": "Launches in under 200ms. No loading screens, no splash pages. A single executable — just double-click and learn."
+        "title": "Boots in 200ms",
+        "desc": "A single 5 MB executable. No Node, no Python, no admin rights. Launch from your shell or double-click the file — either works."
       },
       {
-        "title": "Kinetic Reading Engine",
-        "desc": "A custom text progression engine that reveals content at your pace. No mindless scrolling — every section demands your attention."
+        "title": "Kinetic Reader",
+        "desc": "Content reveals line-by-line at your rhythm. It forces you to read, not skim. The same pattern used by competitive typing tools — adapted for technical prose."
       },
       {
-        "title": "Built-in Spaced Repetition",
-        "desc": "Science-backed flashcard system with smart scheduling. Review concepts right before you forget them, with streak tracking."
+        "title": "Spaced Repetition Built In",
+        "desc": "Every concept you learn enters a review queue. The scheduler surfaces it right before you'd forget — the SM-2 algorithm, not another flashcard app bolted on."
       },
       {
         "title": "100% Offline & Private",
@@ -84,34 +86,34 @@
         "desc": "Courses are Markdown folders. Drop in your own content — programming, languages, science — and the engine renders it instantly."
       },
       {
-        "title": "Gamified Progress Tracking",
-        "desc": "Daily streaks, sparkline activity charts, phase completion, and course recommendations. Stay motivated without social media dopamine."
+        "title": "Progress You Can See",
+        "desc": "Daily streaks, sparkline activity charts, phase completion, and adaptive course recommendations. Progress you can see — no feed to scroll."
       }
     ]
   },
   "courses": {
-    "title": "4 Professional Courses — All Free",
-    "subtitle": "A complete web development learning path. Start with TypeScript fundamentals, then choose Angular, React, or go full-stack with Next.js.",
+    "title": "4 Courses. 1 Complete. 3 in Development.",
+    "subtitle": "TypeScript Deep Learning ships today with 44 complete lessons. Angular, React, and Next.js curricula are public; lesson production is underway. All free, all open source.",
     "viewAll": "View Full Curriculum for All Courses →"
   },
   "howItWorks": {
     "title": "Start Learning in 3 Steps",
-    "subtitle": "No sign-up. No credit card. No complicated setup. From download to learning in under 60 seconds.",
+    "subtitle": "No sign-up. No credit card. No setup wizard. From download to learning in under 60 seconds.",
     "steps": [
       {
         "step": "01",
         "title": "Download",
-        "desc": "Grab the single executable for Windows, macOS, or Linux. No Node.js, no Python, no admin rights needed. Just one file."
+        "desc": "Grab the single executable for Windows, macOS, or Linux. No Node.js, no Python, no admin rights. Just one 5 MB file."
       },
       {
         "step": "02",
         "title": "Launch",
-        "desc": "Double-click the file or run it from your terminal. The TUI boots in under 200ms and automatically detects your courses."
+        "desc": "Double-click or run from shell. The TUI boots in 200 ms and loads the bundled courses — TypeScript is ready immediately."
       },
       {
         "step": "03",
         "title": "Learn & Master",
-        "desc": "Navigate lessons with your keyboard. Read theory, run examples, solve exercises, take quizzes. Your progress is saved automatically."
+        "desc": "Navigate with your keyboard. Read theory, run examples, solve exercises, take quizzes. Progress is saved locally — no cloud, no account."
       }
     ]
   },
@@ -120,27 +122,27 @@
     "items": [
       {
         "q": "What is Kodo Forge?",
-        "a": "Kodo Forge is a free, open-source Terminal User Interface (TUI) learning platform. It lets you learn TypeScript, Angular, React and Next.js directly inside your command line terminal — with zero internet connection, zero dependencies, and zero distractions."
+        "a": "Kodo Forge is a free, open-source Terminal User Interface (TUI) learning platform. It lets you learn TypeScript, Angular, React and Next.js directly inside your command line — with zero internet connection, zero dependencies, and zero distractions."
       },
       {
-        "q": "Is Kodo Forge really free?",
-        "a": "Yes, 100% free and open source under the MIT license. There are no hidden costs, no subscriptions, and no premium tiers. All 144+ lessons across 4 courses are included."
+        "q": "Is this really free — what's the catch?",
+        "a": "No catch. MIT license, all 144 lessons across 4 courses included, no accounts, no telemetry, no \"pro tier\" locked behind a paywall. Kodo Forge is built by one developer who got tired of browser tutorials and wanted a tool they'd actually use. If you want to support it, star the GitHub repo or contribute a course."
       },
       {
         "q": "Do I need an internet connection?",
         "a": "No. Kodo Forge runs entirely offline. Once you download the executable, everything works without any internet connection. Your progress is saved locally on your machine."
       },
       {
-        "q": "What programming languages and frameworks can I learn?",
-        "a": "Kodo Forge currently offers courses in TypeScript (44 lessons), Angular (40 lessons), React with TypeScript (40 lessons), and Next.js (20 lessons). The TypeScript course is the foundation — start there."
+        "q": "Which courses are actually available right now?",
+        "a": "TypeScript Deep Learning (44 lessons, shipping now) is the complete course. Angular Mastery (40 lessons), React with TypeScript (40 lessons), and Next.js Production (20 lessons) are in active development — you can preview their curricula today and they unlock as they ship. All are free."
       },
       {
         "q": "How is this different from Udemy, Codecademy, or freeCodeCamp?",
-        "a": "Unlike browser-based platforms, Kodo Forge runs in your terminal — the same tool professional developers use every day. There are no ads, no notifications, no social features. It's designed for deep focus and uses science-backed techniques like spaced repetition and kinetic reading to maximize retention."
+        "a": "Three concrete differences. (1) It runs in your terminal, not a browser — no notifications, no autoplay videos, no social features to scroll. (2) Spaced repetition is native, not bolted on: every concept goes into a review queue automatically. (3) Adaptive depth: you pick summary, standard, or deep-dive for each section, so experts don't slog through basics. Udemy sells courses; Kodo Forge teaches retention."
       },
       {
         "q": "Can I create my own courses?",
-        "a": "Absolutely! Kodo Forge is a data-driven engine. Courses are just folders of Markdown files. You can create courses on any topic — not just programming. Check the documentation for the content authoring guide."
+        "a": "Absolutely. Kodo Forge is a data-driven engine. Courses are just folders of Markdown files. You can create courses on any topic — not just programming. See the docs for the content authoring guide."
       },
       {
         "q": "What operating systems are supported?",
@@ -152,7 +154,7 @@
     "title1": "Ready to learn ",
     "titleHighlight": "differently",
     "title2": "?",
-    "description": "Join developers who swapped endless browser tabs for deep-focus terminal learning. Download Kodo Forge, open your command line, and start mastering web development today. Free forever.",
+    "description": "Download the executable. Open it. Start learning. No signup. No internet required. Free forever.",
     "downloadBtn": "Download Free",
     "docsBtn": "Read the Docs"
   },
@@ -177,7 +179,7 @@
       "bugs": "Report a Bug",
       "license": "MIT License"
     },
-    "copyright": "© 2026 KODO_FORGE // v1.0.0 // SYSTEM_NOMINAL",
+    "copyright": "© 2026 KODO_FORGE // SYSTEM_NOMINAL",
     "terminalStatus": "▮ TERMINAL_LINK_ACTIVE"
   },
   "common": {
@@ -197,8 +199,8 @@
     "active": "Active",
     "comingSoon": "Coming Soon",
     "prerequisite": "Prerequisite",
-    "metaTitle": "Courses — Terminal Learning Platform",
-    "metaDescription": "Browse all available Kodo Forge terminal courses: TypeScript Deep Learning, Angular Mastery, React with TypeScript, and Next.js Production."
+    "metaTitle": "Free Terminal Courses — TypeScript, Angular, React, Next.js",
+    "metaDescription": "Browse all Kodo Forge terminal courses: TypeScript Deep Learning (44 lessons, shipping now), Angular, React, and Next.js. Free, offline, open source."
   },
   "courseDetail": {
     "allCourses": "All Courses",
@@ -210,28 +212,28 @@
     "targetAudience": "Who is this course for?",
     "whatYouLearn": "What you'll learn",
     "learningOutcomes": "{count} Learning Outcomes",
-    "didacticConcept": "Science-Backed Learning",
-    "didacticDesc": "This course uses modern, research-backed learning methods. Every lesson is designed so that you don't just read, but truly understand and retain.",
+    "didacticConcept": "Grounded in Learning Research",
+    "didacticDesc": "This course uses research-backed methods from cognitive science — spaced repetition (SM-2), active recall, Sweller's Cognitive Load Theory, and Bjork's desirable difficulties. Every lesson is designed so that you don't just read, but truly understand and retain.",
     "coveredTopics": "Covered Topics",
     "fullCurriculum": "Full Curriculum",
     "curriculumMeta": "{lessons} lessons across {phases} phases · {sections} sections · ~{hours}h content",
     "readyToStart": "Ready to master ",
     "readyToStart2": "?",
-    "downloadCta": "Download Kodo Forge and begin your journey. Free, offline, no sign-up needed.",
+    "downloadCta": "Download Kodo Forge and begin. Free, offline, no sign-up needed.",
     "downloadFree": "Download Free",
     "viewAllCourses": "View All Courses",
-    "heroQuote": "Built by developers, for developers.",
+    "heroQuote": "The TypeScript course that remembers what you forget.",
     "whyThisCourse": "Why This Course?",
     "whyItems": [
       {
         "icon": "Layers",
         "title": "44 Lessons, Zero Fluff",
-        "description": "Every lesson is meticulously crafted. No filler content, no padding. Pure, distilled TypeScript knowledge across 5 progressive phases."
+        "description": "Every lesson is meticulously crafted. No filler, no padding. Pure, distilled TypeScript knowledge across 5 progressive phases."
       },
       {
         "icon": "Brain",
-        "title": "Science-Backed Retention",
-        "description": "Built on 7 learning theories including spaced repetition and active recall. You don't just read — you remember. Permanently."
+        "title": "Built for Retention",
+        "description": "Grounded in 7 learning theories including spaced repetition (SM-2) and active recall. You don't just read — you remember. Permanently."
       },
       {
         "icon": "TrendingUp",
@@ -240,7 +242,7 @@
       }
     ],
     "metaTitle": "Learn {courseName} Free: {lessons} Lessons | Terminal Course",
-    "metaDescription": "Master {courseName} with {lessons} free interactive lessons and {hours}h of content. Science-backed learning with spaced repetition, quizzes, and adaptive depth — 100% offline in your terminal.",
+    "metaDescription": "Master {courseName} with {lessons} free interactive lessons and {hours}h of content. Spaced repetition, quizzes, adaptive depth — 100% offline in your terminal.",
     "metaOgTitle": "Learn {courseName} Free — {lessons} Lessons in Your Terminal | Kodo Forge",
     "terminalPreviewLines": [
       "$ kodo-forge start typescript",
@@ -262,7 +264,7 @@
   "downloadPage": {
     "title": "Download ",
     "titleHighlight": "Kodo Forge",
-    "subtitle": "One file. Zero dependencies. Double-click and start learning.",
+    "subtitle": "5 MB executable. No install wizard. No admin rights.",
     "buildFromSource": "Build from Source",
     "buildDesc": "For developers who want to contribute, customize, or just peek under the hood.",
     "noInstall": "No Install Wizard",
@@ -270,11 +272,11 @@
     "portable": "Fully Portable",
     "portableDesc": "Runs from a USB stick. Your progress travels with you.",
     "instantBoot": "Instant Boot",
-    "instantBootDesc": "Launches in under 200ms. No splash screens, no loading bars.",
+    "instantBootDesc": "Launches in under 200 ms. No splash screens, no loading bars.",
     "needHelp": "Need help getting started?",
     "readDocs": "Read the documentation →",
-    "metaTitle": "Download Kodo Forge",
-    "metaDescription": "Download Kodo Forge for Windows, macOS, or Linux. A single zero-dependency executable — no installation required."
+    "metaTitle": "Download Kodo Forge — 5MB Terminal Learning App",
+    "metaDescription": "Download Kodo Forge for Windows, macOS, or Linux. A single 5 MB zero-dependency executable — no installation, no admin rights required."
   },
   "docsPage": {
     "title": "Docu",
@@ -282,7 +284,7 @@
     "subtitle": "Everything you need to know about Kodo Forge — from getting started to creating your own terminal courses.",
     "onThisPage": "On This Page",
     "openSourceTitle": "Kodo Forge is Open Source",
-    "openSourceDesc": "Built by developers, for developers. Contribute, fork, or just study the code. The entire engine is written in clean, well-documented TypeScript.",
+    "openSourceDesc": "Contribute, fork, or just study the code. The entire engine is written in clean, well-documented TypeScript.",
     "viewOnGithub": "View on GitHub",
     "downloadFree": "Download Free",
     "sectionTitles": {
@@ -296,13 +298,13 @@
       "markdown-features": "Markdown Reference",
       "architecture": "Engine Architecture"
     },
-    "metaTitle": "Documentation",
+    "metaTitle": "Documentation — Terminal Learning Engine",
     "metaDescription": "Learn how Kodo Forge works, how to install it, how to create your own terminal courses, and explore the architecture behind the zero-dependency TUI learning engine."
   },
   "createPage": {
     "title": "Author Your Own ",
     "titleHighlight": "Course",
-    "subtitle": "Kodo Forge isn't just a learning platform — it's an open-source, data-driven reading engine. You can create stunning interactive terminal courses using nothing but simple Markdown files.",
+    "subtitle": "Kodo Forge isn't just a learning platform — it's an open-source, data-driven reading engine. Create interactive terminal courses using nothing but Markdown files.",
     "howItWorks": "How does it work?",
     "howItWorksP1": "The Kodo Forge engine knows absolutely nothing about TypeScript or React. It purely reads a <code>platform.json</code> file and parses the folders you define inside it.",
     "howItWorksP2": "A course is simply a folder on your computer. Inside that folder, you create numbered subfolders for your lessons (e.g. <code>01-foundations/</code>). Inside those are your Markdown files.",
@@ -310,17 +312,17 @@
     "dirStructure": "DIRECTORY STRUCTURE",
     "creatorExperience": "The Creator Experience",
     "writeMarkdown": "Write in Markdown",
-    "writeMarkdownDesc": "No proprietary builders. Just write standard Github Flavored Markdown. We support code fences, bold, italic, tables, and blockquotes.",
+    "writeMarkdownDesc": "No proprietary builders. Just write standard GitHub Flavored Markdown. Code fences, bold, italic, tables, and blockquotes all supported.",
     "terminalNative": "Terminal Native UI",
-    "terminalNativeDesc": "Kodo Forge automatically parses your files into a beautiful TUI context, turning blockquotes into Callout Boxes and headings into semantic dividers.",
+    "terminalNativeDesc": "Kodo Forge automatically parses your files into a beautiful TUI context, turning blockquotes into callout boxes and headings into semantic dividers.",
     "annotatedCode": "Annotated Code Blocks",
     "annotatedCodeDesc": "Add `[annotated]` to your code fences, and the engine splits the view to show your inline `// comments` as beautiful side-by-side explanations.",
     "aiTitle": "The AI Course Creator Skill",
-    "aiDesc": "We've developed a deterministic AI Workflow instruction set to help you rapidly prototype courses. Give the prompt to AI tools like Claude, Gemini, or ChatGPT, and they will fully generate Kodo Forge compatible directory structures and Markdown files for any topic you want to teach!",
+    "aiDesc": "A deterministic AI workflow instruction set to rapidly prototype courses. Give the prompt to Claude, Gemini, or ChatGPT, and they generate fully Kodo-Forge-compatible directory structures and Markdown files for any topic you want to teach.",
     "viewTutorial": "View Tutorial",
     "getAiWorkflow": "Get AI Workflow",
-    "metaTitle": "Create Your Own Course",
-    "metaDescription": "Learn how to author your own terminal courses with Kodo Forge. Write Markdown, define a folder structure, and the engine renders a beautiful TUI learning experience."
+    "metaTitle": "Create Your Own Terminal Course",
+    "metaDescription": "Author your own terminal courses with Kodo Forge. Write Markdown, define a folder structure, and the engine renders a beautiful TUI learning experience."
   },
   "coursesData": {
     "typescript": {

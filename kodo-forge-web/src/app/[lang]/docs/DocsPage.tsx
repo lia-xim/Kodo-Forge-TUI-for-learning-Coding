@@ -416,6 +416,7 @@ export default function DocsPage({ dict, lang }: DocsPageProps) {
               <a
                 href="https://github.com/lia-xim/Learning"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 retro-glass rounded text-[#FFB000] font-bold uppercase tracking-widest text-sm hover:bg-zinc-800/40 transition-colors"
               >
                 <Code2 size={16} /> {t.viewOnGithub}

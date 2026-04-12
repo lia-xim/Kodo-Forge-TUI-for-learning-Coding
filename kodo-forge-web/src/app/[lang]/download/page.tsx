@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getDictionary, hasLocale } from "../dictionaries";
 import DownloadPage from "./DownloadPage";
 
+const BASE_URL = "https://kodoforge.dev";
+
 export async function generateMetadata(
   props: PageProps<"/[lang]/download">
 ): Promise<Metadata> {
@@ -12,6 +14,14 @@ export async function generateMetadata(
   return {
     title: dict.downloadPage.metaTitle,
     description: dict.downloadPage.metaDescription,
+    alternates: {
+      canonical: `${BASE_URL}/${lang}/download`,
+      languages: {
+        en: `${BASE_URL}/en/download`,
+        de: `${BASE_URL}/de/download`,
+        "x-default": `${BASE_URL}/en/download`,
+      },
+    },
   };
 }
 

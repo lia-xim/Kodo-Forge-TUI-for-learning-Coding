@@ -27,7 +27,7 @@ export default function Navbar({ lang, dict }: NavbarProps) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 border-b border-zinc-800/60 bg-[#09090b]/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 right-0 z-40 border-b border-amber-500/20 bg-zinc-950/90">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
         {/* Logo */}
         <Link href={`/${lang}`} className="flex items-center gap-3 group">
@@ -74,6 +74,7 @@ export default function Navbar({ lang, dict }: NavbarProps) {
           <a
             href="https://github.com/lia-xim/Learning"
             target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 text-xs text-zinc-500 hover:text-[#FFB000] transition-colors uppercase tracking-wider"
           >
             {nav.starOnGithub}
@@ -83,6 +84,9 @@ export default function Navbar({ lang, dict }: NavbarProps) {
         {/* Mobile Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={nav.toggleMenu ?? (mobileOpen ? 'Close menu' : 'Open menu')}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav"
           className="md:hidden text-zinc-400 hover:text-white"
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -93,10 +97,11 @@ export default function Navbar({ lang, dict }: NavbarProps) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-zinc-800/60 bg-[#09090b]/95 backdrop-blur-md"
+            className="md:hidden overflow-hidden border-t border-amber-500/20 bg-zinc-950/95"
           >
             <div className="flex flex-col p-4 gap-2">
               {links.map((link) => (

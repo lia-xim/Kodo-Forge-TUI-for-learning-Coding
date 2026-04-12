@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getDictionary, hasLocale } from "../dictionaries";
 import DocsPage from "./DocsPage";
 
+const BASE_URL = "https://kodoforge.dev";
+
 export async function generateMetadata(
   props: PageProps<"/[lang]/docs">
 ): Promise<Metadata> {
@@ -12,6 +14,14 @@ export async function generateMetadata(
   return {
     title: dict.docsPage.metaTitle,
     description: dict.docsPage.metaDescription,
+    alternates: {
+      canonical: `${BASE_URL}/${lang}/docs`,
+      languages: {
+        en: `${BASE_URL}/en/docs`,
+        de: `${BASE_URL}/de/docs`,
+        "x-default": `${BASE_URL}/en/docs`,
+      },
+    },
   };
 }
 

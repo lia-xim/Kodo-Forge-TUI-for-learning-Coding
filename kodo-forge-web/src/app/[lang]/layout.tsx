@@ -1,9 +1,24 @@
 import { notFound } from 'next/navigation';
+import { JetBrains_Mono, IBM_Plex_Sans } from 'next/font/google';
 import { getDictionary, hasLocale } from './dictionaries';
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import '../../globals.css';
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+  weight: ['400', '500', '700'],
+});
+
+const sans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+  weight: ['400', '500', '600'],
+});
 
 const BASE_URL = 'https://kodoforge.dev';
 
@@ -27,28 +42,32 @@ export async function generateMetadata({
       template: '%s | Kodo Forge',
     },
     description: dict.meta.description,
-    keywords: [
-      'learn TypeScript',
-      'TypeScript tutorial',
-      'TypeScript course free',
-      'terminal learning platform',
-      'TUI learning',
-      'learn coding in terminal',
-      'Angular course',
-      'React course',
-      'Next.js course',
-      'offline learning platform',
-      'command line tutorial',
-      'spaced repetition coding',
-      'open source learning',
-      'free coding course',
-      'learn programming offline',
-      'web development course',
-      'TypeScript deep learning',
-      'coding without distractions',
-      'developer education',
-      'Kodo Forge',
-    ],
+    keywords:
+      lang === 'de'
+        ? [
+            'TypeScript Tutorial',
+            'TypeScript im Terminal lernen',
+            'TypeScript Kurs kostenlos',
+            'Angular Kurs',
+            'React Kurs',
+            'Next.js Kurs',
+            'Open Source TypeScript Kurs',
+            'Spaced Repetition Programmieren',
+            'CLI Lernplattform',
+            'Offline Programmierkurs',
+          ]
+        : [
+            'TypeScript tutorial',
+            'learn TypeScript terminal',
+            'TypeScript course free',
+            'Angular course',
+            'React course',
+            'Next.js course',
+            'open source TypeScript course',
+            'spaced repetition coding',
+            'CLI learning platform',
+            'offline programming course',
+          ],
     authors: [{ name: 'lia-xim', url: 'https://github.com/lia-xim' }],
     creator: 'lia-xim',
     publisher: 'Kodo Forge',
@@ -100,56 +119,77 @@ export default async function LocaleLayout({
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Kodo Forge',
-    applicationCategory: 'EducationalApplication',
-    operatingSystem: 'Windows, macOS, Linux',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    description: dict.meta.description,
-    url: `${BASE_URL}/${lang}`,
-    downloadUrl: `${BASE_URL}/${lang}/download`,
-    softwareVersion: '1.0.0',
-    inLanguage: lang,
-    author: {
-      '@type': 'Person',
-      name: 'lia-xim',
-      url: 'https://github.com/lia-xim',
-    },
-    license: 'https://opensource.org/licenses/MIT',
-    featureList: [
-      '144+ interactive lessons',
-      'Spaced repetition system',
-      'Kinetic reading engine',
-      '100% offline',
-      'Zero dependencies',
-      'Gamified progress tracking',
-      'TypeScript, Angular, React, Next.js courses',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${BASE_URL}/#organization`,
+        name: 'Kodo Forge',
+        url: BASE_URL,
+        logo: `${BASE_URL}/logo.png`,
+        sameAs: ['https://github.com/lia-xim'],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${BASE_URL}/#website`,
+        url: BASE_URL,
+        name: 'Kodo Forge',
+        publisher: { '@id': `${BASE_URL}/#organization` },
+        inLanguage: ['en', 'de'],
+      },
+      {
+        '@type': 'SoftwareApplication',
+        '@id': `${BASE_URL}/#app`,
+        name: 'Kodo Forge',
+        applicationCategory: 'EducationalApplication',
+        operatingSystem: 'Windows, macOS, Linux',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${BASE_URL}/${lang}/#courses`,
+        itemListElement: [
+          {
+            '@type': 'Course',
+            name: 'TypeScript Deep Learning',
+            description: '44-lesson TypeScript mastery course in the terminal',
+            provider: { '@id': `${BASE_URL}/#organization` },
+            url: `${BASE_URL}/${lang}/courses/typescript`,
+          },
+          {
+            '@type': 'Course',
+            name: 'Angular Deep Learning',
+            provider: { '@id': `${BASE_URL}/#organization` },
+            url: `${BASE_URL}/${lang}/courses/angular`,
+          },
+          {
+            '@type': 'Course',
+            name: 'React Deep Learning',
+            provider: { '@id': `${BASE_URL}/#organization` },
+            url: `${BASE_URL}/${lang}/courses/react`,
+          },
+          {
+            '@type': 'Course',
+            name: 'Next.js Deep Learning',
+            provider: { '@id': `${BASE_URL}/#organization` },
+            url: `${BASE_URL}/${lang}/courses/nextjs`,
+          },
+        ],
+      },
     ],
   };
 
   return (
-    <html lang={lang} className="scroll-smooth dark">
+    <html
+      lang={lang}
+      className={`scroll-smooth dark ${mono.variable} ${sans.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased min-h-screen relative bg-[#09090b] text-zinc-300 selection:bg-amber-500/20 selection:text-amber-300">
+      <body className="antialiased min-h-screen relative bg-[#0b0b0d] text-zinc-300 selection:bg-amber-500/20 selection:text-amber-300">
         {/* CRT Scanlines */}
         <div className="crt-overlay" />
 

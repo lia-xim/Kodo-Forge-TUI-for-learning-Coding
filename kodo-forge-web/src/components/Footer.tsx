@@ -10,7 +10,7 @@ export default function Footer({ lang, dict }: FooterProps) {
   const footer = dict.footer;
 
   return (
-    <footer className="border-t border-zinc-800/60 bg-[#09090b] mt-32">
+    <footer className="border-t border-amber-500/25 bg-zinc-950 mt-32">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
@@ -110,6 +110,7 @@ export default function Footer({ lang, dict }: FooterProps) {
                 <a
                   href="https://github.com/lia-xim/Learning"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors flex items-center gap-2"
                 >
                   <Code2 size={14} /> {footer.communityLinks.github}
@@ -119,6 +120,7 @@ export default function Footer({ lang, dict }: FooterProps) {
                 <a
                   href="https://github.com/lia-xim/Learning/issues"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors"
                 >
                   {footer.communityLinks.bugs}
@@ -128,6 +130,7 @@ export default function Footer({ lang, dict }: FooterProps) {
                 <a
                   href="https://github.com/lia-xim/Learning/blob/master/LICENSE"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors"
                 >
                   {footer.communityLinks.license}
@@ -138,7 +141,7 @@ export default function Footer({ lang, dict }: FooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-zinc-800/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-amber-500/15 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-zinc-600 font-mono">
             {footer.copyright}
           </p>
