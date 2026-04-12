@@ -1,30 +1,37 @@
-Here is the fully translated file. All German user-facing strings have been translated to English while preserving the TypeScript structure, code examples, and property keys exactly:
-
-```typescript
 /**
- * Lektion 03 -- Transfer Tasks: Type Annotations & Inference
- * ...
+ * Lesson 03 -- Transfer Tasks: Type Annotations & Inference
+ *
+ * These tasks take the concepts from the Annotations/Inference lesson
+ * and apply them in completely new contexts:
+ *
+ *  1. Config object with multiple environments (satisfies, as const)
+ *  2. Function refactoring for better inference
+ *
+ * No external dependencies.
  */
 
 import type { TransferTask } from "../tools/transfer-engine.ts";
 
+// ─── Transfer Tasks ─────────────────────────────────────────────────────────
+
 export const transferTasks: TransferTask[] = [
+  // ─── Task 1: Config Object with Environments ───────────────────────────
   {
     id: "03-config-environments",
-    title: "Type-Safe App Configuration with Environments",
+    title: "Type-safe App Configuration with Environments",
     prerequisiteLessons: [3],
     scenario:
       "Your app runs in three environments: development, staging, production. " +
       "Each has its own API URL, log level, and feature flags. " +
-      "Currently the config is one huge 'any' object and last week " +
-      "someone activated debug mode in production because there was no " +
+      "Currently the config is one big 'any' object, and last week " +
+      "someone enabled debug mode in production because there was no " +
       "type system to catch the mistake.",
     task:
       "Create a type-safe configuration using TypeScript inference.\n\n" +
       "1. Define a Config interface with the fields: apiUrl (string), " +
       "   logLevel ('debug' | 'info' | 'warn' | 'error'), " +
       "   features (object with boolean flags)\n" +
-      "2. Create a configs object using 'as const satisfies' that contains all " +
+      "2. Create a configs object with 'as const satisfies' that contains all " +
       "   three environments\n" +
       "3. Explain: Why 'as const satisfies' instead of just 'as const' or " +
       "   just a type annotation?\n" +
@@ -43,13 +50,13 @@ export const transferTasks: TransferTask[] = [
       "  production:  { /* TODO */ },",
       "};",
       "",
-      "// Function that returns the config for an environment",
+      "// Function that returns config for an environment",
       "function getConfig(env: ???) {",
       "  // TODO",
       "}",
     ].join("\n"),
     solutionCode: [
-      "// ═══ Config interface: The structural template ═══",
+      "// ═══ Config Interface: The Structure Definition ═══",
       "interface AppConfig {",
       "  apiUrl: string;",
       "  logLevel: 'debug' | 'info' | 'warn' | 'error';",
@@ -81,12 +88,12 @@ export const transferTasks: TransferTask[] = [
       "",
       "// ═══ Why 'as const satisfies'? ═══",
       "//",
-      "// Just 'as const':",
+      "// Only 'as const':",
       "//   + Literal types are preserved ('debug' instead of string)",
-      "//   - No check that the structure is correct",
-      "//   - Typos like 'logLeve' are not caught",
+      "//   - No check whether the structure is correct",
+      "//   - Typos like 'logLeve' go undetected",
       "//",
-      "// Just a type annotation (: Record<string, AppConfig>):",
+      "// Only type annotation (: Record<string, AppConfig>):",
       "//   + Structure is checked",
       "//   - Literal types are lost ('debug' becomes string)",
       "//   - Environment names become string (no autocomplete)",
@@ -121,28 +128,29 @@ export const transferTasks: TransferTask[] = [
     hints: [
       "The problem with a plain type annotation (const configs: Record<string, AppConfig>) is widening: 'debug' becomes string, 'development' becomes string. You lose precision.",
       "'as const' alone preserves the literal types, but does not check whether the structure matches the interface. 'as const satisfies Record<string, AppConfig>' does both.",
-      "For the getConfig function: Use a generic parameter E extends keyof typeof configs. The return type is then typeof configs[E] — with full literal precision.",
+      "For the getConfig function: use a generic parameter E extends keyof typeof configs. The return type is then typeof configs[E] — with full literal precision.",
     ],
     difficulty: 4,
   },
 
+  // ─── Task 2: Function Refactoring for Inference ────────────────────────
   {
     id: "03-inference-refactoring",
-    title: "Streamlining Over-annotated Functions",
+    title: "Trimming an Over-annotated Function",
     prerequisiteLessons: [3],
     scenario:
       "A junior developer wrote a utility library. " +
-      "Every function has explicit type annotations at EVERY location — " +
+      "Every function has explicit type annotations at EVERY point — " +
       "variables, return types, even obvious literal assignments. " +
       "The code is three times longer than necessary and hard to maintain " +
-      "because every change has to be made in three places.",
+      "because every change has to be updated in three places.",
     task:
       "Refactor the following code: remove unnecessary annotations " +
       "and keep only those that are truly needed.\n\n" +
       "1. Which annotations can TypeScript infer on its own?\n" +
       "2. Where are annotations indispensable?\n" +
       "3. Apply the principle 'Annotate at boundaries, infer inside'\n" +
-      "4. Make sure the resulting code is JUST AS type-safe",
+      "4. Ensure that the resulting code is EQUALLY type-safe",
     starterCode: [
       "// BEFORE: Over-annotated",
       "function filterPositive(numbers: number[]): number[] {",
@@ -168,12 +176,12 @@ export const transferTasks: TransferTask[] = [
       "",
       "function getStatus(code: number): string {",
       "  const isOk: boolean = code >= 200 && code < 300;",
-      "  const statusText: string = isOk ? 'OK' : 'Fehler';",
+      "  const statusText: string = isOk ? 'OK' : 'Error';",
       "  return statusText;",
       "}",
     ].join("\n"),
     solutionCode: [
-      "// ═══ AFTER: Only necessary annotations ═══",
+      "// ═══ AFTER: Only Necessary Annotations ═══",
       "",
       "// Parameter types: KEEP (boundary rule)",
       "// Return type: KEEP (public API)",
@@ -184,7 +192,7 @@ export const transferTasks: TransferTask[] = [
       "",
       "// Parameter types: KEEP (boundary)",
       "// Return type: REMOVED (correctly inferred)",
-      "// Local variable 'pair': REMOVED (superfluous)",
+      "// Local variable 'pair': REMOVED (redundant)",
       "function createPair(first: string, second: number) {",
       "  return { first, second };",
       "}",
@@ -194,23 +202,23 @@ export const transferTasks: TransferTask[] = [
       "// Return type: KEEP (public API, makes intent clear)",
       "// Local variables: REMOVED",
       "function getStatus(code: number): string {",
-      "  return code >= 200 && code < 300 ? 'OK' : 'Fehler';",
+      "  return code >= 200 && code < 300 ? 'OK' : 'Error';",
       "}",
       "",
       "// ═══ The Golden Rule ═══",
       "// 'Annotate at boundaries, infer inside'",
       "//",
-      "// KEEP:                          REMOVE:",
-      "// - Function parameters         - Local variables",
-      "// - Exported return types       - Obvious assignments",
-      "// - Interface/type definitions  - Temporary values",
-      "// - Public API contracts        - Literals (const x = 5)",
+      "// KEEP:                            REMOVE:",
+      "// - Function parameters            - Local variables",
+      "// - Exported return types          - Obvious assignments",
+      "// - Interface/type definitions     - Temporary values",
+      "// - Public API contracts           - Literals (const x = 5)",
       "//",
       "// Why?",
       "// - Less code = easier to maintain",
       "// - Inference is more precise than manual annotations",
       "// - Changes only need to be made in one place",
-      "// - The compiler finds errors that are missed with manual types",
+      "// - The compiler catches errors that manual types miss",
     ].join("\n"),
     conceptsBridged: [
       "Type Inference",
@@ -220,15 +228,9 @@ export const transferTasks: TransferTask[] = [
       "Maintainability",
     ],
     hints: [
-      "Ask yourself for every annotation: 'Would TypeScript infer the same type here if I removed the annotation?' If yes, it is superfluous.",
-      "The boundary rule: parameters need annotations (TypeScript cannot infer them). Local variables that are initialized from expressions almost never need annotations.",
+      "Ask for every annotation: 'Would TypeScript infer the same type here if I remove the annotation?' If yes, it is redundant.",
+      "The boundary rule: parameters need annotations (TypeScript cannot infer them). Local variables initialized from expressions almost never need annotations.",
     ],
     difficulty: 2,
   },
 ];
-```
-
-**Translation decisions:**
-- `starterCode`/`solutionCode` comments translated; code strings like `'OK'` and `'Fehler'` left as-is (they are code example values, not UI text)
-- `conceptsBridged` items translated: `"satisfies-Operator"` → `"satisfies operator"`, `"Widening vermeiden"` → `"Avoiding Widening"`, `"Boundary-Regel"` → `"Boundary Rule"`, `"Ueber-Annotation"` → `"Over-annotation"`, `"Wartbarkeit"` → `"Maintainability"`
-- Top-level `/** */` block comment left untouched (not a string literal)

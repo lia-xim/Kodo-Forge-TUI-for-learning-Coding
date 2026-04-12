@@ -23,6 +23,10 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.retro-glass-hover:hover {
+  background: rgba(24, 24, 27, 0.6);
+}
+
 .crt-overlay {
   position: fixed;
   top: 0;
@@ -34,4 +38,108 @@ body {
   background-size: 100% 4px;
   z-index: 50;
   opacity: 0.2;
+}
+
+/* Animated gradient mesh background */
+.gradient-mesh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.gradient-mesh::before,
+.gradient-mesh::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  animation: meshFloat 20s ease-in-out infinite;
+}
+
+.gradient-mesh::before {
+  width: 60%;
+  height: 60%;
+  top: -20%;
+  left: -10%;
+  background: var(--mesh-color, #3B82F6);
+  animation-delay: 0s;
+}
+
+.gradient-mesh::after {
+  width: 50%;
+  height: 50%;
+  bottom: -15%;
+  right: -10%;
+  background: var(--mesh-color, #3B82F6);
+  animation-delay: -10s;
+  opacity: 0.1;
+}
+
+@keyframes meshFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(5%, 10%) scale(1.05); }
+  50% { transform: translate(-3%, 5%) scale(0.95); }
+  75% { transform: translate(8%, -5%) scale(1.02); }
+}
+
+/* Card with subtle glow on hover */
+.glow-card {
+  position: relative;
+  background: rgba(24, 24, 27, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glow-card:hover {
+  border-color: var(--glow-color, rgba(59, 130, 246, 0.3));
+  box-shadow: 0 0 30px -5px var(--glow-color, rgba(59, 130, 246, 0.15)),
+              inset 0 1px 0 0 var(--glow-color, rgba(59, 130, 246, 0.1));
+  background: rgba(24, 24, 27, 0.7);
+}
+
+/* Decorative pull quote */
+.pull-quote {
+  position: relative;
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #a1a1aa;
+  font-style: italic;
+  border-left: 3px solid var(--quote-color, #3B82F6);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+}
+
+.pull-quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.25rem;
+  left: 0.5rem;
+  font-size: 3rem;
+  font-style: normal;
+  line-height: 1;
+  color: var(--quote-color, #3B82F6);
+  opacity: 0.3;
+}
+
+/* Terminal preview typing animation */
+@keyframes terminalBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-cursor {
+  animation: terminalBlink 1s step-end infinite;
+}
+
+/* Scrollbar styling for horizontal scroll containers */
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

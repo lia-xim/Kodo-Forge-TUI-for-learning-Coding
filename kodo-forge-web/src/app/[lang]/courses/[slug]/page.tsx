@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import CourseDetailPage from "./CourseDetailPage";
 
+const BASE_URL = "https://kodoforge.dev";
+
 export async function generateStaticParams() {
   const langs = ["en", "de"];
   return courses.flatMap((c) => langs.map((lang) => ({ lang, slug: c.slug })));
@@ -21,14 +23,57 @@ export async function generateMetadata(
   const courseName = course.name;
   const courseData = (dict.coursesData as Record<string, any>)[course.id];
   const description = courseData?.description ?? course.description;
+  const t = dict.courseDetail;
+
+  const title = t.metaTitle
+    .replace("{courseName}", courseName)
+    .replace("{lessons}", String(course.totalLessons));
+
+  const metaDescription = t.metaDescription
+    .replace("{courseName}", courseName)
+    .replace("{description}", description)
+    .replace("{lessons}", String(course.totalLessons))
+    .replace("{hours}", String(course.estimatedHours));
+
+  const ogTitle = (t.metaOgTitle ?? t.metaTitle)
+    .replace("{courseName}", courseName)
+    .replace("{lessons}", String(course.totalLessons));
+
+  const courseUrl = `${BASE_URL}/${lang}/courses/${course.slug}`;
 
   return {
-    title: dict.courseDetail.metaTitle
-      .replace("{courseName}", courseName),
-    description: dict.courseDetail.metaDescription
-      .replace("{description}", description)
-      .replace("{lessons}", String(course.totalLessons))
-      .replace("{hours}", String(course.estimatedHours)),
+    title,
+    description: metaDescription,
+    openGraph: {
+      title: ogTitle,
+      description: metaDescription,
+      type: "website",
+      url: courseUrl,
+      siteName: "Kodo Forge",
+      locale: lang === "de" ? "de_DE" : "en_US",
+      images: [
+        {
+          url: `${BASE_URL}${course.image}`,
+          width: 1200,
+          height: 630,
+          alt: `${courseName} — Kodo Forge Terminal Course`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description: metaDescription,
+      images: [`${BASE_URL}${course.image}`],
+    },
+    alternates: {
+      canonical: courseUrl,
+      languages: {
+        en: `${BASE_URL}/en/courses/${course.slug}`,
+        de: `${BASE_URL}/de/courses/${course.slug}`,
+        "x-default": `${BASE_URL}/en/courses/${course.slug}`,
+      },
+    },
   };
 }
 

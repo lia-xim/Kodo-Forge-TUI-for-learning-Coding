@@ -1,9 +1,8 @@
-```typescript
 /**
  * Lesson 03 — Quiz Data: Type Annotations & Type Inference
  *
  * Exports only the questions (without calling runQuiz),
- * so the review runner can import them.
+ * so that the review runner can import them.
  */
 
 import type { QuizQuestion } from '../tools/quiz-runner.ts';
@@ -41,7 +40,7 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 1,
     explanation:
-      'With `let`, widening occurs: "hello" is broadened to string, ' +
+      'With `let`, widening occurs: "hello" is widened to string ' +
       'because the variable could later hold a different string value.',
   },
 
@@ -58,7 +57,7 @@ export const questions: QuizQuestion[] = [
     correct: 2,
     explanation:
       '`msg: string` is redundant because TS infers the type from the template literal. ' +
-      'Parameter annotations (name: string) are required, and the return type ' +
+      'Parameter annotations (name: string) are mandatory, and the return type ' +
       '(: void) is best practice for exported functions.',
   },
 
@@ -74,7 +73,7 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 1,
     explanation:
-      'Even though `config` is const, object properties are widened. ' +
+      'Although `config` is const, object properties are widened. ' +
       'Properties can be changed (config.host = "other"). ' +
       'Therefore the type is string, not "localhost".',
   },
@@ -87,12 +86,12 @@ export const questions: QuizQuestion[] = [
       'The array becomes string[]',
       'The array becomes a readonly tuple with literal types',
       'The array becomes immutable, but the types remain string',
-      'Nothing -- as const only works on primitives',
+      'Nothing -- as const only works with primitives',
     ],
     correct: 1,
     explanation:
       '`as const` makes the array readonly ["red", "green", "blue"]. ' +
-      'Each element retains its literal type, and the entire array is readonly.',
+      'Each element keeps its literal type, and the entire array is readonly.',
   },
 
   // --- Question 6: Contextual Typing ---
@@ -108,7 +107,7 @@ export const questions: QuizQuestion[] = [
     correct: 1,
     explanation:
       'TypeScript knows the type of nums (number[]) and knows that the ' +
-      'callback of .map() receives the element type as a parameter. ' +
+      '.map() callback receives the element type as a parameter. ' +
       'This is called Contextual Typing.',
   },
 
@@ -141,17 +140,17 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      'TS analyzes ALL return paths: toString() returns string, ' +
+      'TS analyzes ALL return paths: toString() gives string, ' +
       'then null, then undefined. The return type is the union ' +
       'of all possible return values: string | null | undefined.',
   },
 
-  // --- Question 9: Widening on Function Return ---
+  // --- Question 9: Widening at Function Return ---
   {
-    question: "How do you preserve the literal type in a return value?",
+    question: "How do you preserve the literal type in the return value?",
     code: `function getStatus() {\n  return "active";\n}\n// Return type: string (widened!)`,
     options: [
-      'You cannot prevent widening on returns',
+      'You cannot prevent widening at returns',
       'Use `return "active" as const`',
       'Write `const` before `function`',
       'Use `return "active" as literal`',
@@ -169,7 +168,7 @@ export const questions: QuizQuestion[] = [
     code: `type Colors = Record<string, string | number[]>;\n\nconst a: Colors = { red: "#f00" };\nconst b = { red: "#f00" } satisfies Colors;`,
     options: [
       'There is no difference -- satisfies is just shorter syntax',
-      'satisfies validates the type, but preserves the specific inferred types',
+      'satisfies validates the type, but keeps the specific inferred types',
       'satisfies is stricter and does not allow extra properties',
       'satisfies only works with Record types',
     ],
@@ -177,13 +176,13 @@ export const questions: QuizQuestion[] = [
     explanation:
       'With annotation (`: Colors`), a.red becomes `string | number[]` (the full union). ' +
       'With `satisfies`, b.red becomes `string` (the specific inferred type). ' +
-      'satisfies validates against the schema, but the inferred type stays precise.',
+      'satisfies validates against the schema, but the inferred type remains precise.',
   },
 
   // --- Question 11: Control Flow Narrowing ---
   {
     question: "What type does `value` have at the marked line?",
-    code: `function process(value: string | number | null) {\n  if (value === null) return;\n  if (typeof value === "string") {\n    // <-- Here: What type?\n    console.log(value);\n  }\n}`,
+    code: `function process(value: string | number | null) {\n  if (value === null) return;\n  if (typeof value === "string") {\n    // <-- Here: what type?\n    console.log(value);\n  }\n}`,
     options: [
       'string | number | null',
       'string | number',
@@ -194,11 +193,11 @@ export const questions: QuizQuestion[] = [
     explanation:
       'TS narrows the type step by step: ' +
       '1. After `if (value === null) return`, null is excluded --> string | number. ' +
-      '2. Inside `if (typeof value === "string")`, it narrows further --> string. ' +
-      'Control Flow Analysis tracks every step and narrows the type accordingly.',
+      '2. In `if (typeof value === "string")`, it is further narrowed --> string. ' +
+      'Control Flow Analysis tracks each step and narrows the type accordingly.',
   },
 
-  // --- Question 12: Loss of Contextual Typing ---
+  // --- Question 12: Contextual Typing Lost ---
   {
     question: "Why does `event` have the type `any` in the following code?",
     code: `const handler = (event) => {\n  console.log(event.clientX);\n};\ndocument.addEventListener("click", handler);`,
@@ -212,8 +211,8 @@ export const questions: QuizQuestion[] = [
     explanation:
       'Contextual Typing only works when the callback is passed DIRECTLY as ' +
       'an argument. When handler is defined separately, ' +
-      'TS has no context at the point of definition. The connection ' +
-      'to addEventListener is made later -- too late for inference.',
+      'TS has no context at the definition site. The connection ' +
+      'to addEventListener is established later -- too late for inference.',
   },
 
   // --- Question 13: Object.keys() ---
@@ -228,9 +227,9 @@ export const questions: QuizQuestion[] = [
     correct: 2,
     explanation:
       'TypeScript is deliberately conservative here. An object of type ' +
-      '{ a: number; b: number } could have additional properties at runtime ' +
-      '(e.g. through inheritance or dynamic assignment). ' +
-      'Therefore `("a" | "b")[]` would be technically unsound.',
+      '{ a: number; b: number } could also have properties ' +
+      'like "c" or "toString" at runtime (e.g., through inheritance or dynamic ' +
+      'assignment). Therefore `("a" | "b")[]` would be technically unsound.',
   },
 
   // --- Question 14: as const + satisfies ---
@@ -245,13 +244,13 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 1,
     explanation:
-      '`as const` makes the values literal types ("/" and "/users"). ' +
-      '`satisfies` validates against Record<string, string>, without losing the literal types. ' +
+      '`as const` makes the values into literal types ("/" and "/users"). ' +
+      '`satisfies` validates against Record<string, string> without losing the literal types. ' +
       '`(typeof ROUTES)[keyof typeof ROUTES]` then extracts the ' +
       'union of values: "/" | "/users".',
   },
 
-  // --- Question 15: Understanding Best Practice ---
+  // --- Question 15: Understanding Best Practices ---
   {
     question: "A function has a complex return type (union of 5 types). " +
               "What is the best strategy?",
@@ -266,8 +265,8 @@ export const questions: QuizQuestion[] = [
     explanation:
       'For complex functions with many return paths, an explicit ' +
       'return type is best practice. It documents the intention (not just the ' +
-      'result), provides better error messages, and prevents an ' +
-      'implementation change from accidentally changing the public type. ' +
+      'result), gives better error messages, and prevents an implementation ' +
+      'change from accidentally changing the public type. ' +
       'This is the "Annotate at boundaries" principle in action.',
   },
 
@@ -278,11 +277,11 @@ export const questions: QuizQuestion[] = [
   // --- Question 16: Short-Answer — Widening ---
   {
     type: "short-answer",
-    question: "What type does TypeScript infer for 'let x = 42'? (Provide only the type name)",
+    question: "What type does TypeScript infer for 'let x = 42'? (Give only the type name)",
     expectedAnswer: "number",
     acceptableAnswers: ["number"],
     explanation:
-      "With let, type widening occurs: the literal value 42 is broadened to the wider type 'number' " +
+      "With let, type widening occurs: the literal value 42 is widened to the broader type 'number' " +
       "because the variable could later hold a different numeric value. " +
       "With 'const x = 42', the type would instead be the literal type '42'.",
   },
@@ -292,11 +291,11 @@ export const questions: QuizQuestion[] = [
     type: "short-answer",
     question:
       "Which TypeScript keyword validates a value against a type, " +
-      "but preserves the specific inferred type?",
+      "but keeps the specific inferred type?",
     expectedAnswer: "satisfies",
     acceptableAnswers: ["satisfies"],
     explanation:
-      "satisfies (since TS 4.9) validates that a value conforms to a type, " +
+      "satisfies (since TS 4.9) validates that a value matches a type " +
       "without overwriting the inferred type. With ': Type' (annotation), " +
       "the type is set to the broader type. satisfies is ideal for " +
       "configuration objects: validation + precise inference.",
@@ -305,25 +304,25 @@ export const questions: QuizQuestion[] = [
   // --- Question 18: Predict-Output — Contextual Typing ---
   {
     type: "predict-output",
-    question: "What type does TypeScript infer for the parameter 'n'? (Provide only the type name)",
+    question: "What type does TypeScript infer for the parameter 'n'? (Give only the type name)",
     code: `const nums: number[] = [1, 2, 3];\nnums.forEach(n => {\n  // What type does n have?\n});`,
     expectedAnswer: "number",
     acceptableAnswers: ["number"],
     explanation:
-      "Contextual Typing: TypeScript knows the type of nums (number[]) and knows " +
-      "that the forEach callback receives the element type as a parameter. " +
+      "Contextual Typing: TypeScript knows the type of nums (number[]) and knows that " +
+      "the forEach callback receives the element type as a parameter. " +
       "n is automatically inferred as 'number' — no annotation needed.",
   },
 
-  // --- Question 19: Predict-Output — const vs let with objects ---
+  // --- Question 19: Predict-Output — const vs let with Objects ---
   {
     type: "predict-output",
-    question: "What type does config.mode have according to TypeScript? (Provide the type name)",
+    question: "What type does config.mode have according to TypeScript? (Give the type name)",
     code: `const config = {\n  mode: "production",\n  port: 3000,\n};\n// typeof config.mode = ???`,
     expectedAnswer: "string",
     acceptableAnswers: ["string"],
     explanation:
-      "Even though config is declared with const, widening occurs for object properties. " +
+      "Although config is declared with const, widening occurs for object properties. " +
       "config.mode could be changed later " +
       "(config.mode = 'development'), so TypeScript infers 'string', " +
       "not the literal type 'production'. With 'as const' it would be 'production'.",
@@ -346,11 +345,11 @@ export const questions: QuizQuestion[] = [
     type: "explain-why",
     question:
       "Why do TypeScript experts recommend placing type annotations primarily at " +
-      "'boundaries' (function parameters, return types of exports), " +
+      "'boundaries' (function parameters, return types of exports) " +
       "rather than everywhere?",
     modelAnswer:
       "At boundaries (exports, public APIs), annotations serve as a contract between modules. " +
-      "They document the intention, provide better error messages (the error points to " +
+      "They document the intention, give better error messages (the error points to " +
       "the function, not the caller), and prevent implementation changes from " +
       "accidentally changing the public type. Internally, inference is often more precise than " +
       "manual annotations and avoids redundant 'type noise'.",
@@ -376,18 +375,18 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   0: {
     whyCorrect:
       'With `const`, the literal type is preserved: `"hello"`. ' +
-      "TypeScript knows the value can never change, so the " +
-      "narrowest possible type is the exact value itself.",
+      "TypeScript knows the value can never change, so the narrowest possible " +
+      "type is the exact value itself.",
     commonMistake:
-      "Most people answer `string`. That would be correct for `let`. " +
+      "Most answer `string`. That would be correct for `let`. " +
       "With `const` and primitive values, the literal type is more precise " +
       "and TypeScript uses it automatically.",
   },
   1: {
     whyCorrect:
-      'With `let`, widening occurs: `"hello"` is broadened to `string`. ' +
+      'With `let`, widening occurs: `"hello"` is widened to `string`. ' +
       "Since the variable could later hold a different value, " +
-      "TypeScript chooses the wider type.",
+      "TypeScript chooses the broader type.",
     commonMistake:
       'Some think the type is `"hello"` like with const. ' +
       "Widening with let is fundamental: TypeScript must assume that " +
@@ -395,40 +394,40 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   },
   2: {
     whyCorrect:
-      "`msg: string` is redundant because TypeScript automatically recognizes " +
-      "the type of the template literal as `string`. Parameter annotations (name: string) are required " +
+      "`msg: string` is redundant because TypeScript automatically recognizes the type of " +
+      "the template literal as `string`. Parameter annotations (name: string) are mandatory " +
       "and the return type (: void) is best practice for exported functions.",
     commonMistake:
-      "Many think ALL annotations are necessary. This leads to 'annotation noise': " +
-      "redundant annotations make code harder to read and can even " +
-      "worsen inference (e.g. loss of literal types).",
+      'Many think ALL annotations are necessary. This leads to "annotation noise": ' +
+      "redundant annotations make the code unreadable and can even " +
+      "worsen inference (e.g., loss of literal types).",
   },
   3: {
     whyCorrect:
-      "Even though `config` is const, properties can be changed " +
-      "(`config.host = 'other'` would be allowed). Therefore TypeScript " +
-      'widens the type to `string`, not the literal `"localhost"`.',
+      "Although `config` is const, properties can be changed " +
+      '(`config.host = "other"` would be allowed). Therefore TypeScript ' +
+      'widens the type to `string`, not to the literal `"localhost"`.',
     commonMistake:
       'Almost everyone expects `"localhost"` (literal type). ' +
-      "const only protects the variable (no `config = ...`), " +
+      "The const only protects the variable (no `config = ...`), " +
       "not the properties. Solution: `as const` on the object.",
   },
   4: {
     whyCorrect:
       "`as const` makes the array a readonly tuple with literal types: " +
-      '`readonly ["red", "green", "blue"]`. Each element retains its ' +
-      "exact string value as a type, and the array is immutable.",
+      '`readonly ["red", "green", "blue"]`. Each element keeps its ' +
+      "exact string value as type, and the array is immutable.",
     commonMistake:
-      "Some think `as const` only makes things readonly. The literal type preservation " +
+      "Some think `as const` only makes things readonly. The preservation of literal types " +
       "and tuple conversion are the actual main benefits of `as const`.",
   },
   5: {
     whyCorrect:
-      "Contextual Typing: TypeScript knows the type of `nums` (`number[]`) and knows " +
-      "that the .map() callback receives a `number` as a parameter. " +
+      "Contextual Typing: TypeScript knows the type of `nums` (`number[]`) and knows that " +
+      "the .map() callback receives a `number` as parameter. " +
       "The annotation `(n: number)` would be correct but redundant.",
     commonMistake:
-      "Some think arrow functions always have `any` as the implicit parameter type. " +
+      "Some think arrow functions always have `any` as an implicit parameter type. " +
       "That is only true without context. With array methods, the array type provides the context.",
   },
   6: {
@@ -438,13 +437,13 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
       "This is one of the few cases where inference leads to an unsafe type.",
     commonMistake:
       "Many expect `never[]` (logical: empty array, no elements). " +
-      "TypeScript pragmatically chooses `any[]` because `never[]` would be useless — " +
-      "you could never add anything to it.",
+      "TypeScript pragmatically chooses `any[]` because a `never[]` would be useless — " +
+      "you could never add anything.",
   },
   7: {
     whyCorrect:
       "TypeScript analyzes ALL return paths and forms the union of all possible " +
-      "return values: `toString()` returns `string`, the second path `null`, the third " +
+      "return values: `toString()` gives `string`, the second path `null`, the third " +
       "`undefined`. Result: `string | null | undefined`.",
     commonMistake:
       "Some forget `undefined` — because `return undefined` is explicit, " +
@@ -455,7 +454,7 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "`as const` on the return value prevents widening. " +
       '`return "active" as const` returns the type `"active"`, not `string`. ' +
-      'Alternatively: explicit return type `function getStatus(): "active"`.',
+      'Alternative: explicit return type `function getStatus(): "active"`.',
     commonMistake:
       "Many try to write `const` before the function. " +
       "`const function` is not valid syntax — `as const` must be on the value.",
@@ -464,45 +463,44 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "With annotation (`: Colors`), `a.red` becomes the full union type `string | number[]`. " +
       "With `satisfies`, `b.red` becomes the specific type `string`. " +
-      "satisfies validates the type but preserves the precise inference.",
+      "satisfies validates the type but keeps the precise inference.",
     commonMistake:
-      "Many consider `satisfies` to be a pure syntactic variant of annotation. " +
-      "The key difference: annotation OVERWRITES the type, " +
-      "satisfies VALIDATES against the type and preserves the inferred type.",
+      "Many consider `satisfies` a pure syntactic variant of annotation. " +
+      "The core difference: annotation OVERWRITES the type, " +
+      "satisfies VALIDATES against the type and keeps the inferred type.",
   },
   10: {
     whyCorrect:
-      "Control Flow Analysis: After `if (value === null) return`, null is excluded. " +
-      'Inside `if (typeof value === "string")`, it narrows further to `string`. ' +
+      'Control Flow Analysis: After `if (value === null) return`, null is excluded. ' +
+      'In `if (typeof value === "string")`, it is further narrowed to `string`. ' +
       "TypeScript tracks every control flow step precisely.",
     commonMistake:
       'Some think TypeScript "forgets" earlier checks. ' +
-      "Control Flow Analysis correctly tracks ALL branches — " +
+      "Control Flow Analysis tracks ALL branches correctly — " +
       "even across multiple if-statements and return-statements.",
   },
   11: {
     whyCorrect:
-      "Contextual Typing only works when passed DIRECTLY as an argument. " +
+      "Contextual Typing only works with DIRECT passing as an argument. " +
       "When `handler` is defined beforehand, TypeScript has no context at the " +
-      "point of definition — the connection is made too late.",
+      "definition site — the connection is established too late.",
     commonMistake:
-      "Intuition: 'TypeScript tracks data flow.' " +
-      "For values that is true (Control Flow), but for Contextual Typing " +
-      "the context must be present at the POINT OF DEFINITION.",
+      '"TypeScript tracks the data flow." ' +
+      "That is true for values (Control Flow), but for Contextual Typing " +
+      "the context must be present at the DEFINITION SITE.",
   },
   12: {
     whyCorrect:
       "TypeScript is deliberately conservative: an object of type " +
       "`{ a: number; b: number }` could have additional properties at runtime " +
-      "(inheritance, dynamic assignment). `(\"a\" | \"b\")[]` would be technically unsound.",
+      '(inheritance, dynamic assignment). `("a" | "b")[]` would be technically unsound.',
     commonMistake:
-      "Many consider it a bug. It is a deliberate design decision " +
-      "for type safety — TypeScript prefers conservative, correct types " +
-      "over practical but potentially incorrect ones.",
+      "Many consider it a bug. It is a deliberate design decision for type safety — " +
+      "TypeScript prefers conservative, correct types over practical but potentially incorrect ones.",
   },
   13: {
     whyCorrect:
-      "`as const` makes the values literal types. `satisfies` validates the structure " +
+      "`as const` makes the values into literal types. `satisfies` validates the structure " +
       "without losing the literal types. `(typeof ROUTES)[keyof typeof ROUTES]` " +
       'then extracts the union of values: `"/" | "/users"`.',
     commonMistake:
@@ -512,13 +510,12 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   },
   14: {
     whyCorrect:
-      "For complex functions with many return paths, an explicit " +
-      "return type documents the intention. It provides better error messages (the error is IN " +
+      "For complex functions with many return paths, an explicit return type documents " +
+      "the intention. It gives better error messages (the error is IN " +
       "the function, not at the caller) and prevents accidental changes.",
     commonMistake:
-      "Two extreme positions: 'Always annotate' (too much noise) or " +
-      "'Never annotate' (API instability). The golden middle: " +
+      'Two extreme positions: "always annotate" (too much noise) or ' +
+      '"never annotate" (API instability). The golden mean: ' +
       "annotate at boundaries (exports), trust inference internally.",
   },
 };
-```

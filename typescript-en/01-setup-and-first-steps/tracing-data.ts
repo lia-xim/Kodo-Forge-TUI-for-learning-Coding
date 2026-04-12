@@ -1,22 +1,21 @@
-```typescript
 /**
- * Lektion 01 — Tracing-Exercises: Setup & Erste Schritte
+ * Lesson 01 — Tracing Exercises: Setup & First Steps
  *
- * Themen:
- *  - Type Assertions und Laufzeitverhalten
- *  - Enum-Werte zur Laufzeit
- *  - Type Erasure: Was bleibt nach der Kompilierung?
+ * Topics:
+ *  - Type Assertions and runtime behavior
+ *  - Enum values at runtime
+ *  - Type Erasure: What remains after compilation?
  *
- * Schwierigkeit steigend: 1 → 3
+ * Difficulty increasing: 1 → 3
  */
 
 import type { TracingExercise } from "../tools/tracing-engine.ts";
 
 export const tracingExercises: TracingExercise[] = [
-  // ─── Exercise 1: Type Erasure — Was bleibt nach der Kompilierung? ────────
+  // ─── Exercise 1: Type Erasure — What remains after compilation? ──────────
   {
     id: "01-type-erasure-basics",
-    title: "Type Erasure — What Remains?",
+    title: "Type Erasure — What remains?",
     description:
       "Trace what the TypeScript compiler removes and what remains as " +
       "JavaScript code.",
@@ -34,12 +33,12 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 0,
         question:
-          "The interface 'User' is defined. Does it still exist after " +
+          "The 'User' interface is defined. Does it still exist after " +
           "compilation to JavaScript?",
         expectedAnswer: "No",
         variables: {},
         explanation:
-          "Interfaces are pure compile-time constructs. They are completely " +
+          "Interfaces are purely compile-time constructs. They are completely " +
           "removed during type erasure. No interface exists in the JavaScript " +
           "output — only the object literal remains.",
       },
@@ -47,12 +46,12 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 5,
         question:
           "What type does the variable 'user' have in the JavaScript output? " +
-          "Does the annotation ': User' remain?",
-        expectedAnswer: "No, the annotation is removed. user is a normal object.",
+          "Is the annotation ': User' preserved?",
+        expectedAnswer: "No, the annotation is removed. user is a plain object.",
         variables: { "user": "{ name: 'Max', age: 25 }" },
         explanation:
           "The type annotation ': User' is removed during compilation. " +
-          "In JavaScript it simply reads: const user = { name: 'Max', age: 25 }; " +
+          "The JavaScript only contains: const user = { name: 'Max', age: 25 }; " +
           "The value itself remains identical.",
       },
       {
@@ -61,9 +60,8 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "object",
         variables: { "user": "{ name: 'Max', age: 25 }", "typeof user": "object" },
         explanation:
-          "JavaScript's typeof operator does not know about TypeScript types. " +
-          "It returns 'object', not 'User'. The interface " +
-          "does not exist at runtime.",
+          "JavaScript's typeof operator does not know TypeScript types. " +
+          "It returns 'object', not 'User'. The interface does not exist at runtime.",
       },
       {
         lineIndex: 7,
@@ -71,21 +69,21 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "Max",
         variables: { "user": "{ name: 'Max', age: 25 }" },
         explanation:
-          "Property access works normally — the object itself " +
-          "was not changed, only the type information was removed.",
+          "Property access works normally — the object itself was not changed, " +
+          "only the type information was removed.",
       },
     ],
     concept: "type-erasure",
     difficulty: 1,
   },
 
-  // ─── Exercise 2: Enum-Werte zur Laufzeit ─────────────────────────────────
+  // ─── Exercise 2: Enum Values at Runtime ───────────────────────────────────
   {
     id: "01-enum-runtime-values",
-    title: "Enum Values — What Exists at Runtime?",
+    title: "Enum Values — What exists at runtime?",
     description:
-      "Trace what values an enum has at runtime and how " +
-      "numeric and string enums differ.",
+      "Trace what values an enum has at runtime and how numeric and " +
+      "string enums differ.",
     code: [
       "enum Direction {",
       "  Up,",
@@ -102,14 +100,13 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 0,
         question:
-          "A numeric enum is defined. Unlike interfaces — " +
-          "does it exist after compilation?",
+          "A numeric enum is defined. Unlike interfaces — does it exist after compilation?",
         expectedAnswer: "Yes",
         variables: {},
         explanation:
           "Enums are one of the few TypeScript constructs that exist at runtime. " +
-          "The compiler generates a JavaScript object with the " +
-          "enum values. Only 'const enum' is completely removed.",
+          "The compiler generates a JavaScript object with the enum values. " +
+          "Only 'const enum' is completely removed.",
       },
       {
         lineIndex: 7,
@@ -117,7 +114,7 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "0",
         variables: { "Direction.Up": "0", "Direction.Down": "1", "Direction.Left": "2", "Direction.Right": "3" },
         explanation:
-          "Numeric enums start at 0 (when no initial value is given). " +
+          "Numeric enums start at 0 (when no initial value is specified). " +
           "Up = 0, Down = 1, Left = 2, Right = 3. " +
           "These values exist as real JavaScript values.",
       },
@@ -147,7 +144,7 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 2,
   },
 
-  // ─── Exercise 3: Type Assertions vs. Laufzeit ────────────────────────────
+  // ─── Exercise 3: Type Assertions vs. Runtime ──────────────────────────────
   {
     id: "01-type-assertions-runtime",
     title: "Type Assertions — Compile Time vs. Runtime",
@@ -183,7 +180,7 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "'as string' is a type assertion — it only convinces the " +
           "compiler, NOT the runtime. The value remains 42 (a number). " +
-          "TypeScript trusts you here but does not check.",
+          "TypeScript trusts you here, but does not verify.",
       },
       {
         lineIndex: 2,
@@ -192,14 +189,13 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "text": "42", "typeof text": "number" },
         explanation:
           "Here the contradiction becomes visible: TypeScript thinks text is " +
-          "a 'string', but typeof returns 'number'. Type assertions " +
-          "do not change the value — they only lie to the compiler.",
+          "a 'string', but typeof returns 'number'. Type assertions do not " +
+          "change the value — they only lie to the compiler.",
       },
       {
         lineIndex: 4,
         question:
-          "What would happen if line 5 (text.toUpperCase()) " +
-          "were executed?",
+          "What would happen if line 5 (text.toUpperCase()) is executed?",
         expectedAnswer: "Runtime Error: text.toUpperCase is not a function",
         variables: { "text": "42 (number)" },
         explanation:
@@ -212,10 +208,10 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 3,
   },
 
-  // ─── Exercise 4: const enum vs. regulaeres enum ──────────────────────────
+  // ─── Exercise 4: const enum vs. regular enum ──────────────────────────────
   {
     id: "01-const-enum-erasure",
-    title: "const enum — Completely Removed",
+    title: "const enum — Completely removed",
     description:
       "Compare what remains after compilation for a regular enum " +
       "versus a const enum.",
@@ -233,8 +229,7 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 0,
         question:
-          "A 'const enum' is defined. Does it exist as an object " +
-          "after compilation?",
+          "A 'const enum' is defined. Does it exist after compilation as an object?",
         expectedAnswer: "No",
         variables: {},
         explanation:
@@ -250,7 +245,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "myColor": "RED" },
         explanation:
           "The compiler replaces Color.Red directly with the value 'RED' " +
-          "(inlining). In JavaScript it simply reads: const myColor = 'RED'; " +
+          "(inlining). The JavaScript only contains: const myColor = 'RED'; " +
           "No reference to Color, no enum object.",
       },
       {
@@ -259,7 +254,7 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "RED",
         variables: { "myColor": "RED" },
         explanation:
-          "Since the value was replaced inline, it simply outputs 'RED'. " +
+          "Since the value was inlined, it simply outputs 'RED'. " +
           "The result is identical to a regular enum — " +
           "but the generated code is smaller and faster.",
       },
@@ -268,4 +263,3 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 2,
   },
 ];
-```

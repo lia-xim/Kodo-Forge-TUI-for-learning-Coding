@@ -1,20 +1,19 @@
-```typescript
 /**
  * Lesson 01 — Completion Problems: Setup & First Steps
  *
- * Code templates with strategic gaps (______).
- * The learner fills in the gaps — Faded Worked Examples.
+ * Code templates with strategic blanks (______).
+ * The learner fills in the blanks — Faded Worked Examples.
  */
 
 export interface CompletionProblem {
   id: string;
   title: string;
   description: string;
-  /** Code with ______ as placeholder for gaps */
+  /** Code with ______ as placeholder for blanks */
   template: string;
-  /** Solution with filled gaps */
+  /** Solution with filled blanks */
   solution: string;
-  /** Which gap has which answer */
+  /** Which blank has which answer */
   blanks: { placeholder: string; answer: string; hint: string }[];
   /** Related concept */
   concept: string;
@@ -26,7 +25,7 @@ export const completionProblems: CompletionProblem[] = [
     id: "01-cp-annotations",
     title: "First Type Annotations",
     description:
-      "Add the missing type annotations for variables and " +
+      "Complete the missing type annotations for variables and " +
       "the function. TypeScript expects the correct primitive types.",
     template: `let vorname: ______ = "Max";
 let alter: ______ = 30;
@@ -46,7 +45,7 @@ function addiere(a: number, b: number): number {
       {
         placeholder: "______",
         answer: "string",
-        hint: 'Which type fits a text value like "Max"?',
+        hint: "Which type fits a text value like \"Max\"?",
       },
       {
         placeholder: "______",
@@ -64,16 +63,16 @@ function addiere(a: number, b: number): number {
         hint: "What does the addition of two numbers return?",
       },
     ],
-    concept: "Type Annotations for Variables and Functions",
+    concept: "Type annotations for variables and functions",
   },
 
-  // ─── 2: Defining an Interface (easy-medium) ─────────────────────────────
+  // ─── 2: Define Interface (easy-medium) ──────────────────────────────────
   {
     id: "01-cp-interface",
-    title: "Defining an Interface",
+    title: "Define Interface",
     description:
       "Define an interface for a vehicle. Note: " +
-      "The color is optional (not every vehicle has a known color).",
+      "Color is optional (not every vehicle has a known color).",
     template: `______ Fahrzeug {
   marke: string;
   baujahr: ______;
@@ -85,7 +84,7 @@ const meinAuto: Fahrzeug = {
   marke: "VW",
   baujahr: 2023,
   elektrisch: true,
-  // color is optional, so omit it
+  // farbe is optional, so leave it out
 };`,
     solution: `interface Fahrzeug {
   marke: string;
@@ -98,7 +97,7 @@ const meinAuto: Fahrzeug = {
   marke: "VW",
   baujahr: 2023,
   elektrisch: true,
-  // color is optional, so omit it
+  // farbe is optional, so leave it out
 };`,
     blanks: [
       {
@@ -123,10 +122,10 @@ const meinAuto: Fahrzeug = {
   // ─── 3: Type Guard for Runtime Check (medium) ───────────────────────────
   {
     id: "01-cp-type-guard",
-    title: "Runtime Check Instead of instanceof",
+    title: "Runtime Check instead of instanceof",
     description:
       "Interfaces do not exist at runtime. Write a " +
-      "Type Guard function that checks whether an object has the structure " +
+      "type guard function that checks whether an object has the structure " +
       "of a User.",
     template: `interface User {
   name: string;
@@ -173,7 +172,7 @@ if (isUser(data)) {
       {
         placeholder: "______",
         answer: "is",
-        hint: "Which keyword makes a function a Type Guard? (obj ___ User)",
+        hint: "Which keyword makes a function a type guard? (obj ___ User)",
       },
       {
         placeholder: "______",
@@ -189,10 +188,10 @@ if (isUser(data)) {
     concept: "Type Guards / Type Erasure / Runtime Check",
   },
 
-  // ─── 4: Predicting Compiler Output (medium) ───────────────────────────
+  // ─── 4: Predict Compiler Output (medium) ────────────────────────────────
   {
     id: "01-cp-compiler-output",
-    title: "Predicting Compiler Output",
+    title: "Predict Compiler Output",
     description:
       "Complete what the TypeScript compiler does with the code. " +
       "Note: All types are removed!",
@@ -207,7 +206,7 @@ function formatPreis(p: Produkt): string {
 }
 
 // JavaScript Output (after tsc):
-// (Fill in the gaps)
+// (Fill in the blanks)
 
 // ______ Produkt { ... }  ← What happens to the interface?
 
@@ -246,10 +245,10 @@ function formatPreis(p) {
     concept: "Type Erasure / Compiler Output",
   },
 
-  // ─── 5: Configuring tsconfig (medium-hard) ──────────────────────────────
+  // ─── 5: Understanding tsconfig (medium-hard) ────────────────────────────
   {
     id: "01-cp-tsconfig",
-    title: "Configuring tsconfig.json",
+    title: "Configure tsconfig.json",
     description:
       "Create a tsconfig.json for a new project with strict " +
       "checks, output to ./dist, and type declarations.",
@@ -302,7 +301,7 @@ function formatPreis(p) {
     id: "01-cp-assertion-vs-conversion",
     title: "Type Assertion vs. Real Conversion",
     description:
-      "Fix the code. In line A, a Type Assertion is incorrectly " +
+      "Correct the code. In line A, a type assertion is incorrectly " +
       "used where a real conversion is needed. " +
       "In line B, a real validation is needed.",
     template: `// API data is unknown at runtime:
@@ -321,7 +320,7 @@ if (______ apiData === "______") {
     solution: `// API data is unknown at runtime:
 const apiData: unknown = fetchFromApi();
 
-// Line A — CORRECT: Real conversion
+// Line A — CORRECT: Real Conversion
 const name = String(apiData);
 
 // Line B — Safe Check:
@@ -343,10 +342,9 @@ if (typeof apiData === "string") {
       {
         placeholder: "______",
         answer: "string",
-        hint: "Which typeof value do you check for a string?",
+        hint: "Which typeof value do you check against for a string?",
       },
     ],
     concept: "Type Assertion vs. Conversion / typeof",
   },
 ];
-```

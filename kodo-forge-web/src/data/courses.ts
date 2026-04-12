@@ -36,16 +36,16 @@ export const courses: Course[] = [
     id: "typescript",
     slug: "typescript",
     name: "TypeScript Deep Learning",
-    tagline: "Von Basics bis Type-Level Programming — 44 Lektionen, 5 Phasen",
+    tagline: "From basics to type-level programming — 44 lessons, 5 phases",
     description:
-      "Der umfassendste TypeScript-Kurs, den du im Terminal finden wirst. 44 Lektionen, 5 Phasen, von Primitives bis zur Compiler API.",
-    longDescription: `Dieser Kurs ist kein einfaches Tutorial — es ist ein systematisches, tiefgründiges Lernprogramm, das dich über 5 Phasen und 44 Lektionen vom absoluten TypeScript-Anfänger zum echten Experten bringt.
+      "The most comprehensive TypeScript course you'll find in a terminal. 44 lessons, 5 phases, from primitives to the Compiler API.",
+    longDescription: `This course isn't a simple tutorial — it's a systematic, in-depth learning program that takes you from absolute TypeScript beginner to true expert across 5 phases and 44 lessons.
 
-Jede einzelne Lektion folgt unserem bewährten LEARN-Zyklus: Du liest die Theorie mit Diagrammen und Analogien, erkundest lauffähige Code-Beispiele, wendest dein Wissen in Übungen mit steigender Schwierigkeit an, reflektierst dein Verständnis in interaktiven Terminal-Quizzes, und behältst alles über kompakte Cheatsheets.
+Every single lesson follows our proven LEARN cycle: You read the theory with diagrams and analogies, explore runnable code examples, apply your knowledge in exercises with increasing difficulty, reflect on your understanding in interactive terminal quizzes, and retain everything through compact cheatsheets.
 
-Das Besondere: Unser Spaced-Repetition-System merkt sich, welche Konzepte du gelernt hast, und erinnert dich genau dann an sie, bevor du sie vergessen würdest. So baust du echtes, langfristiges Wissen auf — keine oberflächliche Tutorial-Erfahrung.
+What makes it special: Our spaced repetition system remembers which concepts you've learned and reminds you of them right before you'd forget. This way you build real, long-term knowledge — not a superficial tutorial experience.
 
-Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Mapped Types und Conditional Types bis hin zu Decorators, der Compiler API und Type-Level Programming. Phase 5 geht sogar über das Übliche hinaus mit TypeScript Security, RxJS-Integration und fortgeschrittenen Design Patterns.`,
+The course covers everything: from primitive types and interfaces through generics, mapped types and conditional types all the way to decorators, the Compiler API, and type-level programming. Phase 5 even goes beyond the usual with TypeScript security, RxJS integration, and advanced design patterns.`,
     color: "#3B82F6",
     glowColor: "rgba(59, 130, 246, 0.4)",
     image: "/course_typescript.png",
@@ -71,56 +71,56 @@ Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Map
       "/screenshots/kodo_typescript_screen_3.png"
     ],
     targetAudience: [
-      "JavaScript-Entwickler, die TypeScript wirklich verstehen wollen",
-      "Selbstlerner, die einen strukturierten Lernpfad suchen",
-      "Entwickler, die sich auf Angular, React oder Next.js vorbereiten",
-      "Profis, die ihr Type-System-Wissen vertiefen wollen",
+      "JavaScript developers who want to truly understand TypeScript",
+      "Self-learners looking for a structured learning path",
+      "Developers preparing for Angular, React, or Next.js",
+      "Professionals who want to deepen their type system knowledge",
     ],
     whatYouLearn: [
-      "Alle primitiven Typen und wann du Annotations vs. Inference verwendest",
-      "Generics: von den Basics bis zu komplexen Higher-Order Types",
-      "Mapped Types, Conditional Types und Template Literal Types meistern",
-      "Discriminated Unions und exhaustive Pattern Matching",
-      "Branded/Nominal Types für type-safe IDs und Opaque Types",
-      "Result<T,E> Patterns für type-safe Error Handling",
-      "Decorators (Legacy & Stage 3) für Metaprogrammierung",
-      "Die Compiler API und AST-Manipulation",
-      "Type-Level Programming — Computing mit dem Type System",
-      "15+ Design Patterns (GoF, SOLID, Builder, State Machine) typsicher implementiert",
-      "TypeScript Security: gefährliche Muster erkennen und vermeiden",
-      "RxJS-Pipelines vollständig typsicher designen",
+      "All primitive types and when to use annotations vs. inference",
+      "Generics: from basics to complex higher-order types",
+      "Master mapped types, conditional types, and template literal types",
+      "Discriminated unions and exhaustive pattern matching",
+      "Branded/nominal types for type-safe IDs and opaque types",
+      "Result<T,E> patterns for type-safe error handling",
+      "Decorators (legacy & Stage 3) for metaprogramming",
+      "The Compiler API and AST manipulation",
+      "Type-level programming — computing with the type system",
+      "15+ design patterns (GoF, SOLID, Builder, State Machine) implemented type-safely",
+      "TypeScript security: recognizing and avoiding dangerous patterns",
+      "Fully type-safe RxJS pipeline design",
     ],
     didacticHighlights: [
       {
         title: "Spaced Repetition",
-        description: "Jedes Konzept wird automatisch in dein Review-System aufgenommen. Der Algorithmus plant Wiederholungen optimal — genau bevor du etwas vergisst.",
+        description: "Every concept is automatically added to your review system. The algorithm schedules reviews optimally — right before you'd forget.",
       },
       {
-        title: "Adaptive Lesetiefe",
-        description: "Jede Sektion bietet 3 Modi: Kurzfassung, Standard und Vollständig. Du entscheidest, wie tief du eintauchen willst.",
+        title: "Adaptive Reading Depth",
+        description: "Every section offers 3 modes: summary, standard, and deep-dive. You decide how deep you want to go.",
       },
       {
-        title: "Interaktive Quizzes",
-        description: "Am Ende jeder Lektion: Multiple Choice, Code-Lücken und Konzeptfragen direkt im Terminal.",
+        title: "Interactive Quizzes",
+        description: "At the end of every lesson: multiple choice, code gaps, and concept questions — right in the terminal.",
       },
       {
-        title: "Annotierte Code-Blöcke",
-        description: "Code-Beispiele mit zeilenweisen Annotationen, die erklären, was jede Zeile tut und warum.",
+        title: "Annotated Code Blocks",
+        description: "Code examples with line-by-line annotations that explain what each line does and why.",
       },
       {
         title: "Review Challenges",
-        description: "Alle 10 Lektionen: eine Phase-Review, die alles Gelernte kombiniert und dein Verständnis prüft.",
+        description: "Every 10 lessons: a phase review that combines everything you've learned and tests your understanding.",
       },
       {
-        title: "Mermaid-Diagramme",
-        description: "Komplexe Zusammenhänge werden als visuelle Diagramme direkt im Terminal dargestellt.",
+        title: "Mermaid Diagrams",
+        description: "Complex relationships are displayed as visual diagrams right in the terminal.",
       },
     ],
     phases: [
       {
         name: "Phase 1 — Foundations",
         lessons: [
-          "Setup & Erste Schritte",
+          "Setup & First Steps",
           "Primitive Types",
           "Type Annotations & Inference",
           "Arrays & Tuples",
@@ -182,8 +182,8 @@ Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Map
         lessons: [
           "TypeScript 5.x Features",
           "TypeScript Security",
-          "TypeScript mit RxJS",
-          "Design Patterns Erweitert",
+          "TypeScript with RxJS",
+          "Advanced Design Patterns",
         ],
       },
     ],
@@ -194,7 +194,7 @@ Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Map
     name: "Angular Mastery",
     tagline: "Component Architecture, Signals, RxJS & DI",
     description:
-      "Lerne Angular von Grund auf — mit Signals, modernem Component Design, Dependency Injection und Testing. Der Kurs setzt TypeScript Phase 2 voraus und bringt dich auf Production-Level.",
+      "Learn Angular from the ground up — with Signals, modern component design, Dependency Injection, and testing. Requires TypeScript Phase 2 and takes you to production level.",
     color: "#EF4444",
     glowColor: "rgba(239, 68, 68, 0.4)",
     image: "/course_angular.png",
@@ -248,10 +248,10 @@ Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Map
   {
     id: "react",
     slug: "react",
-    name: "React mit TypeScript",
-    tagline: "Hooks, Patterns, Performance — alles typsicher",
+    name: "React with TypeScript",
+    tagline: "Hooks, Patterns, Performance — all type-safe",
     description:
-      "React, aber richtig. Mit TypeScript von Anfang an. Hooks-Typen, Component Patterns, Context, Performance-Optimierung und Testing.",
+      "React, done right. With TypeScript from the start. Hook types, component patterns, context, performance optimization, and testing.",
     color: "#06B6D4",
     glowColor: "rgba(6, 182, 212, 0.4)",
     image: "/course_react.png",
@@ -291,7 +291,7 @@ Der Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Map
     name: "Next.js Production",
     tagline: "App Router, Server Components, Deployment",
     description:
-      "Das Full-Stack Framework für React. Lerne App Router, Server Components, Caching-Strategien und Production Deployment.",
+      "The full-stack framework for React. Learn App Router, Server Components, caching strategies, and production deployment.",
     color: "#A855F7",
     glowColor: "rgba(168, 85, 247, 0.4)",
     image: "/course_typescript.png",

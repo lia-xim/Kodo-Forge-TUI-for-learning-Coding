@@ -162,7 +162,7 @@
     "coursesLinks": {
       "typescript": "TypeScript Deep Learning",
       "angular": "Angular Mastery",
-      "react": "React mit TypeScript",
+      "react": "React with TypeScript",
       "nextjs": "Next.js Production"
     },
     "resourcesTitle": "Resources",
@@ -198,7 +198,7 @@
     "comingSoon": "Coming Soon",
     "prerequisite": "Prerequisite",
     "metaTitle": "Courses — Terminal Learning Platform",
-    "metaDescription": "Browse all available Kodo Forge terminal courses: TypeScript Deep Learning, Angular Mastery, React mit TypeScript, and Next.js Production."
+    "metaDescription": "Browse all available Kodo Forge terminal courses: TypeScript Deep Learning, Angular Mastery, React with TypeScript, and Next.js Production."
   },
   "courseDetail": {
     "allCourses": "All Courses",
@@ -209,17 +209,55 @@
     "aboutCourse": "About This Course",
     "targetAudience": "Who is this course for?",
     "whatYouLearn": "What you'll learn",
-    "didacticConcept": "Didactic Concept",
-    "didacticDesc": "This course uses modern, science-backed learning methods. Every lesson is designed so that you don't just read, but truly understand and retain.",
+    "learningOutcomes": "{count} Learning Outcomes",
+    "didacticConcept": "Science-Backed Learning",
+    "didacticDesc": "This course uses modern, research-backed learning methods. Every lesson is designed so that you don't just read, but truly understand and retain.",
     "coveredTopics": "Covered Topics",
     "fullCurriculum": "Full Curriculum",
     "curriculumMeta": "{lessons} lessons across {phases} phases · {sections} sections · ~{hours}h content",
-    "readyToStart": "Ready to start ",
+    "readyToStart": "Ready to master ",
     "readyToStart2": "?",
     "downloadCta": "Download Kodo Forge and begin your journey. Free, offline, no sign-up needed.",
     "downloadFree": "Download Free",
-    "metaTitle": "{courseName} — Terminal Course",
-    "metaDescription": "{description} {lessons} lessons, {hours} hours of content."
+    "viewAllCourses": "View All Courses",
+    "heroQuote": "Built by developers, for developers.",
+    "whyThisCourse": "Why This Course?",
+    "whyItems": [
+      {
+        "icon": "Layers",
+        "title": "44 Lessons, Zero Fluff",
+        "description": "Every lesson is meticulously crafted. No filler content, no padding. Pure, distilled TypeScript knowledge across 5 progressive phases."
+      },
+      {
+        "icon": "Brain",
+        "title": "Science-Backed Retention",
+        "description": "Built on 7 learning theories including spaced repetition and active recall. You don't just read — you remember. Permanently."
+      },
+      {
+        "icon": "TrendingUp",
+        "title": "From Beginner to Expert",
+        "description": "Start with primitive types, finish with the Compiler API and type-level programming. A complete mastery path, not a surface-level overview."
+      }
+    ],
+    "metaTitle": "Learn {courseName} Free: {lessons} Lessons | Terminal Course",
+    "metaDescription": "Master {courseName} with {lessons} free interactive lessons and {hours}h of content. Science-backed learning with spaced repetition, quizzes, and adaptive depth — 100% offline in your terminal.",
+    "metaOgTitle": "Learn {courseName} Free — {lessons} Lessons in Your Terminal | Kodo Forge",
+    "terminalPreviewLines": [
+      "$ kodo-forge start typescript",
+      "",
+      "  L02: Primitive Types",
+      "  ─────────────────────────────────",
+      "  Section 2/5 · Standard Mode",
+      "",
+      "  TypeScript has 7 primitive types.",
+      "  The most common are string,",
+      "  number, and boolean.",
+      "",
+      "  > Experiment: What happens when",
+      "    you assign null to a string?",
+      "",
+      "  [Space] Continue  [D] Depth  [Q] Quiz"
+    ]
   },
   "downloadPage": {
     "title": "Download ",
@@ -288,7 +326,8 @@
     "typescript": {
       "tagline": "From basics to type-level programming — 44 lessons, 5 phases",
       "description": "The most comprehensive TypeScript course you'll find in a terminal. 44 lessons, 5 phases, from primitives to the Compiler API.",
-      "longDescription": "This course isn't a simple tutorial — it's a systematic, in-depth learning program that takes you from absolute TypeScript beginner to true expert across 5 phases and 44 lessons.\n\nEvery single lesson follows our proven LEARN cycle: You read the theory with diagrams and analogies, explore runnable code examples, apply your knowledge in exercises with increasing difficulty, reflect on your understanding in interactive terminal quizzes, and retain everything through compact cheatsheets.\n\nWhat makes it special: Our spaced repetition system remembers which concepts you've learned and reminds you of them right before you'd forget. This way you build real, long-term knowledge — not a superficial tutorial experience.\n\nThe course covers everything: from primitive types and interfaces through generics, mapped types and conditional types all the way to decorators, the Compiler API, and type-level programming. Phase 5 even goes beyond the usual with TypeScript security, RxJS integration, and advanced design patterns.",
+      "longDescription": "This isn't another TypeScript tutorial that stops at interfaces and generics. It's a 44-lesson, 82-hour deep dive that takes you from your first type annotation to writing your own type-level programs and manipulating the Compiler AST.\n\nEvery lesson follows the proven LEARN cycle: read theory enriched with diagrams and real-world analogies, explore runnable code examples annotated line-by-line, apply your knowledge through progressively harder exercises, reflect via interactive terminal quizzes, and retain everything with compact cheatsheets and spaced repetition.\n\nWhat sets this apart from every other TypeScript resource: the built-in spaced repetition engine tracks every concept you learn and schedules reviews at scientifically optimal intervals — right before you'd forget. No other course does this. You build genuine, permanent knowledge instead of a fleeting tutorial high.\n\nThe curriculum spans everything a professional needs: primitive types, generics, mapped and conditional types, template literals, discriminated unions, branded types, decorators, the full Compiler API, and type-level programming. Phase 5 pushes into expert territory with TypeScript security patterns, fully typed RxJS pipelines, and 15+ GoF/SOLID design patterns implemented type-safely.",
+      "heroQuote": "The TypeScript course that remembers what you forget.",
       "targetAudience": [
         "JavaScript developers who want to truly understand TypeScript",
         "Self-learners looking for a structured learning path",
@@ -334,6 +373,13 @@
           "title": "Mermaid Diagrams",
           "description": "Complex relationships are displayed as visual diagrams right in the terminal."
         }
+      ],
+      "phases": [
+        { "name": "Phase 1 — Foundations", "lessonCount": 10 },
+        { "name": "Phase 2 — Type System Core", "lessonCount": 10 },
+        { "name": "Phase 3 — Advanced TypeScript", "lessonCount": 10 },
+        { "name": "Phase 4 — Real-World Mastery", "lessonCount": 10 },
+        { "name": "Phase 5 — Mastery Plus", "lessonCount": 4 }
       ]
     },
     "angular": {

@@ -1,14 +1,13 @@
-```typescript
 /**
- * Lektion 04 — Tracing-Exercises: Arrays & Tuples
+ * Lesson 04 — Tracing Exercises: Arrays & Tuples
  *
- * Themen:
- *  - filter/map/find Return-Typen und wie TS sie inferiert
- *  - Tuple-Destructuring und positionsbasierte Typen
- *  - as const auf Arrays: Tuple-Literale und readonly
- *  - Array-Methoden mit Union-Typen
+ * Topics:
+ *  - filter/map/find return types and how TS infers them
+ *  - Tuple destructuring and position-based types
+ *  - as const on arrays: tuple literals and readonly
+ *  - Array methods with union types
  *
- * Schwierigkeit steigend: 1 -> 4
+ * Difficulty increasing: 1 -> 4
  */
 
 import type { TracingExercise } from "../tools/tracing-engine.ts";
@@ -19,8 +18,8 @@ export const tracingExercises: TracingExercise[] = [
     id: "04-array-method-types",
     title: "Array Methods — What Types Come Back?",
     description:
-      "Trace the return types of map, filter, and find and " +
-      "why find can contain 'undefined'.",
+      "Trace the return types of map, filter, and find, and " +
+      "why find can include 'undefined'.",
     code: [
       "const nums: number[] = [1, 2, 3, 4, 5];",
       "",
@@ -39,9 +38,9 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "number[]",
         variables: { "nums": "number[]", "doubled": "number[]" },
         explanation:
-          "map() returns a new array with the type of the callback return value. " +
-          "n * 2 returns number, so doubled: number[]. " +
-          "map never changes the length.",
+          "map() returns a new array with the type of the " +
+          "callback's return value. n * 2 returns number, " +
+          "so doubled is: number[]. map never changes the length.",
       },
       {
         lineIndex: 3,
@@ -52,21 +51,21 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "filter() returns an array of the same type: number[]. " +
           "The runtime value is [2, 4], but the TypeScript type " +
-          "remains number[] — TS doesn't know which elements will remain. " +
-          "The length is unknown.",
+          "remains number[] — TS doesn't know which elements will " +
+          "remain. The length is unknown.",
       },
       {
         lineIndex: 4,
         question:
           "What type does 'found' have (nums.find)? " +
-          "Why is it different from filter?",
+          "Why does it differ from filter?",
         expectedAnswer: "number | undefined",
         variables: { "doubled": "number[]", "evens": "number[]", "found": "number | undefined" },
         explanation:
           "find() returns a single element, NOT an array. " +
-          "Since find() may not find anything, the type is " +
+          "Since find() might not find anything, the type is " +
           "number | undefined. The undefined must be handled " +
-          "before you can work with found.",
+          "before you can use found in calculations.",
       },
       {
         lineIndex: 6,
@@ -87,9 +86,9 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "strings": "string[]", "bools": "boolean[]" },
         explanation:
           "The comparison n > 3 returns boolean. " +
-          "Therefore bools: boolean[]. The runtime value is " +
+          "Therefore bools is: boolean[]. The runtime value is " +
           "[false, false, false, true, true]. map always infers " +
-          "the type from the callback return.",
+          "the type from the callback's return.",
       },
     ],
     concept: "array-methods",
@@ -150,14 +149,15 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 6,
         question:
-          "What types do 'first' and 'rest' have in rest destructuring " +
-          "of [10, 20, 30, 40]?",
+          "What types do 'first' and 'rest' have when rest-destructuring " +
+          "[10, 20, 30, 40]?",
         expectedAnswer: "first: number, rest: number[]",
         variables: { "first": "number (10)", "rest": "number[] ([20, 30, 40])" },
         explanation:
           "The array [10, 20, 30, 40] is inferred as number[] " +
-          "(not as a tuple, since there is no 'as const'). In rest destructuring " +
-          "first: number and ...rest collects the rest as number[].",
+          "(not as a tuple, since there is no 'as const'). With rest " +
+          "destructuring, first is: number and ...rest collects the " +
+          "rest as number[].",
       },
       {
         lineIndex: 12,
@@ -172,8 +172,8 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "The function returns a tuple [string, (v: string) => void]. " +
           "When destructured, state gets the type string " +
-          "and setState gets the function type. This pattern is familiar " +
-          "from React's useState hook.",
+          "and setState gets the function type. This pattern is " +
+          "familiar from React's useState hook.",
       },
     ],
     concept: "tuple-types",
@@ -192,7 +192,7 @@ export const tracingExercises: TracingExercise[] = [
       "const fixedColors = ['red', 'green', 'blue'] as const;",
       "",
       "colors.push('yellow');",
-      "// fixedColors.push('yellow');  // Fehler!",
+      "// fixedColors.push('yellow');  // Error!",
       "",
       "const first = fixedColors[0];",
       "const any_color = colors[0];",
@@ -238,14 +238,13 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 7,
         question:
           "What type does 'any_color' have (colors[0])? " +
-          "Why is it different from 'first'?",
+          "Why does it differ from 'first'?",
         expectedAnswer: "string",
         variables: { "first": "\"red\" (literal type)", "any_color": "string" },
         explanation:
           "With a regular string[], index access always returns " +
-          "string — not the concrete value. " +
-          "TypeScript doesn't know which element is at position 0 " +
-          "because the array is mutable.",
+          "string — not the concrete value. TypeScript doesn't know " +
+          "which element is at position 0 because the array is mutable.",
       },
       {
         lineIndex: 9,
@@ -268,18 +267,18 @@ export const tracingExercises: TracingExercise[] = [
     id: "04-filter-type-narrowing",
     title: "filter() with Type Predicates",
     description:
-      "Trace why a normal filter does not narrow the type " +
+      "Trace why a regular filter does not narrow the type " +
       "and how type predicates solve the problem.",
     code: [
       "const mixed: (string | null)[] = ['a', null, 'b', null, 'c'];",
       "",
       "const filtered1 = mixed.filter((x) => x !== null);",
-      "// filtered1 Typ: ???",
+      "// filtered1 type: ???",
       "",
       "const filtered2 = mixed.filter(",
       "  (x): x is string => x !== null",
       ");",
-      "// filtered2 Typ: ???",
+      "// filtered2 type: ???",
     ],
     steps: [
       {
@@ -295,15 +294,15 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 2,
         question:
-          "What type does 'filtered1' have after the normal filter? " +
+          "What type does 'filtered1' have after the regular filter? " +
           "Is null removed?",
         expectedAnswer: "string[]",
         variables: { "filtered1": "string[]" },
         explanation:
-          "From TypeScript 5.5 onwards, filter() automatically recognizes " +
-          "Inferred Type Predicates for simple null checks. The callback " +
-          "`x => x !== null` is inferred as a type guard, narrowing the " +
-          "type to string[]. In older TS versions (before 5.5), " +
+          "As of TypeScript 5.5, filter() automatically recognizes " +
+          "inferred type predicates for simple null checks. The callback " +
+          "`x => x !== null` is inferred as a type guard, so the type " +
+          "is narrowed to string[]. In older TS versions (before 5.5), " +
           "the type remained (string | null)[].",
       },
       {
@@ -315,7 +314,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "filtered2": "string[]" },
         explanation:
           "The type predicate 'x is string' tells TypeScript: " +
-          "If the callback returns true, x is a string. " +
+          "if the callback returns true, x is a string. " +
           "This allows filter() to narrow the type to string[]. " +
           "This is the only way to narrow the type through filter.",
       },
@@ -328,12 +327,12 @@ export const tracingExercises: TracingExercise[] = [
         variables: {},
         explanation:
           "'x is string' is a type predicate. It tells the compiler: " +
-          "'If this function returns true, then the parameter x is of type string.' " +
-          "It is like a boolean return type with additional type information.",
+          "'If this function returns true, then parameter x is of " +
+          "type string.' It is like a boolean return type with " +
+          "additional type information.",
       },
     ],
     concept: "type-predicates",
     difficulty: 4,
   },
 ];
-```

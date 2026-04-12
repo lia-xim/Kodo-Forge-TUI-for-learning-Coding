@@ -1,6 +1,3 @@
-The file is outside the allowed working directory for this session. I can't read or write it directly. Here is the fully translated file — you can paste it in yourself:
-
-```typescript
 /**
  * Lesson 01 — Debugging Challenges: Setup & First Steps
  *
@@ -11,7 +8,7 @@ The file is outside the allowed working directory for this session. I can't read
 import type { DebuggingChallenge } from "../tools/debugging-engine.ts";
 
 export const debuggingChallenges: DebuggingChallenge[] = [
-  // ─── Challenge 1: as string statt Konvertierung ──────────────────────────
+  // ─── Challenge 1: as string instead of Conversion ───────────────────────
   {
     id: "L01-D1",
     title: "Type Assertion Is Not a Runtime Cast",
@@ -55,7 +52,7 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     difficulty: 1,
   },
 
-  // ─── Challenge 2: instanceof mit Interface ───────────────────────────────
+  // ─── Challenge 2: instanceof with Interface ──────────────────────────────
   {
     id: "L01-D2",
     title: "instanceof Does Not Work with Interfaces",
@@ -75,14 +72,14 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     options: [
       "instanceof can only be used with classes, not with interfaces",
       "The parameter must be 'any' instead of 'unknown'",
-      "You must write 'typeof value === Animal'",
+      "You need to write 'typeof value === Animal'",
       "The interface needs an 'export' in front of it",
     ],
     correctOption: 0,
     hints: [
       "What happens to interfaces after TypeScript compilation?",
       "Interfaces don't exist at runtime — they are removed by type erasure.",
-      "instanceof needs a constructor (class/function) as the right operand.",
+      "instanceof requires a constructor (class/function) as the right-hand operand.",
     ],
     fixedCode: [
       "interface Animal {",
@@ -101,14 +98,14 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     ].join("\n"),
     explanation:
       "Interfaces exist ONLY at compile time. After type erasure there is no " +
-      "'Animal' left in JavaScript. instanceof needs a class (a constructor) " +
+      "'Animal' left in JavaScript. instanceof requires a class (a constructor) " +
       "that exists at runtime. For interfaces you must use property checks " +
       "('name' in value) and mark the function as a type predicate (value is Animal).",
     concept: "type-erasure",
     difficulty: 2,
   },
 
-  // ─── Challenge 3: Falsches target in tsconfig ────────────────────────────
+  // ─── Challenge 3: Wrong target in tsconfig ───────────────────────────────
   {
     id: "L01-D3",
     title: "Wrong target in tsconfig",
@@ -116,13 +113,13 @@ export const debuggingChallenges: DebuggingChallenge[] = [
       "// tsconfig.json:",
       '// { "compilerOptions": { "target": "ES5" } }',
       "",
-      "const greet = (name: string) => `Hallo ${name}!`;",
+      "const greet = (name: string) => `Hello ${name}!`;",
       "",
       "const nums = [1, 2, 3];",
       "const doubled = nums.map(n => n * 2);",
     ].join("\n"),
     errorMessage:
-      "With target ES5: Arrow functions and template literals are rewritten.",
+      "With target ES5: arrow functions and template literals are transpiled.",
     bugType: "logic-error",
     bugLine: 2,
     options: [
@@ -141,7 +138,7 @@ export const debuggingChallenges: DebuggingChallenge[] = [
       "// tsconfig.json:",
       '// { "compilerOptions": { "target": "ES2022" } }',
       "",
-      "const greet = (name: string) => `Hallo ${name}!`;",
+      "const greet = (name: string) => `Hello ${name}!`;",
       "",
       "const nums = [1, 2, 3];",
       "const doubled = nums.map(n => n * 2);",
@@ -156,7 +153,7 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     difficulty: 1,
   },
 
-  // ─── Challenge 4: Fehlender strictNullChecks ─────────────────────────────
+  // ─── Challenge 4: Missing strictNullChecks ───────────────────────────────
   {
     id: "L01-D4",
     title: "Missing strictNullChecks",
@@ -182,7 +179,7 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     correctOption: 0,
     hints: [
       "What does items[0] return when items is an empty array?",
-      "Without strictNullChecks, TypeScript doesn't treat undefined/null separately.",
+      "Without strictNullChecks, TypeScript does not treat undefined/null separately.",
       "The return type is 'string', but at runtime undefined is returned.",
     ],
     fixedCode: [
@@ -198,7 +195,7 @@ export const debuggingChallenges: DebuggingChallenge[] = [
       "}",
     ].join("\n"),
     explanation:
-      "Without strictNullChecks, TypeScript doesn't recognize that items[0] on an " +
+      "Without strictNullChecks, TypeScript does not recognize that items[0] on an " +
       "empty array is undefined. The type says 'string', but at runtime it is " +
       "undefined — a soundness hole. With strict: true and the correct " +
       "return type (string | undefined), TypeScript enforces a null check.",
@@ -206,9 +203,3 @@ export const debuggingChallenges: DebuggingChallenge[] = [
     difficulty: 2,
   },
 ];
-```
-
-**Translation notes:**
-- Code examples (`buggyCode`, `fixedCode`) left untouched, including `Hallo ${name}!` inside the code string — that's part of the code, not UI text.
-- `errorMessage` in D1, D2, D4 were already English; only D3's was German and has been translated.
-- File-level comments translated; inline section comments (developer notes) left as-is since they're not user-facing.

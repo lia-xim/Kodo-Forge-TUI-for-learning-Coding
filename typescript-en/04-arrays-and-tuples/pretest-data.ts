@@ -1,17 +1,16 @@
-```typescript
 /**
- * Lektion 04 -- Pre-Test-Fragen: Arrays & Tuples
+ * Lesson 04 -- Pre-Test Questions: Arrays & Tuples
  *
- * 3 Fragen pro Sektion, die VOR dem Lesen der Sektion gestellt werden.
- * Ziel: Vorwissen aktivieren, Neugier wecken, Fehlkonzeptionen aufdecken.
+ * 3 questions per section, asked BEFORE reading the section.
+ * Goal: Activate prior knowledge, spark curiosity, uncover misconceptions.
  *
- * Sektionen:
- *   1 — Array-Grundlagen
+ * Sections:
+ *   1 — Array Basics
  *   2 — Readonly Arrays
- *   3 — Tuples Grundlagen
- *   4 — Fortgeschrittene Tuples
- *   5 — Kovarianz und Sicherheit
- *   6 — Praxis-Patterns
+ *   3 — Tuple Basics
+ *   4 — Advanced Tuples
+ *   5 — Covariance and Safety
+ *   6 — Practical Patterns
  */
 
 export interface PretestQuestion {
@@ -25,7 +24,7 @@ export interface PretestQuestion {
 
 export const pretestQuestions: PretestQuestion[] = [
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 1: Array-Grundlagen
+  // Section 1: Array Basics
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -40,7 +39,7 @@ export const pretestQuestions: PretestQuestion[] = [
     ],
     correct: 1,
     briefExplanation:
-      "TypeScript does NOT infer a Tuple — it becomes an array with a Union type. " +
+      "TypeScript does NOT infer a Tuple — it becomes an Array with a Union type. " +
       "You'll learn why in Section 1.",
   },
 
@@ -57,7 +56,7 @@ export const pretestQuestions: PretestQuestion[] = [
     correct: 2,
     briefExplanation:
       "Both notations are identical. number[] is syntactic sugar " +
-      "for Array<number> — and that means you're already using Generics!",
+      "for Array<number> — and with that, you're already using Generics!",
   },
 
   {
@@ -78,7 +77,7 @@ const result = nums.map(n => n.toString());`,
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 2: Readonly Arrays
+  // Section 2: Readonly Arrays
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -93,44 +92,44 @@ const result = nums.map(n => n.toString());`,
     ],
     correct: 3,
     briefExplanation:
-      "filter() returns a NEW array and does not mutate the original. " +
-      "push(), sort() and index assignment are blocked on readonly arrays.",
+      "filter() returns a NEW Array and does not mutate the original. " +
+      "push(), sort() and index assignment are blocked on readonly Arrays.",
   },
 
   {
     sectionIndex: 2,
     question:
-      "Can a 'string[]' be assigned to a variable of type 'readonly string[]'?",
+      "Can you assign a 'string[]' to a variable of type 'readonly string[]'?",
     options: [
-      "Yes — mutable to readonly is safe (removing rights)",
+      "Yes — mutable to readonly is safe (taking away rights)",
       "No — the types are incompatible",
       "Only with a Type Assertion (as readonly string[])",
-      "Only if the array is empty",
+      "Only if the Array is empty",
     ],
     correct: 0,
     briefExplanation:
       "mutable -> readonly is allowed (giving fewer rights). " +
-      "But readonly -> mutable does NOT work (you could then mutate it).",
+      "But readonly -> mutable is NOT possible (it could then be mutated).",
   },
 
   {
     sectionIndex: 2,
     question:
-      "Does 'readonly' also prevent the array from being modified at runtime?",
+      "Does 'readonly' also prevent the Array from being modified at runtime?",
     options: [
-      "Yes — readonly arrays are automatically frozen (Object.freeze)",
+      "Yes — readonly Arrays are automatically frozen (Object.freeze)",
       "Yes — .push() throws a runtime error",
-      "No — readonly only exists in the type system and is removed during compilation",
+      "No — readonly only exists in the type system and is removed at compilation",
       "Partially — .push() is blocked, but index access works",
     ],
     correct: 2,
     briefExplanation:
       "Type Erasure! All TypeScript types disappear at runtime. " +
-      "readonly is purely compile-time — at runtime it's a normal array.",
+      "readonly is purely compile-time — at runtime it is a normal Array.",
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 3: Tuples Grundlagen
+  // Section 3: Tuple Basics
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -146,7 +145,7 @@ const len = tup.length;`,
     ],
     correct: 1,
     briefExplanation:
-      "For Tuples, .length is a literal type! The Tuple has a fixed length of 3, " +
+      "For Tuples, .length is a Literal Type! The Tuple has a fixed length of 3, " +
       "so the type of .length is exactly 3 (not number).",
   },
 
@@ -157,13 +156,13 @@ const len = tup.length;`,
 pair.push("world");`,
     options: [
       "Compile error: push is not allowed on Tuples",
-      "Compile error: 'world' is not string | number... actually it is, it's allowed!",
+      "Compile error: 'world' is not string | number... but actually it is allowed!",
       "No compile error: push accepts string | number on mutable Tuples",
       "Runtime error: Tuples have a fixed length",
     ],
     correct: 2,
     briefExplanation:
-      "push() is allowed on mutable Tuples and accepts the union " +
+      "push() is allowed on mutable Tuples and accepts the Union " +
       "of all element types (string | number). This is a known " +
       "security gap — readonly Tuples prevent this.",
   },
@@ -180,12 +179,12 @@ pair.push("world");`,
     ],
     correct: 2,
     briefExplanation:
-      "Labels are purely documentary. They don't affect the type — " +
+      "Labels are purely documentary. They do not affect the type — " +
       "[x: number, y: number] and [number, number] are identical.",
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 4: Fortgeschrittene Tuples
+  // Section 4: Advanced Tuples
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -200,7 +199,7 @@ pair.push("world");`,
     ],
     correct: 3,
     briefExplanation:
-      "'as const' does two things: (1) readonly Tuple and (2) literal types. " +
+      "'as const' does two things: (1) readonly Tuple and (2) Literal types. " +
       'So: readonly ["localhost", 3000] — not readonly [string, number]!',
   },
 
@@ -217,8 +216,8 @@ const copy = [...pair];`,
     ],
     correct: 0,
     briefExplanation:
-      "Spreading a Tuple LOSES the Tuple type! TypeScript instead infers " +
-      "(string | number)[]. This is a common pitfall.",
+      "Spreading a Tuple LOSES the Tuple type! TypeScript infers " +
+      "(string | number)[] instead. This is a common pitfall.",
   },
 
   {
@@ -226,9 +225,9 @@ const copy = [...pair];`,
     question: "Which values are valid for this type?",
     code: `type T = [string, ...number[]];`,
     options: [
-      '["hello", 1, 2, 3] only — at least one number required',
-      '["hello"] only — rest element can be empty',
-      '[] — empty array is also valid',
+      'Only ["hello", 1, 2, 3] — at least one number required',
+      'Only ["hello"] — rest element can be empty',
+      '[] — empty Array is also valid',
       '["hello"], ["hello", 1], ["hello", 1, 2, 3] — all valid',
     ],
     correct: 3,
@@ -239,7 +238,7 @@ const copy = [...pair];`,
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 5: Kovarianz und Sicherheit
+  // Section 5: Covariance and Safety
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -248,15 +247,15 @@ const copy = [...pair];`,
     code: `const narrow: ("admin" | "mod")[] = ["admin", "mod"];
 const wide: string[] = narrow;`,
     options: [
-      "Yes — a subtype array can be assigned to a wider array",
+      "Yes — a subtype Array can be assigned to a wider Array",
       "No — the types are not compatible",
       "Only with 'as string[]'",
-      "Yes, but only for readonly arrays",
+      "Yes, but only with readonly Arrays",
     ],
     correct: 0,
     briefExplanation:
-      "That's covariance: (\"admin\" | \"mod\")[] is a subtype of string[]. " +
-      "But be careful — via 'wide' you could now push arbitrary strings!",
+      "This is covariance: (\"admin\" | \"mod\")[] is a subtype of string[]. " +
+      "But beware — through 'wide' you could now push arbitrary strings!",
   },
 
   {
@@ -273,28 +272,28 @@ const val = arr[0];`,
     ],
     correct: 1,
     briefExplanation:
-      "With this compiler option, every index access on arrays " +
-      "is treated as potentially undefined — including arr[0].",
+      "With this compiler option, every index access on Arrays " +
+      "is treated as potentially undefined — even arr[0].",
   },
 
   {
     sectionIndex: 5,
     question:
-      "Why does 'readonly' solve the covariance problem with arrays?",
+      "Why does 'readonly' solve the covariance problem with Arrays?",
     options: [
-      "Because readonly arrays are slower and TypeScript treats them differently",
-      "Because a readonly array cannot be mutated — no push() possible",
-      "Because readonly completely prohibits assignment of subtypes",
+      "Because readonly Arrays are slower and TypeScript treats them differently",
+      "Because a readonly Array cannot be mutated — no push() possible",
+      "Because readonly completely forbids assignment of subtypes",
       "readonly doesn't solve the problem at all",
     ],
     correct: 1,
     briefExplanation:
-      "If no one can mutate the array, covariance is safe. " +
+      "When nobody can mutate the Array, covariance is safe. " +
       "The problem only arises when mutating through the wider type.",
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // Sektion 6: Praxis-Patterns
+  // Section 6: Practical Patterns
   // ═══════════════════════════════════════════════════════════════
 
   {
@@ -310,14 +309,14 @@ const result = mixed.filter(x => x !== null);`,
     ],
     correct: 0,
     briefExplanation:
-      "From TypeScript 5.5, filter() automatically recognizes Inferred Type Predicates " +
-      "for simple null checks. The callback `x => x !== null` is inferred as a type guard, " +
-      "so the result is string[].",
+      "Starting with TypeScript 5.5, filter() automatically recognizes " +
+      "Inferred Type Predicates for simple null checks. The callback `x => x !== null` " +
+      "is inferred as a Type Guard, so the result is string[].",
   },
 
   {
     sectionIndex: 6,
-    question: "What is the best type annotation for an array parameter " +
+    question: "What is the best type annotation for an Array parameter " +
       "that should not be modified?",
     code: `function sum(numbers: ???) {
   return numbers.reduce((a, b) => a + b, 0);
@@ -331,7 +330,7 @@ const result = mixed.filter(x => x !== null);`,
     correct: 3,
     briefExplanation:
       "'readonly number[]' signals to the caller that the function " +
-      "does not modify the array. Bonus: you can also pass readonly arrays.",
+      "does not modify the Array. Bonus: readonly Arrays can also be passed in.",
   },
 
   {
@@ -339,15 +338,14 @@ const result = mixed.filter(x => x !== null);`,
     question: "What does 'satisfies' do in combination with 'as const'?",
     code: `const ROLES = ["admin", "user", "guest"] as const satisfies readonly string[];`,
     options: [
-      "It validates the structure but retains the narrow literal types",
+      "It validates the structure but keeps the narrow Literal types",
       "It makes no difference at all",
-      "It converts the values into strings",
+      "It converts the values to strings",
       "It removes the readonly",
     ],
     correct: 0,
     briefExplanation:
-      "'satisfies' checks at compile-time that the value matches a wider type " +
-      "— WITHOUT losing the literal types.",
+      "'satisfies' checks at compile time that the value matches a wider type " +
+      "— WITHOUT losing the Literal types.",
   },
 ];
-```

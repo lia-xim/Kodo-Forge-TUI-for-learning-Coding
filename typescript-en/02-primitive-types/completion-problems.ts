@@ -1,6 +1,3 @@
-Since writing outside the working directory requires explicit permission, here is the translated file:
-
-```typescript
 /**
  * Lesson 02 — Completion Problems: Primitive Types
  *
@@ -23,7 +20,7 @@ export interface CompletionProblem {
 }
 
 export const completionProblems: CompletionProblem[] = [
-  // ─── 1: Null-sichere Funktion (leicht) ──────────────────────────────────
+  // ─── 1: Null-safe Function (easy) ───────────────────────────────────────
   {
     id: "02-cp-null-safe",
     title: "Null-safe String Function",
@@ -37,7 +34,7 @@ export const completionProblems: CompletionProblem[] = [
   return text.length;
 }
 
-console.log(safeLength("Hallo")); // 5
+console.log(safeLength("Hello")); // 5
 console.log(safeLength(null));     // 0
 console.log(safeLength(undefined));// 0`,
     solution: `function safeLength(text: string | null | undefined): number {
@@ -47,7 +44,7 @@ console.log(safeLength(undefined));// 0`,
   return text.length;
 }
 
-console.log(safeLength("Hallo")); // 5
+console.log(safeLength("Hello")); // 5
 console.log(safeLength(null));     // 0
 console.log(safeLength(undefined));// 0`,
     blanks: [
@@ -75,43 +72,43 @@ console.log(safeLength(undefined));// 0`,
     concept: "null / undefined / strictNullChecks",
   },
 
-  // ─── 2: Sicherer Umgang mit unknown (leicht-mittel) ────────────────────
+  // ─── 2: Safe Handling of unknown (easy-medium) ──────────────────────────
   {
     id: "02-cp-unknown-narrowing",
     title: "Using unknown Safely",
     description:
-      "A function receives an unknown value. Use Type Narrowing, " +
+      "A function receives an unknown value. Use Type Narrowing " +
       "to process the value safely.",
     template: `function processValue(value: ______) {
   if (______ value === "string") {
-    // TypeScript weiss: value ist string
+    // TypeScript knows: value is string
     console.log("String:", value.toUpperCase());
   } else if (typeof value === "______") {
-    // TypeScript weiss: value ist number
+    // TypeScript knows: value is number
     console.log("Number:", value.toFixed(2));
   } else {
-    console.log("Anderer Typ:", value);
+    console.log("Other type:", value);
   }
 }
 
 processValue("hallo");  // String: HALLO
 processValue(3.14159);  // Number: 3.14
-processValue(true);     // Anderer Typ: true`,
+processValue(true);     // Other type: true`,
     solution: `function processValue(value: unknown) {
   if (typeof value === "string") {
-    // TypeScript weiss: value ist string
+    // TypeScript knows: value is string
     console.log("String:", value.toUpperCase());
   } else if (typeof value === "number") {
-    // TypeScript weiss: value ist number
+    // TypeScript knows: value is number
     console.log("Number:", value.toFixed(2));
   } else {
-    console.log("Anderer Typ:", value);
+    console.log("Other type:", value);
   }
 }
 
 processValue("hallo");  // String: HALLO
 processValue(3.14159);  // Number: 3.14
-processValue(true);     // Anderer Typ: true`,
+processValue(true);     // Other type: true`,
     blanks: [
       {
         placeholder: "______",
@@ -132,47 +129,47 @@ processValue(true);     // Anderer Typ: true`,
     concept: "unknown / Type Narrowing / typeof",
   },
 
-  // ─── 3: never fuer exhaustive Checks (mittel) ──────────────────────────
+  // ─── 3: never for Exhaustive Checks (medium) ────────────────────────────
   {
     id: "02-cp-exhaustive-check",
     title: "Exhaustive Check with never",
     description:
       "Use the never type to ensure that all cases " +
-      "of a Union type are handled. When a new case is added, " +
-      "TypeScript automatically generates an error.",
+      "of a union type are handled. When a new case is added, " +
+      "TypeScript automatically produces an error.",
     template: `type TrafficLight = "red" | "yellow" | "green";
 
 function getAction(light: TrafficLight): string {
   switch (light) {
     case "red":
-      return "Stopp!";
+      return "Stop!";
     case "yellow":
-      return "Vorsicht!";
+      return "Caution!";
     case "green":
-      return "Fahren!";
+      return "Go!";
     default:
-      // Wenn alle Faelle abgedeckt sind, ist light hier 'never'.
-      // Dieses Pattern erzeugt einen Compile-Fehler, wenn ein
-      // neuer Wert zum Union hinzugefuegt wird:
+      // When all cases are covered, light is 'never' here.
+      // This pattern produces a compile error when a
+      // new value is added to the union:
       const _exhaustive: ______ = light;
       return _exhaustive;
   }
 }
 
-// Fehler-werfende Hilfsfunktion:
+// Error-throwing helper function:
 function assertNever(value: ______): ______ {
-  throw new Error(\`Unerwarteter Wert: \${value}\`);
+  throw new Error(\`Unexpected value: \${value}\`);
 }`,
     solution: `type TrafficLight = "red" | "yellow" | "green";
 
 function getAction(light: TrafficLight): string {
   switch (light) {
     case "red":
-      return "Stopp!";
+      return "Stop!";
     case "yellow":
-      return "Vorsicht!";
+      return "Caution!";
     case "green":
-      return "Fahren!";
+      return "Go!";
     default:
       const _exhaustive: never = light;
       return _exhaustive;
@@ -180,7 +177,7 @@ function getAction(light: TrafficLight): string {
 }
 
 function assertNever(value: never): never {
-  throw new Error(\`Unerwarteter Wert: \${value}\`);
+  throw new Error(\`Unexpected value: \${value}\`);
 }`,
     blanks: [
       {
@@ -202,34 +199,34 @@ function assertNever(value: never): never {
     concept: "never / Exhaustive Checks / Union Types",
   },
 
-  // ─── 4: Nullish Coalescing richtig verwenden (mittel) ──────────────────
+  // ─── 4: Using Nullish Coalescing Correctly (medium) ─────────────────────
   {
     id: "02-cp-nullish-coalescing",
     title: "Nullish Coalescing vs. Logical OR",
     description:
-      "Replace the faulty || operator with the correct " +
+      "Replace the incorrect ||-operator with the correct " +
       "operator, so that 0, '' and false are recognized as valid values.",
     template: `interface UserSettings {
-  volume: number;       // 0 ist gueltig (stumm)
-  nickname: string;     // "" ist gueltig (kein Nickname)
-  darkMode: boolean;    // false ist gueltig
+  volume: number;       // 0 is valid (muted)
+  nickname: string;     // "" is valid (no nickname)
+  darkMode: boolean;    // false is valid
 }
 
 function applySettings(settings: Partial<UserSettings>) {
-  // FALSCH: || behandelt 0, "" und false als "fehlend"
+  // WRONG: || treats 0, "" and false as "missing"
   // const volume = settings.volume || 50;
 
-  // RICHTIG: Nur null und undefined als "fehlend" behandeln
+  // CORRECT: Only treat null and undefined as "missing"
   const volume = settings.volume ______ 50;
-  const nickname = settings.nickname ______ "Anonym";
+  const nickname = settings.nickname ______ "Anonymous";
   const darkMode = settings.darkMode ______ true;
 
   console.log({ volume, nickname, darkMode });
 }
 
-// Test: Alle Werte sind gesetzt (auch die "falsy"-Werte)
+// Test: All values are set (including the "falsy" values)
 applySettings({ volume: 0, nickname: "", darkMode: false });
-// Soll: { volume: 0, nickname: "", darkMode: false }`,
+// Expected: { volume: 0, nickname: "", darkMode: false }`,
     solution: `interface UserSettings {
   volume: number;
   nickname: string;
@@ -238,14 +235,14 @@ applySettings({ volume: 0, nickname: "", darkMode: false });
 
 function applySettings(settings: Partial<UserSettings>) {
   const volume = settings.volume ?? 50;
-  const nickname = settings.nickname ?? "Anonym";
+  const nickname = settings.nickname ?? "Anonymous";
   const darkMode = settings.darkMode ?? true;
 
   console.log({ volume, nickname, darkMode });
 }
 
 applySettings({ volume: 0, nickname: "", darkMode: false });
-// Ergebnis: { volume: 0, nickname: "", darkMode: false }`,
+// Result: { volume: 0, nickname: "", darkMode: false }`,
     blanks: [
       {
         placeholder: "______",
@@ -266,31 +263,31 @@ applySettings({ volume: 0, nickname: "", darkMode: false });
     concept: "Nullish Coalescing (??) vs. Logical OR (||)",
   },
 
-  // ─── 5: Typ-Hierarchie anwenden (mittel-schwer) ────────────────────────
+  // ─── 5: Applying the Type Hierarchy (medium-hard) ───────────────────────
   {
     id: "02-cp-type-hierarchy",
     title: "Understanding the Type Hierarchy",
     description:
-      "Insert the correct types, based on the TypeScript type hierarchy. " +
+      "Insert the correct types based on the TypeScript type hierarchy. " +
       "unknown is the Top Type, never is the Bottom Type.",
-    template: `// unknown ist der Top Type: ALLES ist unknown zuweisbar
+    template: `// unknown is the Top Type: EVERYTHING is assignable to unknown
 let top: ______ = "hello";
 top = 42;
 top = true;
 top = null;
 top = undefined;
 
-// never ist der Bottom Type: never ist ALLEM zuweisbar
+// never is the Bottom Type: never is assignable to EVERYTHING
 function impossible(): ______ {
-  throw new Error("Unmoeglich!");
+  throw new Error("Impossible!");
 }
 
-let str: string = impossible();  // OK: never ist string zuweisbar
-let num: number = impossible();  // OK: never ist number zuweisbar
+let str: string = impossible();  // OK: never is assignable to string
+let num: number = impossible();  // OK: never is assignable to number
 
-// any bricht die Regeln: Es ist KEIN Top/Bottom Type
+// any breaks the rules: It is NOT a Top/Bottom Type
 let unsicher: ______ = "hello";
-let zahl: number = unsicher;  // OK (unsicher!) — any umgeht die Pruefung`,
+let zahl: number = unsicher;  // OK (unsafe!) — any bypasses the check`,
     solution: `let top: unknown = "hello";
 top = 42;
 top = true;
@@ -298,7 +295,7 @@ top = null;
 top = undefined;
 
 function impossible(): never {
-  throw new Error("Unmoeglich!");
+  throw new Error("Impossible!");
 }
 
 let str: string = impossible();
@@ -310,12 +307,12 @@ let zahl: number = unsicher;`,
       {
         placeholder: "______",
         answer: "unknown",
-        hint: "Which type is the Top Type that EVERYTHING can be assigned to?",
+        hint: "Which type is the Top Type that EVERYTHING is assignable to?",
       },
       {
         placeholder: "______",
         answer: "never",
-        hint: "Which type is the Bottom Type that can be assigned to EVERYTHING and means 'never returns'?",
+        hint: "Which type is the Bottom Type that is assignable to EVERYTHING and means 'never returns'?",
       },
       {
         placeholder: "______",
@@ -326,38 +323,38 @@ let zahl: number = unsicher;`,
     concept: "Type Hierarchy / unknown / never / any",
   },
 
-  // ─── 6: as const und Literal Types (schwer) ────────────────────────────
+  // ─── 6: as const and Literal Types (hard) ───────────────────────────────
   {
     id: "02-cp-as-const",
-    title: "as const for Type-safe Configuration",
+    title: "as const for Type-Safe Configuration",
     description:
-      "Use as const to create a configuration with Literal Types. " +
-      "Then derive a Union type from the values.",
+      "Use as const to create a configuration with literal types. " +
+      "Then derive a union type from the values.",
     template: `const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE"] ______ ______;
-// Typ: readonly ["GET", "POST", "PUT", "DELETE"]
+// Type: readonly ["GET", "POST", "PUT", "DELETE"]
 
-// Union-Typ aus den Array-Werten ableiten:
+// Derive a Union Type from the array values:
 type HttpMethod = ______ HTTP_METHODS[______];
-// Ergebnis: "GET" | "POST" | "PUT" | "DELETE"
+// Result: "GET" | "POST" | "PUT" | "DELETE"
 
 function sendRequest(method: HttpMethod, url: string) {
   console.log(\`\${method} \${url}\`);
 }
 
 sendRequest("GET", "/api/users");     // OK
-// sendRequest("PATCH", "/api/users"); // Fehler! "PATCH" ist nicht erlaubt`,
+// sendRequest("PATCH", "/api/users"); // Error! "PATCH" is not allowed`,
     solution: `const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE"] as const;
-// Typ: readonly ["GET", "POST", "PUT", "DELETE"]
+// Type: readonly ["GET", "POST", "PUT", "DELETE"]
 
 type HttpMethod = typeof HTTP_METHODS[number];
-// Ergebnis: "GET" | "POST" | "PUT" | "DELETE"
+// Result: "GET" | "POST" | "PUT" | "DELETE"
 
 function sendRequest(method: HttpMethod, url: string) {
   console.log(\`\${method} \${url}\`);
 }
 
 sendRequest("GET", "/api/users");     // OK
-// sendRequest("PATCH", "/api/users"); // Fehler! "PATCH" ist nicht erlaubt`,
+// sendRequest("PATCH", "/api/users"); // Error! "PATCH" is not allowed`,
     blanks: [
       {
         placeholder: "______",
@@ -383,4 +380,3 @@ sendRequest("GET", "/api/users");     // OK
     concept: "as const / typeof / Literal Types / Index Access",
   },
 ];
-```

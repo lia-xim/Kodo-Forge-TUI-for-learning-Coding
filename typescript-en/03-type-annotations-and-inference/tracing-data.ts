@@ -1,16 +1,13 @@
-Here is the fully translated file:
-
-```typescript
 /**
- * Lektion 03 — Tracing-Exercises: Type Annotations & Inference
+ * Lesson 03 — Tracing Exercises: Type Annotations & Inference
  *
- * Themen:
- *  - Widening: let vs const bei Literal-Typen
- *  - Contextual Typing: Woher kennt TS den Typ?
- *  - as const: Readonly Literal-Typen erzwingen
+ * Topics:
+ *  - Widening: let vs const with literal types
+ *  - Contextual Typing: How does TS know the type?
+ *  - as const: Enforcing readonly literal types
  *  - Return Type Inference
  *
- * Schwierigkeit steigend: 1 -> 4
+ * Difficulty increasing: 1 -> 4
  */
 
 import type { TracingExercise } from "../tools/tracing-engine.ts";
@@ -53,12 +50,12 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "With let, TypeScript 'widens' the type to the general type: " +
           "string instead of \"bye\". The reason: let variables can " +
-          "later receive a different string value.",
+          "receive a different string value later.",
       },
       {
         lineIndex: 2,
         question:
-          "What TypeScript type does 'count' have (const with a number)?",
+          "What TypeScript type does 'count' have (const with number)?",
         expectedAnswer: "42",
         variables: {
           "greeting": "\"hello\" (literal type)",
@@ -73,7 +70,7 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 3,
         question:
-          "What TypeScript type does 'amount' have (let with a number)?",
+          "What TypeScript type does 'amount' have (let with number)?",
         expectedAnswer: "number",
         variables: {
           "greeting": "\"hello\" (literal type)",
@@ -90,7 +87,7 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 5,
         question:
           "Is the assignment farewell = 'see you' allowed? Why?",
-        expectedAnswer: "Yes, because farewell has the type string",
+        expectedAnswer: "Yes, because farewell has type string",
         variables: { "farewell": "\"see you\" (type: string)" },
         explanation:
           "Since farewell is declared with let, it has the type string. " +
@@ -108,7 +105,7 @@ export const tracingExercises: TracingExercise[] = [
     title: "Contextual Typing — Type from Context",
     description:
       "Trace how TypeScript automatically infers the type of callback " +
-      "parameters from context.",
+      "parameters from the surrounding context.",
     code: [
       "const names: string[] = ['Anna', 'Ben', 'Clara'];",
       "",
@@ -138,7 +135,7 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 3,
         question:
-          "What type does 'lengths' have after map? " +
+          "What type does 'lengths' have after the map? " +
           "What is the return type of the callback?",
         expectedAnswer: "number[]",
         variables: { "lengths": "number[]" },
@@ -162,7 +159,7 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 9,
         question:
           "What type does 'e' have in the handler callback? " +
-          "Why does it not need to be annotated?",
+          "Why doesn't it need to be annotated?",
         expectedAnswer: "MouseEvent",
         variables: { "e": "MouseEvent" },
         explanation:
@@ -176,13 +173,13 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 2,
   },
 
-  // --- Exercise 3: as const — Readonly Literal-Typen -----------------------
+  // --- Exercise 3: as const — Readonly Literal Types -----------------------
   {
     id: "03-as-const-effect",
     title: "as const — Everything becomes readonly and literal",
     description:
       "Trace the difference between normal declarations " +
-      "and 'as const' for objects and arrays.",
+      "and 'as const' with objects and arrays.",
     code: [
       "const config = {",
       "  host: 'localhost',",
@@ -202,7 +199,7 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 0,
         question:
           "What type does 'config.host' have? " +
-          "(object WITHOUT as const)",
+          "(Object WITHOUT as const)",
         expectedAnswer: "string",
         variables: { "config.host": "string", "config.port": "number" },
         explanation:
@@ -214,20 +211,20 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 5,
         question:
           "What type does 'frozenConfig.host' have? " +
-          "(object WITH as const)",
+          "(Object WITH as const)",
         expectedAnswer: "\"localhost\"",
         variables: { "frozenConfig.host": "\"localhost\"", "frozenConfig.port": "3000" },
         explanation:
           "'as const' does three things: (1) All properties become " +
-          "readonly, (2) string values keep their literal type, " +
-          "(3) numbers keep their literal type. " +
+          "readonly, (2) String values retain their literal type, " +
+          "(3) Numbers retain their literal type. " +
           "host is therefore readonly \"localhost\", not string.",
       },
       {
         lineIndex: 10,
         question:
           "What type does 'colors' have? " +
-          "(array WITHOUT as const)",
+          "(Array WITHOUT as const)",
         expectedAnswer: "string[]",
         variables: { "colors": "string[]" },
         explanation:
@@ -239,7 +236,7 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 11,
         question:
           "What type does 'fixedColors' have? " +
-          "(array WITH as const)",
+          "(Array WITH as const)",
         expectedAnswer: "readonly [\"red\", \"green\", \"blue\"]",
         variables: { "fixedColors": "readonly [\"red\", \"green\", \"blue\"]" },
         explanation:
@@ -259,7 +256,7 @@ export const tracingExercises: TracingExercise[] = [
     title: "Return Type Inference — What does the function return?",
     description:
       "Trace how TypeScript infers the return type of functions " +
-      "from the return statements.",
+      "from their return statements.",
     code: [
       "function getStatus(code: number) {",
       "  if (code === 200) {",
@@ -282,8 +279,8 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "return": "\"ok\"" },
         explanation:
           "The return value 'ok' is a string literal. Since it appears " +
-          "in a return statement, TypeScript remembers this type " +
-          "for the return type calculation.",
+          "in a return statement, TypeScript remembers " +
+          "this type for the return type calculation.",
       },
       {
         lineIndex: 5,
@@ -292,7 +289,7 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "\"not found\"",
         variables: { "return": "\"not found\"" },
         explanation:
-          "Here too, TypeScript remembers the literal type " +
+          "Here too TypeScript remembers the literal type " +
           "\"not found\". Both return paths are collected.",
       },
       {
@@ -308,14 +305,14 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 10,
         question:
-          "What type does 'result' have? How does TypeScript " +
-          "calculate the return type of the entire function?",
+          "What type does 'result' have? How does TypeScript calculate " +
+          "the return type of the entire function?",
         expectedAnswer: "\"ok\" | \"not found\" | null",
         variables: { "result": "\"ok\" | \"not found\" | null" },
         explanation:
-          "TypeScript forms a union from all return paths: " +
+          "TypeScript forms a union of all return paths: " +
           "\"ok\" | \"not found\" | null. Without an explicit annotation, " +
-          "TS automatically infers the return type by analyzing " +
+          "TS infers the return type automatically by analyzing " +
           "all return statements.",
       },
     ],
@@ -323,4 +320,3 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 4,
   },
 ];
-```

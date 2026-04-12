@@ -1,4 +1,3 @@
-```typescript
 /**
  * Lesson 04 — Quiz Data: Arrays & Tuples
  *
@@ -75,7 +74,7 @@ export const questions: QuizQuestion[] = [
     explanation:
       "number[] and Array<number> are exactly the same type. number[] is " +
       "syntactic sugar for Array<number>. Array<T> is a generic " +
-      "interface in lib.es5.d.ts — so you are already using generics " +
+      "interface in lib.es5.d.ts — you are already using generics " +
       "when you write string[]!",
   },
 
@@ -93,7 +92,7 @@ export const questions: QuizQuestion[] = [
     explanation:
       "push() is allowed on mutable tuples, but the argument type is " +
       "checked. push only accepts 'string | number' (the union of the " +
-      "tuple elements), and 'true' (boolean) does not belong to that. " +
+      "tuple elements), and 'true' (boolean) is not part of that. " +
       "Use 'readonly' tuples to block push entirely!",
   },
 
@@ -120,8 +119,8 @@ export const questions: QuizQuestion[] = [
     question: "Which values are valid for the type [string, ...number[]]?",
     code: "type T = [string, ...number[]];",
     options: [
-      '["hello", 1, 2, 3] only — at least one number required',
-      '["hello"] only — rest element can be empty',
+      'Only ["hello", 1, 2, 3] — at least one number required',
+      'Only ["hello"] — rest element can be empty',
       '["hello"], ["hello", 1], ["hello", 1, 2, 3] — all valid',
       '[] — empty array is also valid',
     ],
@@ -151,7 +150,7 @@ export const questions: QuizQuestion[] = [
     explanation:
       "mutable -> readonly is allowed (giving fewer rights is safe). " +
       "readonly -> mutable is NOT allowed (you could then mutate, " +
-      "even though the original type prohibits it). Think of it like a " +
+      "even though the original type forbids it). Think of it like a " +
       "one-way street: you can take away capabilities, but not add them.",
   },
 
@@ -167,8 +166,8 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      "Labels in tuples are purely documentary. They do not affect the type — " +
-      "[x: number, y: number] and [number, number] are identical. " +
+      "Labels in tuples are purely documentary. They do not affect the type " +
+      "— [x: number, y: number] and [number, number] are identical. " +
       "But they improve the developer experience: IDE tooltips show the " +
       "label names, and error messages become more understandable.",
   },
@@ -188,20 +187,20 @@ export const questions: QuizQuestion[] = [
     correct: 2,
     explanation:
       "When a tuple is copied with the spread operator into a new array, " +
-      "it LOSES its tuple type! TypeScript instead infers " +
-      "a regular array with a union type: (string | number)[]. " +
-      "To preserve the tuple type, an explicit annotation is required.",
+      "it LOSES the tuple type! TypeScript infers instead " +
+      "a normal array with a union type: (string | number)[]. " +
+      "To keep the tuple type, an explicit annotation is needed.",
   },
 
-  // --- Question 11: Understanding covariance ---
+  // --- Question 11: Covariance understanding ---
   {
-    question: "Why is this code problematic even though it compiles?",
+    question: "Why is this code problematic, even though it compiles?",
     code:
       "const admins: (\"admin\" | \"mod\")[] = [\"admin\", \"mod\"];\n" +
       "const users: string[] = admins;\n" +
       "users.push(\"hacker\");",
     options: [
-      "This code does not compile — string[] is not compatible with (\"admin\" | \"mod\")[]",
+      "This code doesn't compile — string[] is not compatible with (\"admin\" | \"mod\")[]",
       "users.push() throws a runtime error",
       "admins now contains \"hacker\", but its type says (\"admin\" | \"mod\")[]",
       "The code is correct and has no problem",
@@ -211,8 +210,8 @@ export const questions: QuizQuestion[] = [
       "This is a covariance problem: (\"admin\" | \"mod\")[] is a subtype " +
       "of string[] (covariance). But after the assignment, both point to " +
       "the same array. Through 'users' you can push \"hacker\" — which then " +
-      "also ends up in 'admins', even though the type does not allow it. " +
-      "TypeScript permits this out of pragmatism, but it is technically unsound. " +
+      "also ends up in 'admins', even though its type doesn't allow it. " +
+      "TypeScript allows this out of pragmatism, but it is technically unsound. " +
       "readonly arrays solve this problem.",
   },
 
@@ -232,7 +231,7 @@ export const questions: QuizQuestion[] = [
     explanation:
       "For tuples, .length is a literal type! [string, number, boolean] " +
       "always has exactly 3 elements, so tup.length is of type 3 (not number). " +
-      "For a regular array, .length would be of type number. " +
+      "For a normal array, .length would be of type number. " +
       "This is another fundamental difference between arrays and tuples.",
   },
 
@@ -251,10 +250,10 @@ export const questions: QuizQuestion[] = [
     correct: 1,
     explanation:
       "With noUncheckedIndexedAccess, EVERY array index access is treated as " +
-      "potentially undefined. arr[0] then has the type " +
+      "possibly undefined. arr[0] then has the type " +
       "string | undefined, even if we can see the element exists. " +
       "BUT: For tuples, known positions are NOT affected — a " +
-      "tuple [string, number] always has type string at position 0 (without | undefined).",
+      "tuple [string, number] at position 0 always has type string (without | undefined).",
   },
 
   // --- Question 14: filter with type predicate ---
@@ -271,11 +270,11 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 0,
     explanation:
-      "Since TypeScript 5.5, filter() automatically recognizes type predicates for " +
+      "As of TypeScript 5.5, filter() automatically recognizes type predicates for " +
       "simple typeof checks. The callback `x => typeof x === \"string\"` " +
       "is inferred as a type guard, so the result is string[]. " +
-      "In older TypeScript versions (before 5.5) the result would be " +
-      "(string | number)[] and an explicit type predicate was needed: " +
+      "In older TypeScript versions (before 5.5), the result would be " +
+      "(string | number)[] and you would need an explicit type predicate: " +
       "arr.filter((x): x is string => typeof x === \"string\").",
   },
 
@@ -284,9 +283,9 @@ export const questions: QuizQuestion[] = [
     question: "WHY does TypeScript infer 'number[]' instead of a tuple for 'const p = [1, 2]'?",
     code: "const p = [1, 2]; // Type: number[], not [number, number]",
     options: [
-      "Because TypeScript doesn't know tuples — you always have to annotate",
-      "Because arrays are mutable and their length can change",
-      "Because square brackets always create arrays, never tuples",
+      "Because TypeScript doesn't know about tuples — you always have to annotate",
+      "Because arrays are mutable and the length can change",
+      "Because square brackets always produce arrays, never tuples",
       "Because const only protects the reference, not the content",
     ],
     correct: 1,
@@ -295,7 +294,7 @@ export const questions: QuizQuestion[] = [
       "are MUTABLE by default. You could later call p.push(3) or " +
       "p.pop(). A tuple type would then be too restrictive and would " +
       "block many common operations. 'const' protects the " +
-      "variable (you cannot reassign p), but the CONTENT of the array " +
+      "variable (you can't reassign p), but the CONTENT of the array " +
       "remains changeable. Only 'as const' tells TypeScript: 'Treat this " +
       "as immutable and use the narrowest possible types.'",
   },
@@ -327,8 +326,8 @@ export const questions: QuizQuestion[] = [
     expectedAnswer: "3",
     acceptableAnswers: ["3", "Literal 3", "literal 3"],
     explanation:
-      "For tuples, .length is a literal type! Since [string, number, boolean] always " +
-      "has exactly 3 elements, tup.length is of type 3 (not number). For a regular array " +
+      "For tuples, .length is a literal type! Since [string, number, boolean] always has " +
+      "exactly 3 elements, tup.length is of type 3 (not number). For a normal array, " +
       ".length would be of type number. This is a fundamental difference between " +
       "arrays and tuples.",
   },
@@ -337,16 +336,16 @@ export const questions: QuizQuestion[] = [
   {
     type: "predict-output",
     question:
-      "What is the type inferred by TypeScript for 'copy'? " +
+      "What is the TypeScript-inferred type of 'copy'? " +
       "(Give the type, e.g. 'string[]' or '[string, number]')",
     code: `const original: [string, number] = ["hello", 42];\nconst copy = [...original];`,
     expectedAnswer: "(string | number)[]",
     acceptableAnswers: ["(string | number)[]", "Array<string | number>", "(string|number)[]", "string | number[]"],
     explanation:
-      "When a tuple is copied with the spread operator, it LOSES its tuple type! " +
-      "TypeScript instead infers a regular array with a union type: (string | number)[]. " +
+      "When a tuple is copied with the spread operator, it LOSES the tuple type! " +
+      "TypeScript infers instead a normal array with a union type: (string | number)[]. " +
       "The fixed length and position-specific types are lost. " +
-      "An explicit annotation is required to preserve the tuple type.",
+      "An explicit annotation is needed to keep the tuple type.",
   },
 
   // --- Question 19: Predict-Output — as const ---
@@ -370,8 +369,8 @@ export const questions: QuizQuestion[] = [
     expectedAnswer: "noUncheckedIndexedAccess",
     acceptableAnswers: ["noUncheckedIndexedAccess", "noUncheckedIndexedAccess: true", "nouncheckedindexedaccess"],
     explanation:
-      "With noUncheckedIndexedAccess, EVERY array index access is treated as potentially " +
-      "undefined. arr[0] then has type T | undefined. This is safer " +
+      "With noUncheckedIndexedAccess, EVERY array index access is treated as possibly " +
+      "undefined. arr[0] then has the type T | undefined. This is safer, " +
       "because the index could be outside the array bounds. " +
       "For tuples, known positions are NOT affected by this.",
   },
@@ -380,11 +379,11 @@ export const questions: QuizQuestion[] = [
   {
     type: "explain-why",
     question:
-      "Why does TypeScript infer the type number[] for 'const p = [1, 2]' " +
+      "Why does TypeScript infer type number[] for 'const p = [1, 2]' " +
       "instead of [number, number], even though const is used?",
     modelAnswer:
       "const only protects the variable binding (p cannot be reassigned), " +
-      "but not the contents of the array. You could run p.push(3), p.pop(), or p[0] = 99. " +
+      "but not the contents of the array. You could call p.push(3), p.pop(), or p[0] = 99. " +
       "A tuple type [number, number] would be too restrictive and would block many " +
       "common array operations. TypeScript therefore chooses the more flexible " +
       "number[] type. Only 'as const' signals: 'Treat this as immutable " +
@@ -408,7 +407,7 @@ export interface ElaboratedFeedback {
 }
 
 export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
-  // Question 1: Array vs Tuple identification
+  // Question 1: Identifying Array vs Tuple
   0: {
     whyCorrect:
       "A tuple has a FIXED length and each position has its own type. " +
@@ -424,12 +423,12 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   // Question 2: Inference with mixed values
   1: {
     whyCorrect:
-      "TypeScript ALWAYS infers an array from array literals, never a tuple. " +
+      "TypeScript ALWAYS infers an array for array literals, never a tuple. " +
       "The values 1, 'hello', true are combined into the union (string | number | boolean). " +
       "This is a deliberate design decision: since arrays " +
       "are mutable, a tuple type would be too restrictive.",
     commonMistake:
-      "Confusion with [number, string, boolean] is tempting — " +
+      "Confusion with [number, string, boolean] is understandable — " +
       "the values DO look like a tuple. But TS looks at the " +
       "intended usage: a mutable array, not a fixed structure. " +
       "For a tuple you need 'as const' or an explicit annotation.",
@@ -438,8 +437,8 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   // Question 3: readonly behavior
   2: {
     whyCorrect:
-      "filter() creates a NEW array from elements that pass the test. " +
-      "The original is not modified — that's why it is allowed on readonly. " +
+      "filter() creates a NEW array from the elements that pass the test. " +
+      "The original is not modified — that is why it is allowed on readonly. " +
       "The ReadonlyArray definition in lib.es5.d.ts includes filter(), map(), " +
       "slice() etc., but NOT push(), sort(), or pop().",
     commonMistake:
@@ -466,7 +465,7 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "push() on mutable tuples accepts the union of all element types. " +
       "For [string, number], push() only accepts string | number. " +
-      "true is boolean — that doesn't belong to the union, so an error occurs. " +
+      "true is boolean — that is not part of the union, so error. " +
       "pair.push('world') or pair.push(99) would compile.",
     commonMistake:
       "Many think push() is completely forbidden on tuples. That is only " +
@@ -495,23 +494,23 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "A rest element (...number[]) means '0 or more elements'. " +
       "It is like a spread in reverse — it collects any number of " +
-      "(even zero) values. Only the fixed positions before it are " +
+      "(including zero) values. Only the fixed positions before it are " +
       "required — here the string at position 0.",
     commonMistake:
       "Many assume at least one element must be present in the rest. " +
       "But ...number[] is number[] — and an empty array is a " +
-      "valid number[]. The string at the beginning is required, the numbers after it are not.",
+      "valid number[]. The string at the start is required, the numbers after it are not.",
   },
 
   // Question 8: Readonly assignment
   7: {
     whyCorrect:
-      "mutable -> readonly is like 'taking away rights': You give someone " +
+      "mutable -> readonly is like 'removing rights': you give someone " +
       "read access to something you could also write. That is safe. " +
-      "readonly -> mutable would be 'adding rights': The array could then " +
-      "be mutated even though it was declared as readonly. Unsafe!",
+      "readonly -> mutable would be 'adding rights': the array " +
+      "could then be mutated, even though it was declared readonly. Unsafe!",
     commonMistake:
-      "The thinking 'readonly is a different type, so no direction " +
+      "The thinking 'readonly is a different type, so neither direction " +
       "works' leads to option D. But readonly is a subtype relationship: " +
       "string[] is a subtype of readonly string[] (has more capabilities).",
   },
@@ -520,7 +519,7 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   8: {
     whyCorrect:
       "Labels in tuples exist ONLY for documentation. They are " +
-      "preserved in the .d.ts file and appear in IDE tooltips, " +
+      "preserved in .d.ts files and appear in IDE tooltips, " +
       "but they do NOT create properties. point.x does not exist — " +
       "it stays at point[0]. The type [x: number, y: number] is " +
       "structurally identical to [number, number].",
@@ -535,26 +534,26 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "The spread operator creates a NEW array. TypeScript cannot " +
       "guarantee that the new array has the same fixed length as the " +
-      "original (multiple spreads could be combined, for example). Therefore it " +
-      "falls back to the safest common type: (string | number)[].",
+      "original (multiple spreads could be combined, for example). Therefore it falls " +
+      "back to the safest common type: (string | number)[].",
     commonMistake:
-      "Expecting [string, number] is tempting — you are just copying after all. " +
+      "The expectation [string, number] is natural — you are just copying after all. " +
       "But TypeScript treats [...tuple] like a fresh array literal. " +
       "Since TS 4.0 there are better tuple spreads in generic contexts, " +
       "but for concrete values it remains an array.",
   },
 
-  // Question 11: Understanding covariance
+  // Question 11: Covariance understanding
   10: {
     whyCorrect:
-      "After the assignment, admins and users point to THE SAME array object " +
+      "After the assignment, admins and users point to the SAME array object " +
       "in memory. Through users (type string[]) you can push arbitrary strings. " +
-      "These also end up in admins, even though the type ('admin' | 'mod')[] " +
-      "only allows these two values. TypeScript recognizes the problem but permits " +
+      "These also end up in admins, even though its type ('admin' | 'mod')[] " +
+      "only allows those two values. TypeScript recognizes the problem but allows " +
       "it out of pragmatism — too much existing code would break.",
     commonMistake:
       "Option A assumes the assignment itself fails. But covariance " +
-      "allows the assignment (narrower type -> wider type). " +
+      "allows the assignment (narrower type -> broader type). " +
       "The problem lies in the subsequent MUTATION, not in the assignment.",
   },
 
@@ -563,10 +562,10 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
     whyCorrect:
       "TypeScript knows the exact length of a tuple. Since [string, number, boolean] " +
       "always has exactly 3 elements, .length is the literal type 3. This is a " +
-      "fundamental difference from arrays (type number), because in arrays the " +
-      "length is variable.",
+      "fundamental difference from arrays (type number), because for arrays " +
+      "the length is variable.",
     commonMistake:
-      "'number' is the intuitive answer — .length does return a number. " +
+      "'number' is the intuitive answer — .length does return a number after all. " +
       "But TypeScript is more precise than you might think. For tuples, .length " +
       "becomes a literal type. This can be very useful in conditional types and mapped types.",
   },
@@ -575,27 +574,27 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   12: {
     whyCorrect:
       "noUncheckedIndexedAccess changes the behavior of index accesses: " +
-      "Every access to arr[n] has type T | undefined (instead of just T). " +
+      "every access to arr[n] has the type T | undefined (instead of just T). " +
       "This is safer because the index could be outside the bounds. " +
       "BUT: For tuples, known positions are not affected — " +
-      "tup[0] for a [string, number] remains string.",
+      "tup[0] for a [string, number] stays string.",
     commonMistake:
       "'string' without undefined is the default assumption of many developers. " +
-      "Without the option, that is also correct. But with the option, TypeScript " +
+      "Without the option, that is correct. But with the option, TypeScript " +
       "becomes more cautious — which is more correct at runtime.",
   },
 
   // Question 14: filter with type predicate
   13: {
     whyCorrect:
-      "Since TypeScript 5.5, filter() automatically recognizes inferred type predicates for simple typeof checks. " +
-      "The callback `x => typeof x === \"string\"` is " +
+      "As of TypeScript 5.5, filter() automatically recognizes inferred type predicates " +
+      "for simple typeof checks. The callback `x => typeof x === \"string\"` is " +
       "inferred as a type guard, so the result is string[]. " +
       "For more complex conditions, explicit type predicates are still needed.",
     commonMistake:
       "(string | number)[] was the correct answer before TS 5.5. " +
       "Those who learned with older TypeScript versions still expect the old behavior. " +
-      "From 5.5 onwards, the compiler is smarter about simple typeof/instanceof checks in filter().",
+      "From 5.5 onward, the compiler is smarter about simple typeof/instanceof checks in filter().",
   },
 
   // Question 15: Why no tuple?
@@ -604,13 +603,12 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
       "TypeScript assumes that arrays will be modified after declaration. " +
       "push(), pop(), splice() would fail on a tuple type. " +
       "'const' only protects the variable itself (p = [3, 4] is not allowed), " +
-      "but not the content (p.push(3) is fine). 'as const' does both: " +
+      "but not the contents (p.push(3) is). 'as const' does both: " +
       "readonly tuple with literal types.",
     commonMistake:
       "Confusing const (variable binding) with immutability " +
       "(content) is one of the most common misconceptions. In JavaScript, " +
-      "const is like a nameplate fixed to the wall — " +
+      "const is like a name tag fixed to the wall — " +
       "but the object behind it can still change.",
   },
 };
-```

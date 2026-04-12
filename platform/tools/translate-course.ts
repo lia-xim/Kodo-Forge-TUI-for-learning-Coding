@@ -26,10 +26,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execFile } from "node:child_process";
+import { exec } from "node:child_process";
 import { promisify } from "node:util";
 
-const execFileAsync = promisify(execFile);
+const execAsync = promisify(exec);
 
 // ─── Config ────────────────────────────────────────────────────────────────
 
@@ -68,6 +68,7 @@ interface CliArgs {
   to: Lang;
   lesson?: string;
   dryRun: boolean;
+  skipExisting: boolean;
   model: string;
   concurrency: number;
 }
@@ -79,6 +80,7 @@ function parseArgs(): CliArgs {
     from: "de",
     to: "en",
     dryRun: false,
+    skipExisting: false,
     model: "claude-sonnet-4-20250514",
     concurrency: 5,
   };
@@ -99,6 +101,9 @@ function parseArgs(): CliArgs {
         break;
       case "--dry-run":
         opts.dryRun = true;
+        break;
+      case "--skip-existing":
+        opts.skipExisting = true;
         break;
       case "--model":
         opts.model = args[++i];
@@ -145,17 +150,16 @@ function getCodeFileTranslationPrompt(
   fromLang: Lang,
   toLang: Lang,
 ): string {
-  return `You are a professional technical translator. Translate user-facing strings in this TypeScript data file from ${LANG_NAMES[fromLang]} to ${LANG_NAMES[toLang]}.
+  return `Translate the user-facing ${LANG_NAMES[fromLang]} strings in this TypeScript file to ${LANG_NAMES[toLang]}.
 
-RULES:
-1. Only translate string VALUES that are user-facing text (questions, explanations, feedback, hints)
-2. DO NOT translate: variable names, property keys, code examples, type annotations
-3. DO NOT change the file structure, imports, exports, or any TypeScript syntax
-4. Keep technical terms (TypeScript, string, number, interface, etc.) in English
-5. Translate the content inside string literals ("..." or '...' or \`...\`)
-6. For template literals with code examples inside, only translate the surrounding text, not the code
+Rules:
+- Translate string VALUES (questions, explanations, feedback, hints)
+- Keep variable names, property keys, code examples, type annotations unchanged
+- Keep file structure, imports, exports, TypeScript syntax identical
+- Keep technical terms (TypeScript, string, number, interface) in English
+- For template literals with code, only translate surrounding text
 
-Output ONLY the translated TypeScript file. No explanations.`;
+CRITICAL: Your response must be ONLY the complete translated TypeScript file — the raw source code starting with the first line of the file (import/export/comment). Do NOT include any explanation, description, markdown fences, or preamble. Just the code.`;
 }
 
 // ─── API Client ────────────────────────────────────────────────────────────
@@ -172,21 +176,59 @@ async function translateContent(
   content: string,
   systemPrompt: string,
   _model: string,
+  isCode: boolean = false,
 ): Promise<{ translated: string; inputTokens: number; outputTokens: number }> {
-  // Use Claude Code CLI in print mode — no API key needed
-  const prompt = `${systemPrompt}\n\n---\n\n${content}`;
-  const { stdout } = await execFileAsync("claude", ["-p", "--model", "sonnet", prompt], {
-    encoding: "utf-8",
-    maxBuffer: 50 * 1024 * 1024, // 50 MB
-    timeout: 300_000, // 5 min per file
-  });
-  const translated = stdout.trim();
+  const tmpFile = path.join(
+    process.env.TEMP ?? process.env.TMP ?? "/tmp",
+    `kf-translate-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`,
+  );
 
-  // Token counts not available via CLI — estimate from string lengths
-  const inputTokens = Math.ceil(content.length / 4);
-  const outputTokens = Math.ceil(translated.length / 4);
+  try {
+    let cmd: string;
+    const escapedPath = tmpFile.replace(/\\/g, "/");
 
-  return { translated, inputTokens, outputTokens };
+    if (isCode) {
+      // Code files: pipe full prompt (system + content) via stdin
+      // This avoids shell escaping issues with backticks in prompts
+      const fullPrompt = `${systemPrompt}\n\n---\n\n${content}`;
+      fs.writeFileSync(tmpFile, fullPrompt, "utf-8");
+      cmd = `cat "${escapedPath}" | claude -p --model sonnet`;
+    } else {
+      // Markdown files: pipe content via stdin, system prompt as argument
+      // This works more reliably for markdown translation
+      fs.writeFileSync(tmpFile, content, "utf-8");
+      cmd = `cat "${escapedPath}" | claude -p --model sonnet "Translate the following Markdown from German to English for a TypeScript learning platform. Preserve ALL formatting, code blocks, emoji markers, and structure. Output ONLY the translated Markdown, no explanations."`;
+    }
+
+    const { stdout } = await execAsync(cmd, {
+      encoding: "utf-8",
+      maxBuffer: 50 * 1024 * 1024,
+      timeout: 600_000, // 10 min per file
+    });
+
+    let translated = stdout.trim();
+
+    if (isCode) {
+      // Strip markdown code fences if Claude wraps the output
+      if (translated.includes("```")) {
+        const fenceMatch = translated.match(/```\w*\n([\s\S]*?)```/);
+        if (fenceMatch) {
+          translated = fenceMatch[1].trim();
+        }
+      }
+      // Strip preamble text before actual code
+      const codeStart = translated.search(/^(import |export |\/\*|\/\/|"|')/m);
+      if (codeStart > 0) {
+        translated = translated.slice(codeStart);
+      }
+    }
+
+    const inputTokens = Math.ceil(content.length / 4);
+    const outputTokens = Math.ceil(translated.length / 4);
+    return { translated, inputTokens, outputTokens };
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch {}
+  }
 }
 
 /** Run tasks in batches of `concurrency` */
@@ -232,6 +274,25 @@ const DIR_NAME_MAP: Record<string, string> = {
   "recursive-types": "recursive-types",
   "branded-nominal-types": "branded-nominal-types",
   "type-safe-error-handling": "type-safe-error-handling",
+  "advanced-patterns": "advanced-patterns",
+  "declaration-merging": "declaration-merging",
+  "decorators": "decorators",
+  "tsconfig-deep-dive": "tsconfig-deep-dive",
+  "review-challenge-phase-3": "review-challenge-phase-3",
+  "async-typescript": "async-typescript",
+  "type-safe-apis": "type-safe-apis",
+  "testing-typescript": "testing-typescript",
+  "performance-und-compiler": "performance-and-compiler",
+  "migration-strategies": "migration-strategies",
+  "library-authoring": "library-authoring",
+  "type-level-programming": "type-level-programming",
+  "compiler-api": "compiler-api",
+  "best-practices": "best-practices",
+  "capstone-project": "capstone-project",
+  "typescript-5x-features": "typescript-5x-features",
+  "typescript-sicherheit": "typescript-security",
+  "typescript-mit-rxjs": "typescript-with-rxjs",
+  "design-patterns-erweitert": "design-patterns-advanced",
 };
 
 function translateDirName(name: string, toLang: Lang): string {
@@ -262,13 +323,23 @@ async function translateFile(
     return { file: relPath, success: true };
   }
 
+  if (opts.skipExisting && fs.existsSync(destPath)) {
+    console.log(`  ⏭ ${relPath} (already exists)`);
+    return { file: relPath, success: true };
+  }
+
   try {
     const content = fs.readFileSync(srcPath, "utf-8");
     const prompt = isCode
       ? getCodeFileTranslationPrompt(opts.from, opts.to)
       : getMarkdownTranslationPrompt(opts.from, opts.to);
 
-    const result = await translateContent(content, prompt, opts.model);
+    const result = await translateContent(content, prompt, opts.model, isCode);
+
+    // Validate: output should be at least 30% the size of input
+    if (result.translated.length < content.length * 0.3) {
+      throw new Error(`Output too short (${result.translated.length} vs ${content.length} chars) — likely a bad translation`);
+    }
 
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     fs.writeFileSync(destPath, result.translated);

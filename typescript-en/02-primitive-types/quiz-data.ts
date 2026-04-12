@@ -1,9 +1,8 @@
-```typescript
 /**
  * Lesson 02 — Quiz Data: Primitive Types
  *
  * Exports only the questions (without calling runQuiz),
- * so the review runner can import them.
+ * so that the review runner can import them.
  */
 
 import type { QuizQuestion } from '../tools/quiz-runner.ts';
@@ -24,11 +23,11 @@ export const questions: QuizQuestion[] = [
     correct: 1,
     explanation:
       "Always use 'string' (lowercase). 'String' (uppercase) is a " +
-      "wrapper object from JavaScript and leads to subtle bugs. The rule " +
-      "also applies to number/Number and boolean/Boolean.",
+      "wrapper object from JavaScript and leads to subtle bugs. The same rule " +
+      "applies to number/Number and boolean/Boolean.",
   },
 
-  // --- Question 2: number precision ---
+  // --- Question 2: number Precision ---
   {
     question: "What is the result of 0.1 + 0.2 === 0.3 in TypeScript?",
     options: [
@@ -39,7 +38,7 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 1,
     explanation:
-      "false! Due to IEEE 754 floating-point arithmetic, 0.1 + 0.2 yields " +
+      "false! Due to IEEE 754 floating-point arithmetic, 0.1 + 0.2 results in " +
       "0.30000000000000004, not exactly 0.3. This is not a TypeScript problem, " +
       "but a fundamental issue with floating-point representation.",
     code: "const ergebnis = 0.1 + 0.2 === 0.3;\nconsole.log(ergebnis); // ???",
@@ -56,12 +55,12 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      '"object" — this is a notorious bug from the early days of ' +
+      '"object" — this is a famously notorious bug from the early days of ' +
       "JavaScript (1995). It was never fixed because too much existing code " +
-      'depends on it. typeof undefined, however, correctly returns "undefined".',
+      "depends on it. typeof undefined on the other hand correctly returns \"undefined\".",
   },
 
-  // --- Question 4: any vs unknown — assignment ---
+  // --- Question 4: any vs unknown — Assignment ---
   {
     question: "Which assignment causes a TypeScript error?",
     options: [
@@ -73,8 +72,8 @@ export const questions: QuizQuestion[] = [
     correct: 1,
     explanation:
       "unknown CANNOT be directly assigned to another type — " +
-      "you must check first (type narrowing). any, on the other hand, can be " +
-      "assigned anywhere (unsafe!). unknown → any and any → unknown are OK.",
+      "you must check first (Type Narrowing). any on the other hand can be assigned " +
+      "anywhere (unsafe!). unknown → any and any → unknown are OK.",
     code: 'let a: unknown = "hallo";\nlet b: string = a; // Error?',
   },
 
@@ -111,8 +110,8 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      "never, because the function NEVER returns — it always throws an error. " +
-      "void means 'returns nothing meaningful', but the function still returns. " +
+      "never, because the function NEVER returns — it always throws an Error. " +
+      "void means 'returns nothing meaningful', but the function does return. " +
       "never means 'NEVER returns'.",
     code:
       "function fail(msg: string): ??? {\n" +
@@ -131,13 +130,12 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      "Callbacks typed as void may return values — " +
-      "they are simply ignored. That's why, for example, " +
-      "arr.forEach(v => arr.push(v)) works, even though push returns a number " +
-      "and forEach expects (value) => void.",
+      "Callbacks typed as void may return values — they are simply ignored. " +
+      "This is why arr.forEach(v => arr.push(v)) works, even though push returns " +
+      "a number and forEach expects (value) => void.",
   },
 
-  // --- Question 8: Type hierarchy ---
+  // --- Question 8: Type Hierarchy ---
   {
     question: "Which statement about the TypeScript type hierarchy is CORRECT?",
     options: [
@@ -148,10 +146,10 @@ export const questions: QuizQuestion[] = [
     ],
     correct: 2,
     explanation:
-      "never (bottom type) is assignable to every type — because a never value " +
-      "never exists, the assignment is always 'safe'. unknown is the top type " +
-      "(not any!). any breaks the rules and is neither top nor bottom. " +
-      "Option D is wrong: never IS assignable to every type (that's why C is correct).",
+      "never (Bottom Type) is assignable to every type — because a never value " +
+      "never exists, the assignment is always 'safe'. unknown is the Top Type " +
+      "(not any!). any breaks the rules and is neither Top nor Bottom. " +
+      "Option D is wrong: never IS assignable to every type (which is why C is correct).",
   },
 
   // --- Question 9: Nullish Coalescing ---
@@ -160,14 +158,14 @@ export const questions: QuizQuestion[] = [
     options: [
       "No difference, both are the same",
       "|| checks for null/undefined, ?? checks for all falsy values",
-      "?? only checks for null/undefined, || checks for all falsy values",
+      "?? checks only for null/undefined, || checks for all falsy values",
       "?? only works with strings",
     ],
     correct: 2,
     explanation:
       "?? (Nullish Coalescing) returns the right-hand value only for null or undefined. " +
       "|| (logical OR) returns the right-hand value for ALL falsy values " +
-      "(0, \"\", false, null, undefined, NaN). So 0 ?? 42 = 0, but 0 || 42 = 42.",
+      "(0, \"\", false, null, undefined, NaN). Therefore 0 ?? 42 = 0, but 0 || 42 = 42.",
     code: "const a = 0 || 42;   // ???\nconst b = 0 ?? 42;   // ???",
   },
 
@@ -176,15 +174,15 @@ export const questions: QuizQuestion[] = [
     question: "What is the result of this comparison?",
     options: [
       "true, because both have the same description",
-      "false, because every Symbol is unique",
+      "false, because every symbol is unique",
       "Compile Error",
       "undefined",
     ],
     correct: 1,
     explanation:
-      "Every Symbol created with Symbol() is UNIQUE — even if the " +
-      "description is identical. The description is only for debugging. " +
-      "If you need the same symbol, you must use Symbol.for(): " +
+      "Every symbol created with Symbol() is UNIQUE — even if the description is " +
+      "identical. The description only serves for debugging. " +
+      "If you need equal symbols, you must use Symbol.for(): " +
       "Symbol.for('id') === Symbol.for('id') would be true.",
     code:
       'const a = Symbol("id");\n' +
@@ -205,26 +203,26 @@ export const questions: QuizQuestion[] = [
     explanation:
       'const variables with primitive values get a LITERAL TYPE. ' +
       'Because const can never change, TypeScript knows: x is EXACTLY "hallo" ' +
-      'and nothing else. With "let x = \'hallo\'" the type would be "string", ' +
-      'because let could change. This is called type widening.',
+      'and nothing else. With "let x = \'hallo\'" the type would be "string" instead, ' +
+      'because let could change. This is called Type Widening.',
     code: 'const x = "hallo";\n// Was ist der Typ von x?',
   },
 
-  // --- Question 12: Type Widening with objects ---
+  // --- Question 12: Type Widening with Objects ---
   {
     question: "Why does this assignment NOT compile?",
     options: [
       'Because "GET" is not a valid string',
-      'Because method is inferred as string (type widening with let)',
-      'Because const objects cannot be modified',
+      'Because method is inferred as string (Type Widening with let)',
+      'Because const objects cannot be changed',
       'Because config.method is readonly',
     ],
     correct: 1,
     explanation:
-      'Even though config is declared with "const", the PROPERTIES of an ' +
-      'object are mutable (you could write config.method = "POST"). ' +
+      'Although config is declared with "const", the PROPERTIES of an object are ' +
+      'mutable (you could write config.method = "POST"). ' +
       'Therefore TypeScript infers method as "string" (wide), not as "GET" ' +
-      '(literal). The fix: "as const" on the value or an explicit type annotation.',
+      '(literal). The solution: "as const" on the value or an explicit type annotation.',
     code:
       'type HttpMethod = "GET" | "POST";\n' +
       'const config = { method: "GET" };\n' +
@@ -237,20 +235,20 @@ export const questions: QuizQuestion[] = [
     question: "What happens to TypeScript types at runtime?",
     options: [
       "They are converted into JavaScript classes",
-      "They are kept as comments in the code",
-      "They are completely removed (type erasure)",
+      "They are preserved as comments in the code",
+      "They are completely removed (Type Erasure)",
       "They are converted into typeof checks",
     ],
     correct: 2,
     explanation:
       "TypeScript types exist ONLY at compile time. During compilation, " +
-      "ALL type annotations, interfaces and type aliases are removed. What remains " +
-      "is plain JavaScript. This is called type erasure. That's why " +
-      "you can't write 'if (x instanceof MyInterface)' — interfaces " +
-      "don't exist at runtime.",
+      "ALL type annotations, interfaces, and type aliases are removed. What remains " +
+      "is plain JavaScript. This is called Type Erasure. This is why " +
+      "you cannot write 'if (x instanceof MyInterface)' — interfaces " +
+      "do not exist at runtime.",
   },
 
-  // --- Question 14: ?? vs || trap ---
+  // --- Question 14: ?? vs || Pitfall ---
   {
     question: "What is the value of 'port' in this code?",
     options: [
@@ -283,10 +281,10 @@ export const questions: QuizQuestion[] = [
     correct: 2,
     explanation:
       '"as const" does three things: (1) The array becomes readonly, ' +
-      '(2) all elements get literal types, and (3) the length is fixed. ' +
-      'The type is therefore a readonly tuple with exactly three literal elements. ' +
+      '(2) all elements get Literal Types, and (3) the length is fixed. ' +
+      'The type is therefore a readonly Tuple with exactly three literal elements. ' +
       'Without "as const" the type would just be string[]. ' +
-      'With "typeof farben[number]" you can derive the union type "rot" | "gruen" | "blau" from it.',
+      'With "typeof farben[number]" you can derive the Union Type "rot" | "gruen" | "blau" from it.',
     code: 'const farben = ["rot", "gruen", "blau"] as const;',
   },
 
@@ -301,7 +299,7 @@ export const questions: QuizQuestion[] = [
     expectedAnswer: "object",
     acceptableAnswers: ["object", "'object'", "\"object\""],
     explanation:
-      "typeof null === 'object' is a notorious bug from the early days " +
+      "typeof null === 'object' is a famously notorious bug from the early days " +
       "of JavaScript (1995). In the first JS implementation, values were stored as " +
       "a type tag + value. null had the tag 0 (like objects), hence 'object'. " +
       "The bug was never fixed because too much existing code depends on it.",
@@ -310,29 +308,29 @@ export const questions: QuizQuestion[] = [
   // --- Question 17: Short-Answer — Bottom Type ---
   {
     type: "short-answer",
-    question: "Which TypeScript type is the bottom type that is assignable to every other type?",
+    question: "Which TypeScript type is the Bottom Type that is assignable to every other type?",
     expectedAnswer: "never",
     acceptableAnswers: ["never", "Never"],
     explanation:
-      "never is the bottom type in TypeScript. A never value never exists — " +
-      "therefore it is trivially assignable to every type (you cannot assign " +
-      "something that doesn't exist). never arises in functions that never return " +
+      "never is the Bottom Type in TypeScript. A never value never exists — " +
+      "therefore it is trivially assignable to every type (you cannot assign something " +
+      "that does not exist). never arises in functions that never return " +
       "(throw, infinite loop) and in impossible branches in control flow.",
   },
 
   // --- Question 18: Short-Answer — Nullish Coalescing ---
   {
     type: "short-answer",
-    question: "Which operator checks ONLY for null and undefined (not other falsy values like 0 or '')?",
+    question: "Which operator checks ONLY for null and undefined (not for other falsy values like 0 or '')?",
     expectedAnswer: "??",
     acceptableAnswers: ["??", "Nullish Coalescing", "nullish coalescing", "Nullish Coalescing Operator"],
     explanation:
       "The ?? (Nullish Coalescing) operator returns the right-hand value only for null or undefined. " +
-      "Unlike ||, the values 0, '' and false are NOT treated as 'empty'. " +
+      "Unlike ||, 0, '' and false are NOT treated as 'empty'. " +
       "Therefore: 0 ?? 42 = 0, but 0 || 42 = 42.",
   },
 
-  // --- Question 19: Predict-Output — Falsy trap ---
+  // --- Question 19: Predict-Output — Falsy Pitfall ---
   {
     type: "predict-output",
     question: "What does this code output?",
@@ -348,7 +346,7 @@ export const questions: QuizQuestion[] = [
   // --- Question 20: Predict-Output — any contagion ---
   {
     type: "predict-output",
-    question: "What is the type of 'result' as inferred by TypeScript? (Give the type name)",
+    question: "What is the type of 'result' as inferred by TypeScript? (Enter the type name)",
     code: `let data: any = { value: 42 };\nlet result = data.value + 1;`,
     expectedAnswer: "any",
     acceptableAnswers: ["any"],
@@ -366,7 +364,7 @@ export const questions: QuizQuestion[] = [
     modelAnswer:
       "'string' is the primitive type in TypeScript/JavaScript. 'String' (uppercase) is a " +
       "wrapper object (new String('x')) that causes subtle bugs. typeof new String('x') " +
-      "returns 'object', not 'string'. Additionally, 'string' is not assignable to 'String' " +
+      "returns 'object', not 'string'. Also, 'string' is not assignable to 'String' " +
       "in strict mode. The same rule applies to number/Number and boolean/Boolean.",
     keyPoints: [
       "string (lowercase) = primitive type, String (uppercase) = wrapper object",
@@ -394,18 +392,18 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
       "`typeof new String('x')` returns 'object', not 'string'.",
     commonMistake:
       "Coming from Java or C#, many write `String` uppercase. " +
-      "In TypeScript/JavaScript that is the wrapper object type — " +
+      "In TypeScript/JavaScript this is the wrapper object type — " +
       "ALWAYS use lowercase: string, number, boolean.",
   },
   1: {
     whyCorrect:
-      "IEEE 754 floating point: 0.1 and 0.2 cannot be represented exactly in binary. " +
+      "IEEE 754 floating-point: 0.1 and 0.2 are not exactly representable in binary. " +
       "Their sum is 0.30000000000000004. This applies to ALL languages with IEEE 754 " +
       "(JavaScript, Python, Java, C++, etc.).",
     commonMistake:
       "Many think this is a JavaScript or TypeScript bug. " +
       "It is a fundamental problem of floating-point representation that occurs in almost " +
-      "every programming language. Solution: for monetary amounts, use integer arithmetic (cents).",
+      "all programming languages. Solution: Use integer arithmetic (cents) for monetary amounts.",
   },
   2: {
     whyCorrect:
@@ -419,30 +417,30 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   },
   3: {
     whyCorrect:
-      "`unknown` CANNOT be directly assigned to a specific type. " +
-      "You must first perform type narrowing (e.g., typeof check). " +
+      "`unknown` cannot be directly assigned to a specific type. " +
+      "You must first perform Type Narrowing (e.g., typeof check). " +
       "This is the core difference from `any`, which bypasses all checks.",
     commonMistake:
-      "Many confuse the assignment direction: " +
-      "EVERYTHING can be assigned to `unknown` (receiving), but `unknown` " +
-      "CANNOT be assigned to specific types (passing on) — " +
+      "Many confuse assignment in both directions: " +
+      "ANYTHING can be assigned to `unknown` (reception), but `unknown` " +
+      "CANNOT be assigned to specific types (forwarding) — " +
       "without prior checking.",
   },
   4: {
     whyCorrect:
-      "`any` is contagious: every expression derived from an `any` value " +
-      "is again `any`. The entire chain loses type safety. " +
+      "`any` is contagious: Every expression derived from an `any` value " +
+      "is `any` again. The entire chain loses type safety. " +
       "This is the main reason why `any` is so dangerous.",
     commonMistake:
       "Many think TypeScript would infer the type `string` for `quelle.name`, " +
-      "because at runtime there actually is a string in there. " +
+      "because at runtime there is actually a string in it. " +
       "But TypeScript only sees the DECLARED type (`any`), not the runtime value.",
   },
   5: {
     whyCorrect:
-      "`never` means 'NEVER returns'. The function ALWAYS throws an error — " +
-      "it never reaches the end. `void` means 'returns nothing meaningful', " +
-      "but the function still returns.",
+      "`never` means 'NEVER returns'. The function ALWAYS throws an Error — " +
+      "it never reaches the end. `void` on the other hand means 'returns nothing meaningful', " +
+      "but the function does return.",
     commonMistake:
       "The most common mistake: confusing `void` and `never`. `void` = returns " +
       "(with undefined). `never` = NEVER returns (throw, infinite loop).",
@@ -450,22 +448,22 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
   6: {
     whyCorrect:
       "Callbacks with a void return type may return values — they are simply ignored. " +
-      "That's why `arr.forEach(v => arr.push(v))` works: push returns a number, " +
-      "but forEach expects void — and that's OK.",
+      "This is why `arr.forEach(v => arr.push(v))` works: push returns a number, " +
+      "but forEach expects void — and that is OK.",
     commonMistake:
       "Many think void callbacks may NOT return any value. " +
       "But that would break many common patterns. " +
-      "void as a callback return type means: 'I don't care what you return.'",
+      "void as a callback return means: 'I don't care what you return.'",
   },
   7: {
     whyCorrect:
-      "`never` (bottom type) is assignable to every type — this is logically correct, " +
+      "`never` (Bottom Type) is assignable to every type — this is logically correct, " +
       "because a never value never exists. You cannot assign something that never exists. " +
-      "`unknown` is the top type (not `any`!). `any` breaks the type rules.",
+      "`unknown` is the Top Type (not `any`!). `any` breaks the type rules.",
     commonMistake:
-      "Most people think `any` is the top type. `any` is neither top nor bottom — " +
+      "Most people think `any` is the Top Type. `any` is neither Top nor Bottom — " +
       "it is a 'cheat code' that bypasses the type hierarchy. " +
-      "`unknown` is the true top type.",
+      "`unknown` is the true Top Type.",
   },
   8: {
     whyCorrect:
@@ -474,43 +472,43 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
       "Therefore: 0 ?? 42 = 0, but 0 || 42 = 42.",
     commonMistake:
       "Many habitually use `||` for default values. " +
-      "It often works, but breaks with 0, '' or false. " +
-      "The classic bug: `port || 3000` returns 3000 even when port is 0.",
+      "This often works, but breaks with 0, '' or false. " +
+      "The classic bug: `port || 3000` returns 3000 even for port 0.",
   },
   9: {
     whyCorrect:
       "Every symbol created with `Symbol()` is UNIQUE. The description " +
-      "is only for debugging — it does not make symbols equal. " +
+      "only serves for debugging — it does not make symbols equal. " +
       "`Symbol.for('id')` would return a shared symbol from the global registry.",
     commonMistake:
       "Intuition: 'Same description = same value'. " +
-      "For strings that's true, for symbols it's not. " +
-      "Uniqueness is the entire point of symbols.",
+      "For strings that is true, for symbols it is not. " +
+      "Uniqueness is the whole point of symbols.",
   },
   10: {
     whyCorrect:
-      "const variables with primitive values get a literal type. " +
+      "const variables with primitive values get a Literal Type. " +
       "Since `const x` can never change, TypeScript knows: x is EXACTLY \"hallo\" " +
-      "and nothing else. With `let` the type would be `string` (widening).",
+      "and nothing else. With `let` the type would be `string` (Widening).",
     commonMistake:
       "Many expect `string`, because 'string is the type of text values'. " +
-      "But the literal type `\"hallo\"` is more PRECISE — and with const, precision is possible.",
+      "But the Literal Type `\"hallo\"` is MORE PRECISE — and with const, precision is possible.",
   },
   11: {
     whyCorrect:
-      "Even though `config` is declared with const, object properties are mutable. " +
+      "Although `config` is declared with const, object properties are mutable. " +
       "You could write `config.method = 'POST'`. Therefore TypeScript widens " +
-      "the type of `method` to `string`, not `\"GET\"`. This is property widening.",
+      "the type of `method` to `string`, not `\"GET\"`. This is Property Widening.",
     commonMistake:
       "Almost everyone expects const to also 'freeze' the properties. " +
       "const only protects the variable (no reassignment of the object), " +
-      "not its contents. Fix: `as const` or Object.freeze().",
+      "not its contents. Solution: `as const` or Object.freeze().",
   },
   12: {
     whyCorrect:
-      "ALL TypeScript types are removed during compilation (type erasure). " +
-      "Interfaces, type aliases, generics, type annotations — all gone. " +
-      "At runtime everything is plain JavaScript.",
+      "ALL TypeScript types are removed during compilation (Type Erasure). " +
+      "Interfaces, Type Aliases, Generics, type annotations — all gone. " +
+      "At runtime everything is pure JavaScript.",
     commonMistake:
       "Some think types are converted into typeof checks or comments. " +
       "No — they are COMPLETELY removed. No trace remains.",
@@ -522,18 +520,17 @@ export const elaboratedFeedback: Record<number, ElaboratedFeedback> = {
       "The classic port bug!",
     commonMistake:
       "Many see `config.port || 3000` as a safe default value. " +
-      "It works — except when port is intentionally 0 (OS picks a free port). " +
+      "It works — except when the port is intentionally 0 (OS chooses a free port). " +
       "ALWAYS use `??` for numeric and boolean defaults.",
   },
   14: {
     whyCorrect:
-      "`as const` does three things: (1) readonly array, (2) literal types for elements, " +
-      "(3) fixed length (tuple). The type is `readonly [\"rot\", \"gruen\", \"blau\"]`. " +
-      "With `typeof farben[number]` you get the union `\"rot\" | \"gruen\" | \"blau\"`.",
+      "`as const` does three things: (1) readonly array, (2) Literal Types for elements, " +
+      "(3) fixed length (Tuple). The type is `readonly [\"rot\", \"gruen\", \"blau\"]`. " +
+      "With `typeof farben[number]` you get the Union `\"rot\" | \"gruen\" | \"blau\"`.",
     commonMistake:
       "Some think `as const` only makes things readonly. " +
-      "The literal type preservation and the tuple conversion " +
-      "are often overlooked — but they are the real main benefit.",
+      "The literal type preservation and tuple conversion " +
+      "are often overlooked — but they are the actual main benefit.",
   },
 };
-```

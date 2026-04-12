@@ -209,17 +209,55 @@
     "aboutCourse": "Über diesen Kurs",
     "targetAudience": "Für wen ist dieser Kurs?",
     "whatYouLearn": "Was du nach diesem Kurs kannst",
-    "didacticConcept": "Didaktisches Konzept",
+    "learningOutcomes": "{count} Lernergebnisse",
+    "didacticConcept": "Wissenschaftlich fundiertes Lernen",
     "didacticDesc": "Dieser Kurs nutzt moderne, wissenschaftlich fundierte Lernmethoden. Jede Lektion ist so aufgebaut, dass du nicht nur liest, sondern wirklich verstehst und behältst.",
     "coveredTopics": "Behandelte Themen",
     "fullCurriculum": "Vollständiges Curriculum",
     "curriculumMeta": "{lessons} Lektionen in {phases} Phasen · {sections} Sektionen · ~{hours}h Inhalt",
     "readyToStart": "Bereit, ",
-    "readyToStart2": " zu starten?",
+    "readyToStart2": " zu meistern?",
     "downloadCta": "Lade Kodo Forge herunter und starte deine Lernreise. Kostenlos, offline, ohne Anmeldung.",
     "downloadFree": "Kostenlos herunterladen",
-    "metaTitle": "{courseName} — Terminal-Kurs",
-    "metaDescription": "{description} {lessons} Lektionen, {hours} Stunden Inhalt."
+    "viewAllCourses": "Alle Kurse ansehen",
+    "heroQuote": "Von Entwicklern, für Entwickler.",
+    "whyThisCourse": "Warum dieser Kurs?",
+    "whyItems": [
+      {
+        "icon": "Layers",
+        "title": "44 Lektionen, kein Füllmaterial",
+        "description": "Jede Lektion ist sorgfältig ausgearbeitet. Kein Filler, kein Padding. Reines, destilliertes TypeScript-Wissen über 5 progressive Phasen."
+      },
+      {
+        "icon": "Brain",
+        "title": "Wissenschaftlich fundierte Merkfähigkeit",
+        "description": "Basierend auf 7 Lerntheorien inklusive Spaced Repetition und Active Recall. Du liest nicht nur — du behältst. Dauerhaft."
+      },
+      {
+        "icon": "TrendingUp",
+        "title": "Vom Anfänger zum Experten",
+        "description": "Starte mit primitiven Typen, ende bei der Compiler API und Type-Level Programming. Ein vollständiger Meisterschaftspfad, kein oberflächlicher Überblick."
+      }
+    ],
+    "metaTitle": "Lerne {courseName} Kostenlos: {lessons} Lektionen | Terminal-Kurs",
+    "metaDescription": "Meistere {courseName} mit {lessons} kostenlosen interaktiven Lektionen und {hours}h Inhalt. Wissenschaftlich fundiertes Lernen mit Spaced Repetition, Quizzes und adaptiver Tiefe — 100 % offline im Terminal.",
+    "metaOgTitle": "Lerne {courseName} Kostenlos — {lessons} Lektionen im Terminal | Kodo Forge",
+    "terminalPreviewLines": [
+      "$ kodo-forge start typescript",
+      "",
+      "  L02: Primitive Typen",
+      "  ─────────────────────────────────",
+      "  Sektion 2/5 · Standard-Modus",
+      "",
+      "  TypeScript hat 7 primitive Typen.",
+      "  Die häufigsten sind string,",
+      "  number und boolean.",
+      "",
+      "  > Experiment: Was passiert, wenn",
+      "    du null einem string zuweist?",
+      "",
+      "  [Space] Weiter  [D] Tiefe  [Q] Quiz"
+    ]
   },
   "downloadPage": {
     "title": "Download ",
@@ -288,7 +326,8 @@
     "typescript": {
       "tagline": "Von Basics bis Type-Level Programming — 44 Lektionen, 5 Phasen",
       "description": "Der umfassendste TypeScript-Kurs, den du im Terminal finden wirst. 44 Lektionen, 5 Phasen, von Primitives bis zur Compiler API.",
-      "longDescription": "Dieser Kurs ist kein einfaches Tutorial — es ist ein systematisches, tiefgründiges Lernprogramm, das dich über 5 Phasen und 44 Lektionen vom absoluten TypeScript-Anfänger zum echten Experten bringt.\n\nJede einzelne Lektion folgt unserem bewährten LEARN-Zyklus: Du liest die Theorie mit Diagrammen und Analogien, erkundest lauffähige Code-Beispiele, wendest dein Wissen in Übungen mit steigender Schwierigkeit an, reflektierst dein Verständnis in interaktiven Terminal-Quizzes, und behältst alles über kompakte Cheatsheets.\n\nDas Besondere: Unser Spaced-Repetition-System merkt sich, welche Konzepte du gelernt hast, und erinnert dich genau dann an sie, bevor du sie vergessen würdest. So baust du echtes, langfristiges Wissen auf — keine oberflächliche Tutorial-Erfahrung.\n\nDer Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Mapped Types und Conditional Types bis hin zu Decorators, der Compiler API und Type-Level Programming. Phase 5 geht sogar über das Übliche hinaus mit TypeScript Security, RxJS-Integration und fortgeschrittenen Design Patterns.",
+      "longDescription": "Dieser Kurs ist kein weiteres TypeScript-Tutorial, das bei Interfaces und Generics aufhört. Es ist ein 44-Lektionen, 82-Stunden Deep Dive, der dich von deiner ersten Type-Annotation bis zum Schreiben eigener Type-Level-Programme und der Manipulation des Compiler-AST führt.\n\nJede Lektion folgt dem bewährten LEARN-Zyklus: Lies Theorie, angereichert mit Diagrammen und Analogien aus der echten Welt, erkunde lauffähige Code-Beispiele mit Zeile-für-Zeile-Annotationen, wende dein Wissen in progressiv schwierigeren Übungen an, reflektiere über interaktive Terminal-Quizzes, und behalte alles mit kompakten Cheatsheets und Spaced Repetition.\n\nWas diesen Kurs von jeder anderen TypeScript-Ressource unterscheidet: Die eingebaute Spaced-Repetition-Engine verfolgt jedes Konzept, das du lernst, und plant Wiederholungen in wissenschaftlich optimalen Intervallen — genau bevor du es vergessen würdest. Kein anderer Kurs macht das. Du baust echtes, dauerhaftes Wissen auf statt eines flüchtigen Tutorial-Hochs.\n\nDas Curriculum umfasst alles, was ein Profi braucht: Primitive Typen, Generics, Mapped und Conditional Types, Template Literals, Discriminated Unions, Branded Types, Decorators, die vollständige Compiler API und Type-Level Programming. Phase 5 geht in Experten-Territorium mit TypeScript-Security-Patterns, vollständig typisierten RxJS-Pipelines und 15+ GoF/SOLID Design Patterns — typsicher implementiert.",
+      "heroQuote": "Der TypeScript-Kurs, der sich merkt, was du vergisst.",
       "targetAudience": [
         "JavaScript-Entwickler, die TypeScript wirklich verstehen wollen",
         "Selbstlerner, die einen strukturierten Lernpfad suchen",
@@ -334,6 +373,13 @@
           "title": "Mermaid-Diagramme",
           "description": "Komplexe Zusammenhänge werden als visuelle Diagramme direkt im Terminal dargestellt."
         }
+      ],
+      "phases": [
+        { "name": "Phase 1 — Grundlagen", "lessonCount": 10 },
+        { "name": "Phase 2 — Type System Core", "lessonCount": 10 },
+        { "name": "Phase 3 — Fortgeschrittenes TypeScript", "lessonCount": 10 },
+        { "name": "Phase 4 — Praxis-Meisterschaft", "lessonCount": 10 },
+        { "name": "Phase 5 — Mastery Plus", "lessonCount": 4 }
       ]
     },
     "angular": {

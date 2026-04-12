@@ -1,6 +1,3 @@
-The file path isn't specified — I'll translate the content directly and output the full file:
-
-```typescript
 /**
  * Lesson 02 — Tracing Exercises: Primitive Types
  *
@@ -10,13 +7,13 @@ The file path isn't specified — I'll translate the content directly and output
  *  - ?? vs || with falsy values
  *  - never and void
  *
- * Increasing difficulty: 1 → 4
+ * Difficulty increasing: 1 → 4
  */
 
 import type { TracingExercise } from "../tools/tracing-engine.ts";
 
 export const tracingExercises: TracingExercise[] = [
-  // ─── Exercise 1: JavaScript quirks with primitives ───────────────────────
+  // ─── Exercise 1: JavaScript Quirks with Primitives ───────────────────
   {
     id: "02-primitive-gotchas",
     title: "Primitive Gotchas — typeof, NaN, Floating Point",
@@ -45,7 +42,7 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "typeof null returns 'object' — a historical bug from " +
           "JavaScript 1.0 (1995). It was never fixed because too much " +
-          "existing code depends on it.",
+          "existing code relies on it.",
       },
       {
         lineIndex: 1,
@@ -54,7 +51,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "a": "object", "b": "undefined" },
         explanation:
           "typeof undefined correctly returns 'undefined'. " +
-          "Unlike with null, typeof behaves as expected for undefined.",
+          "Unlike null, typeof behaves as expected with undefined.",
       },
       {
         lineIndex: 2,
@@ -64,7 +61,7 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "NaN is the only value in JavaScript that is NOT equal to " +
           "itself. NaN === NaN is false. " +
-          "Use Number.isNaN() to check for NaN.",
+          "To check for NaN, use Number.isNaN().",
       },
       {
         lineIndex: 3,
@@ -74,7 +71,7 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "IEEE 754 floating point: 0.1 + 0.2 yields 0.30000000000000004, " +
           "not exactly 0.3. Therefore the comparison is false. " +
-          "For monetary values, use integers (cents) instead.",
+          "For monetary amounts, it's better to use integers (cents).",
       },
       {
         lineIndex: 4,
@@ -82,8 +79,8 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "0.30000000000000004",
         variables: { "a": "object", "b": "undefined", "c": "false", "d": "false", "e": "0.30000000000000004" },
         explanation:
-          "This is the actual IEEE 754 floating-point value. " +
-          "The tiny deviation occurs because 0.1 and 0.2 " +
+          "That is the actual IEEE 754 floating-point value. " +
+          "The tiny discrepancy occurs because 0.1 and 0.2 " +
           "cannot be represented exactly in binary.",
       },
     ],
@@ -91,7 +88,7 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 1,
   },
 
-  // ─── Exercise 2: Type Narrowing with unknown ─────────────────────────────
+  // ─── Exercise 2: Type Narrowing with unknown ──────────────────────────────
   {
     id: "02-typeof-narrowing",
     title: "Type Narrowing with typeof",
@@ -102,7 +99,7 @@ export const tracingExercises: TracingExercise[] = [
       "function process(x: string | number | null) {",
       "  // x has type: string | number | null",
       "  if (x === null) {",
-      "    return 'nichts';",
+      "    return 'nothing';",
       "  }",
       "  // x now has type: ???",
       "  if (typeof x === 'string') {",
@@ -123,13 +120,13 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "x": "string | number | null" },
         explanation:
           "The parameter x is declared as a union type: " +
-          "string | number | null. TypeScript does not yet know the " +
-          "concrete value.",
+          "string | number | null. TypeScript doesn't know the concrete " +
+          "value yet.",
       },
       {
         lineIndex: 5,
         question:
-          "What type does x have AFTER the null check in lines 3-4? " +
+          "What type does x have AFTER the null check on lines 3-4? " +
           "(When we reach line 6)",
         expectedAnswer: "string | number",
         variables: { "x": "string | number" },
@@ -146,7 +143,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "x": "string" },
         explanation:
           "The typeof check narrows the type further. In the if-branch " +
-          "TypeScript knows: x is a string. Therefore " +
+          "TypeScript knows: x is a string. That's why " +
           "x.toUpperCase() is allowed without error.",
       },
       {
@@ -158,14 +155,14 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "In the else-branch, TypeScript eliminates string (that was the " +
           "if-case) and null (that was the early return). " +
-          "What remains: number. Therefore x.toFixed(2) is allowed.",
+          "What remains: number. That's why x.toFixed(2) is allowed.",
       },
     ],
     concept: "type-narrowing",
     difficulty: 2,
   },
 
-  // ─── Exercise 3: ?? vs || with falsy values ──────────────────────────────
+  // ─── Exercise 3: ?? vs || with Falsy Values ──────────────────────────────
   {
     id: "02-nullish-vs-or",
     title: "Nullish Coalescing (??) vs. Logical OR (||)",
@@ -192,7 +189,7 @@ export const tracingExercises: TracingExercise[] = [
         explanation:
           "|| checks for 'falsy'. 0 is falsy in JavaScript, " +
           "so 'fallback' is returned. " +
-          "This is often unintended when 0 is a valid value.",
+          "This is often unwanted when 0 is a valid value.",
       },
       {
         lineIndex: 1,
@@ -202,8 +199,8 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "a": "fallback", "b": "0" },
         explanation:
           "?? checks ONLY for null and undefined. 0 is neither null " +
-          "nor undefined, so the value stays 0. " +
-          "This is the great advantage of ?? with numeric values.",
+          "nor undefined, so the value remains 0. " +
+          "This is the big advantage of ?? with numeric values.",
       },
       {
         lineIndex: 2,
@@ -241,7 +238,7 @@ export const tracingExercises: TracingExercise[] = [
         },
         explanation:
           "With null (and undefined), || and ?? behave identically: " +
-          "both return 'fallback'. The difference only shows " +
+          "both return 'fallback'. The difference only shows up " +
           "with 0, '' and false.",
       },
     ],
@@ -249,7 +246,7 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 2,
   },
 
-  // ─── Exercise 4: unknown — forced narrowing ──────────────────────────────
+  // ─── Exercise 4: unknown — Forced Checking ────────────────────────────
   {
     id: "02-unknown-narrowing",
     title: "unknown — Narrowing Step by Step",
@@ -280,7 +277,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "val": "unknown" },
         explanation:
           "unknown is the safe 'top type'. Any value can be " +
-          "assigned to it, but you can't do anything with it " +
+          "assigned to it, but nothing can be done with it " +
           "without first narrowing the type.",
       },
       {
@@ -291,8 +288,8 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "val": "object | null" },
         explanation:
           "typeof returns 'object' for objects AND for null " +
-          "(the historical bug). Therefore val after this check " +
-          "has type 'object | null' — null is not yet excluded!",
+          "(the historical bug). Therefore, after this check, val has " +
+          "the type 'object | null' — null is not yet excluded!",
       },
       {
         lineIndex: 5,
@@ -302,7 +299,7 @@ export const tracingExercises: TracingExercise[] = [
         variables: { "val": "object" },
         explanation:
           "After 'val !== null', null is eliminated. Now val has " +
-          "type 'object'. Only now is Object.keys(val) safe. " +
+          "the type 'object'. Only now is Object.keys(val) safe. " +
           "Without the null check, TypeScript would report an error.",
       },
       {
@@ -321,7 +318,7 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 3,
   },
 
-  // ─── Exercise 5: never and exhaustive checks ─────────────────────────────
+  // ─── Exercise 5: never and Exhaustive Checks ────────────────────────────
   {
     id: "02-never-exhaustive",
     title: "never — Exhaustive Type Checking",
@@ -349,8 +346,8 @@ export const tracingExercises: TracingExercise[] = [
       {
         lineIndex: 0,
         question:
-          "What type does 'shape' have in the switch statement " +
-          "before the case checks?",
+          "What type does 'shape' have in the switch statement before " +
+          "the case checks?",
         expectedAnswer: "circle | square | triangle",
         variables: { "shape": "circle | square | triangle" },
         explanation:
@@ -361,24 +358,24 @@ export const tracingExercises: TracingExercise[] = [
         lineIndex: 6,
         question:
           "What type does 'shape' have after case 'circle'? " +
-          "(In the remaining code)",
+          "(i.e., in the remaining code)",
         expectedAnswer: "square | triangle",
         variables: { "shape": "square | triangle" },
         explanation:
           "The case 'circle' with return eliminates 'circle' from the " +
-          "union type. TypeScript knows: if we continue here, " +
+          "union type. TypeScript knows: if execution continues here, " +
           "shape cannot be 'circle'.",
       },
       {
         lineIndex: 11,
         question:
-          "What type does 'shape' have in the default branch, " +
-          "when all three cases are covered?",
+          "What type does 'shape' have in the default branch when all " +
+          "three cases are covered?",
         expectedAnswer: "never",
         variables: { "shape": "never" },
         explanation:
-          "After all three values (circle, square, triangle) have been " +
-          "covered by case branches, nothing remains. " +
+          "After all three values (circle, square, triangle) are covered " +
+          "by case branches, nothing remains. " +
           "TypeScript infers 'never' — the type for 'impossible'.",
       },
       {
@@ -389,9 +386,9 @@ export const tracingExercises: TracingExercise[] = [
         expectedAnswer: "Compile error: 'rectangle' is not assignable to 'never'",
         variables: { "shape": "rectangle (not never!)" },
         explanation:
-          "That's the trick: when a new value is added to the union " +
-          "and no case exists for it, shape has type 'rectangle' in the default. " +
-          "The assignment to 'never' fails — " +
+          "That's the trick: if a new value is added to the union " +
+          "and no case exists for it, shape has the type 'rectangle' " +
+          "in the default branch. The assignment to 'never' fails — " +
           "TypeScript reports the error. Exhaustive check!",
       },
     ],
@@ -399,4 +396,3 @@ export const tracingExercises: TracingExercise[] = [
     difficulty: 4,
   },
 ];
-```

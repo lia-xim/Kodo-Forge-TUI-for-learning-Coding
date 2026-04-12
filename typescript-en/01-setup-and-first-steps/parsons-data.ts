@@ -1,15 +1,14 @@
-```typescript
 /**
- * Lektion 01 — Parson's Problems: Setup & Erste Schritte
+ * Lesson 01 — Parson's Problems: Setup & First Steps
  *
- * 3 Problems zum Ordnen von Code-Zeilen.
- * Konzepte: Type Guards, Interfaces, tsconfig.json
+ * 3 problems for ordering code lines.
+ * Concepts: Type Guards, Interfaces, tsconfig.json
  */
 
 import type { ParsonsProblem } from "../tools/parsons-engine.ts";
 
 export const parsonsProblems: ParsonsProblem[] = [
-  // ─── Problem 1: Type Guard Funktion ──────────────────────────────────────
+  // ─── Problem 1: Type Guard Function ──────────────────────────────────────
   {
     id: "L01-P1",
     title: "Type Guard Function",
@@ -33,7 +32,7 @@ export const parsonsProblems: ParsonsProblem[] = [
     difficulty: 1,
   },
 
-  // ─── Problem 2: Interface + Objekt ───────────────────────────────────────
+  // ─── Problem 2: Interface + Object ───────────────────────────────────────
   {
     id: "L01-P2",
     title: "Define and use an Interface",
@@ -58,7 +57,7 @@ export const parsonsProblems: ParsonsProblem[] = [
     difficulty: 1,
   },
 
-  // ─── Problem 3: tsconfig.json Reihenfolge ────────────────────────────────
+  // ─── Problem 3: tsconfig.json Structure ──────────────────────────────────
   {
     id: "L01-P3",
     title: "tsconfig.json Basic Structure",
@@ -78,9 +77,8 @@ export const parsonsProblems: ParsonsProblem[] = [
       '    "strict": "yes",',
       '  "options": {',
     ],
-    hint: "'strict' is a Boolean (true/false), not a string.",
+    hint: "'strict' is a boolean (true/false), not a string.",
     concept: "tsconfig",
     difficulty: 1,
   },
 ];
-```

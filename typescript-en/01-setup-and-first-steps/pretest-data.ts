@@ -1,9 +1,8 @@
-```typescript
 /**
  * Lesson 01 — Pre-Test Questions: Setup & First Steps
  *
  * 3 questions per section, asked BEFORE reading.
- * Goal: 'Prime' the brain for the upcoming explanation.
+ * Goal: "Prime" the brain for the upcoming explanation.
  */
 
 export interface PretestQuestion {
@@ -18,7 +17,7 @@ export interface PretestQuestion {
 }
 
 export const pretestQuestions: PretestQuestion[] = [
-  // ─── Section 1: What is TypeScript? (Compiler, Transpiler) ────────────────
+  // ─── Section 1: What is TypeScript? (Compiler, Transpiler) ───────────────
 
   {
     sectionIndex: 1,
@@ -34,12 +33,12 @@ export const pretestQuestions: PretestQuestion[] = [
     correct: 1,
     briefExplanation:
       "TypeScript is a transpiler — it translates TS to JS. " +
-      "At runtime, not a single TypeScript type remains.",
+      "At runtime, not a single TypeScript type exists anymore.",
   },
   {
     sectionIndex: 1,
     question:
-      "When TypeScript is compiled to another language — " +
+      "If TypeScript compiles to another language — " +
       "what do you think happens to type annotations like `: string`?",
     options: [
       "They are converted into runtime checks",
@@ -65,7 +64,7 @@ export const pretestQuestions: PretestQuestion[] = [
     ],
     correct: 2,
     briefExplanation:
-      "Interfaces are pure compile-time constructs. They disappear " +
+      "Interfaces are purely compile-time constructs. They disappear " +
       "during compilation — instanceof only works with classes.",
   },
 
@@ -79,21 +78,21 @@ export const pretestQuestions: PretestQuestion[] = [
     options: [
       "No, nothing is generated when there are errors",
       "Yes, TypeScript still generates JavaScript",
-      "Only when a special flag is set",
+      "Only if you set a special flag",
       "I don't know",
     ],
     correct: 1,
     briefExplanation:
       "By default, tsc generates JavaScript even with type errors. " +
       "Type checking and emit are conceptually independent. " +
-      "This can be changed with `noEmitOnError: true`.",
+      "You can change this with `noEmitOnError: true`.",
   },
   {
     sectionIndex: 2,
     question:
       "What do you think — what does `strict: true` do in tsconfig.json?",
     options: [
-      "It enables strict type checks (e.g., null checks)",
+      "It enables strict type checking (e.g. null checks)",
       "It makes the code faster",
       "It prevents the use of `var`",
       "I don't know",
@@ -101,7 +100,7 @@ export const pretestQuestions: PretestQuestion[] = [
     correct: 0,
     briefExplanation:
       "`strict: true` enables a set of strict checks, " +
-      "including strictNullChecks — the single most important option " +
+      "including strictNullChecks — the single most important option, " +
       "because it catches null/undefined errors.",
   },
   {
@@ -120,7 +119,7 @@ export const pretestQuestions: PretestQuestion[] = [
       "Type Checking (check types) → Emit (generate JavaScript).",
   },
 
-  // ─── Section 3: Tools & Output Files ──────────────────────────────
+  // ─── Section 3: Tools & Output Files ─────────────────────────────────────
 
   {
     sectionIndex: 3,
@@ -135,8 +134,8 @@ export const pretestQuestions: PretestQuestion[] = [
     ],
     correct: 0,
     briefExplanation:
-      "Source maps (.js.map) are JSON files that map every line in the " +
-      "JavaScript output to the corresponding line in the TypeScript source code. " +
+      "Source maps (.js.map) are JSON files that map each line in the " +
+      "JavaScript output to the corresponding line in the TypeScript source. " +
       "Browsers and Node.js use them automatically.",
   },
   {
@@ -152,7 +151,7 @@ export const pretestQuestions: PretestQuestion[] = [
     correct: 3,
     briefExplanation:
       ".d.ts files contain ONLY types, no executable code. " +
-      "They serve as interface descriptions, e.g., @types/react " +
+      "They serve as interface descriptions, e.g. @types/react " +
       "for React.",
   },
   {
@@ -162,15 +161,14 @@ export const pretestQuestions: PretestQuestion[] = [
     code: "const value = someData as string;",
     options: [
       "The value is converted to a string",
-      "It checks whether the value is a string",
+      "It is checked whether the value is a string",
       "I don't know",
       "It is completely removed — the value does not change",
     ],
     correct: 3,
     briefExplanation:
       "Type assertions (`as string`) only exist at compile time. " +
-      "They are removed by type erasure and do NOT change the value. " +
-      "For actual conversion, you need `String(value)`.",
+      "They are removed during type erasure and do NOT change the value. " +
+      "For actual conversion you need `String(value)`.",
   },
 ];
-```

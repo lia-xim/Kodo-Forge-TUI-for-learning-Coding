@@ -1,17 +1,14 @@
-Here is the fully translated file. You can copy it directly:
-
-```typescript
 /**
- * Lektion 02 -- Transfer Tasks: Primitive Types
+ * Lesson 02 -- Transfer Tasks: Primitive Types
  *
- * Diese Tasks nehmen die Konzepte aus der Primitive-Types-Lektion und wenden
- * sie in komplett neuen Kontexten an:
+ * These tasks take the concepts from the Primitive Types lesson and apply
+ * them in completely new contexts:
  *
- *  1. Geldbetraege korrekt modellieren (number-Fallen)
- *  2. API-Daten von any zu unknown refactoren
- *  3. Eingabe-Validierung mit Typschutz
+ *  1. Correctly modeling monetary amounts (number pitfalls)
+ *  2. Refactoring API data from any to unknown
+ *  3. Input validation with type safety
  *
- * Keine externen Dependencies.
+ * No external dependencies.
  */
 
 import type { TransferTask } from "../tools/transfer-engine.ts";
@@ -19,21 +16,21 @@ import type { TransferTask } from "../tools/transfer-engine.ts";
 // ─── Transfer Tasks ─────────────────────────────────────────────────────────
 
 export const transferTasks: TransferTask[] = [
-  // ─── Task 1: Geldbetraege modellieren ──────────────────────────────────
+  // ─── Task 1: Modeling monetary amounts ──────────────────────────────────
   {
     id: "02-geldbetraege",
-    title: "Modeling Monetary Amounts Correctly",
+    title: "Correctly Modeling Monetary Amounts",
     prerequisiteLessons: [2],
     scenario:
       "You are working on an online shop. A customer complains that " +
-      "his order costs 19.99 + 5.01 = 25.009999999999998 euros. " +
-      "Another developer has used 'number' everywhere for monetary amounts " +
-      "and is calculating in euros with decimal places.",
+      "their order costs 19.99 + 5.01 = 25.009999999999998 euros. " +
+      "Another developer used 'number' everywhere for monetary amounts " +
+      "and calculates in euros with decimal places.",
     task:
       "Model monetary amounts in a type-safe way in TypeScript.\n\n" +
       "1. Why is 'number' dangerous for money? (IEEE 754)\n" +
-      "2. Create a type 'Cents' that represents monetary amounts as whole numbers " +
-      "   in cents (1999 instead of 19.99)\n" +
+      "2. Create a type 'Cents' that represents monetary amounts as whole " +
+      "   numbers in cents (1999 instead of 19.99)\n" +
       "3. Write a function 'addMoney' that adds two cent values\n" +
       "4. Write a function 'formatEuro' that formats cents as a euro string " +
       "   (e.g. 1999 -> '19,99 EUR')\n" +
@@ -55,13 +52,13 @@ export const transferTasks: TransferTask[] = [
       "// formatEuro(2500)     should return '25,00 EUR'",
     ].join("\n"),
     solutionCode: [
-      "// ═══ Why number is dangerous for money ═══",
+      "// ═══ Why number is Dangerous for Money ═══",
       "// JavaScript uses IEEE 754 double-precision floats.",
       "// 0.1 + 0.2 === 0.30000000000000004  (not 0.3!)",
       "// 19.99 + 5.01 === 25.009999999999998 (not 25.00!)",
       "//",
       "// Solution: Always calculate in the smallest unit (cents).",
-      "// Integers don't have this problem.",
+      "// Integers do not have this problem.",
       "",
       "// Branded Type: Prevents accidental confusion",
       "// with regular numbers",
@@ -106,13 +103,13 @@ export const transferTasks: TransferTask[] = [
     ],
     hints: [
       "Think about IEEE 754: Why is 0.1 + 0.2 !== 0.3 in JavaScript? What consequence does this have for monetary amounts?",
-      "If you calculate in cents (integers), you completely avoid the floating-point problem. 1999 cents instead of 19.99 euros.",
+      "If you calculate in cents (integers), you completely bypass the floating-point problem. 1999 cents instead of 19.99 euros.",
       "A 'Branded Type' (type Cents = number & { __brand: 'Cents' }) prevents you from accidentally treating regular numbers as Cents.",
     ],
     difficulty: 3,
   },
 
-  // ─── Task 2: API-Daten any zu unknown ──────────────────────────────────
+  // ─── Task 2: API data any to unknown ──────────────────────────────────
   {
     id: "02-any-zu-unknown",
     title: "API Data: Refactoring from any to unknown",
@@ -125,13 +122,13 @@ export const transferTasks: TransferTask[] = [
       "'displayName'. Nobody noticed the error until " +
       "customers saw 'undefined' on their screen.",
     task:
-      "Refactor the code from 'any' to 'unknown' and build in " +
+      "Refactor the code from 'any' to 'unknown' and add " +
       "safe validation.\n\n" +
-      "1. Why did 'any' conceal the bug?\n" +
-      "2. Write a function 'parseUser' that accepts an unknown value " +
+      "1. Why did 'any' hide the bug?\n" +
+      "2. Write a function 'parseUser' that takes an unknown value " +
       "   and returns either a validated User or " +
       "   an error\n" +
-      "3. Use Type Guards (typeof, 'in' operator) to check the structure " +
+      "3. Use type guards (typeof, 'in' operator) to check the structure " +
       "   at runtime\n" +
       "4. Explain why unknown is better here than any",
     starterCode: [
@@ -148,7 +145,7 @@ export const transferTasks: TransferTask[] = [
       "// AFTER (safe):",
       "function parseUser(data: unknown): User {",
       "  // TODO: Validate that data is a User",
-      "  // Throw an error if the structure doesn't match",
+      "  // Throw an error if the structure does not match",
       "}",
     ].join("\n"),
     solutionCode: [
@@ -158,9 +155,9 @@ export const transferTasks: TransferTask[] = [
       "  email: string;",
       "}",
       "",
-      "// ═══ Why any conceals the bug ═══",
-      "// 'any' disables the type system completely.",
-      "// data.name -> no error, even though 'name' doesn't exist",
+      "// ═══ Why any Hides the Bug ═══",
+      "// 'any' completely disables the type system.",
+      "// data.name -> no error, even though 'name' does not exist",
       "// data.wasAuchImmer -> no error, TypeScript checks nothing",
       "//",
       "// 'unknown', on the other hand, enforces a check BEFORE access.",
@@ -192,9 +189,9 @@ export const transferTasks: TransferTask[] = [
       "  };",
       "}",
       "",
-      "// ═══ Why unknown is better ═══",
+      "// ═══ Why unknown is Better ═══",
       "// 1. unknown enforces validation — no access without checking",
-      "// 2. Errors are caught immediately, not first by the customer",
+      "// 2. Errors are caught immediately, not only when customers see them",
       "// 3. The error messages say exactly WHAT is missing",
       "// 4. The compiler helps: data.name would give an error",
     ].join("\n"),
@@ -212,20 +209,20 @@ export const transferTasks: TransferTask[] = [
     difficulty: 3,
   },
 
-  // ─── Task 3: Eingabe-Validierung ───────────────────────────────────────
+  // ─── Task 3: Input validation ───────────────────────────────────────
   {
     id: "02-eingabe-validierung",
     title: "Form Validation with Type Narrowing",
     prerequisiteLessons: [2],
     scenario:
       "You are building a registration form. The inputs come as " +
-      "strings from the input fields. Before you save the data, " +
+      "strings from the input fields. Before saving the data, " +
       "you need to ensure: age is a valid number (16-120), " +
       "email contains an @, password has at least 8 characters. " +
       "Currently the app only returns 'Invalid input' — " +
       "no user knows what is wrong.",
     task:
-      "Build a type-safe validation that gives concrete error messages.\n\n" +
+      "Build a type-safe validation that gives specific error messages.\n\n" +
       "1. Define a result type: either success (with data) " +
       "   or failure (with error list)\n" +
       "2. Write a validate function that checks all fields\n" +
@@ -233,7 +230,7 @@ export const transferTasks: TransferTask[] = [
       "4. Show how the caller can safely use the result " +
       "   (type narrowing on the result)",
     starterCode: [
-      "// Define a Result type: success or failure",
+      "// Define a result type: success or failure",
       "type ValidationResult = ???;",
       "",
       "interface RegistrationData {",
@@ -252,7 +249,7 @@ export const transferTasks: TransferTask[] = [
       "}",
     ].join("\n"),
     solutionCode: [
-      "// ═══ Discriminated Union for the result ═══",
+      "// ═══ Discriminated Union for the Result ═══",
       "type ValidationResult =",
       "  | { success: true; data: RegistrationData }",
       "  | { success: false; errors: string[] };",
@@ -293,22 +290,22 @@ export const transferTasks: TransferTask[] = [
       "  if (email === null || email === undefined) {",
       "    errors.push('Email is required');",
       "  } else if (!email.includes('@')) {",
-      "    errors.push('Email must contain an @ character');",
+      "    errors.push('Email must contain an @ symbol');",
       "  }",
       "",
       "  // Password: at least 8 characters",
       "  if (password === null || password === undefined) {",
       "    errors.push('Password is required');",
       "  } else if (password.length < 8) {",
-      "    errors.push('Password must have at least 8 characters');",
+      "    errors.push('Password must be at least 8 characters');",
       "  }",
       "",
       "  if (errors.length > 0) {",
       "    return { success: false, errors };",
       "  }",
       "",
-      "  // Here TypeScript doesn't yet know that all values are present.",
-      "  // But we know it, because we caught all errors above.",
+      "  // TypeScript doesn't know yet that all values are present.",
+      "  // But we know, because we caught all errors above.",
       "  return {",
       "    success: true,",
       "    data: {",
@@ -337,18 +334,9 @@ export const transferTasks: TransferTask[] = [
       "string | null Parameter",
     ],
     hints: [
-      "Define the result as a Discriminated Union: { success: true, data: ... } | { success: false, errors: string[] }. The shared field 'success' enables safe narrowing.",
-      "Every parameter is string | null. You must first check whether the value is null before accessing string methods like .includes() or .trim().",
+      "Define the result as a Discriminated Union: { success: true, data: ... } | { success: false, errors: string[] }. The shared field 'success' allows safe narrowing.",
+      "Each parameter is string | null. You must first check if the value is null before accessing string methods like .includes() or .trim().",
     ],
     difficulty: 3,
   },
 ];
-```
-
-**Translation decisions worth noting:**
-
-- `id` fields (`"02-geldbetraege"`, `"02-any-zu-unknown"`, `"02-eingabe-validierung"`) — kept as-is since they are system identifiers, not user-facing text
-- File header JSDoc and section divider comments (`// ─── Task 1...`) — kept as-is since they are code comments, not string literals
-- Variable names in code examples within `solutionCode` (`preis`, `versand`, `total`) — kept as-is since they are part of code samples, not prose
-- Error message strings inside `throw new Error(...)` within `solutionCode` — translated since they are user-facing runtime messages
-- `conceptsBridged` entries — translated where German (`"Ganzzahl-Arithmetik"` → `"Integer Arithmetic"`, `"Laufzeit-Validierung"` → `"Runtime Validation"`, `"Typ-Narrowing"` → `"Type Narrowing"`)

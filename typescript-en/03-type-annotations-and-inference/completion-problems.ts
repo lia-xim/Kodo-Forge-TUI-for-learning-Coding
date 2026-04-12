@@ -1,6 +1,3 @@
-The write was blocked by permissions. Here is the fully translated file content — you can save it to `typescript-en/03-type-annotations-and-inference/completion-problems.ts`:
-
-```typescript
 /**
  * Lesson 03 — Completion Problems: Type Annotations & Inference
  *
@@ -26,11 +23,11 @@ export const completionProblems: CompletionProblem[] = [
   // ─── 1: When to annotate, when to infer (easy) ───────────────────────────
   {
     id: "03-cp-annotate-or-infer",
-    title: "Annotate or let TypeScript infer?",
+    title: "Annotate or let infer?",
     description:
-      "Decide for each position whether an annotation is necessary " +
-      "or whether TypeScript can infer the type on its own. Write 'INFER' " +
-      "when the annotation is redundant.",
+      "Decide for each position whether an annotation is needed " +
+      "or whether TypeScript recognizes the type itself. Write 'INFER' " +
+      "when the annotation is unnecessary.",
     template: `// Parameter: MUST be annotated
 function greet(name: ______): string {
   // Local variable: inference is sufficient
@@ -64,12 +61,12 @@ const items: string[] = [];`,
       {
         placeholder: "______",
         answer: "",
-        hint: "Does a local variable with an initial value need an annotation? (No — leave blank.)",
+        hint: "Does a local variable with an initial value need an annotation? (No — leave empty.)",
       },
       {
         placeholder: "______",
         answer: "",
-        hint: "Can TypeScript infer the type from the function call? (Yes — leave blank.)",
+        hint: "Can TypeScript infer the type from the function call? (Yes — leave empty.)",
       },
       {
         placeholder: "______",
@@ -80,13 +77,13 @@ const items: string[] = [];`,
     concept: "When to annotate? / Inference rules",
   },
 
-  // ─── 2: Controlling widening (easy-medium) ───────────────────────────────
+  // ─── 2: Controlling widening (easy-medium) ─────────────────────────────
   {
     id: "03-cp-widening",
     title: "Understanding and controlling widening",
     description:
       "Fill in the types that TypeScript infers for each variable. " +
-      "Notice the difference between let and const.",
+      "Pay attention to the difference between let and const.",
     template: `const literal = "hello";
 // TypeScript infers: ______
 
@@ -113,7 +110,7 @@ const configFixed = { mode: "dark" } as const;
       {
         placeholder: "______",
         answer: '"hello"',
-        hint: "const with a primitive: TypeScript keeps the literal type.",
+        hint: "const with primitive: TypeScript keeps the literal type.",
       },
       {
         placeholder: "______",
@@ -183,7 +180,7 @@ document.addEventListener("click", handler);`,
       {
         placeholder: "______",
         answer: "n",
-        hint: "Same as with .map() — contextual typing works for all array methods.",
+        hint: "Same as with .map() — contextual typing works with all array methods.",
       },
       {
         placeholder: "______",
@@ -196,20 +193,20 @@ document.addEventListener("click", handler);`,
         hint: "Contextual typing is missing with a separate definition. Which event type matches 'click'?",
       },
     ],
-    concept: "Contextual Typing / Callback inference",
+    concept: "Contextual Typing / Callback-Inference",
   },
 
-  // ─── 4: Control flow narrowing (medium) ──────────────────────────────────
+  // ─── 4: Control Flow Narrowing (medium) ──────────────────────────────────
   {
     id: "03-cp-control-flow",
-    title: "Control flow narrowing",
+    title: "Control Flow Narrowing",
     description:
       "Complete the function. TypeScript narrows the type " +
       "after each check — take advantage of that.",
     template: `function format(value: string | number | boolean | null): string {
   // Step 1: exclude null
   if (value ______ null) {
-    return "no value";
+    return "kein Wert";
   }
   // Here value is: string | number | boolean
 
@@ -225,11 +222,11 @@ document.addEventListener("click", handler);`,
   }
   // Here value is: boolean
 
-  return value ? "yes" : "no";
+  return value ? "ja" : "nein";
 }`,
     solution: `function format(value: string | number | boolean | null): string {
   if (value === null) {
-    return "no value";
+    return "kein Wert";
   }
 
   if (typeof value === "string") {
@@ -240,13 +237,13 @@ document.addEventListener("click", handler);`,
     return value.toFixed(2);
   }
 
-  return value ? "yes" : "no";
+  return value ? "ja" : "nein";
 }`,
     blanks: [
       {
         placeholder: "______",
         answer: "===",
-        hint: "Strict equality operator for null checks.",
+        hint: "Strict equality operator for null check.",
       },
       {
         placeholder: "______",
@@ -256,7 +253,7 @@ document.addEventListener("click", handler);`,
       {
         placeholder: "______",
         answer: "string",
-        hint: "Which typeof value are you checking against?",
+        hint: "What typeof value are you checking against?",
       },
       {
         placeholder: "______",
@@ -270,10 +267,10 @@ document.addEventListener("click", handler);`,
   // ─── 5: satisfies in practice (medium-hard) ──────────────────────────────
   {
     id: "03-cp-satisfies",
-    title: "satisfies vs. annotation",
+    title: "satisfies vs. Annotation",
     description:
       "Use `satisfies` to validate a configuration " +
-      "AND keep the precise types at the same time.",
+      "AND at the same time keep the precise types.",
     template: `type RouteConfig = Record<string, {
   path: string;
   auth: boolean;
@@ -286,7 +283,7 @@ const routesAnnotated: RouteConfig = {
 };
 // routesAnnotated.home.path is: string (not "/")
 
-// With satisfies — precise types are kept:
+// With satisfies — precise types are preserved:
 const routes = {
   home: { path: "/", auth: false },
   dashboard: { path: "/dashboard", auth: true },
@@ -301,7 +298,7 @@ const ROUTES = {
   dashboard: { path: "/dashboard", auth: true },
 } ______ ______ ______ RouteConfig;
 
-// All route paths as a union type:
+// All route paths as union type:
 type RoutePath = ______ ROUTES[keyof typeof ROUTES]["path"];
 // Result: "/" | "/dashboard"`,
     solution: `type RouteConfig = Record<string, {
@@ -330,7 +327,7 @@ type RoutePath = typeof ROUTES[keyof typeof ROUTES]["path"];
       {
         placeholder: "______",
         answer: "satisfies",
-        hint: "Which operator validates against a type WITHOUT losing inference?",
+        hint: "Which operator validates against a type WITHOUT losing the inference?",
       },
       {
         placeholder: "______",
@@ -353,18 +350,18 @@ type RoutePath = typeof ROUTES[keyof typeof ROUTES]["path"];
         hint: "Which operator extracts the TYPE from a runtime variable?",
       },
     ],
-    concept: "satisfies / as const / Precise inference",
+    concept: "satisfies / as const / Precise Inference",
   },
 
-  // ─── 6: Return type best practices (hard) ────────────────────────────────
+  // ─── 6: Return Type Best Practices (hard) ────────────────────────────────
   {
     id: "03-cp-return-types",
     title: "Return types for exported functions",
     description:
-      "Annotate the return types of the exported functions explicitly. " +
-      "The 'annotate at boundaries' principle: internal inference, " +
+      "Annotate the return types of exported functions explicitly. " +
+      "The 'Annotate at boundaries' principle: internal inference, " +
       "external annotation.",
-    template: `// EXPORTED: Explicit return type (best practice)
+    template: `// EXPORTED: Explicit return type (Best Practice)
 export function parseAge(input: string): ______ {
   const parsed = parseInt(input, 10);
   if (______) return null;
@@ -380,7 +377,7 @@ export function classify(value: unknown): ______ {
   return "other" as const;
 }
 
-// INTERNAL: inference is sufficient (not exported)
+// INTERNAL: Inference is sufficient (not exported)
 function double(n: number) {
   return n * 2;
 }`,
@@ -410,7 +407,7 @@ function double(n: number) {
       {
         placeholder: "______",
         answer: "isNaN(parsed)",
-        hint: "How do you check whether parseInt returned an invalid value (NaN)?",
+        hint: "How do you check if parseInt returned an invalid value (NaN)?",
       },
       {
         placeholder: "______",
@@ -420,15 +417,9 @@ function double(n: number) {
       {
         placeholder: "______",
         answer: "as",
-        hint: "Keyword for 'as const' to keep the literal type in the return value.",
+        hint: "Keyword for 'as const' to keep the literal type in the return.",
       },
     ],
     concept: "Return type annotation / Annotate at boundaries / as const",
   },
 ];
-```
-
-**Translation notes:**
-- All German user-facing strings (titles, descriptions, hints, concepts) translated to English
-- Code examples left untouched (including the `Hallo,` greeting inside template literals — it's embedded in a code example, not UI text)
-- `"kein Wert"` → `"no value"` and `"ja"/"nein"` → `"yes"/"no"` in the solution strings (those are string literals that appear as output in code examples, so they follow rule 6 — only surrounding text, but since they're the actual return values being taught, I kept them translated to maintain consistency with the English solution)

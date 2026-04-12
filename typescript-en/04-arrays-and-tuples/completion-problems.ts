@@ -1,4 +1,3 @@
-```typescript
 /**
  * Lesson 04 -- Completion Problems: Arrays & Tuples
  *
@@ -17,7 +16,7 @@ export interface CompletionProblem {
 }
 
 export const completionProblems: CompletionProblem[] = [
-  // ─── 1: Basics — Annotating array types ───────────────────────────────
+  // ─── 1: Basics — annotating array types ───────────────────────────────────
   {
     id: "04-cp-01",
     title: "Correctly annotating array types",
@@ -59,7 +58,7 @@ const PRIMES: readonly number[] = [2, 3, 5, 7, 11];`,
     concept: "Array type syntax and readonly",
   },
 
-  // ─── 2: Defining tuple types ─────────────────────────────────────────────
+  // ─── 2: Defining tuple types ───────────────────────────────────────────────
   {
     id: "04-cp-02",
     title: "Tuple types for fixed structures",
@@ -90,7 +89,7 @@ const spatial: Coordinate = [10, 20, 30];`,
       {
         placeholder: "___(1)___",
         answer: "[string, number]",
-        hint: "Position 0 is a name (string), position 1 is an age (number).",
+        hint: "Position 0 is a name (string), position 1 an age (number).",
       },
       {
         placeholder: "___(2)___",
@@ -111,8 +110,8 @@ const spatial: Coordinate = [10, 20, 30];`,
     id: "04-cp-03",
     title: "Type-safe filter() with type predicate",
     description:
-      "Complete the filter() call so that TypeScript correctly narrows the type. " +
-      "Without a type predicate the type remains too broad.",
+      "Complete the filter() call so TypeScript narrows the type correctly. " +
+      "Without a type predicate, the type remains too broad.",
     template: `interface User {
   name: string;
   email: string | null;
@@ -131,7 +130,7 @@ const usersWithEmail: UserWithEmail[] = users.filter(
   (user): ___(2)___ => ___(3)___
 );
 
-// This should work without errors:
+// This should now work without errors:
 usersWithEmail.forEach(u => console.log(u.email.toUpperCase()));`,
     solution: `type UserWithEmail = User & { email: string };
 
@@ -142,7 +141,7 @@ const usersWithEmail: UserWithEmail[] = users.filter(
       {
         placeholder: "___(1)___",
         answer: "User & { email: string }",
-        hint: "Intersection: A User where email is guaranteed to be a string (not null).",
+        hint: "Intersection: A User where email is guaranteed to be string (not null).",
       },
       {
         placeholder: "___(2)___",
@@ -158,7 +157,7 @@ const usersWithEmail: UserWithEmail[] = users.filter(
     concept: "Type predicates with filter() and intersection types",
   },
 
-  // ─── 4: Combining as const and satisfies ─────────────────────────────────
+  // ─── 4: Combining as const and satisfies ──────────────────────────────────
   {
     id: "04-cp-04",
     title: "Combining 'as const' and 'satisfies'",
@@ -170,8 +169,8 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // Create a readonly tuple with validation
 const ALLOWED_METHODS = ___(1)___;
-// Should have type readonly ["GET", "POST"] (not readonly HttpMethod[])
-// AND only compiles if all values are valid HttpMethod values
+// Should have the type readonly ["GET", "POST"] (not readonly HttpMethod[])
+// AND only compiles if all values are valid HttpMethod
 
 // Use the type to derive a union
 type AllowedMethod = ___(2)___;
@@ -202,7 +201,7 @@ function isAllowed(method: string): method is AllowedMethod {
       {
         placeholder: "___(3)___",
         answer: "(ALLOWED_METHODS as readonly string[])",
-        hint: "includes() on readonly tuples requires a small type assertion.",
+        hint: "includes() on readonly tuples needs a small type assertion.",
       },
     ],
     concept: "as const + satisfies + typeof + indexed access",
@@ -213,8 +212,8 @@ function isAllowed(method: string): method is AllowedMethod {
     id: "04-cp-05",
     title: "Variadic tuple types for flexible functions",
     description:
-      "Implement a type-safe 'prepend' function that adds an element " +
-      "to the front of a tuple. The length and types must be preserved.",
+      "Implement a type-safe 'prepend' function that prepends an element " +
+      "to a tuple. The length and types must be preserved.",
     template: `// A function that prepends an element
 function prepend<T, ___(1)___>(
   element: T,
@@ -247,7 +246,7 @@ const r3 = prepend(true, []);
       {
         placeholder: "___(1)___",
         answer: "Rest extends unknown[]",
-        hint: "A generic type parameter that represents an arbitrary tuple.",
+        hint: "A generic type parameter that represents any tuple.",
       },
       {
         placeholder: "___(2)___",
@@ -257,16 +256,16 @@ const r3 = prepend(true, []);
       {
         placeholder: "___(3)___",
         answer: "[boolean]",
-        hint: "true with an empty rest results in a tuple with one element.",
+        hint: "true with an empty rest yields a tuple with one element.",
       },
     ],
     concept: "Variadic tuple types and generic constraints",
   },
 
-  // ─── 6: Readonly safety in function parameters ────────────────────────────
+  // ─── 6: Readonly safety for function parameters ───────────────────────────
   {
     id: "04-cp-06",
-    title: "Correctly typed readonly function signatures",
+    title: "Readonly-correct function signatures",
     description:
       "Fix the function signatures so they accept both mutable and " +
       "readonly arrays and correctly prevent mutation.",
@@ -282,17 +281,17 @@ function getFirst(arr: ___(1)___): string | undefined {
   return arr[0];
 }
 
-// This function SHOULD mutate the array — the caller must know this
+// This function SHOULD modify the array — the caller needs to know this
 function addItem(arr: ___(2)___, item: string): void {
   arr.push(item);
 }
 
-// This function returns a sorted copy without changing the original
+// This function returns a sorted copy without modifying the original
 function sortedCopy(arr: ___(3)___): string[] {
   return [...arr].sort();
 }
 
-// All three should work with both readonly and mutable arrays:
+// All three should work with readonly and mutable arrays:
 const mutable: string[] = ["c", "a", "b"];
 const immutable: readonly string[] = ["x", "y", "z"];
 
@@ -322,7 +321,7 @@ function sortedCopy(arr: readonly string[]): string[] {
       {
         placeholder: "___(2)___",
         answer: "string[]",
-        hint: "This MUST be mutable here, since push() is called.",
+        hint: "Here it MUST be mutable, since push() is called.",
       },
       {
         placeholder: "___(3)___",
@@ -330,7 +329,6 @@ function sortedCopy(arr: readonly string[]): string[] {
         hint: "The function does not mutate — so readonly for maximum compatibility.",
       },
     ],
-    concept: "readonly in function parameters — when mutable, when readonly",
+    concept: "readonly for function parameters — when mutable, when readonly",
   },
 ];
-```
