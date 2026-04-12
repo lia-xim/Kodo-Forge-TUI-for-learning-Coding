@@ -31,6 +31,7 @@ import { openSection } from "./tui-section-reader.ts";
 import { registerAnimation, hasAnimation, ensureMenuBlink, getBlinkPhase } from "./tui-animation.ts";
 import { theme, marker as themeMarker } from "./tui-theme.ts";
 import { renderFooterBar, renderHeaderBar, renderPanel, renderBadge, modePill, smoothProgress, type FooterHint } from "./tui-components.ts";
+import { t } from "./i18n.ts";
 
 export function renderMainMenu(): void {
   updateTermSize();
@@ -40,7 +41,7 @@ export function renderMainMenu(): void {
   const w = W();
   const h = H();
 
-  const t = theme;
+  const th = theme;
   const overallPct = getOverallProgress();
   const timerStr = formatSessionTime();
   const headerBarWidth = Math.max(8, Math.floor(w * 0.20));
@@ -71,20 +72,20 @@ export function renderMainMenu(): void {
       
     lines.push(
       bLine(
-        ` ${t.border.muted}┌─ ${t.fg.heading}Weitermachen${t.mod.reset} ${t.border.muted}${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${t.mod.reset}`,
+        ` ${th.border.muted}┌─ ${th.fg.heading}Weitermachen${th.mod.reset} ${th.border.muted}${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${th.mod.reset}`,
         w
       )
     );
-    const resumeText = `${mk}${t.mod.bold}▶ Lektion ${lesson?.number ?? "?"}: ${truncate(sectionTitle, Math.max(10, resumeInnerW - 40))}, Sektion ${si + 1}${t.mod.reset}     ${t.fg.secondary}[Enter]${t.mod.reset}`;
+    const resumeText = `${mk}${th.mod.bold}▶ Lektion ${lesson?.number ?? "?"}: ${truncate(sectionTitle, Math.max(10, resumeInnerW - 40))}, Sektion ${si + 1}${th.mod.reset}     ${th.fg.secondary}[Enter]${th.mod.reset}`;
     lines.push(
       bLine(
-        ` ${t.border.muted}│${t.mod.reset} ${padR(resumeText, resumeInnerW - 2)}${t.border.muted}│${t.mod.reset}`,
+        ` ${th.border.muted}│${th.mod.reset} ${padR(resumeText, resumeInnerW - 2)}${th.border.muted}│${th.mod.reset}`,
         w
       )
     );
     lines.push(
       bLine(
-        ` ${t.border.muted}└${"─".repeat(resumeInnerW)}┘${t.mod.reset}`,
+        ` ${th.border.muted}└${"─".repeat(resumeInnerW)}┘${th.mod.reset}`,
         w
       )
     );
@@ -99,8 +100,8 @@ export function renderMainMenu(): void {
   const leftLines: string[] = [];
   const rightLines: string[] = [];
 
-  leftLines.push(padR(`${t.mod.bold}${t.fg.info} Lektionen${t.mod.reset}`, leftColW));
-  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
+  leftLines.push(padR(`${th.mod.bold}${th.fg.info} Lektionen${th.mod.reset}`, leftColW));
+  leftLines.push(`${th.border.default} ${"─".repeat(leftColW - 1)}${th.mod.reset}`);
 
   for (let i = 0; i < lessons.length; i++) {
     const lesson = lessons[i];
@@ -108,7 +109,7 @@ export function renderMainMenu(): void {
     const mastery = calculateMastery(i);
 
     const mk = themeMarker(isSelected);
-    const num = `${isSelected ? t.mod.bold : ""}${i + 1}${t.mod.reset}`;
+    const num = `${isSelected ? th.mod.bold : ""}${i + 1}${th.mod.reset}`;
     const masteryStr = masteryBar(mastery);
     const titleMaxLen = Math.max(5, leftColW - 28);
     const displayTitle = truncate(lesson.title, titleMaxLen);
@@ -122,10 +123,10 @@ export function renderMainMenu(): void {
   }
 
   rightLines.push(
-    `${t.mod.bold}${t.fg.info} Dein Fortschritt${t.mod.reset}`
+    `${th.mod.bold}${th.fg.info} Dein Fortschritt${th.mod.reset}`
   );
   rightLines.push(
-    `${t.border.default} ${"─".repeat(rightColW - 1)}${t.mod.reset}`
+    `${th.border.default} ${"─".repeat(rightColW - 1)}${th.mod.reset}`
   );
 
   let totalSections = 0;

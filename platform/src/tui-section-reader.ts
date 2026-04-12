@@ -40,6 +40,7 @@ import { HIDE_CURSOR, SHOW_CURSOR } from "./tui-render.ts";
 import { adaptiveState, TOOLS_DIR } from "./tui-state.ts";
 import { loadAdaptiveState, saveAdaptiveState } from "./adaptive-engine.ts";
 import { stopAnimation } from "./tui-animation.ts";
+import { t } from "./i18n.ts";
 
 // ─── Section laden ─────────────────────────────────────────────────────────
 
@@ -165,45 +166,45 @@ export function renderSectionReader(
   const atEnd = offset >= Math.max(0, totalLines - contentHeight);
   const hasNextSection = lesson.sections.length > 1 && sectionIndex < lesson.sections.length - 1;
   const spaceLabel = atEnd && hasNextSection
-    ? `${c.bold}${c.green}[Space/→]${c.reset} ${c.green}Nächste Sektion${c.reset}`
-    : `${c.bold}[Space]${c.reset} Seite vor`;
+    ? `${c.bold}${c.green}[Space/→]${c.reset} ${c.green}${t("reader.nextSection")}${c.reset}`
+    : `${c.bold}[Space]${c.reset} ${t("reader.pageForward")}`;
   const navParts: string[] = [
-    `${c.bold}[\u2191\u2193]${c.reset} Scrollen`,
+    `${c.bold}[\u2191\u2193]${c.reset} ${t("reader.scroll")}`,
     spaceLabel,
-    `${c.bold}[Home/End]${c.reset} Anfang/Ende`,
+    `${c.bold}[Home/End]${c.reset} ${t("reader.startEnd")}`,
   ];
   if (lesson.sections.length > 1) {
-    navParts.push(`${c.bold}[1-${lesson.sections.length}]${c.reset} Sektion`);
+    navParts.push(`${c.bold}[1-${lesson.sections.length}]${c.reset} ${t("reader.section")}`);
   }
   if (sectionMermaidBlocks.length > 0)
-    navParts.push(`${c.bold}[D]${c.reset} Diagramm`);
+    navParts.push(`${c.bold}[D]${c.reset} ${t("reader.diagram")}`);
 
   // Tiefe-Anzeige
   const depthKey = getSectionKey(lessonIndex, sectionIndex);
   const currentDepth = adaptiveState.sectionDepths[depthKey] || "standard";
-  const depthLabel = currentDepth === "kurz" ? `${c.cyan}KURZ${c.reset}` :
-    currentDepth === "vollständig" ? `${c.magenta}VOLLST.${c.reset}` :
-      `${c.dim}Standard${c.reset}`;
-  navParts.push(`${c.bold}[K/N/V]${c.reset} Tiefe: ${depthLabel}`);
+  const depthLabel = currentDepth === "kurz" ? `${c.cyan}${t("reader.short")}${c.reset}` :
+    currentDepth === "vollständig" ? `${c.magenta}${t("reader.full")}${c.reset}` :
+      `${c.dim}${t("reader.standard")}${c.reset}`;
+  navParts.push(`${c.bold}[K/N/V]${c.reset} ${t("reader.depth")} ${depthLabel}`);
 
   let ttsLabel = "";
   if (ttsActive) {
     if (ttsLoading) {
-      ttsLabel = `${c.bold}${c.yellow}[L]${c.reset} ${c.yellow}Vorlesen: LÄDT...${c.reset}`;
+      ttsLabel = `${c.bold}${c.yellow}[L]${c.reset} ${c.yellow}${t("reader.readAloudLoading")}${c.reset}`;
     } else {
-      ttsLabel = `${c.bold}${c.green}[L]${c.reset} ${c.green}Vorlesen: AN${c.reset}`;
+      ttsLabel = `${c.bold}${c.green}[L]${c.reset} ${c.green}${t("reader.readAloudOn")}${c.reset}`;
     }
   } else {
-    ttsLabel = `${c.bold}[L]${c.reset} Vorlesen`;
+    ttsLabel = `${c.bold}[L]${c.reset} ${t("reader.readAloud")}`;
   }
   if (ttsEngineLabel) {
     ttsLabel += ` ${c.dim}(${ttsEngineLabel})${c.reset}`;
   }
   navParts.push(ttsLabel);
-  navParts.push(`${c.bold}[A]${c.reset} Annotationen: ${annotationsEnabled ? "AN" : "AUS"}`);
-  navParts.push(`${c.bold}[M]${c.reset} Merken`);
-  navParts.push(`${c.bold}[V]${c.reset} VS Code`);
-  navParts.push(`${c.bold}[Q/Esc]${c.reset} Zurueck`);
+  navParts.push(`${c.bold}[A]${c.reset} ${t("reader.annotations")}: ${annotationsEnabled ? t("reader.on") : t("reader.off")}`);
+  navParts.push(`${c.bold}[M]${c.reset} ${t("reader.bookmark")}`);
+  navParts.push(`${c.bold}[V]${c.reset} ${t("reader.vscode")}`);
+  navParts.push(`${c.bold}[Q/Esc]${c.reset} ${t("reader.back")}`);
 
   lines.push(...renderFooter(navParts));
   flushScreen(lines);
@@ -482,7 +483,7 @@ function renderSelfExplanation(): void {
   const w = W();
   const h = H();
 
-  lines.push(renderHeader(" Erklaere dir selbst", ""));
+  lines.push(renderHeader(` ${t("selfexplain.title")}`, ""));
   lines.push(boxTop(w));
   lines.push(bEmpty(w));
 
@@ -493,7 +494,7 @@ function renderSelfExplanation(): void {
   lines.push(bEmpty(w));
 
   if (typingMode) {
-    lines.push(bLine(`  ${c.dim}Deine Erklaerung:${c.reset}`, w));
+    lines.push(bLine(`  ${c.dim}${t("selfexplain.yourExplanation")}${c.reset}`, w));
     const typedLines = wordWrap(typedText + "\u2588", w - 8);
     for (const tl of typedLines) {
       lines.push(bLine(`    ${c.white}${tl}${c.reset}`, w));
@@ -503,7 +504,7 @@ function renderSelfExplanation(): void {
 
   if (showKeyPoints && prompt.keyPoints.length > 0) {
     lines.push(bLine(`  ${c.dim}${"─".repeat(w - 6)}${c.reset}`, w));
-    lines.push(bLine(`  ${c.yellow}${c.bold}Kernpunkte:${c.reset}`, w));
+    lines.push(bLine(`  ${c.yellow}${c.bold}${t("selfexplain.keyPoints")}${c.reset}`, w));
     for (const kp of prompt.keyPoints) {
       const kpLines = wordWrap(kp, w - 10);
       for (const kl of kpLines) {
@@ -518,14 +519,14 @@ function renderSelfExplanation(): void {
 
   if (typingMode) {
     lines.push(...renderFooter([
-      `${c.bold}[Enter]${c.reset} Fertig`,
-      `${c.bold}[Esc]${c.reset} Abbrechen`,
+      `${c.bold}[Enter]${c.reset} ${t("selfexplain.done")}`,
+      `${c.bold}[Esc]${c.reset} ${t("selfexplain.cancel")}`,
     ]));
   } else {
     lines.push(...renderFooter([
-      `${c.bold}[T]${c.reset} Tippe Erklaerung`,
-      `${c.bold}[Enter]${c.reset} Verstanden — weiter`,
-      `${c.bold}[?]${c.reset} Kernpunkte zeigen`,
+      `${c.bold}[T]${c.reset} ${t("selfexplain.typeExplanation")}`,
+      `${c.bold}[Enter]${c.reset} ${t("selfexplain.understoodContinue")}`,
+      `${c.bold}[?]${c.reset} ${t("selfexplain.showKeyPoints")}`,
     ]));
   }
   flushScreen(lines);
@@ -661,10 +662,10 @@ function renderCheatsheetReader(lessonIndex: number, scrollOffset: number): void
   }
 
   const navParts: string[] = [
-    `${c.bold}[\u2191\u2193]${c.reset} Scrollen`,
-    `${c.bold}[PgUp/PgDn]${c.reset} Seite`,
-    `${c.bold}[Space]${c.reset} Weiter`,
-    `${c.bold}[Q/Esc]${c.reset} Zurueck`,
+    `${c.bold}[\u2191\u2193]${c.reset} ${t("cheatsheet.scroll")}`,
+    `${c.bold}[PgUp/PgDn]${c.reset} ${t("cheatsheet.page")}`,
+    `${c.bold}[Space]${c.reset} ${t("cheatsheet.forward")}`,
+    `${c.bold}[Q/Esc]${c.reset} ${t("cheatsheet.back")}`,
   ];
   lines.push(...renderFooter(navParts));
   flushScreen(lines);

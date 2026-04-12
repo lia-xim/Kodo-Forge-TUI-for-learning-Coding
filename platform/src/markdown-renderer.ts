@@ -513,10 +513,11 @@ function renderSelfExplanationPrompt(
   for (const part of questionParts) {
     const wrapped = wrapText(part, boxInner);
     for (const wl of wrapped) {
-      const vis = stripAnsi(wl).length;
+      const rendered = renderInline(wl);
+      const vis = stripAnsi(rendered).length;
       const pad = Math.max(0, boxWidth - 1 - vis);
       output.push(
-        `  ${c.magenta}\u2502${c.reset} ${c.bold}${renderInline(wl)}${
+        `  ${c.magenta}\u2502${c.reset} ${c.bold}${rendered}${
           c.reset
         }${" ".repeat(pad)}${c.magenta}\u2502${c.reset}`
       );
@@ -1095,10 +1096,12 @@ export function renderMarkdown(
         } else {
           const wrapped = wrapText(ql, boxInnerWidth);
           for (const wl of wrapped) {
-            const vis = stripAnsi(wl).length;
+            const rendered = renderInline(wl);
+            // Measure AFTER renderInline — it strips ** * ` markers, changing visible length
+            const vis = stripAnsi(rendered).length;
             const pad = Math.max(0, boxWidth - 1 - vis);
             output.push(
-              `  ${c.slate}│${c.reset} ${c.paleWhite}${renderInline(wl)}${c.reset}${" ".repeat(pad)}${c.slate}│${c.reset}`
+              `  ${c.slate}│${c.reset} ${c.paleWhite}${rendered}${c.reset}${" ".repeat(pad)}${c.slate}│${c.reset}`
             );
           }
         }

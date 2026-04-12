@@ -38,6 +38,17 @@ process.on("SIGTERM", () => { cleanup(); process.exit(0); });
 process.on("uncaughtException", (err) => {
   cleanup();
   console.error("Unerwarteter Fehler:", err);
+  if (true) {
+    fs.writeFileSync("kodo-crash.log", String(err.stack || err) + "\n");
+    console.log("\nApplikation abgestuerzt. Fehler wurde in 'kodo-crash.log' gespeichert.");
+    console.log("Druecke eine Taste zum Beenden...");
+    // Pause synchron blockieren, damit das Fenster nicht sofort zugeht
+    // Da readline asynchron sein kann, blockieren wir einfach durch warten auf stdin sync
+    try {
+      const buffer = Buffer.alloc(1);
+      fs.readSync(0, buffer, 0, 1, null);
+    } catch {}
+  }
   process.exit(1);
 });
 

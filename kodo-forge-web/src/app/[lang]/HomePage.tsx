@@ -30,52 +30,32 @@ const fadeUp: any = {
   }),
 };
 
-const faqs = [
-  {
-    q: "What is Kodo Forge?",
-    a: "Kodo Forge is a free, open-source Terminal User Interface (TUI) learning platform. It lets you learn TypeScript, Angular, React and Next.js directly inside your command line terminal — with zero internet connection, zero dependencies, and zero distractions.",
-  },
-  {
-    q: "Is Kodo Forge really free?",
-    a: "Yes, 100% free and open source under the MIT license. There are no hidden costs, no subscriptions, and no premium tiers. All 144+ lessons across 4 courses are included.",
-  },
-  {
-    q: "Do I need an internet connection?",
-    a: "No. Kodo Forge runs entirely offline. Once you download the executable, everything works without any internet connection. Your progress is saved locally on your machine.",
-  },
-  {
-    q: "What programming languages and frameworks can I learn?",
-    a: "Kodo Forge currently offers courses in TypeScript (44 lessons), Angular (40 lessons), React with TypeScript (40 lessons), and Next.js (20 lessons). The TypeScript course is the foundation — start there.",
-  },
-  {
-    q: "How is this different from Udemy, Codecademy, or freeCodeCamp?",
-    a: "Unlike browser-based platforms, Kodo Forge runs in your terminal — the same tool professional developers use every day. There are no ads, no notifications, no social features. It's designed for deep focus and uses science-backed techniques like spaced repetition and kinetic reading to maximize retention.",
-  },
-  {
-    q: "Can I create my own courses?",
-    a: "Absolutely! Kodo Forge is a data-driven engine. Courses are just folders of Markdown files. You can create courses on any topic — not just programming. Check the documentation for the content authoring guide.",
-  },
-  {
-    q: "What operating systems are supported?",
-    a: "Kodo Forge provides standalone executables for Windows (x64), macOS (Apple Silicon), and Linux (x64). No installation required — just download and run.",
-  },
+const featureIcons = [
+  <Zap key="zap" size={28} />,
+  <BookOpen key="book" size={28} />,
+  <Brain key="brain" size={28} />,
+  <Shield key="shield" size={28} />,
+  <Layers key="layers" size={28} />,
+  <Sparkles key="sparkles" size={28} />,
 ];
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.a,
-    },
-  })),
-};
+interface HomePageProps {
+  dict: Record<string, any>;
+  lang: string;
+}
 
-export default function Home() {
+export default function HomePage({ dict, lang }: HomePageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: dict.faq.items.map((faq: any) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
 
   return (
     <>
@@ -107,43 +87,42 @@ export default function Home() {
             >
               <div className="flex items-center gap-2 text-[#FFB000] font-bold text-sm mb-6 tracking-[0.3em] uppercase">
                 <Terminal size={16} />
-                <span className="animate-pulse">open_source · free · offline</span>
+                <span className="animate-pulse">{dict.hero.badge}</span>
               </div>
 
               <h1
                 className="text-5xl sm:text-7xl font-extrabold text-white tracking-tighter leading-[1.05] mb-6"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                Learn TypeScript, React &amp; Angular
+                {dict.hero.title1}
                 <br />
                 <span className="text-[#FFB000] drop-shadow-[0_0_30px_rgba(255,176,0,0.4)]">
-                  in your terminal.
+                  {dict.hero.title2}
                 </span>
               </h1>
 
-              <p className="text-lg text-zinc-400 max-w-lg leading-relaxed mb-10 border-l-2 border-[#FFB000]/30 pl-5">
-                Kodo Forge is a <strong className="text-zinc-200">free, open-source learning platform</strong> that
-                runs entirely in your command line. 144+ interactive lessons, spaced repetition,
-                gamified progress — without browser, without internet, without distractions.
-              </p>
+              <p
+                className="text-lg text-zinc-400 max-w-lg leading-relaxed mb-10 border-l-2 border-[#FFB000]/30 pl-5"
+                dangerouslySetInnerHTML={{ __html: dict.hero.description }}
+              />
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/download">
+                <Link href={`/${lang}/download`}>
                   <motion.div
                     whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255,176,0,0.3)" }}
                     whileTap={{ scale: 0.95 }}
                     className="retro-glass flex items-center justify-center gap-3 px-8 py-4 text-[#FFB000] font-bold uppercase tracking-widest rounded-sm cursor-pointer border border-[#FFB000]/30 hover:border-[#FFB000]/60 transition-all"
                   >
-                    <Download size={18} /> Download Free
+                    <Download size={18} /> {dict.hero.downloadBtn}
                   </motion.div>
                 </Link>
-                <Link href="/courses">
+                <Link href={`/${lang}/courses`}>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center justify-center gap-3 px-8 py-4 text-zinc-400 hover:text-white uppercase tracking-widest transition-colors font-bold cursor-pointer"
                   >
-                    Browse All 4 Courses <ArrowRight size={16} />
+                    {dict.hero.browseBtn} <ArrowRight size={16} />
                   </motion.div>
                 </Link>
               </div>
@@ -165,22 +144,22 @@ export default function Home() {
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
                   <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                  <span className="text-xs text-zinc-600 ml-3 font-mono">kodo-forge — ~/typescript</span>
+                  <span className="text-xs text-zinc-600 ml-3 font-mono">{dict.hero.terminalTitle}</span>
                 </div>
                 <div className="p-5 font-mono text-sm space-y-1">
-                  <p className="text-zinc-500">$ kodo-forge start</p>
+                  <p className="text-zinc-500">{dict.hero.terminalLines[0]}</p>
                   <p className="text-[#FFB000] font-bold">
                     ██╗  ██╗ ██████╗ ██████╗  ██████╗
                   </p>
                   <p className="text-[#FFB000]/70">
                     █████╔╝ ██║  ██║██║  ██║██║  ██║
                   </p>
-                  <p className="text-green-400 mt-1">✓ TypeScript Deep Learning loaded</p>
-                  <p className="text-green-400">✓ 44 lessons · 239 sections · 82h content</p>
-                  <p className="text-zinc-500">✓ Streak: 12 days · 24/44 complete</p>
-                  <p className="text-cyan-400 mt-2">» Spaced Repetition: 3 reviews due</p>
+                  <p className="text-green-400 mt-1">✓ {dict.hero.terminalLines[1]?.replace(/^✓\s*/, "")}</p>
+                  <p className="text-green-400">✓ {dict.hero.terminalLines[2]?.replace(/^✓\s*/, "")}</p>
+                  <p className="text-zinc-500">✓ {dict.hero.terminalLines[3]?.replace(/^✓\s*/, "")}</p>
+                  <p className="text-cyan-400 mt-2">» {dict.hero.terminalLines[4]?.replace(/^»\s*/, "")}</p>
                   <p className="text-zinc-400">
-                    <span className="text-[#FFB000]">❯</span> Resuming L25: Type-safe Error Handling...
+                    <span className="text-[#FFB000]">❯</span> {dict.hero.terminalLines[5]}
                   </p>
                   <p className="text-zinc-600 animate-pulse">▮</p>
                 </div>
@@ -193,10 +172,10 @@ export default function Home() {
         <section className="border-y border-zinc-800/60 bg-zinc-950/50 backdrop-blur-sm" aria-label="Platform statistics">
           <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: "144+", label: "Interactive Lessons", icon: <BookOpen size={18} /> },
-              { value: "751", label: "Learning Sections", icon: <Layers size={18} /> },
-              { value: "350h", label: "Total Content", icon: <Clock size={18} /> },
-              { value: "100%", label: "Free & Offline", icon: <Shield size={18} /> },
+              { value: dict.stats.lessons.value, label: dict.stats.lessons.label, icon: <BookOpen size={18} /> },
+              { value: dict.stats.sections.value, label: dict.stats.sections.label, icon: <Layers size={18} /> },
+              { value: dict.stats.hours.value, label: dict.stats.hours.label, icon: <Clock size={18} /> },
+              { value: dict.stats.offline.value, label: dict.stats.offline.label, icon: <Shield size={18} /> },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -231,22 +210,17 @@ export default function Home() {
                 className="text-3xl sm:text-4xl font-bold text-white mb-6"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                What is a <span className="text-[#FFB000]">Terminal Learning Platform</span>?
+                {dict.whatIs.title1}<span className="text-[#FFB000]">{dict.whatIs.titleHighlight}</span>{dict.whatIs.title2}
               </h2>
               <p className="text-zinc-400 leading-relaxed mb-4">
-                Most coding courses run in a browser — surrounded by notifications, social media, and infinite tabs.
-                <strong className="text-zinc-200"> Kodo Forge takes a radically different approach.</strong>
+                {dict.whatIs.p1}
+                <strong className="text-zinc-200">{dict.whatIs.p1Bold}</strong>
               </p>
               <p className="text-zinc-400 leading-relaxed mb-4">
-                It runs as a native application inside your terminal (command line).
-                The same tool that professional developers use every single day to write and deploy software.
-                No ads, no accounts, no tracking. Just you and the code.
+                {dict.whatIs.p2}
               </p>
               <p className="text-zinc-400 leading-relaxed">
-                Research shows that <strong className="text-zinc-200">distraction-free environments dramatically improve
-                learning retention</strong>. Kodo Forge combines this with science-backed techniques
-                like spaced repetition and active recall to help you truly master — not just consume —
-                TypeScript, React, Angular, and full-stack web development.
+                {dict.whatIs.p3Start}<strong className="text-zinc-200">{dict.whatIs.p3Bold}</strong>{dict.whatIs.p3End}
               </p>
             </motion.div>
 
@@ -258,16 +232,10 @@ export default function Home() {
               variants={fadeUp}
               className="retro-glass rounded-lg p-6"
             >
-              <h3 className="text-sm font-bold text-[#FFB000] uppercase tracking-widest mb-4">The LEARN Cycle</h3>
-              <p className="text-xs text-zinc-500 mb-4">Every lesson follows a proven 5-step methodology:</p>
+              <h3 className="text-sm font-bold text-[#FFB000] uppercase tracking-widest mb-4">{dict.whatIs.learnCycleTitle}</h3>
+              <p className="text-xs text-zinc-500 mb-4">{dict.whatIs.learnCycleSubtitle}</p>
               <div className="space-y-3">
-                {[
-                  { letter: "L", label: "Lesen & Verstehen", desc: "Theory with diagrams and analogies" },
-                  { letter: "E", label: "Erkunden", desc: "Run live code examples" },
-                  { letter: "A", label: "Anwenden", desc: "Exercises with increasing difficulty" },
-                  { letter: "R", label: "Reflektieren", desc: "Interactive quizzes in the terminal" },
-                  { letter: "N", label: "Nachschlagen", desc: "Compact cheatsheet for reference" },
-                ].map((step) => (
+                {dict.whatIs.learnSteps.map((step: any) => (
                   <div key={step.letter} className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded bg-[#FFB000]/10 border border-[#FFB000]/20 flex items-center justify-center text-[#FFB000] font-bold text-sm flex-shrink-0">
                       {step.letter}
@@ -297,47 +265,16 @@ export default function Home() {
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Why Developers Choose Kodo Forge
+              {dict.features.title}
             </h2>
             <p className="text-zinc-500 max-w-2xl mx-auto">
-              Built from scratch for one purpose: deep-focus, distraction-free learning that actually sticks.
+              {dict.features.subtitle}
             </p>
             <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Zap size={28} />,
-                title: "Instant Startup",
-                desc: "Launches in under 200ms. No loading screens, no splash pages. A single executable — just double-click and learn.",
-              },
-              {
-                icon: <BookOpen size={28} />,
-                title: "Kinetic Reading Engine",
-                desc: "A custom text progression engine that reveals content at your pace. No mindless scrolling — every section demands your attention.",
-              },
-              {
-                icon: <Brain size={28} />,
-                title: "Built-in Spaced Repetition",
-                desc: "Science-backed flashcard system with smart scheduling. Review concepts right before you forget them, with streak tracking.",
-              },
-              {
-                icon: <Shield size={28} />,
-                title: "100% Offline & Private",
-                desc: "No internet required, no telemetry, no accounts, no data collection. Your learning data stays on your machine. Always.",
-              },
-              {
-                icon: <Layers size={28} />,
-                title: "Data-Driven Architecture",
-                desc: "Courses are Markdown folders. Drop in your own content — programming, languages, science — and the engine renders it instantly.",
-              },
-              {
-                icon: <Sparkles size={28} />,
-                title: "Gamified Progress Tracking",
-                desc: "Daily streaks, sparkline activity charts, phase completion, and course recommendations. Stay motivated without social media dopamine.",
-              },
-            ].map((feature, i) => (
+            {dict.features.items.map((feature: any, i: number) => (
               <motion.div
                 key={feature.title}
                 initial="hidden"
@@ -348,7 +285,7 @@ export default function Home() {
                 className="retro-glass retro-glass-hover p-7 rounded-lg flex flex-col gap-4 group cursor-default"
               >
                 <div className="text-[#FFB000] group-hover:scale-110 transition-transform origin-left">
-                  {feature.icon}
+                  {featureIcons[i]}
                 </div>
                 <h3 className="text-lg font-bold text-white uppercase tracking-wide">{feature.title}</h3>
                 <p className="text-zinc-500 group-hover:text-zinc-300 transition-colors text-sm leading-relaxed">
@@ -373,11 +310,10 @@ export default function Home() {
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              4 Professional Courses — All Free
+              {dict.courses.title}
             </h2>
             <p className="text-zinc-500 max-w-2xl mx-auto">
-              A complete web development learning path. Start with TypeScript fundamentals,
-              then choose Angular, React, or go full-stack with Next.js.
+              {dict.courses.subtitle}
             </p>
             <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
           </motion.div>
@@ -392,7 +328,7 @@ export default function Home() {
                 custom={i}
                 variants={fadeUp}
               >
-                <Link href={`/courses/${course.slug}`}>
+                <Link href={`/${lang}/courses/${course.slug}`}>
                   <div className="retro-glass rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-lg h-full">
                     <div className="relative h-48 overflow-hidden">
                       <Image
@@ -404,12 +340,12 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                       {course.status === "active" && (
                         <div className="absolute top-4 right-4 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded text-xs text-green-400 font-bold uppercase tracking-wider">
-                          Available Now
+                          {dict.common.availableNow}
                         </div>
                       )}
                       {course.status === "planned" && (
                         <div className="absolute top-4 right-4 px-3 py-1 bg-zinc-500/20 border border-zinc-500/30 rounded text-xs text-zinc-400 font-bold uppercase tracking-wider">
-                          Coming Soon
+                          {dict.common.comingSoon}
                         </div>
                       )}
                     </div>
@@ -427,11 +363,11 @@ export default function Home() {
                       </p>
 
                       <div className="flex items-center gap-4 text-xs text-zinc-500 mb-4">
-                        <span>{course.totalLessons} Lessons</span>
+                        <span>{course.totalLessons} {dict.common.lessons}</span>
                         <span>·</span>
-                        <span>{course.estimatedHours}h Content</span>
+                        <span>{course.estimatedHours}h {dict.common.content}</span>
                         <span>·</span>
-                        <span>{course.phases.length} Phases</span>
+                        <span>{course.phases.length} {dict.common.phases}</span>
                       </div>
 
                       <div className="flex items-center justify-between pt-4 border-t border-zinc-800/60">
@@ -460,10 +396,10 @@ export default function Home() {
             className="text-center mt-12"
           >
             <Link
-              href="/courses"
+              href={`/${lang}/courses`}
               className="text-[#FFB000] hover:text-amber-300 font-bold uppercase tracking-widest text-sm transition-colors"
             >
-              View Full Curriculum for All Courses →
+              {dict.courses.viewAll}
             </Link>
           </motion.div>
         </section>
@@ -483,32 +419,16 @@ export default function Home() {
                 className="text-3xl sm:text-4xl font-bold text-white mb-4"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                Start Learning in 3 Steps
+                {dict.howItWorks.title}
               </h2>
               <p className="text-zinc-500 max-w-xl mx-auto">
-                No sign-up. No credit card. No complicated setup. From download to learning in under 60 seconds.
+                {dict.howItWorks.subtitle}
               </p>
               <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  step: "01",
-                  title: "Download",
-                  desc: "Grab the single executable for Windows, macOS, or Linux. No Node.js, no Python, no admin rights needed. Just one file.",
-                },
-                {
-                  step: "02",
-                  title: "Launch",
-                  desc: "Double-click the file or run it from your terminal. The TUI boots in under 200ms and automatically detects your courses.",
-                },
-                {
-                  step: "03",
-                  title: "Learn & Master",
-                  desc: "Navigate lessons with your keyboard. Read theory, run examples, solve exercises, take quizzes. Your progress is saved automatically.",
-                },
-              ].map((item, i) => (
+              {dict.howItWorks.steps.map((item: any, i: number) => (
                 <motion.div
                   key={item.step}
                   initial="hidden"
@@ -546,13 +466,13 @@ export default function Home() {
               className="text-3xl sm:text-4xl font-bold text-white mb-4"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Frequently Asked Questions
+              {dict.faq.title}
             </h2>
             <div className="w-16 h-1 bg-[#FFB000] mx-auto mt-6 rounded-full shadow-[0_0_10px_#FFB000]" />
           </motion.div>
 
           <div className="space-y-3">
-            {faqs.map((faq, i) => (
+            {dict.faq.items.map((faq: any, i: number) => (
               <motion.div
                 key={i}
                 initial="hidden"
@@ -589,30 +509,30 @@ export default function Home() {
               className="text-4xl sm:text-5xl font-bold text-white mb-6"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Ready to learn{" "}
-              <span className="text-[#FFB000] drop-shadow-[0_0_20px_rgba(255,176,0,0.4)]">differently</span>?
+              {dict.cta.title1}
+              <span className="text-[#FFB000] drop-shadow-[0_0_20px_rgba(255,176,0,0.4)]">{dict.cta.titleHighlight}</span>
+              {dict.cta.title2}
             </h2>
             <p className="text-zinc-400 max-w-xl mx-auto mb-10">
-              Join developers who swapped endless browser tabs for deep-focus terminal learning.
-              Download Kodo Forge, open your command line, and start mastering web development today. Free forever.
+              {dict.cta.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/download">
+              <Link href={`/${lang}/download`}>
                 <motion.div
                   whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(255,176,0,0.3)" }}
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center gap-3 px-10 py-5 bg-[#FFB000] text-[#09090b] font-bold uppercase tracking-widest rounded-sm cursor-pointer text-lg transition-all hover:bg-amber-400"
                 >
-                  <Download size={20} /> Download Free
+                  <Download size={20} /> {dict.cta.downloadBtn}
                 </motion.div>
               </Link>
-              <Link href="/docs">
+              <Link href={`/${lang}/docs`}>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center gap-3 px-10 py-5 text-zinc-400 hover:text-white font-bold uppercase tracking-widest cursor-pointer text-lg transition-colors"
                 >
-                  Read the Docs <ArrowRight size={18} />
+                  {dict.cta.docsBtn} <ArrowRight size={18} />
                 </motion.div>
               </Link>
             </div>

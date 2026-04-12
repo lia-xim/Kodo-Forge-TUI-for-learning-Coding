@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "title": "Kodo Forge — Kostenlose Terminal-Lernplattform für TypeScript, React & Angular",
+    "titleTemplate": "%s | Kodo Forge",
+    "description": "Kodo Forge ist eine kostenlose, quelloffene Terminal-Lernplattform (TUI) zum Meistern von TypeScript, Angular, React und Next.js. 144+ Lektionen, Spaced Repetition, kinetisches Lesen und gamifizierter Fortschritt — 100 % offline, ohne Abhängigkeiten.",
+    "ogTitle": "Kodo Forge — Kostenlose Terminal-Lernplattform",
+    "ogDescription": "Meistere TypeScript, React, Angular & Next.js direkt im Terminal. 144+ Lektionen, keine Abhängigkeiten, 100 % offline. Kostenlos und Open Source.",
+    "twitterTitle": "Kodo Forge — Programmieren lernen im Terminal",
+    "twitterDescription": "Eine kostenlose, quelloffene TUI-Plattform zum Meistern von Webentwicklung. 144+ Lektionen, Spaced Repetition, 100 % offline."
+  },
+  "nav": {
+    "home": "Startseite",
+    "courses": "Kurse",
+    "docs": "Doku",
+    "createCourse": "Kurs erstellen",
+    "download": "Download",
+    "starOnGithub": "★ Stern auf GitHub"
+  },
+  "hero": {
+    "badge": "open_source · kostenlos · offline",
+    "title1": "Lerne TypeScript, React & Angular",
+    "title2": "in deinem Terminal.",
+    "description": "Kodo Forge ist eine <strong>kostenlose, quelloffene Lernplattform</strong>, die vollständig in deiner Kommandozeile läuft. 144+ interaktive Lektionen, Spaced Repetition, gamifizierter Fortschritt — ohne Browser, ohne Internet, ohne Ablenkung.",
+    "downloadBtn": "Kostenlos herunterladen",
+    "browseBtn": "Alle 4 Kurse ansehen",
+    "terminalTitle": "kodo-forge — ~/typescript",
+    "terminalLines": [
+      "$ kodo-forge start",
+      "✓ TypeScript Deep Learning geladen",
+      "✓ 44 Lektionen · 239 Sektionen · 82h Inhalt",
+      "✓ Streak: 12 Tage · 24/44 abgeschlossen",
+      "» Spaced Repetition: 3 Wiederholungen fällig",
+      "Fortsetzen L25: Typsichere Fehlerbehandlung..."
+    ]
+  },
+  "stats": {
+    "lessons": { "value": "144+", "label": "Interaktive Lektionen" },
+    "sections": { "value": "751", "label": "Lernsektionen" },
+    "hours": { "value": "350h", "label": "Gesamtinhalt" },
+    "offline": { "value": "100%", "label": "Kostenlos & Offline" }
+  },
+  "whatIs": {
+    "title1": "Was ist eine ",
+    "titleHighlight": "Terminal-Lernplattform",
+    "title2": "?",
+    "p1": "Die meisten Programmierkurse laufen im Browser — umgeben von Benachrichtigungen, Social Media und endlosen Tabs.",
+    "p1Bold": " Kodo Forge geht einen radikal anderen Weg.",
+    "p2": "Es läuft als native Anwendung direkt in deinem Terminal (Kommandozeile). Das gleiche Werkzeug, das professionelle Entwickler jeden Tag nutzen, um Software zu schreiben und bereitzustellen. Keine Werbung, keine Konten, kein Tracking. Nur du und der Code.",
+    "p3Start": "Studien zeigen, dass ",
+    "p3Bold": "ablenkungsfreie Umgebungen die Lernleistung dramatisch verbessern",
+    "p3End": ". Kodo Forge kombiniert dies mit wissenschaftlich fundierten Techniken wie Spaced Repetition und Active Recall, um dir zu helfen, TypeScript, React, Angular und Full-Stack-Webentwicklung wirklich zu meistern — nicht nur zu konsumieren.",
+    "learnCycleTitle": "Der LEARN-Zyklus",
+    "learnCycleSubtitle": "Jede Lektion folgt einer bewährten 5-Schritte-Methodik:",
+    "learnSteps": [
+      { "letter": "L", "label": "Lesen & Verstehen", "desc": "Theorie mit Diagrammen und Analogien" },
+      { "letter": "E", "label": "Erkunden", "desc": "Live-Code-Beispiele ausführen" },
+      { "letter": "A", "label": "Anwenden", "desc": "Übungen mit steigendem Schwierigkeitsgrad" },
+      { "letter": "R", "label": "Reflektieren", "desc": "Interaktive Quizzes im Terminal" },
+      { "letter": "N", "label": "Nachschlagen", "desc": "Kompaktes Cheatsheet als Referenz" }
+    ]
+  },
+  "features": {
+    "title": "Warum Entwickler Kodo Forge wählen",
+    "subtitle": "Von Grund auf für einen Zweck gebaut: konzentriertes, ablenkungsfreies Lernen, das wirklich hängen bleibt.",
+    "items": [
+      {
+        "title": "Sofortiger Start",
+        "desc": "Startet in unter 200 ms. Keine Ladebildschirme, keine Splash-Seiten. Eine einzige ausführbare Datei — einfach doppelklicken und loslernen."
+      },
+      {
+        "title": "Kinetische Lese-Engine",
+        "desc": "Eine eigens entwickelte Textdarstellung, die Inhalte in deinem Tempo freigibt. Kein gedankenloses Scrollen — jede Sektion verlangt deine Aufmerksamkeit."
+      },
+      {
+        "title": "Integrierte Spaced Repetition",
+        "desc": "Wissenschaftlich fundiertes Karteikartensystem mit intelligenter Planung. Wiederhole Konzepte genau dann, bevor du sie vergisst — mit Streak-Tracking."
+      },
+      {
+        "title": "100 % Offline & Privat",
+        "desc": "Kein Internet nötig, keine Telemetrie, keine Konten, keine Datenerfassung. Deine Lerndaten bleiben auf deinem Rechner. Immer."
+      },
+      {
+        "title": "Datengetriebene Architektur",
+        "desc": "Kurse sind Markdown-Ordner. Lege eigene Inhalte ab — Programmierung, Sprachen, Naturwissenschaften — und die Engine rendert sie sofort."
+      },
+      {
+        "title": "Gamifiziertes Fortschritts-Tracking",
+        "desc": "Tägliche Streaks, Sparkline-Aktivitätsdiagramme, Phasenabschluss und Kursempfehlungen. Bleib motiviert — ohne Social-Media-Dopamin."
+      }
+    ]
+  },
+  "courses": {
+    "title": "4 professionelle Kurse — alle kostenlos",
+    "subtitle": "Ein vollständiger Lernpfad für Webentwicklung. Starte mit TypeScript-Grundlagen, dann wähle Angular, React oder gehe mit Next.js in den Full-Stack-Bereich.",
+    "viewAll": "Vollständiges Curriculum aller Kurse ansehen →"
+  },
+  "howItWorks": {
+    "title": "In 3 Schritten starten",
+    "subtitle": "Keine Anmeldung. Keine Kreditkarte. Kein kompliziertes Setup. Vom Download zum Lernen in unter 60 Sekunden.",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Herunterladen",
+        "desc": "Lade die einzelne ausführbare Datei für Windows, macOS oder Linux herunter. Kein Node.js, kein Python, keine Admin-Rechte nötig. Nur eine Datei."
+      },
+      {
+        "step": "02",
+        "title": "Starten",
+        "desc": "Doppelklicke die Datei oder starte sie im Terminal. Die TUI bootet in unter 200 ms und erkennt deine Kurse automatisch."
+      },
+      {
+        "step": "03",
+        "title": "Lernen & Meistern",
+        "desc": "Navigiere Lektionen mit der Tastatur. Lies Theorie, führe Beispiele aus, löse Übungen, beantworte Quizzes. Dein Fortschritt wird automatisch gespeichert."
+      }
+    ]
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "items": [
+      {
+        "q": "Was ist Kodo Forge?",
+        "a": "Kodo Forge ist eine kostenlose, quelloffene Terminal-Lernplattform (TUI). Du kannst TypeScript, Angular, React und Next.js direkt in deiner Kommandozeile lernen — ohne Internetverbindung, ohne Abhängigkeiten und ohne Ablenkungen."
+      },
+      {
+        "q": "Ist Kodo Forge wirklich kostenlos?",
+        "a": "Ja, 100 % kostenlos und Open Source unter der MIT-Lizenz. Es gibt keine versteckten Kosten, keine Abonnements und keine Premium-Stufen. Alle 144+ Lektionen in 4 Kursen sind enthalten."
+      },
+      {
+        "q": "Brauche ich eine Internetverbindung?",
+        "a": "Nein. Kodo Forge läuft vollständig offline. Sobald du die ausführbare Datei heruntergeladen hast, funktioniert alles ohne Internetverbindung. Dein Fortschritt wird lokal auf deinem Rechner gespeichert."
+      },
+      {
+        "q": "Welche Programmiersprachen und Frameworks kann ich lernen?",
+        "a": "Kodo Forge bietet derzeit Kurse in TypeScript (44 Lektionen), Angular (40 Lektionen), React mit TypeScript (40 Lektionen) und Next.js (20 Lektionen). Der TypeScript-Kurs ist die Grundlage — starte dort."
+      },
+      {
+        "q": "Wie unterscheidet sich das von Udemy, Codecademy oder freeCodeCamp?",
+        "a": "Anders als browserbasierte Plattformen läuft Kodo Forge in deinem Terminal — dem gleichen Werkzeug, das professionelle Entwickler täglich nutzen. Es gibt keine Werbung, keine Benachrichtigungen, keine sozialen Features. Es ist auf tiefen Fokus ausgelegt und nutzt wissenschaftlich fundierte Techniken wie Spaced Repetition und kinetisches Lesen, um die Merkfähigkeit zu maximieren."
+      },
+      {
+        "q": "Kann ich eigene Kurse erstellen?",
+        "a": "Auf jeden Fall! Kodo Forge ist eine datengetriebene Engine. Kurse sind einfach Ordner mit Markdown-Dateien. Du kannst Kurse zu jedem Thema erstellen — nicht nur Programmierung. Schau in die Dokumentation für den Leitfaden zur Inhaltserstellung."
+      },
+      {
+        "q": "Welche Betriebssysteme werden unterstützt?",
+        "a": "Kodo Forge bietet eigenständige ausführbare Dateien für Windows (x64), macOS (Apple Silicon) und Linux (x64). Keine Installation nötig — einfach herunterladen und ausführen."
+      }
+    ]
+  },
+  "cta": {
+    "title1": "Bereit, ",
+    "titleHighlight": "anders",
+    "title2": " zu lernen?",
+    "description": "Schließe dich Entwicklern an, die endlose Browser-Tabs gegen konzentriertes Terminal-Lernen getauscht haben. Lade Kodo Forge herunter, öffne deine Kommandozeile und beginne noch heute, Webentwicklung zu meistern. Für immer kostenlos.",
+    "downloadBtn": "Kostenlos herunterladen",
+    "docsBtn": "Zur Dokumentation"
+  },
+  "footer": {
+    "brandDescription": "Eine Terminal-Lernumgebung ohne Abhängigkeiten, gebaut für tiefes, konzentriertes Lernen.",
+    "coursesTitle": "Kurse",
+    "coursesLinks": {
+      "typescript": "TypeScript Deep Learning",
+      "angular": "Angular Mastery",
+      "react": "React mit TypeScript",
+      "nextjs": "Next.js Production"
+    },
+    "resourcesTitle": "Ressourcen",
+    "resourcesLinks": {
+      "documentation": "Dokumentation",
+      "createCourse": "Eigenen Kurs erstellen",
+      "download": "Download"
+    },
+    "communityTitle": "Community",
+    "communityLinks": {
+      "github": "GitHub-Repository",
+      "bugs": "Fehler melden",
+      "license": "MIT-Lizenz"
+    },
+    "copyright": "© 2026 KODO_FORGE // v1.0.0 // SYSTEM_NOMINAL",
+    "terminalStatus": "▮ TERMINAL_LINK_ACTIVE"
+  },
+  "common": {
+    "lessons": "Lektionen",
+    "content": "Inhalt",
+    "phases": "Phasen",
+    "availableNow": "Jetzt verfügbar",
+    "comingSoon": "Demnächst"
+  }
+}

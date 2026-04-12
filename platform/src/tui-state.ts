@@ -21,15 +21,22 @@ import type {
 } from "./tui-types.ts";
 import type { SelfExplanationPrompt } from "./markdown-renderer.ts";
 import type { AdaptiveState } from "./adaptive-engine.ts";
+import {
+  initI18n, t, setLocale, getLocale, loadLocalePreference, saveLocalePreference,
+  type Locale,
+} from "./i18n.ts";
 
 // ─── Konstanten ─────────────────────────────────────────────────────────────
 
 export const IS_STANDALONE = !!(process as any).isBun || path.basename(process.argv[1] || "").endsWith(".exe");
 
+import { fileURLToPath } from "node:url";
+
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
+
 /** platform/ Ordner (Parent von src/ in dev, oder CWD in standalone) */
-const devPlatformRoot = import.meta.dirname
-  ? path.resolve(import.meta.dirname, "..")
-  : path.resolve(__dirname, ".."); // fallback for cjs environments if any
+const devPlatformRoot = path.resolve(_dirname, "..");
 
 export const PLATFORM_ROOT = IS_STANDALONE ? process.cwd() : devPlatformRoot;
 
@@ -41,6 +48,18 @@ export const PLATFORM_FILE = path.join(PLATFORM_ROOT, "platform.json");
 
 /** platform/state/ — Runtime State */
 export const STATE_DIR = path.join(PLATFORM_ROOT, IS_STANDALONE ? ".kodo-state" : "state");
+
+// ─── i18n Initialization ──────────────────────────────────────────────────
+initI18n(loadLocalePreference(STATE_DIR));
+
+/** Switch the UI locale, persist it, and trigger a redraw */
+export function switchLocale(locale: Locale): void {
+  setLocale(locale);
+  saveLocalePreference(STATE_DIR, locale);
+}
+
+// Re-export for convenience
+export { t, getLocale, type Locale } from "./i18n.ts";
 
 /** Dynamisch pro Kurs: z.B. Learning/typescript/ */
 export let PROJECT_ROOT = path.join(COURSES_ROOT, "typescript");
@@ -253,173 +272,202 @@ export function pushHistory(screen: Screen): void {
 }
 
 // ─── Feature 1: Shortcut-Hilfe pro Screen ─────────────────────────────────
-export const shortcutsForScreen: Record<string, { key: string; desc: string }[]> = {
+export function getShortcutsForScreen(): Record<string, { key: string; desc: string }[]> {
+  return {
   platform: [
-    { key: "\u2191 / \u2193", desc: "Kurs waehlen" },
-    { key: "Enter", desc: "Kurs oeffnen" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Q", desc: "Beenden" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.platform.selectCourse") },
+    { key: "Enter", desc: t("shortcuts.platform.openCourse") },
+    { key: "?/F1", desc: t("shortcuts.platform.help") },
+    { key: "Q", desc: t("shortcuts.platform.quit") },
+    { key: "Ctrl+C", desc: t("shortcuts.platform.ctrlc") },
   ],
   courseinfo: [
-    { key: "\u2191 / \u2193", desc: "Scrollen" },
-    { key: "C", desc: "Curriculum anzeigen" },
-    { key: "Esc / \u2190", desc: "Zurueck zur Kursauswahl" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.courseinfo.scroll") },
+    { key: "C", desc: t("shortcuts.courseinfo.curriculum") },
+    { key: "Esc / \u2190", desc: t("shortcuts.courseinfo.back") },
+    { key: "?/F1", desc: t("shortcuts.courseinfo.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.courseinfo.quit") },
   ],
   main: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "Enter / \u2192", desc: "Oeffnen / Bestaetigen" },
-    { key: "1-9", desc: "Lektion direkt oeffnen" },
-    { key: "/", desc: "Volltextsuche" },
-    { key: "B", desc: "Lesezeichen anzeigen" },
-    { key: "R", desc: "Review starten" },
-    { key: "I", desc: "Interleaved Review" },
-    { key: "K", desc: "Kompetenzen" },
-    { key: "P", desc: "Kursauswahl (Platform)" },
-    { key: "Alt+\u2190", desc: "Letzte Stellen (History)" },
-    { key: "Q", desc: "Beenden" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.main.navigate") },
+    { key: "Enter / \u2192", desc: t("shortcuts.main.open") },
+    { key: "1-9", desc: t("shortcuts.main.directOpen") },
+    { key: "/", desc: t("shortcuts.main.search") },
+    { key: "B", desc: t("shortcuts.main.bookmarks") },
+    { key: "R", desc: t("shortcuts.main.review") },
+    { key: "I", desc: t("shortcuts.main.interleaved") },
+    { key: "K", desc: t("shortcuts.main.competence") },
+    { key: "P", desc: t("shortcuts.main.courseSelect") },
+    { key: "Alt+\u2190", desc: t("shortcuts.main.history") },
+    { key: "Q", desc: t("shortcuts.main.quit") },
+    { key: "?/F1", desc: t("shortcuts.main.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.main.ctrlc") },
   ],
   lesson: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "Enter / \u2192", desc: "Oeffnen / Bestaetigen" },
-    { key: "Esc / \u2190", desc: "Zurueck" },
-    { key: "1-9", desc: "Sektion oeffnen" },
-    { key: "E", desc: "Exercises" },
-    { key: "Z", desc: "Quiz" },
-    { key: "H", desc: "Hints" },
-    { key: "G", desc: "Misconceptions" },
-    { key: "V", desc: "In VS Code oeffnen" },
-    { key: "C", desc: "Cheatsheet" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.lesson.navigate") },
+    { key: "Enter / \u2192", desc: t("shortcuts.lesson.open") },
+    { key: "Esc / \u2190", desc: t("shortcuts.lesson.back") },
+    { key: "1-9", desc: t("shortcuts.lesson.openSection") },
+    { key: "E", desc: t("shortcuts.lesson.exercises") },
+    { key: "Z", desc: t("shortcuts.lesson.quiz") },
+    { key: "H", desc: t("shortcuts.lesson.hints") },
+    { key: "G", desc: t("shortcuts.lesson.misconceptions") },
+    { key: "V", desc: t("shortcuts.lesson.vscode") },
+    { key: "C", desc: t("shortcuts.lesson.cheatsheet") },
+    { key: "?/F1", desc: t("shortcuts.lesson.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.lesson.quit") },
   ],
   section: [
-    { key: "\u2191 / \u2193", desc: "Zeilenweise scrollen" },
-    { key: "Space / PgDn", desc: "Halbe Seite weiter" },
-    { key: "PgUp", desc: "Halbe Seite zurueck" },
-    { key: "Home / End", desc: "Anfang / Ende" },
-    { key: "\u2192", desc: "Naechste Sektion" },
-    { key: "\u2190", desc: "Vorherige Sektion" },
-    { key: "1-9", desc: "Sektion direkt" },
-    { key: "L", desc: "Vorlesen (Text-to-Speech)" },
-    { key: "D", desc: "Diagramm oeffnen" },
-    { key: "A", desc: "Annotationen umschalten" },
-    { key: "M", desc: "Lesezeichen setzen" },
-    { key: "V", desc: "In VS Code oeffnen" },
-    { key: "Q / Esc", desc: "Zurueck zum Menue" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.section.scrollLine") },
+    { key: "Space / PgDn", desc: t("shortcuts.section.halfPage") },
+    { key: "PgUp", desc: t("shortcuts.section.halfPageBack") },
+    { key: "Home / End", desc: t("shortcuts.section.startEnd") },
+    { key: "\u2192", desc: t("shortcuts.section.nextSection") },
+    { key: "\u2190", desc: t("shortcuts.section.prevSection") },
+    { key: "1-9", desc: t("shortcuts.section.directSection") },
+    { key: "L", desc: t("shortcuts.section.tts") },
+    { key: "D", desc: t("shortcuts.section.diagram") },
+    { key: "A", desc: t("shortcuts.section.annotations") },
+    { key: "M", desc: t("shortcuts.section.bookmark") },
+    { key: "V", desc: t("shortcuts.section.vscode") },
+    { key: "Q / Esc", desc: t("shortcuts.section.back") },
+    { key: "?/F1", desc: t("shortcuts.section.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.section.quit") },
   ],
   warmup: [
-    { key: "A-D", desc: "Antwort waehlen" },
-    { key: "S", desc: "Warm-Up ueberspringen" },
-    { key: "Enter", desc: "Naechste Frage (nach Feedback)" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "A-D", desc: t("shortcuts.warmup.answer") },
+    { key: "S", desc: t("shortcuts.warmup.skip") },
+    { key: "Enter", desc: t("shortcuts.warmup.next") },
+    { key: "?/F1", desc: t("shortcuts.warmup.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.warmup.quit") },
   ],
   pretest: [
-    { key: "A-D", desc: "Antwort waehlen" },
-    { key: "?", desc: "Ich weiss es nicht" },
-    { key: "S", desc: "Pre-Test ueberspringen" },
-    { key: "Enter", desc: "Naechste Frage / Empfehlungen uebernehmen" },
-    { key: "A", desc: "Alle Sektionen auf Standard (Ergebnis-Screen)" },
-    { key: "F1", desc: "Tastenbelegung" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "A-D", desc: t("shortcuts.pretest.answer") },
+    { key: "?", desc: t("shortcuts.pretest.dontKnow") },
+    { key: "S", desc: t("shortcuts.pretest.skip") },
+    { key: "Enter", desc: t("shortcuts.pretest.next") },
+    { key: "A", desc: t("shortcuts.pretest.allStandard") },
+    { key: "F1", desc: t("shortcuts.pretest.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.pretest.quit") },
   ],
   misconceptions: [
-    { key: "A", desc: "Code ist korrekt" },
-    { key: "B", desc: "Fehler gefunden" },
-    { key: "Enter", desc: "Naechste" },
-    { key: "Q / Esc", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "A", desc: t("shortcuts.misconceptions.correct") },
+    { key: "B", desc: t("shortcuts.misconceptions.error") },
+    { key: "Enter", desc: t("shortcuts.misconceptions.next") },
+    { key: "Q / Esc", desc: t("shortcuts.misconceptions.back") },
+    { key: "?/F1", desc: t("shortcuts.misconceptions.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.misconceptions.quit") },
   ],
   interleaved: [
-    { key: "A-D", desc: "Antwort waehlen" },
-    { key: "Enter", desc: "Naechste Frage" },
-    { key: "Q / Esc", desc: "Abbrechen" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "A-D", desc: t("shortcuts.interleaved.answer") },
+    { key: "Enter", desc: t("shortcuts.interleaved.next") },
+    { key: "Q / Esc", desc: t("shortcuts.interleaved.cancel") },
+    { key: "?/F1", desc: t("shortcuts.interleaved.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.interleaved.quit") },
   ],
   cheatsheet: [
-    { key: "\u2191 / \u2193", desc: "Scrollen" },
-    { key: "Space / PgDn", desc: "Halbe Seite weiter" },
-    { key: "PgUp", desc: "Halbe Seite zurueck" },
-    { key: "Home / End", desc: "Anfang / Ende" },
-    { key: "Q / Esc", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.cheatsheet.scroll") },
+    { key: "Space / PgDn", desc: t("shortcuts.cheatsheet.halfPage") },
+    { key: "PgUp", desc: t("shortcuts.cheatsheet.halfPageBack") },
+    { key: "Home / End", desc: t("shortcuts.cheatsheet.startEnd") },
+    { key: "Q / Esc", desc: t("shortcuts.cheatsheet.back") },
+    { key: "?/F1", desc: t("shortcuts.cheatsheet.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.cheatsheet.quit") },
   ],
   search: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "Enter", desc: "Ergebnis oeffnen" },
-    { key: "Esc", desc: "Zurueck" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.search.navigate") },
+    { key: "Enter", desc: t("shortcuts.search.open") },
+    { key: "Esc", desc: t("shortcuts.search.back") },
+    { key: "Ctrl+C", desc: t("shortcuts.search.quit") },
   ],
   bookmarks: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "Enter", desc: "Oeffnen" },
-    { key: "X", desc: "Loeschen" },
-    { key: "Esc", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.bookmarks.navigate") },
+    { key: "Enter", desc: t("shortcuts.bookmarks.open") },
+    { key: "X", desc: t("shortcuts.bookmarks.delete") },
+    { key: "Esc", desc: t("shortcuts.bookmarks.back") },
+    { key: "?/F1", desc: t("shortcuts.bookmarks.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.bookmarks.quit") },
   ],
   stats: [
-    { key: "\u2191 / \u2193", desc: "Scrollen" },
-    { key: "Esc / \u2190", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.stats.scroll") },
+    { key: "Esc / \u2190", desc: t("shortcuts.stats.back") },
+    { key: "?/F1", desc: t("shortcuts.stats.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.stats.quit") },
   ],
   competence: [
-    { key: "\u2191 / \u2193", desc: "Scrollen" },
-    { key: "Esc / \u2190", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.competence.scroll") },
+    { key: "Esc / \u2190", desc: t("shortcuts.competence.back") },
+    { key: "?/F1", desc: t("shortcuts.competence.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.competence.quit") },
   ],
   hints: [
-    { key: "\u2191 / \u2193", desc: "Exercise waehlen" },
-    { key: "\u2190 / \u2192", desc: "Aufgabe waehlen" },
-    { key: "N", desc: "Naechster Hint" },
-    { key: "R", desc: "Reset" },
-    { key: "Esc / Q", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.hints.selectExercise") },
+    { key: "\u2190 / \u2192", desc: t("shortcuts.hints.selectTask") },
+    { key: "N", desc: t("shortcuts.hints.nextHint") },
+    { key: "R", desc: t("shortcuts.hints.reset") },
+    { key: "Esc / Q", desc: t("shortcuts.hints.back") },
+    { key: "?/F1", desc: t("shortcuts.hints.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.hints.quit") },
   ],
   exercisemenu: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "1-4", desc: "Stufe waehlen" },
-    { key: "Enter", desc: "Oeffnen" },
-    { key: "Esc / \u2190", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.exercisemenu.navigate") },
+    { key: "1-4", desc: t("shortcuts.exercisemenu.selectLevel") },
+    { key: "Enter", desc: t("shortcuts.exercisemenu.open") },
+    { key: "Esc / \u2190", desc: t("shortcuts.exercisemenu.back") },
+    { key: "?/F1", desc: t("shortcuts.exercisemenu.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.exercisemenu.quit") },
   ],
   selfexplain: [
-    { key: "T", desc: "Erklaerung tippen" },
-    { key: "Enter", desc: "Verstanden — weiter" },
-    { key: "?", desc: "Kernpunkte zeigen" },
-    { key: "F1", desc: "Tastenbelegung" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "T", desc: t("shortcuts.selfexplain.type") },
+    { key: "Enter", desc: t("shortcuts.selfexplain.understood") },
+    { key: "?", desc: t("shortcuts.selfexplain.showKeyPoints") },
+    { key: "F1", desc: t("shortcuts.selfexplain.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.selfexplain.quit") },
   ],
   completion: [
-    { key: "Enter", desc: "Antwort pruefen / Weiter" },
-    { key: "H", desc: "Hint anzeigen" },
-    { key: "L", desc: "Loesung anzeigen" },
-    { key: "Q / Esc", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "Enter", desc: t("shortcuts.completion.checkNext") },
+    { key: "H", desc: t("shortcuts.completion.hint") },
+    { key: "L", desc: t("shortcuts.completion.solution") },
+    { key: "Q / Esc", desc: t("shortcuts.completion.back") },
+    { key: "?/F1", desc: t("shortcuts.completion.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.completion.quit") },
   ],
   history: [
-    { key: "\u2191 / \u2193", desc: "Navigieren" },
-    { key: "Enter", desc: "Oeffnen" },
-    { key: "Esc", desc: "Zurueck" },
-    { key: "?/F1", desc: "Diese Hilfe" },
-    { key: "Ctrl+C", desc: "Beenden" },
+    { key: "\u2191 / \u2193", desc: t("shortcuts.history.navigate") },
+    { key: "Enter", desc: t("shortcuts.history.open") },
+    { key: "Esc", desc: t("shortcuts.history.back") },
+    { key: "?/F1", desc: t("shortcuts.history.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.history.quit") },
   ],
-};
+  quiz: [
+    { key: "A-D", desc: t("shortcuts.quiz.letterAnswer") },
+    { key: "Enter", desc: t("shortcuts.quiz.next") },
+    { key: "Q / Esc", desc: t("shortcuts.quiz.back") },
+    { key: "?/F1", desc: t("shortcuts.quiz.help") },
+    { key: "Ctrl+C", desc: t("shortcuts.quiz.quit") },
+  ],
+  };
+}
+
+// Backwards-compatible accessor (was previously a const)
+export const shortcutsForScreen: Record<string, { key: string; desc: string }[]> = new Proxy({} as Record<string, { key: string; desc: string }[]>, {
+  get(_target, prop: string) {
+    return getShortcutsForScreen()[prop];
+  },
+  ownKeys() {
+    return Object.keys(getShortcutsForScreen());
+  },
+  getOwnPropertyDescriptor(_target, prop: string) {
+    const data = getShortcutsForScreen();
+    if (prop in data) {
+      return { configurable: true, enumerable: true, value: data[prop] };
+    }
+    return undefined;
+  },
+  has(_target, prop: string) {
+    return prop in getShortcutsForScreen();
+  },
+});
 
 // ─── Terminal-Groesse ──────────────────────────────────────────────────────
 
@@ -655,15 +703,15 @@ export function getNextStep(): string {
     for (let s = 0; s < lesson.sections.length; s++) {
       const key = getSectionKey(i, s);
       if (getSectionStatus(key) !== "completed") {
-        return `Lektion ${lesson.number}, Sektion ${s + 1} lesen`;
+        return t("nextStep.readSection", { lesson: lesson.number, section: String(s + 1) });
       }
     }
     const ex = countExerciseProgress(lesson);
     if (ex.solved < ex.total) {
-      return `Lektion ${lesson.number} Exercises loesen`;
+      return t("nextStep.solveExercises", { lesson: lesson.number });
     }
   }
-  return "Alles erledigt — Glueckwunsch!";
+  return t("nextStep.allDone");
 }
 
 // ─── Mastery-Levels (Feature 6) ───────────────────────────────────────────
@@ -956,72 +1004,73 @@ export function discoverLessons(): LessonInfo[] {
 // ─── Feature 2: Breadcrumbs ──────────────────────────────────────────────
 
 export function getBreadcrumb(screen: Screen): string {
+  const mainMenu = t("breadcrumb.mainMenu");
   switch (screen.type) {
     case "platform":
-      return "Kursauswahl";
+      return t("breadcrumb.courseSelect");
     case "courseinfo": {
       const co = platformConfig.courses.find(c2 => c2.id === screen.courseId);
-      return `Kursauswahl > ${co?.name ?? screen.courseId}`;
+      return `${t("breadcrumb.courseSelect")} > ${co?.name ?? screen.courseId}`;
     }
     case "main": {
       const activeCo = platformConfig.courses.find(c2 => c2.id === platformConfig.activeCourse);
-      return activeCo ? `${activeCo.icon} ${activeCo.name}` : "Hauptmenue";
+      return activeCo ? `${activeCo.icon} ${activeCo.name}` : mainMenu;
     }
     case "lesson": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"}`;
+      return `${mainMenu} > L${l?.number ?? "?"}`;
     }
     case "section": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > S${screen.sectionIndex + 1}`;
+      return `${mainMenu} > L${l?.number ?? "?"} > S${screen.sectionIndex + 1}`;
     }
     case "cheatsheet": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Cheatsheet`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.cheatsheet")}`;
     }
     case "pretest": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Pre-Test`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.pretest")}`;
     }
     case "warmup":
-      return "Warm-Up";
+      return t("breadcrumb.warmup");
     case "misconceptions": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Misconceptions`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.misconceptions")}`;
     }
     case "completion": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Completion`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.completion")}`;
     }
     case "interleaved":
-      return "Interleaved Review";
+      return t("breadcrumb.interleavedReview");
     case "hints": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Hints`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.hints")}`;
     }
     case "exercisemenu": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Exercises`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.exercises")}`;
     }
     case "selfexplain": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Erklaerung`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.explanation")}`;
     }
     case "search":
-      return "Suche";
+      return t("breadcrumb.search");
     case "bookmarks":
-      return "Lesezeichen";
+      return t("breadcrumb.bookmarks");
     case "stats":
-      return "Statistiken";
+      return t("breadcrumb.stats");
     case "competence":
-      return "Kompetenzen";
+      return t("breadcrumb.competence");
     case "help":
-      return "Tastenbelegung";
+      return t("breadcrumb.help");
     case "history":
-      return "Letzte Stellen";
+      return t("breadcrumb.history");
     case "quiz": {
       const l = lessons[screen.lessonIndex];
-      return `Hauptmenue > L${l?.number ?? "?"} > Quiz`;
+      return `${mainMenu} > L${l?.number ?? "?"} > ${t("breadcrumb.quiz")}`;
     }
     default:
       return "";
@@ -1034,13 +1083,13 @@ export function getConfidenceFeedback(confident: boolean, correct: boolean): str
   // Inline ANSI um Circular Dependency mit tui-render.ts zu vermeiden
   const _c = { reset: "\x1b[0m", dim: "\x1b[2m", yellow: "\x1b[33m", cyan: "\x1b[36m", green: "\x1b[32m" };
   if (confident && correct) {
-    return `${_c.green}Gut kalibriert! Du weisst was du weisst.${_c.reset}`;
+    return `${_c.green}${t("confidence.goodCalibration")}${_c.reset}`;
   }
   if (confident && !correct) {
-    return `${_c.yellow}\u26A0 Achtung: Du warst dir sicher, aber lagst falsch. Dieses Konzept solltest du vertiefen.${_c.reset}`;
+    return `${_c.yellow}${t("confidence.overconfident")}${_c.reset}`;
   }
   if (!confident && correct) {
-    return `${_c.cyan}Mehr Vertrauen! Du weisst mehr als du denkst.${_c.reset}`;
+    return `${_c.cyan}${t("confidence.underconfident")}${_c.reset}`;
   }
-  return `${_c.dim}Kein Problem — du wusstest dass du unsicher warst. Das ist gute Selbsteinschaetzung.${_c.reset}`;
+  return `${_c.dim}${t("confidence.goodSelfAssessment")}${_c.reset}`;
 }
