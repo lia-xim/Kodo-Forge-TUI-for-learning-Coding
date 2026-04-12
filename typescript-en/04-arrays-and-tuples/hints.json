@@ -1,0 +1,119 @@
+{
+  "exercises/01-arrays-tippen.ts": {
+    "1": [
+      "TypeScript kann den Typ aus den Werten ableiten. Aber du kannst auch explizit 'string[]' schreiben.",
+      "const staedte: string[] = ['Berlin', 'Wien', 'Zuerich']; — oder lass die Annotation weg."
+    ],
+    "2": [
+      "Das Array soll Strings UND Zahlen enthalten. Du brauchst einen Union-Typ im Array.",
+      "Verwende die Array<T> Syntax: const gemischt: Array<string | number> = ['hello', 42, 'world', 7];"
+    ],
+    "3": [
+      "readonly verhindert, dass Elemente hinzugefuegt oder entfernt werden.",
+      "const farben: readonly string[] = ['rot', 'gruen', 'blau']; — push() wuerde dann einen Compile-Fehler geben."
+    ],
+    "4": [
+      "Verwende die Array-Methoden direkt auf dem 'zahlen'-Array.",
+      "const verdoppelt = zahlen.map(z => z * 2); const gross = zahlen.filter(z => z > 25); const gefunden = zahlen.find(z => z > 35);",
+      "Beachte: find() gibt number | undefined zurueck, weil es nichts finden koennte."
+    ],
+    "5": [
+      "Die Funktion sagt sie gibt number[] zurueck, aber .toString() erzeugt Strings.",
+      "Aendere w.toString() zu w * w (Quadratzahl), damit die Rueckgabe wirklich number[] ist."
+    ],
+    "6": [
+      "Ein 2D-Array ist ein Array von Arrays: number[][].",
+      "type Matrix = number[][]; const grid: Matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];"
+    ],
+    "7": [
+      "Generics erlauben eine Funktion mit beliebigen Typen: function wiederhole<T>(wert: T, anzahl: number): T[]",
+      "Verwende Array.from oder new Array(anzahl).fill(wert) um das Array zu erstellen.",
+      "function wiederhole<T>(wert: T, anzahl: number): T[] { return new Array(anzahl).fill(wert); }"
+    ],
+    "8": [
+      "Die Funktion soll ein mutable Array nehmen und es als readonly zurueckgeben.",
+      "function einfrieren<T>(arr: T[]): readonly T[] { return arr; } — der Typ aendert sich, der Wert nicht."
+    ]
+  },
+  "exercises/02-tuples-meistern.ts": {
+    "1": [
+      "Ein Tuple-Typ ist ein Array mit fester Laenge und Typen pro Position.",
+      "type Person = [string, number]; const alice: Person = ['Alice', 30];"
+    ],
+    "2": [
+      "Named Tuples fuegen Labels hinzu: [label1: Typ1, label2: Typ2].",
+      "type Koordinate = [lat: number, lng: number]; const muenchen: Koordinate = [48.1351, 11.5820];"
+    ],
+    "3": [
+      "Optionale Elemente in Tuples nutzen '?' — sie muessen am Ende stehen.",
+      "type RGB = [r: number, g: number, b: number, a?: number];"
+    ],
+    "4": [
+      "Rest-Elemente in Tuples nutzen '...T[]' und erlauben variable Laenge.",
+      "type LogEntry = [timestamp: string, ...messages: string[]];"
+    ],
+    "5": [
+      "Array-Destructuring funktioniert wie bei normalen Arrays: const [a, b, c] = tuple;",
+      "const [statusCode, statusText, success] = httpResponse; — die Typen werden automatisch zugewiesen."
+    ],
+    "6": [
+      "Die Funktion soll ein Tuple zurueckgeben, nicht ein Array. Annotiere den Rueckgabetyp explizit.",
+      "function useToggle(initial: boolean): [boolean, () => void] { return [initial, () => {}]; }",
+      "WICHTIG: Ohne Annotation wuerde TypeScript (boolean | (() => void))[] infern, nicht das Tuple."
+    ],
+    "7": [
+      "as const erzeugt Literal-Typen und macht das Array readonly.",
+      "const statusCodes = [200, 404, 500] as const; type StatusCode = typeof statusCodes[number];"
+    ],
+    "8": [
+      "Verwende den Spread-Operator im Typ-System: [...A, ...B].",
+      "type UserRecord = [...Anfang, ...Ende]; — das verbindet die beiden Tuples."
+    ]
+  },
+  "exercises/03-fortgeschritten.ts": {
+    "1": [
+      "Das Problem: addDefault aendert das uebergebene Array. Durch Kovarianz erlaubt TypeScript ungewollte Werte.",
+      "Loesung: Statt das Array zu mutieren, gib ein neues Array zurueck. Verwende readonly string[] als Parameter.",
+      "function addDefault(items: readonly string[]): string[] { return [...items, 'default']; }"
+    ],
+    "2": [
+      "Ein Type Predicate im filter-Callback aendert den Ergebnis-Typ.",
+      "daten.filter((item): item is string => typeof item === 'string')"
+    ],
+    "3": [
+      "Erstelle das Array mit as const, leite den Union-Typ mit typeof und [number] ab.",
+      "const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'] as const; type HttpMethod = typeof HTTP_METHODS[number];",
+      "function isValidMethod(method: string): method is HttpMethod { return (HTTP_METHODS as readonly string[]).includes(method); }"
+    ],
+    "4": [
+      "Verwende den Spread-Operator auf Typ-Ebene um Elemente einzufuegen.",
+      "type Prepend<Elem, T extends readonly unknown[]> = [Elem, ...T]; type Append<T extends readonly unknown[], Elem> = [...T, Elem];"
+    ],
+    "5": [
+      "Verwende Conditional Types mit 'infer' um das erste Element zu extrahieren.",
+      "type Head<T extends readonly unknown[]> = T extends readonly [infer H, ...unknown[]] ? H : never;",
+      "type Tail<T extends readonly unknown[]> = T extends readonly [unknown, ...infer R] ? R : never;"
+    ],
+    "6": [
+      "Die Funktion soll das Original nicht aendern. Erstelle eine Kopie mit dem Spread-Operator.",
+      "function sortedCopy<T>(arr: readonly T[], compareFn?: (a: T, b: T) => number): T[] { return [...arr].sort(compareFn); }"
+    ],
+    "7": [
+      "Ein Discriminated Union als Tuple: [true, T] oder [false, string].",
+      "type Result<T> = [true, T] | [false, string];",
+      "function divide(a: number, b: number): Result<number> { if (b === 0) return [false, 'Division durch 0']; return [true, a / b]; }"
+    ],
+    "8": [
+      "Die EventMap definiert fuer jeden Event die erwarteten Argumente als Tuple.",
+      "Der Trick ist: ...args: EventMap[K] — TypeScript entpackt das Tuple automatisch als Funktionsparameter."
+    ],
+    "9": [
+      "Indexed Access mit [number] gibt den Union aller Element-Typen eines Tuples.",
+      "type TupleToUnion<T extends readonly unknown[]> = T[number];"
+    ],
+    "10": [
+      "Tuples haben ein 'length' Property das den Literal-Typ der Laenge hat.",
+      "type Length<T extends readonly unknown[]> = T['length'];"
+    ]
+  }
+}

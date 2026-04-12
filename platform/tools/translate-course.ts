@@ -26,6 +26,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { execFileSync } from "node:child_process";
 
 // ─── Config ────────────────────────────────────────────────────────────────
 
@@ -167,46 +168,21 @@ interface TranslationResult {
 async function translateContent(
   content: string,
   systemPrompt: string,
-  model: string,
+  _model: string,
 ): Promise<{ translated: string; inputTokens: number; outputTokens: number }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+  // Use Claude Code CLI in print mode — no API key needed
+  const prompt = `${systemPrompt}\n\n---\n\n${content}`;
+  const translated = execFileSync("claude", ["-p", "--model", "sonnet", prompt], {
+    encoding: "utf-8",
+    maxBuffer: 50 * 1024 * 1024, // 50 MB
+    timeout: 120_000, // 2 min per file
+  }).trim();
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 8192,
-      system: systemPrompt,
-      messages: [{ role: "user", content }],
-    }),
-  });
+  // Token counts not available via CLI — estimate from string lengths
+  const inputTokens = Math.ceil(content.length / 4);
+  const outputTokens = Math.ceil(translated.length / 4);
 
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`API error ${response.status}: ${err}`);
-  }
-
-  const data = (await response.json()) as {
-    content: { type: string; text: string }[];
-    usage: { input_tokens: number; output_tokens: number };
-  };
-
-  const text = data.content
-    .filter((c) => c.type === "text")
-    .map((c) => c.text)
-    .join("");
-
-  return {
-    translated: text,
-    inputTokens: data.usage.input_tokens,
-    outputTokens: data.usage.output_tokens,
-  };
+  return { translated, inputTokens, outputTokens };
 }
 
 // ─── Directory Name Translation ────────────────────────────────────────────

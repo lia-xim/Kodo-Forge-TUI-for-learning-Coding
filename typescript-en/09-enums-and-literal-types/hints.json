@@ -1,0 +1,64 @@
+{
+  "exercises/01-literal-type-grundlagen.ts": {
+    "1": [
+      "const inferiert Literal-Typen, let widened zum allgemeinen Typ.",
+      "const x = 'hello' hat Typ 'hello'. let x = 'hello' hat Typ string."
+    ],
+    "2": [
+      "as const behaelt Literal-Typen bei — auch fuer Objekt-Properties.",
+      "const config = { method: 'GET' } as const; — method hat Typ 'GET' statt string."
+    ],
+    "3": [
+      "Fuer Literal-Typen bei let: as const, explizite Annotation, oder const verwenden.",
+      "let method = 'GET' as const; oder let method: 'GET' | 'POST' = 'GET';"
+    ]
+  },
+  "exercises/02-enum-grundlagen.ts": {
+    "1": [
+      "Enums erzeugen echten JavaScript-Code — im Gegensatz zu allen anderen TS-Typen.",
+      "enum Direction { Up, Down } wird zu einem Objekt mit Auto-Increment (0, 1)."
+    ],
+    "2": [
+      "String Enums brauchen explizite Werte fuer JEDES Mitglied.",
+      "enum Status { Active = 'ACTIVE', Inactive = 'INACTIVE' }"
+    ],
+    "3": [
+      "Numerische Enums haben Reverse Mapping: Color[0] gibt 'Red'.",
+      "String Enums haben kein Reverse Mapping — nur einseitige Eintraege."
+    ]
+  },
+  "exercises/03-as-const-pattern.ts": {
+    "1": [
+      "as const Object: Wert und Typ in einem. const X = {...} as const; type X = typeof X[keyof typeof X];",
+      "Der Typ-Name und der Wert-Name koennen identisch sein — TypeScript unterscheidet den Kontext."
+    ],
+    "2": [
+      "typeof X[number] fuer Arrays, typeof X[keyof typeof X] fuer Objekte.",
+      "Damit extrahierst du einen Union aller Werte aus dem as const Objekt/Array."
+    ]
+  },
+  "exercises/04-template-literal-types.ts": {
+    "1": [
+      "Template Literal Types erzeugen das kartesische Produkt aller Unions.",
+      "`${A}-${B}` mit A=3 und B=4 Mitgliedern ergibt 3*4=12 Kombinationen."
+    ],
+    "2": [
+      "Capitalize: erster Buchstabe gross. Uppercase: ALLES gross. Lowercase: alles klein.",
+      "Capitalize<'hello'> = 'Hello'. Uppercase<'hello'> = 'HELLO'."
+    ]
+  },
+  "exercises/05-patterns-und-branding.ts": {
+    "1": [
+      "Branded Types verhindern Verwechslungen: type EUR = number & { __brand: 'EUR' };",
+      "Die __brand-Property existiert nur auf Type-Level — nicht zur Laufzeit."
+    ],
+    "2": [
+      "Konstruktor-Funktionen sind der Eintrittspunkt: function eur(n: number): EUR { return n as EUR; }",
+      "Direkte Zuweisung einer Zahl an EUR ist nicht moeglich — Compile-Error."
+    ],
+    "3": [
+      "as const Objects sind die moderne Alternative zu const enum.",
+      "Sie sind kompatibel mit isolatedModules und bieten Laufzeit-Zugriff + Literal Types."
+    ]
+  }
+}

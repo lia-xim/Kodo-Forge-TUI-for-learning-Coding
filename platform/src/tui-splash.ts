@@ -11,6 +11,7 @@
 import { flushScreen } from "./tui-render.ts";
 import { W, H } from "./tui-state.ts";
 import { theme } from "./tui-theme.ts";
+import { t } from "./i18n.ts";
 
 // ─── ASCII Logo ───────────────────────────────────────────────────────────────
 
@@ -130,17 +131,17 @@ export function showSplash(durationMs: number = 1500, onComplete?: () => void): 
   let elapsed = 0;
   const frameMs = 50; // 20fps — fast enough for wave, not too much CPU
 
-  renderSplashFrame(0, "Lade Konfiguration...");
+  renderSplashFrame(0, t("splash.loadingConfig"));
 
   const interval = setInterval(() => {
     frame++;
     elapsed += frameMs;
 
     const statusText = elapsed < 600
-      ? "Lade Konfiguration..."
+      ? t("splash.loadingConfig")
       : elapsed < 1100
-        ? "Entdecke Lektionen..."
-        : "Bereit.";
+        ? t("splash.discoveringLessons")
+        : t("splash.ready");
 
     renderSplashFrame(frame, statusText);
 

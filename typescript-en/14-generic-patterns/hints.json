@@ -1,0 +1,112 @@
+{
+  "exercises/01-generic-factories.ts": {
+    "1": [
+      "createPair<T>(a: T, b: T) — beide Parameter haben denselben Typ T.",
+      "Rueckgabetyp ist ein Tuple: [T, T]. TypeScript inferiert T aus den Argumenten."
+    ],
+    "2": [
+      "Definiere sinnvolle Defaults fuer alle ApiConfig-Properties.",
+      "Spread-Operator: { ...defaults, ...overrides } — Overrides ueberschreiben Defaults."
+    ],
+    "3": [
+      "Constructor Signature: { new (): T } beschreibt eine Klasse ohne Parameter.",
+      "function createService<T>(Ctor: { new (): T }): T { return new Ctor(); }"
+    ],
+    "4": [
+      "Der Builder nutzt Intersection Types: T & Record<K, V> bei jedem set().",
+      "Fluent API: Jede Methode gibt Builder<NeuerTyp> zurueck fuer Method Chaining."
+    ],
+    "5": [
+      "Registry: Map<string, { new (): T }> — String-Key auf Constructor mappen.",
+      "register() speichert die Klasse, create() instanziiert sie mit new."
+    ]
+  },
+  "exercises/02-generic-collections.ts": {
+    "1": [
+      "Stack<T> nutzt intern ein Array: private items: T[] = [].",
+      "pop() gibt T | undefined zurueck — der Stack kann leer sein."
+    ],
+    "2": [
+      "PriorityQueue speichert Elemente mit Prioritaet: { item: T; priority: number }.",
+      "dequeue() gibt das Element mit der NIEDRIGSTEN priority-Zahl zurueck (hoechste Prio)."
+    ],
+    "3": [
+      "FilterableList<T> hat eine where()-Methode mit Predicate: (item: T) => boolean.",
+      "where() gibt eine NEUE FilterableList<T> zurueck — nicht das Original mutieren."
+    ],
+    "4": [
+      "IndexedCollection<T extends { id: string }> braucht das Constraint fuer Map-Lookup.",
+      "Intern eine Map<string, T> verwenden — get(id) ist O(1) statt O(n)."
+    ],
+    "5": [
+      "ImmutableStack<T> gibt bei push/pop jeweils eine NEUE Instanz zurueck.",
+      "Der interne State wird nie mutiert — spread: new ImmutableStack([...this.items, item])."
+    ]
+  },
+  "exercises/03-generic-hof.ts": {
+    "1": [
+      "pipe braucht Overloads: pipe<A,B>, pipe<A,B,C>, pipe<A,B,C,D>.",
+      "Implementation: fns.reduce((v, fn) => fn(v), value) — aber die Overloads machen es typsicher."
+    ],
+    "2": [
+      "curry2<A,B,C>(fn): (a: A) => (b: B) => C — verschachtelte Arrow Functions.",
+      "curry3 erweitert das um einen dritten Parameter: (a) => (b) => (c) => result."
+    ],
+    "3": [
+      "mapResult transformiert den Wert bei ok: true, laesst Fehler durch.",
+      "flatMapResult: wenn fn selbst Result zurueckgibt, kein verschachteltes Result erzeugen."
+    ],
+    "4": [
+      "memoize<Args extends unknown[], R> nutzt eine Map<string, R> als Cache.",
+      "Cache-Key: JSON.stringify(args) — weil Arrays nicht per Referenz vergleichbar sind."
+    ],
+    "5": [
+      "compose(f, g) gibt (x) => f(g(x)) zurueck — rechts nach links.",
+      "Wie pipe, aber die Reihenfolge ist umgekehrt und es gibt eine Funktion zurueck."
+    ]
+  },
+  "exercises/04-advanced-constraints.ts": {
+    "1": [
+      "Conditional Return Type: type Serialized<T> = T extends string ? string : string.",
+      "Alle Faelle geben string zurueck — aber der Conditional Type zeigt das Muster."
+    ],
+    "2": [
+      "DeepReadonly<T>: Fuer jede Property pruefen ob sie ein Objekt ist.",
+      "Rekursion: T[K] extends object ? DeepReadonly<T[K]> : T[K] — und alles readonly."
+    ],
+    "3": [
+      "TreeNode<T> hat value: T und children: TreeNode<T>[] — Selbstreferenz.",
+      "mapTree wandelt jeden Knoten rekursiv um: { value: fn(node.value), children: node.children.map(c => mapTree(c, fn)) }."
+    ],
+    "4": [
+      "const Type Parameters: function f<const T>(x: T) erzwingt Literal-Inferenz.",
+      "Ohne const: ['a','b'] wird string[]. Mit const: readonly ['a','b']."
+    ],
+    "5": [
+      "Mutual Exclusion: Genau eine von mehreren optionalen Properties muss gesetzt sein.",
+      "Discriminated Union oder Conditional Types mit never nutzen."
+    ]
+  },
+  "exercises/05-real-world-patterns.ts": {
+    "1": [
+      "Repository<T extends Entity> — findAll, findById, create, update, delete.",
+      "create nimmt Omit<T, 'id'> — die id wird intern generiert."
+    ],
+    "2": [
+      "TypedEmitter<Events>: on<K extends keyof Events>(event: K, handler: (data: Events[K]) => void).",
+      "K verknuepft Event-Name und Payload-Typ — falsche Kombinationen sind Compile-Fehler."
+    ],
+    "3": [
+      "Token<T> ist ein Phantom Type — T existiert nur auf Type-Level.",
+      "Container.resolve(token) inferiert T aus dem Token — kein Cast noetig."
+    ],
+    "4": [
+      "Generic API Client: request<T>(endpoint: string): Promise<ApiResponse<T>>.",
+      "Der Aufrufer bestimmt mit T welchen Response-Typ er erwartet."
+    ],
+    "5": [
+      "Middleware Pattern: type Middleware<T> = (ctx: T, next: () => void) => void.",
+      "compose() verkettet Middlewares zu einer einzigen Funktion."
+    ]
+  }
+}

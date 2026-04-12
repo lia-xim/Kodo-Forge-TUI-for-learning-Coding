@@ -28,17 +28,40 @@ const fadeUp = {
   }),
 };
 
-export default function CourseDetailPage({ course }: { course: Course }) {
+interface CourseDetailPageProps {
+  course: Course;
+  dict: Record<string, any>;
+  lang: string;
+}
+
+export default function CourseDetailPage({ course, dict, lang }: CourseDetailPageProps) {
   const [openPhase, setOpenPhase] = useState<number>(0);
   const prereqCourse = course.prerequisite
     ? courses.find((c) => c.id === course.prerequisite)
     : null;
 
+  const t = dict.courseDetail;
+  const cd = dict.coursesData[course.id] ?? {};
+
+  // Resolve localized strings with fallback to course data
+  const tagline = cd.tagline ?? course.tagline;
+  const description = cd.description ?? course.description;
+  const longDescription = cd.longDescription ?? course.longDescription;
+  const targetAudience = cd.targetAudience ?? course.targetAudience;
+  const whatYouLearn = cd.whatYouLearn ?? course.whatYouLearn;
+  const didacticHighlights = cd.didacticHighlights ?? course.didacticHighlights;
+
+  const curriculumMeta = t.curriculumMeta
+    .replace("{lessons}", String(course.totalLessons))
+    .replace("{phases}", String(course.phases.length))
+    .replace("{sections}", String(course.totalSections))
+    .replace("{hours}", String(course.estimatedHours));
+
   const courseJsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
     name: course.name,
-    description: course.description,
+    description: description,
     provider: {
       "@type": "Organization",
       name: "Kodo Forge",
@@ -46,7 +69,7 @@ export default function CourseDetailPage({ course }: { course: Course }) {
     },
     isAccessibleForFree: true,
     educationalLevel: course.id === "typescript" ? "Beginner to Advanced" : "Intermediate to Advanced",
-    inLanguage: "de",
+    inLanguage: lang,
     numberOfLessons: course.totalLessons,
     timeRequired: `PT${course.estimatedHours}H`,
     teaches: course.topics.join(", "),
@@ -75,28 +98,28 @@ export default function CourseDetailPage({ course }: { course: Course }) {
 
           <div className="relative z-10 max-w-5xl mx-auto px-6 py-24">
             <Link
-              href="/courses"
+              href={`/${lang}/courses`}
               className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-[#FFB000] mb-8 transition-colors"
             >
-              <ArrowLeft size={14} /> All Courses
+              <ArrowLeft size={14} /> {t.allCourses}
             </Link>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 {course.status === "active" && (
                   <span className="px-3 py-1 bg-green-500/20 border border-green-500/30 rounded text-xs text-green-400 font-bold uppercase">
-                    Available Now — Start Free
+                    {t.availableNow}
                   </span>
                 )}
                 {course.status === "planned" && (
                   <span className="px-3 py-1 bg-zinc-500/20 border border-zinc-500/30 rounded text-xs text-zinc-400 font-bold uppercase">
-                    Coming Soon
+                    {t.comingSoon}
                   </span>
                 )}
                 {prereqCourse && (
                   <span className="text-xs text-zinc-500">
-                    Requires:{" "}
-                    <Link href={`/courses/${prereqCourse.slug}`} className="text-[#FFB000] hover:underline">
+                    {t.requires}:{" "}
+                    <Link href={`/${lang}/courses/${prereqCourse.slug}`} className="text-[#FFB000] hover:underline">
                       {prereqCourse.name}
                     </Link>
                   </span>
@@ -109,24 +132,24 @@ export default function CourseDetailPage({ course }: { course: Course }) {
               >
                 {course.name}
               </h1>
-              <p className="text-lg text-zinc-400 max-w-2xl mb-8">{course.tagline}</p>
+              <p className="text-lg text-zinc-400 max-w-2xl mb-8">{tagline}</p>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-zinc-400 mb-10">
                 <span className="flex items-center gap-2">
-                  <BookOpen size={16} className="text-[#FFB000]" /> {course.totalLessons} Lessons
+                  <BookOpen size={16} className="text-[#FFB000]" /> {course.totalLessons} {dict.common.lessons}
                 </span>
                 <span className="flex items-center gap-2">
-                  <Layers size={16} className="text-[#FFB000]" /> {course.totalSections} Sections
+                  <Layers size={16} className="text-[#FFB000]" /> {course.totalSections} {dict.common.sections}
                 </span>
                 <span className="flex items-center gap-2">
-                  <Clock size={16} className="text-[#FFB000]" /> ~{course.estimatedHours}h Content
+                  <Clock size={16} className="text-[#FFB000]" /> ~{course.estimatedHours}h {dict.common.content}
                 </span>
                 <span className="flex items-center gap-2">
-                  <GraduationCap size={16} className="text-[#FFB000]" /> {course.phases.length} Phases
+                  <GraduationCap size={16} className="text-[#FFB000]" /> {course.phases.length} {dict.common.phases}
                 </span>
               </div>
 
-              <Link href="/download">
+              <Link href={`/${lang}/download`}>
                 <motion.div
                   whileHover={{ scale: 1.05, boxShadow: `0 0 30px ${course.glowColor}` }}
                   whileTap={{ scale: 0.95 }}
@@ -137,7 +160,7 @@ export default function CourseDetailPage({ course }: { course: Course }) {
                     background: `${course.color}10`,
                   }}
                 >
-                  <Download size={18} /> Start This Course Free
+                  <Download size={18} /> {t.startFree}
                 </motion.div>
               </Link>
             </motion.div>
@@ -147,18 +170,18 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         {/* Screenshots Gallery */}
         {course.screenshots && course.screenshots.length > 0 && (
           <section className="max-w-6xl mx-auto px-6 py-12 -mt-16 relative z-20">
-            <motion.div 
-              initial="hidden" 
-              whileInView="visible" 
-              viewport={{ once: true }} 
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
               variants={fadeUp}
               custom={0}
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
               {course.screenshots.map((src, i) => (
                 <div key={i} className="retro-glass rounded-lg overflow-hidden border border-zinc-800/80 shadow-2xl relative aspect-[16/9] group">
-                  <Image 
-                    src={src} 
+                  <Image
+                    src={src}
                     alt={`${course.name} Platform Screenshot ${i + 1}`}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -171,17 +194,17 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         )}
 
         {/* Long Description (if available) */}
-        {course.longDescription && (
+        {longDescription && (
           <section className="max-w-5xl mx-auto px-6 py-16" aria-label="Course overview">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} variants={fadeUp}>
               <h2
                 className="text-2xl font-bold text-white mb-6"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                About This Course
+                {t.aboutCourse}
               </h2>
               <div className="space-y-4">
-                {course.longDescription.split("\n\n").map((p, i) => (
+                {longDescription.split("\n\n").map((p: string, i: number) => (
                   <p key={i} className="text-zinc-400 leading-relaxed">
                     {p}
                   </p>
@@ -192,17 +215,17 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         )}
 
         {/* Target Audience */}
-        {course.targetAudience && (
+        {targetAudience && (
           <section className="max-w-5xl mx-auto px-6 py-12" aria-label="Target audience">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} variants={fadeUp}>
               <div className="flex items-center gap-3 mb-6">
                 <Users size={20} className="text-[#FFB000]" />
                 <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Für wen ist dieser Kurs?
+                  {t.targetAudience}
                 </h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {course.targetAudience.map((item, i) => (
+                {targetAudience.map((item: string, i: number) => (
                   <motion.div
                     key={i}
                     initial="hidden"
@@ -223,14 +246,14 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         )}
 
         {/* What You'll Learn */}
-        {course.whatYouLearn && (
+        {whatYouLearn && (
           <section className="max-w-5xl mx-auto px-6 py-16 border-y border-zinc-800/40" aria-label="Learning outcomes">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} variants={fadeUp}>
               <h2 className="text-2xl font-bold text-white mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Was du nach diesem Kurs kannst
+                {t.whatYouLearn}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                {course.whatYouLearn.map((item, i) => (
+                {whatYouLearn.map((item: string, i: number) => (
                   <motion.div
                     key={i}
                     initial="hidden"
@@ -250,21 +273,20 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         )}
 
         {/* Didactic Highlights */}
-        {course.didacticHighlights && (
+        {didacticHighlights && (
           <section className="max-w-5xl mx-auto px-6 py-16" aria-label="Didactic approach">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} variants={fadeUp}>
               <div className="flex items-center gap-3 mb-8">
                 <Lightbulb size={20} className="text-[#FFB000]" />
                 <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Didaktisches Konzept
+                  {t.didacticConcept}
                 </h2>
               </div>
               <p className="text-zinc-400 mb-8 max-w-2xl">
-                Dieser Kurs nutzt moderne, wissenschaftlich fundierte Lernmethoden.
-                Jede Lektion ist so aufgebaut, dass du nicht nur liest, sondern wirklich verstehst und behältst.
+                {t.didacticDesc}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {course.didacticHighlights.map((h, i) => (
+                {didacticHighlights.map((h: { title: string; description: string }, i: number) => (
                   <motion.div
                     key={h.title}
                     initial="hidden"
@@ -287,7 +309,7 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         {/* Topics */}
         <section className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-2xl font-bold text-white mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Covered Topics
+            {t.coveredTopics}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {course.topics.map((topic, i) => (
@@ -310,10 +332,10 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         {/* Curriculum Accordion */}
         <section className="max-w-5xl mx-auto px-6 py-16" aria-label="Full curriculum">
           <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Full Curriculum
+            {t.fullCurriculum}
           </h2>
           <p className="text-sm text-zinc-500 mb-8">
-            {course.totalLessons} lessons across {course.phases.length} phases · {course.totalSections} sections · ~{course.estimatedHours}h content
+            {curriculumMeta}
           </p>
 
           <div className="space-y-3">
@@ -340,7 +362,7 @@ export default function CourseDetailPage({ course }: { course: Course }) {
                       {String(pi + 1).padStart(2, "0")}
                     </span>
                     <span className="font-bold text-white">{phase.name}</span>
-                    <span className="text-xs text-zinc-500">{phase.lessons.length} Lessons</span>
+                    <span className="text-xs text-zinc-500">{phase.lessons.length} {dict.common.lessons}</span>
                   </div>
                   <ChevronDown
                     size={18}
@@ -374,18 +396,18 @@ export default function CourseDetailPage({ course }: { course: Course }) {
         {/* CTA */}
         <section className="max-w-3xl mx-auto px-6 py-20 text-center" aria-label="Start learning">
           <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Ready to start <span style={{ color: course.color }}>{course.name}</span>?
+            {t.readyToStart}<span style={{ color: course.color }}>{course.name}</span>{t.readyToStart2}
           </h2>
           <p className="text-zinc-500 mb-8">
-            Download Kodo Forge and begin your journey. Free, offline, no sign-up needed.
+            {t.downloadCta}
           </p>
-          <Link href="/download">
+          <Link href={`/${lang}/download`}>
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="inline-flex items-center gap-3 px-10 py-5 bg-[#FFB000] text-[#09090b] font-bold uppercase tracking-widest rounded-sm cursor-pointer text-lg"
             >
-              <Download size={20} /> Download Free
+              <Download size={20} /> {t.downloadFree}
             </motion.div>
           </Link>
         </section>

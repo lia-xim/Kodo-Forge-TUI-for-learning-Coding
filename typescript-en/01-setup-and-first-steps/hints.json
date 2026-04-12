@@ -1,0 +1,117 @@
+{
+  "exercises/01-erste-schritte.ts": {
+    "1": [
+      "Du brauchst zwei Variablen mit expliziten Typ-Annotationen. Denke an 'let variableName: Typ = Wert'.",
+      "Fuer die Zahl brauchst du 'number', fuer den Text 'string'. Schreibe: let lieblingszahl: number = 42"
+    ],
+    "2": [
+      "Schau dir die Funktion an — der zweite Parameter ist 'alter: number'. Was uebergibst du gerade?",
+      "Ersetze den String 'fuenfundzwanzig' durch die Zahl 25. Also: beschreibePerson(\"Anna\", 25)"
+    ],
+    "3": [
+      "Du brauchst eine Funktion mit zwei number-Parametern und einem number-Rueckgabetyp.",
+      "Die Formel ist einfach: breite * hoehe. Vergiss nicht den Rueckgabetyp ': number' hinter der Klammer.",
+      "function berechneFlaeche(breite: number, hoehe: number): number { return breite * hoehe; }"
+    ],
+    "4": [
+      "Was passiert bei einem leeren Array mit summe / zahlen.length? Division durch 0 gibt NaN.",
+      "Pruefe am Anfang ob das Array leer ist: if (zahlen.length === 0) return 0;",
+      "Fuege ': number' als Rueckgabetyp hinzu und fange den leeren Fall ab."
+    ],
+    "5": [
+      "Ein Interface definiert die Struktur eines Objekts. Denke an: interface Name { prop: Typ; }",
+      "Du brauchst 4 Properties: titel (string), autor (string), seiten (number), gelesen (boolean).",
+      "Erstelle das Interface und dann ein Objekt: const meinBuch: Buch = { titel: '...', ... }"
+    ]
+  },
+  "exercises/02-tsconfig-verstehen.ts": {
+    "1": [
+      "Was bewirkt 'strict: true' bei Parametern ohne Typ-Annotation?",
+      "strict: true aktiviert u.a. noImplicitAny — Parameter ohne Typ loesen einen Fehler aus.",
+      "Die Antwort ist 'b' — implizites 'any' wird nicht erlaubt."
+    ],
+    "2": [
+      "ES5 ist aelter als ES2015 (ES6). Arrow Functions sind ein ES2015-Feature.",
+      "Der Compiler wandelt neuere Syntax in aeltere um, wenn das target niedriger ist.",
+      "Arrow Functions werden zu normalen function()-Ausdruecken umgeschrieben. Antwort: 'b'"
+    ],
+    "3": [
+      "strictNullChecks trennt null und undefined von anderen Typen.",
+      "Ohne strictNullChecks koennte man null an jeden Typ zuweisen. MIT der Option ist das ein Fehler."
+    ],
+    "4": [
+      "noEmit bedeutet: der Compiler soll NICHTS ausgeben. Aber prueft er trotzdem die Typen?",
+      "Ja — tsc prueft die Typen, erzeugt aber keine .js-Dateien. Antwort: 'b'"
+    ],
+    "5": [
+      "rootDir gibt an, wo die Quelldateien liegen. outDir, wohin die Ausgabe geht.",
+      "Die Ordnerstruktur UNTERHALB von rootDir wird in outDir gespiegelt. Also src/utils/helper.ts wird zu dist/utils/helper.js."
+    ],
+    "6": [
+      "Wenn strict: true und gleichzeitig noImplicitAny: false gesetzt ist — was hat Vorrang?",
+      "Explizite Einstellungen ueberschreiben die Gruppen-Einstellung von strict. Antwort: 'b'"
+    ],
+    "7": [
+      "Welche Option passt am besten zu: ES2022, strict, outDir, sourceMap, NodeNext?",
+      "Option a) hat ES5 und strict: false. Option c) hat AMD. Option d) hat noEmit. Nur b) passt."
+    ]
+  },
+  "exercises/03-compiler-output-vorhersagen.ts": {
+    "1": [
+      "Was bleibt uebrig, wenn TypeScript kompiliert? Denke an 'Type Erasure'.",
+      "Interfaces und Typ-Annotationen werden KOMPLETT entfernt. Der Rest (Variablen, console.log) bleibt.",
+      "Antwort: 'b' — das Interface und die Annotation ': Config' verschwinden, der Rest bleibt."
+    ],
+    "2": [
+      "Enums sind NICHT nur Typen — sie erzeugen auch JavaScript-Code. Interfaces dagegen nicht.",
+      "Das Status-Enum wird zu einem JavaScript-Objekt. Das User-Interface verschwindet komplett.",
+      "Antwort: 'c' — Status-Enum und user-Objekt bleiben, das Interface wird entfernt."
+    ],
+    "3": [
+      "Entferne alle Typ-Informationen: <T>, : T, : string. Was bleibt uebrig?",
+      "Aus identity<T>(value: T): T wird identity(value). Aus identity<string>('hello') wird identity('hello').",
+      "function identity(value) { return value; } und const result = identity(\"hello\");"
+    ],
+    "4": [
+      "instanceof funktioniert nur mit Dingen die zur Laufzeit existieren. Welche Antwort nutzt ein Interface?",
+      "Interfaces existieren zur Laufzeit NICHT. typeof, instanceof (mit Klassen), 'in' und Array.isArray sind JavaScript.",
+      "Nur 'c' (instanceof MyInterface) schlaegt fehl, weil Interfaces nicht zur Laufzeit existieren."
+    ],
+    "5": [
+      "ES5 unterstuetzt weder const, Arrow Functions, noch Template Literals.",
+      "Der Compiler schreibt ALLE drei Features fuer ES5 um: const zu var, Arrow zu function, Template Literals zu String-Konkatenation."
+    ],
+    "6": [
+      "'as string' ist eine Type Assertion — sagt das dem Compiler oder der Laufzeit etwas?",
+      "Type Assertions existieren NUR zur Compile-Zeit. Zur Laufzeit ist 'as string' weg — der Wert bleibt was er ist.",
+      "Antwort: 'c' — der Wert ist schon ein String, 'as string' ist nur fuer den Compiler."
+    ]
+  },
+  "exercises/04-fehler-finden-und-fixen.ts": {
+    "1": [
+      "user koennte undefined sein. Was passiert wenn du auf undefined.name zugreifst?",
+      "Du brauchst eine Pruefung ob user existiert, z.B. mit Optional Chaining (?.) oder einem if-Check.",
+      "Loesung: const greeting = user ? `Hallo ${user.name}!` : 'Hallo Unbekannter!';"
+    ],
+    "2": [
+      "Schau genau hin: 'port' ist ein String statt einer Zahl, 'maxConnectins' hat einen Tippfehler, und 'logging' fehlt.",
+      "port: 3000 (ohne Anfuehrungszeichen), maxConnections (mit 'o'), und fuege logging: { level: '...', datei: '...' } hinzu.",
+      "Alle drei Fehler fixen: port zu number, Tippfehler korrigieren, logging-Objekt ergaenzen."
+    ],
+    "3": [
+      "Die Funktion prueft zur Laufzeit, aber der Compiler erlaubt trotzdem negative Zahlen.",
+      "Mit einfachen TypeScript-Typen kann man Wertebereiche (z.B. 0-100) nicht einschraenken.",
+      "Branded Types waeren eine Moeglichkeit, sind aber fortgeschritten. Notiere deine Gedanken als Kommentar."
+    ],
+    "4": [
+      "Das Array enthaelt 'drei' (String) und null — das sind keine Zahlen! Und ergebnis sollte number sein, nicht string.",
+      "Ersetze 'drei' durch 3, null durch eine Zahl (z.B. 5), und aendere 'const ergebnis: string' zu 'const ergebnis: number'.",
+      "const zahlen: number[] = [1, 2, 3, 4, 5, 6]; und const ergebnis: number = summe(zahlen);"
+    ],
+    "5": [
+      "instanceof funktioniert nicht mit Interfaces, weil Interfaces zur Laufzeit nicht existieren.",
+      "Nutze stattdessen 'Property Checking': Pruefe ob bestimmte Properties existieren, z.B. 'rasse' in tier.",
+      "Verwende 'in' Operator: if ('rasse' in tier) fuer Hund, if ('indoor' in tier) fuer Katze."
+    ]
+  }
+}

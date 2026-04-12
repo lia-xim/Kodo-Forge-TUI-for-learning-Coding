@@ -1,0 +1,37 @@
+{
+  "exercises/01-es-modules.ts": {
+    "1": ["export function name() — Named Export direkt an der Deklaration.", "Alle vier Funktionen einzeln exportieren."],
+    "2": ["export interface MathOperation { ... } und export type { MathOperation as MathOp }.", "Type-Only-Export mit export type { } from."],
+    "3": ["export { X } from './file' — Re-Export ohne Import.", "Barrel Files re-exportieren ohne selbst zu importieren."],
+    "4": ["import type { X } from './file' — wird beim Compilieren entfernt.", "Nutze type fuer reine Typ-Imports."],
+    "5": ["import * as math from './math' — alle Exports als Namespace-Objekt.", "Zugriff: math.add(), math.PI."]
+  },
+  "exercises/02-commonjs-interop.ts": {
+    "1": ["import _ from 'lodash' braucht esModuleInterop.", "import * as _ from 'lodash' funktioniert immer."],
+    "2": ["esModuleInterop: true in tsconfig.json compilerOptions.", "Ermoeglicht Default-Imports aus CJS module.exports."],
+    "3": ["bundler nutzt package.json 'exports' wie Vite/Webpack.", "Flexibler als node-Resolution."],
+    "4": ["isolatedModules: true wenn Bundler wie esbuild/Vite verwendet wird.", "Diese transpilieren Datei-fuer-Datei ohne Cross-File-Analyse."],
+    "5": ["module: 'ESNext', moduleResolution: 'bundler', esModuleInterop: true.", "Dazu strict: true und isolatedModules: true."]
+  },
+  "exercises/03-declaration-files.ts": {
+    "1": ["declare module 'simple-cache' { export function get<T>(...): T | undefined; }", "Generische Funktionen sind in Declarations erlaubt."],
+    "2": ["declare const API_URL: string; declare const __DEV__: boolean;", "declare erzeugt keinen Code, nur Typ-Information."],
+    "3": ["declare module 'my-lib' { export default function init(config: Config): void; }", "Default Export in Declaration: export default."],
+    "4": ["npm install @types/library-name", "DefinitelyTyped hat ueber 10.000 Pakete."],
+    "5": ["declare module '*.module.css' { const classes: Record<string, string>; export default classes; }", "Wildcard * fuer beliebige Dateinamen."]
+  },
+  "exercises/04-module-augmentation.ts": {
+    "1": ["declare module 'express' { interface Request { user?: UserInfo; } }", "Import 'express' am Anfang der Datei noetig."],
+    "2": ["declare global { namespace NodeJS { interface ProcessEnv { ... } } }", "export {} am Ende nicht vergessen!"],
+    "3": ["declare global { interface Window { __CONFIG__: AppConfig; } }", "In einer Datei mit export."],
+    "4": ["interface X { a: string; } interface X { b: number; } // Merged: { a: string; b: number; }", "Interfaces mit gleichem Namen werden automatisch gemerged."],
+    "5": ["Ohne export/import ist die Datei ein Script, nicht ein Modul.", "declare global funktioniert nur in Modulen."]
+  },
+  "exercises/05-praxis-patterns.ts": {
+    "1": ["export { X } from './x'; export { Y } from './y'; export type { Z } from './z';", "Re-Exports, Type-Only Re-Exports fuer reine Typen."],
+    "2": ["types/user.ts, types/product.ts, types/order.ts + types/index.ts Barrel.", "Feature-basierte Organisation mit gemeinsamem Barrel."],
+    "3": ["declare module '*.svg' { const src: string; export default src; }", "SVG-Imports geben den Pfad als String zurueck."],
+    "4": ["declare global { namespace NodeJS { interface ProcessEnv { ... } } } export {};", "Alle Umgebungsvariablen als Union-Typen oder string."],
+    "5": ["Barrel Files vermeiden bei: grossem Tree-Shaking-Bedarf, zirkulaeren Imports.", "Direkte Imports sind sicherer fuer Bundle-Optimierung."]
+  }
+}

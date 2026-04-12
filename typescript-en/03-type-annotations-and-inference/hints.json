@@ -1,0 +1,164 @@
+{
+  "exercises/01-annotieren-oder-infern.ts": {
+    "1": [
+      "TypeScript kann den Typ aus dem Wert ableiten: const x = 'hello' ergibt automatisch string.",
+      "Entferne alle drei Annotationen (: string, : number, : boolean) — sie sind ueberfluessig."
+    ],
+    "2": [
+      "Ohne Initialwert und ohne Annotation wird die Variable zu 'any'. Das willst du vermeiden.",
+      "Die Variable bekommt spaeter einen String zugewiesen. Also: let errorMessage: string;"
+    ],
+    "3": [
+      "Funktionsparameter koennen NICHT infert werden — du MUSST Annotationen hinzufuegen.",
+      "function calculateArea(width: number, height: number) { ... } — der Rueckgabetyp wird infert."
+    ],
+    "4": [
+      "Bei Array-Methoden wie .map() und .filter() kennt TypeScript die Parametertypen automatisch (Contextual Typing).",
+      "Entferne die Typ-Annotationen in den Callbacks: numbers.map(n => n * 2) und numbers.filter(n => n > 2)"
+    ],
+    "5": [
+      "Exportierte Funktionen sollten einen expliziten Rueckgabetyp haben — das ist eine API-Grenze.",
+      "Fuege ': string' als Rueckgabetyp hinzu: export function formatPrice(cents: number): string"
+    ],
+    "6": [
+      "let 'weitet' den Typ zu string. applyTheme erwartet aber den Literal-Typ 'north' | 'south' | ...",
+      "Drei Moeglichkeiten: const statt let, 'as const' nach dem Wert, oder explizit 'let currentDirection: Direction'."
+    ],
+    "7": [
+      "Ein leeres Array wird als any[] infert — du musst den Typ explizit angeben.",
+      "const results: string[] = []; — dann laesst push nur Strings zu."
+    ],
+    "8": [
+      "Wenn das Objekt nur lokal verwendet wird, kann TypeScript den Typ selbst ableiten.",
+      "Die Annotation ist unnoetig — entferne sie. TypeScript infert { name: string; age: number; city: string }."
+    ],
+    "9": [
+      "Die Variable soll zwei verschiedene Formen annehmen koennen. Du brauchst einen Union-Typ.",
+      "let response: { data: number[] | null; error: string | null };"
+    ],
+    "10": [
+      "Bei Destructuring annotierst du den ganzen Parameter, nicht die einzelnen Variablen.",
+      "function greetUser({ name, age }: { name: string; age: number }) { ... }"
+    ],
+    "11": [
+      "as const macht alle Werte im Objekt zu Literal-Typen (200, 404, 500 statt number).",
+      "Fuege 'as const' nach dem schliessenden } hinzu: const HTTP_STATUS = { ... } as const;"
+    ],
+    "12": [
+      "Der Fallback-Wert 0 ist eine Zahl — daher wird der Rueckgabetyp string | number.",
+      "Ersetze 0 durch einen String-Fallback, z.B. '' (leerer String) oder entferne den Fallback."
+    ],
+    "13": [
+      "TypeScript kann den Typ-Parameter T aus dem uebergebenen Wert ableiten.",
+      "Entferne die expliziten Typ-Angaben: identity('hello'), identity(42), identity(true)"
+    ],
+    "14": [
+      "Ein normales Array [48.137, 11.576] wird als number[] infert, nicht als [number, number].",
+      "Verwende 'as const' oder eine explizite Annotation: const myPosition = [48.137, 11.576] as const;"
+    ],
+    "15": [
+      "Callback-Parameter in Array-Methoden werden durch Contextual Typing automatisch getypt.",
+      "Entferne alle Callback-Annotationen. Behalte nur den Rueckgabetyp der Funktion und den Parameter-Typ."
+    ]
+  },
+  "exercises/02-inference-vorhersagen.ts": {
+    "1": [
+      "const bei einem primitiven Wert erzeugt einen Literal-Typ, nicht den breiten Typ.",
+      "Der Typ ist nicht string, sondern der Literal-Typ 'Hallo Welt'."
+    ],
+    "2": [
+      "let erlaubt spaetere Neuzuweisungen — der Typ wird daher 'geweitet'.",
+      "Der Typ ist number (nicht 42 als Literal). let weitet den Typ automatisch."
+    ],
+    "3": [
+      "Ein Array mit verschiedenen Typen ergibt einen Union-Typ.",
+      "Der Typ ist (string | number | boolean)[] — TypeScript bildet die Union aller Element-Typen."
+    ],
+    "4": [
+      "Objekt-Literale mit const werden NICHT komplett zu Literal-Typen (anders als primitive Werte).",
+      "Der Typ ist { host: string; port: number; debug: boolean } — die Werte sind die breiten Typen."
+    ],
+    "5": [
+      "TypeScript infert den Rueckgabetyp einer Funktion aus dem return-Statement.",
+      "Der Typ von pair ist { first: number; second: string }."
+    ],
+    "6": [
+      "Die Funktion hat zwei Return-Pfade: string und null.",
+      "Der Typ ist string | null."
+    ],
+    "7": [
+      ".map() transformiert die Elemente. name.length gibt eine Zahl zurueck.",
+      "Der Typ ist number[]."
+    ],
+    "8": [
+      "as const auf einem Array erzeugt ein readonly Tuple mit Literal-Typen.",
+      "Der Typ ist readonly ['north', 'south', 'east', 'west']."
+    ],
+    "9": [
+      "as const auf einem Objekt macht alle Properties readonly und gibt ihnen Literal-Typen.",
+      "Der Typ ist { readonly theme: 'dark'; readonly fontSize: 14 }."
+    ],
+    "10": [
+      "Wertet TypeScript den Ternary bei const aus? flag ist 'true' (Literal), nicht boolean.",
+      "flag hat den Literal-Typ true, daher weiss TypeScript dass immer der 'yes'-Zweig genommen wird. Typ: string."
+    ],
+    "11": [
+      "Object.keys() gibt in TypeScript IMMER string[] zurueck, nie die spezifischen Keys.",
+      "Der Typ ist string[] — das ist eine bewusste Design-Entscheidung von TypeScript."
+    ],
+    "12": [
+      "Array.find() koennte nichts finden. Was ist dann der Rueckgabetyp?",
+      "Der Typ ist number | undefined."
+    ],
+    "13": [
+      "Beim Spread werden Properties ueberschrieben. 'b' existiert in beiden Objekten.",
+      "Der Typ ist { a: number; b: number; c: boolean } — das zweite 'b' (number) ueberschreibt das erste (string)."
+    ],
+    "14": [
+      "Funktions-Rueckgabewerte werden bei normaler Rueckgabe geweitet. 'as const' verhindert das.",
+      "status14a ist string, status14b ist 'active' (Literal-Typ)."
+    ],
+    "15": [
+      "Promise.all() gibt ein Array mit den aufgeloesten Typen zurueck.",
+      "Der Typ ist [string, number, boolean]."
+    ]
+  },
+  "exercises/03-satisfies-und-control-flow.ts": {
+    "1": [
+      "Das Problem: Mit ': ColorConfig' verlierst du die spezifischen Typen. satisfies validiert ohne zu verlieren.",
+      "Ersetze ': ColorConfig' durch 'satisfies ColorConfig' NACH dem Objekt.",
+      "const palette = { ... } satisfies ColorConfig; — jetzt hat primary den Typ string, nicht den Union."
+    ],
+    "2": [
+      "Du brauchst ZWEI Modifizierer: as const (fuer Literal-Typen) und satisfies (fuer Validierung).",
+      "Die Reihenfolge ist: const ROUTES = { ... } as const satisfies Record<string, string>;"
+    ],
+    "3": [
+      "satisfies validiert gegen einen Record-Typ, behaelt aber die exakten Keys.",
+      "const registrationForm = { ... } satisfies Record<string, FieldConfig>;"
+    ],
+    "4": [
+      "Verwende switch(shape.kind) und behandle jeden Fall. Gib den passenden String zurueck.",
+      "Fuer exhaustiveness: Fuege 'default: const _exhaustive: never = shape; return _exhaustive;' hinzu.",
+      "case 'circle': return `Kreis mit Radius ${shape.radius}`; usw."
+    ],
+    "5": [
+      "Ein Type Predicate hat die Signatur 'value is TypName' statt 'boolean'.",
+      "Aendere den Rueckgabetyp zu 'value is UserProfile' und pruefe alle Properties mit typeof.",
+      "Pruefe: typeof value === 'object' && value !== null && 'name' in value && typeof (value as any).name === 'string' ..."
+    ],
+    "6": [
+      "filter() mit einem Type Predicate aendert den Ergebnis-Typ des Arrays.",
+      "Verwende: rawData.filter((item): item is string => item != null)",
+      "Das 'item is string' als Return-Typ sagt TypeScript: gefilterte Elemente sind definitiv Strings."
+    ],
+    "7": [
+      "Die Variable muss alle drei Formen annehmen koennen: string, number, und das Objekt.",
+      "let result: string | number | { success: boolean; data: number[] };"
+    ],
+    "8": [
+      "Wenn du 'pending' zum Union hinzufuegst, wird der default-Fall nicht mehr never sein.",
+      "Fuege einen case 'pending': return 'In Bearbeitung'; vor dem default hinzu."
+    ]
+  }
+}

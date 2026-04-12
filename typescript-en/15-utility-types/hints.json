@@ -1,0 +1,158 @@
+{
+  "exercises/01-partial-required-readonly.ts": {
+    "1": [
+      "Partial<T> macht alle Properties optional — perfekt fuer Update-Funktionen.",
+      "function updateProduct(id: number, changes: Partial<Product>): Product { return { ...existing, ...changes }; }"
+    ],
+    "2": [
+      "Required<T> macht alle Properties verpflichtend — ideal nach Default-Aufloesung.",
+      "Verwende den Nullish-Coalescing-Operator (??) fuer Default-Werte: params.query ?? ''"
+    ],
+    "3": [
+      "Readonly<T> verhindert Aenderungen am Parameter — schuetzt vor Seiteneffekten.",
+      "function calculateTotal(cart: Readonly<ShoppingCart>): number — cart kann nicht veraendert werden."
+    ],
+    "4": [
+      "Partial<Theme> als Override-Parameter: function mergeThemes(base: Theme, overrides: Partial<Theme>): Theme",
+      "Spread-Operator zum Mergen: { ...base, ...overrides }"
+    ],
+    "5": [
+      "Required + Readonly verschachteln: Readonly<Required<DatabaseConfig>>",
+      "Reihenfolge: Erst Required (alle Felder vorhanden), dann Readonly (nichts mehr aendern)."
+    ],
+    "6": [
+      "Readonly ist SHALLOW — nur die erste Ebene wird geschuetzt.",
+      "state.user kann nicht neu zugewiesen werden, aber state.user.name kann geaendert werden."
+    ]
+  },
+  "exercises/02-pick-omit-record.ts": {
+    "1": [
+      "Pick<Employee, 'id' | 'firstName' | 'lastName' | 'email' | 'department'> waehlt nur oeffentliche Felder.",
+      "In der Funktion: return { id: emp.id, firstName: emp.firstName, ... } — explizit nur die gewuenschten Felder."
+    ],
+    "2": [
+      "Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'slug'> entfernt Server-Felder.",
+      "In createBlogPost: Fehlende Felder (id, timestamps, slug) selbst generieren."
+    ],
+    "3": [
+      "StrictOmit<T, K extends keyof T> = Omit<T, K> — K muss ein existierender Key sein.",
+      "Der Unterschied zu Omit: Tippfehler werden erkannt. StrictOmit<User, 'salery'> waere ein Error."
+    ],
+    "4": [
+      "Record<LogLevel, LogConfig> erzwingt einen Eintrag fuer JEDEN LogLevel.",
+      "Vergiss keinen Level — der Compiler sagt dir wenn einer fehlt."
+    ],
+    "5": [
+      "Partial<Record<keyof RegistrationForm, string>> — optionaler Fehler pro Feld.",
+      "In validate: Fehler-Objekt erstellen und nur bei Verletzungen setzen."
+    ],
+    "6": [
+      "Pick fuer wenige gewuenschte Felder, Omit fuer wenige ungewuenschte.",
+      "Pick<Order, 'id' | 'status'> vs Omit<Order, 'items' | 'shippingAddress' | ...> — was ist kuerzer?"
+    ]
+  },
+  "exercises/03-extract-exclude-nonnullable.ts": {
+    "1": [
+      "Exclude<HttpMethod, 'GET' | 'HEAD' | 'OPTIONS'> entfernt die lesenden Methoden.",
+      "Das Ergebnis sind die schreibenden Methoden: POST, PUT, PATCH, DELETE."
+    ],
+    "2": [
+      "Exclude<Shape, { kind: 'line' }> entfernt Shapes ohne Flaeche.",
+      "Extract<Shape, { kind: 'circle' }> behaelt nur den Kreis."
+    ],
+    "3": [
+      "NonNullable<UserSettings['theme']> entfernt null aus 'light' | 'dark' | null.",
+      "Fuer alle Properties: Mapped Type mit NonNullable auf jedem Wert."
+    ],
+    "4": [
+      "Extract<AllTypes, any[]> behaelt nur Array-Typen.",
+      "Extract<AllTypes, object> behaelt alles was ein Objekt ist (Arrays, Date, RegExp)."
+    ],
+    "5": [
+      "Extract<ApiEvent, { type: `user.${string}` }> nutzt Template Literal Types als Pattern.",
+      "Extract<ApiEvent, { changes: any }> findet Events mit einem changes-Feld."
+    ],
+    "6": [
+      "NonNullableDeep braucht Rekursion: Primitives mit NonNullable, Objekte rekursiv.",
+      "{ [K in keyof T]-?: NonNullableDeep<NonNullable<T[K]>> } — -? UND NonNullable."
+    ]
+  },
+  "exercises/04-returntype-parameters-awaited.ts": {
+    "1": [
+      "type Product = ReturnType<typeof createProduct> — typeof extrahiert den Funktionstyp.",
+      "ReturnType gibt dann den Rueckgabetyp: { id: number; name: string; ... }"
+    ],
+    "2": [
+      "Parameters<typeof sendNotification> gibt die Parameter als Tuple.",
+      "function queueNotification(...args: Parameters<typeof sendNotification>): void"
+    ],
+    "3": [
+      "Awaited<ReturnType<typeof fetchUserProfile>> entpackt async + Promise.",
+      "ReturnType gibt Promise<...>, Awaited entpackt zu dem inneren Typ."
+    ],
+    "4": [
+      "ConstructorParameters<typeof HttpClient> gibt die Konstruktor-Parameter.",
+      "function createHttpClient(...args: ConstructorParameters<typeof HttpClient>)"
+    ],
+    "5": [
+      "Parameters<typeof processPayment>[0] fuer den ersten Parameter (number).",
+      "Parameters<typeof fn>[index] extrahiert einzelne Parameter-Typen."
+    ],
+    "6": [
+      "type UnwrapAsync<T extends (...args: any[]) => Promise<any>> = Awaited<ReturnType<T>>",
+      "Constraint: T muss eine Funktion sein die ein Promise zurueckgibt."
+    ]
+  },
+  "exercises/05-eigene-utility-types.ts": {
+    "1": [
+      "DeepPartial braucht drei Faelle: Array (infer U), Objekt (Rekursion), Primitive (T).",
+      "T extends (infer U)[] ? DeepPartial<U>[] : T extends object ? { [P in keyof T]?: ... } : T"
+    ],
+    "2": [
+      "DeepReadonly: readonly vor jeder Property + Rekursion fuer verschachtelte Typen.",
+      "Arrays: readonly DeepReadonly<U>[]. Objekte: { readonly [P in keyof T]: DeepReadonly<T[P]> }"
+    ],
+    "3": [
+      "-readonly entfernt den readonly-Modifier. Das ist das Gegenteil von readonly.",
+      "type Mutable<T> = { -readonly [P in keyof T]: T[P] };"
+    ],
+    "4": [
+      "OptionalKeys: undefined extends T[K] ? K : never — dann [keyof T] fuer den Union.",
+      "RequiredKeys: das Gegenteil — undefined extends T[K] ? never : K."
+    ],
+    "5": [
+      "Nullable<T> = T | null. NullableProps: { [P in keyof T]: T[P] | null }.",
+      "Einfache Mapped Types ohne Rekursion."
+    ],
+    "6": [
+      "DeepRequired: { [P in keyof T]-?: DeepRequired<T[P]> } — -? entfernt optional.",
+      "Gleiche Struktur wie DeepPartial, aber -? statt ?."
+    ]
+  },
+  "exercises/06-utility-types-kombinieren.ts": {
+    "1": [
+      "PartialExcept<T, K> = Pick<T, K> & Partial<Omit<T, K>>",
+      "Pick behaelt K wie im Original, Partial<Omit> macht den Rest optional."
+    ],
+    "2": [
+      "RequireKeys<T, K> = Omit<T, K> & Required<Pick<T, K>>",
+      "Omit entfernt K, Required<Pick> fuegt sie required hinzu, & vereint."
+    ],
+    "3": [
+      "CreateArticle = Omit<Article, Server-generierte Felder>",
+      "UpdateArticle = Pick<Article, 'id'> & Partial<Pick<Article, editierbare Felder>>"
+    ],
+    "4": [
+      "FormState<T> = Partial<T>, FormErrors<T> = Partial<Record<keyof T, string>>",
+      "createFormStore gibt leere Objekte fuer values, errors und touched zurueck."
+    ],
+    "5": [
+      "DeepReadonly<Pick<Order, K>> — erst die Felder auswaehlen, dann einfrieren.",
+      "Die Reihenfolge ist wichtig: Pick reduziert, DeepReadonly friert ein."
+    ],
+    "6": [
+      "TransformType = Required<Pick<T, R>> & Partial<Pick<T, O>> & Omit<T, R | O | X>",
+      "R required, O optional, X entfernt. Rest bleibt wie im Original."
+    ]
+  }
+}

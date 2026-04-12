@@ -1,0 +1,37 @@
+{
+  "exercises/01-grundlagen.ts": {
+    "1": ["`${string}@${string}.${string}` — drei string-Platzhalter mit @ und . dazwischen.", "Akzeptiert 'user@example.com' aber nicht 'invalid'."],
+    "2": ["Zwei Unions + Template Literal = kartesisches Produkt.", "`${HttpMethod} ${Path}` erzeugt alle Kombinationen."],
+    "3": ["`--${string}` matcht alle CSS Custom Properties.", "Jeder String der mit -- beginnt wird akzeptiert."],
+    "4": ["`${number}.${number}.${number}` — drei number-Platzhalter mit Punkten.", "Akzeptiert '1.2.3' aber nicht '1.2'."],
+    "5": ["`#${string}` matcht alle Strings die mit # beginnen.", "Fuer strengere Validierung brauchst du Runtime-Checks."]
+  },
+  "exercises/02-utility-types.ts": {
+    "1": ["Uppercase<T> macht ALLE Buchstaben gross.", "ScreamingCase<'hello'> = 'HELLO'."],
+    "2": ["`get${Capitalize<T>}` und `set${Capitalize<T>}`.", "Capitalize macht nur den ersten Buchstaben gross."],
+    "3": ["`on${Capitalize<T>}` — Prefix 'on' + capitalized Event-Name.", "EventName<'click'> = 'onClick'."],
+    "4": ["Capitalize<T> auf den gesamten String.", "Capitalize<'content-type'> = 'Content-type' (nicht 'Content-Type'!)."],
+    "5": ["Drei Mapped Types mit jeweiligem Template Literal.", "GetterNames | SetterNames | EventNames als Union."]
+  },
+  "exercises/03-pattern-matching.ts": {
+    "1": ["T extends `${string}@${infer Domain}` ? Domain : never", "infer Domain steht NACH dem @-Zeichen."],
+    "2": ["S extends `${infer H}${D}${infer T}` ? [H, ...Split<T, D>] : [S]", "Rekursion: Split ruft sich selbst auf mit dem Rest."],
+    "3": ["Wie Replace, aber rekursiv: ReplaceAll<`${H}${To}${T}`, From, To>", "Nach dem Ersetzen nochmal pruefen ob noch Vorkommen da sind."],
+    "4": ["S extends ` ${infer Rest}` ? TrimLeft<Rest> : S", "Rekursion: Solange Leerzeichen am Anfang, weiter trimmen."],
+    "5": ["Fuehrendes / entfernen, dann Split am /.", "T extends `/${infer Rest}` ? Split<Rest, '/'> : Split<T, '/'>"]
+  },
+  "exercises/04-event-names.ts": {
+    "1": ["[K in keyof T & string as `${K}Changed`] — Key Remapping mit Suffix.", "previousValue und newValue vom Typ T[K]."],
+    "2": ["[K in keyof T & string as `on${Capitalize<K>}`] — on-Prefix + Capitalize.", "Handler-Typ: (data: T[K]) => void."],
+    "3": ["Klasse mit Map<string, Function[]> intern.", "on<E extends keyof Events>(event: E, handler: (data: Events[E]) => void)."],
+    "4": ["[K in keyof Props & string as `on${Capitalize<K>}Change`]", "Handler bekommt newValue: Props[K] als Parameter."],
+    "5": ["EventMap<Settings> + EventEmitter<EventMap<Settings>>.", "Settings-Interface -> Events -> Emitter mit typsicherem on/emit."]
+  },
+  "exercises/05-praxis-patterns.ts": {
+    "1": ["`${number}${'px' | 'em' | 'rem' | '%' | 'vh' | 'vw'}`", "number + Einheiten-Union als Template Literal."],
+    "2": ["Zwei Cases: mit /Rest (rekursiv) und ohne (letzter Param).", "T extends `${string}:${infer P}/${infer Rest}` ? P | ExtractParams<Rest> : ..."],
+    "3": ["`${string}.${string}` als Basis-Pattern.", "Fuer spezifischere Keys: bekannte Namespaces als Union."],
+    "4": ["Table -> Column Mapping mit Conditional Type.", "`${T}.${Column<T>}` als Template Literal."],
+    "5": ["Rekursive Traversierung: T extends object ? ... : ...", "Mapped Type mit Key-Konkatenation: `${Prefix}${K}`."]
+  }
+}

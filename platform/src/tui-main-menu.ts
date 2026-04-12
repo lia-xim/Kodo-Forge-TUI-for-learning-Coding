@@ -72,7 +72,7 @@ export function renderMainMenu(): void {
       
     lines.push(
       bLine(
-        ` ${th.border.muted}┌─ ${th.fg.heading}Weitermachen${th.mod.reset} ${th.border.muted}${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${th.mod.reset}`,
+        ` ${th.border.muted}┌─ ${th.fg.heading}${t("mainMenu.resume")}${th.mod.reset} ${th.border.muted}${"─".repeat(Math.max(0, resumeInnerW - 16))}┐${th.mod.reset}`,
         w
       )
     );
@@ -100,7 +100,7 @@ export function renderMainMenu(): void {
   const leftLines: string[] = [];
   const rightLines: string[] = [];
 
-  leftLines.push(padR(`${th.mod.bold}${th.fg.info} Lektionen${th.mod.reset}`, leftColW));
+  leftLines.push(padR(`${th.mod.bold}${th.fg.info} ${t("mainMenu.lessons")}${th.mod.reset}`, leftColW));
   leftLines.push(`${th.border.default} ${"─".repeat(leftColW - 1)}${th.mod.reset}`);
 
   for (let i = 0; i < lessons.length; i++) {
@@ -123,7 +123,7 @@ export function renderMainMenu(): void {
   }
 
   rightLines.push(
-    `${th.mod.bold}${th.fg.info} Dein Fortschritt${th.mod.reset}`
+    `${th.mod.bold}${th.fg.info} ${t("mainMenu.yourProgress")}${th.mod.reset}`
   );
   rightLines.push(
     `${th.border.default} ${"─".repeat(rightColW - 1)}${th.mod.reset}`
@@ -155,16 +155,16 @@ export function renderMainMenu(): void {
   const streak = getReviewStreak();
 
   rightLines.push(
-    ` Sektionen gelesen:  ${c.bold}${String(doneSections).padStart(3)}${c.reset}/${totalSections}`
+    ` ${t("mainMenu.sectionsRead")}  ${c.bold}${String(doneSections).padStart(3)}${c.reset}/${totalSections}`
   );
   rightLines.push(
-    ` Exercises geloest:  ${c.bold}${String(doneExercises).padStart(3)}${c.reset}/${totalExercises}`
+    ` ${t("mainMenu.exercisesSolved")}  ${c.bold}${String(doneExercises).padStart(3)}${c.reset}/${totalExercises}`
   );
   rightLines.push(
-    ` Quiz bestanden:     ${c.bold}${String(quizzesPassed).padStart(3)}${c.reset}/${totalQuizzes}`
+    ` ${t("mainMenu.quizPassed")}     ${c.bold}${String(quizzesPassed).padStart(3)}${c.reset}/${totalQuizzes}`
   );
   rightLines.push(
-    ` Reviews gesamt:   ${c.bold}${String(streak).padStart(3)}${c.reset}`
+    ` ${t("mainMenu.reviewsTotal")}   ${c.bold}${String(streak).padStart(3)}${c.reset}`
   );
   rightLines.push("");
   const overallBarWidth = Math.max(10, rightColW - 12);
@@ -174,7 +174,7 @@ export function renderMainMenu(): void {
   const recentActivity = getRecentActivityValues(7);
   if (recentActivity.some((v) => v > 0)) {
     rightLines.push("");
-    rightLines.push(` ${c.dim}Lernverlauf (7 Tage):${c.reset}`);
+    rightLines.push(` ${c.dim}${t("stats.learningHistory7d")}:${c.reset}`);
     const spark = colorSparkline(recentActivity);
     rightLines.push(` ${spark}`);
   }
@@ -184,7 +184,7 @@ export function renderMainMenu(): void {
     `${c.dim} ${"─".repeat(rightColW - 1)}${c.reset}`
   );
   rightLines.push(
-    `${c.bold} Naechster Schritt:${c.reset}`
+    `${c.bold} ${t("mainMenu.nextStep")}${c.reset}`
   );
   const nextStep = getNextStep();
   const wrappedStep =
@@ -217,12 +217,12 @@ export function renderMainMenu(): void {
     const reviewMarker = reviewSelected
       ? `${markerColor}${c.bold}\u25B8${c.reset} `
       : "  ";
-    const reviewText = `${reviewMarker}${c.yellow}${c.bold}${dueCount} Fragen faellig${c.reset} ${c.dim}— Druecke [R] um die taegliche Wiederholung zu starten${c.reset}`;
+    const reviewText = `${reviewMarker}${c.yellow}${c.bold}${t("mainMenu.questionsDue", { count: String(dueCount) })}${c.reset} ${c.dim}${t("mainMenu.reviewDueHint")}${c.reset}`;
     lines.push(bLine(` ${c.dim}│${c.reset} ${padR(reviewText, reviewInnerW - 2)}${c.dim}│${c.reset}`, w));
     lines.push(bLine(` ${c.dim}└${"─".repeat(reviewInnerW)}┘${c.reset}`, w));
   } else {
     lines.push(bLine(` ${c.dim}┌${"─".repeat(reviewInnerW)}┐${c.reset}`, w));
-    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.green}Review: Alles aktuell${c.reset}`, reviewInnerW - 2)}${c.dim}│${c.reset}`, w));
+    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.green}${t("mainMenu.reviewAllCurrent")}${c.reset}`, reviewInnerW - 2)}${c.dim}│${c.reset}`, w));
     lines.push(bLine(` ${c.dim}└${"─".repeat(reviewInnerW)}┘${c.reset}`, w));
   }
 
@@ -236,8 +236,8 @@ export function renderMainMenu(): void {
       .join(", ");
     const ilInnerW = w - 6;
     lines.push(bLine(` ${c.dim}┌${"─".repeat(ilInnerW)}┐${c.reset}`, w));
-    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.magenta}${c.bold}Interleaved Review${c.reset} ${c.dim}— 5 gemischte Aufgaben aus: ${truncate(completedLessonNames, ilInnerW - 45)}${c.reset}`, ilInnerW - 2)}${c.dim}│${c.reset}`, w));
-    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.dim}Druecke [I] zum Starten${c.reset}`, ilInnerW - 2)}${c.dim}│${c.reset}`, w));
+    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.magenta}${c.bold}${t("mainMenu.interleavedReview")}${c.reset} ${c.dim}${t("mainMenu.interleavedMixed", { lessons: truncate(completedLessonNames, ilInnerW - 45) })}${c.reset}`, ilInnerW - 2)}${c.dim}│${c.reset}`, w));
+    lines.push(bLine(` ${c.dim}│${c.reset} ${padR(`${c.dim}${t("mainMenu.interleavedStartHint")}${c.reset}`, ilInnerW - 2)}${c.dim}│${c.reset}`, w));
     lines.push(bLine(` ${c.dim}└${"─".repeat(ilInnerW)}┘${c.reset}`, w));
     lines.push(bEmpty(w));
   }
@@ -251,17 +251,17 @@ export function renderMainMenu(): void {
   }
 
   const footerHints: FooterHint[] = [
-    { key: `1-${lessons.length}`, label: "Lektion" },
-    { key: "↑↓", label: "Navigieren" },
-    { key: "Enter", label: "Öffnen", primary: true },
-    { key: "/", label: "Suche" },
-    { key: "B", label: "Lesezeichen" },
-    { key: "R", label: "Review" },
-    { key: "I", label: "Interleaved" },
-    { key: "K", label: "Kompetenzen" },
-    { key: "P", label: "Kursauswahl" },
-    { key: "?", label: "Hilfe" },
-    { key: "Q", label: "Beenden" },
+    { key: `1-${lessons.length}`, label: t("mainMenu.lesson") },
+    { key: "↑↓", label: t("mainMenu.navigate") },
+    { key: "Enter", label: t("mainMenu.open"), primary: true },
+    { key: "/", label: t("mainMenu.search") },
+    { key: "B", label: t("mainMenu.bookmarks") },
+    { key: "R", label: t("mainMenu.review") },
+    { key: "I", label: t("mainMenu.interleaved") },
+    { key: "K", label: t("mainMenu.competence") },
+    { key: "P", label: t("mainMenu.courseSelect") },
+    { key: "?", label: t("mainMenu.help") },
+    { key: "Q", label: t("mainMenu.quit") },
   ];
 
   lines.push(...renderFooterBar(footerHints, w));

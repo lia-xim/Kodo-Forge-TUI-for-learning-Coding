@@ -1,0 +1,129 @@
+{
+  "exercises/01-typ-zuweisungen.ts": {
+    "1": [
+      "Denke an die primitiven Typen aus der README. Der Wert ist ein Text.",
+      "const benutzername: string = \"admin\" — oder lass die Annotation weg, TypeScript infert den Typ."
+    ],
+    "2": [
+      "Welcher primitive Typ passt zu ganzen Zahlen und Dezimalzahlen?",
+      "const maxVersuche: number = 3"
+    ],
+    "3": [
+      "Es gibt nur zwei Werte fuer diesen Typ: true und false.",
+      "const istEingeloggt: boolean = false"
+    ],
+    "4": [
+      "Der Parameter soll auch null akzeptieren. Welcher Union-Typ erlaubt string ODER null?",
+      "Aendere 'name: string' zu 'name: string | null'. Das ist ein Union-Typ."
+    ],
+    "5": [
+      "Die Variable soll number ODER undefined sein koennen. Welcher Typ erlaubt beides?",
+      "Aendere 'let serverPort: number' zu 'let serverPort: number | undefined' und weise dann undefined zu."
+    ],
+    "6": [
+      "unknown ist sicherer als any — du musst den Typ PRUEFEN bevor du ihn verwendest.",
+      "Aendere 'any' zu 'unknown' und pruefe mit 'typeof wert === \"number\"' bevor du rechnest.",
+      "if (typeof wert === 'number') return wert * 2; else return NaN;"
+    ],
+    "7": [
+      "Aehnlich wie Aufgabe 6: Pruefe erst ob es ein String ist, bevor du .length aufrufst.",
+      "Aendere 'any' zu 'unknown'. Dann: if (typeof wert === 'string') return wert.length; return -1;"
+    ],
+    "8": [
+      "Die Funktion soll entweder eine Person oder undefined zurueckgeben. Wie schreibst du das als Rueckgabetyp?",
+      "Nutze Array.find() — es gibt automatisch T | undefined zurueck. Schreibe den Rueckgabetyp als Person | undefined.",
+      "function findePerson(name: string): Person | undefined { return personen.find(p => p.name === name); }"
+    ],
+    "9": [
+      "void bedeutet: Die Funktion gibt NICHTS zurueck. Verwende console.log fuer die Ausgabe.",
+      "Nutze ein switch oder if/else fuer die drei Level-Werte (1, 2, 3).",
+      "switch(level) { case 1: console.log(`[INFO] ${nachricht}`); break; ... }"
+    ],
+    "10": [
+      "Symbole erstellt man mit Symbol('beschreibung'). Sie sind einzigartige Werte.",
+      "Du kannst ein Symbol als berechneten Property-Key nutzen: { [meinSymbol]: 'wert' }",
+      "const geheimnis = Symbol('geheimnis'); const tresor = { besitzer: 'Max', [geheimnis]: 'TypeScript ist toll' };"
+    ]
+  },
+  "exercises/02-typ-hierarchie.ts": {
+    "1": [
+      "unknown ist der Top Type — ALLES kann unknown zugewiesen werden.",
+      "Alle 7 Zuweisungen in Teil 1 sind gueltig. Kein @ts-expect-error noetig."
+    ],
+    "2": [
+      "Kann man unknown einfach so einer spezifischeren Variable zuweisen?",
+      "unknown kann nur an unknown oder any zugewiesen werden, nicht an string, number, boolean.",
+      "Die ersten drei Zuweisungen (string, number, boolean) brauchen @ts-expect-error."
+    ],
+    "3": [
+      "any bricht alle Regeln — es ist in BEIDE Richtungen kompatibel.",
+      "Alle Zuweisungen in Teil 3 sind gueltig. any ist der 'Escape Hatch' des Typsystems."
+    ],
+    "4": [
+      "never ist der Bottom Type: never kann jedem Typ zugewiesen werden, aber NICHTS kann never zugewiesen werden.",
+      "gibNever() (never) kann an string, number, boolean, etc. zugewiesen werden. Aber number, boolean, null an never? Nein!",
+      "Zeilen 105-107 brauchen @ts-expect-error (number, boolean, null koennen nicht never zugewiesen werden)."
+    ],
+    "5": [
+      "Bei const bekommt eine Variable einen Literal-Typ, bei let den breiteren Typ.",
+      "konstante hat Typ 'hallo' (Literal). variabel hat Typ string. Kann string an 'hallo' zugewiesen werden?",
+      "test3 braucht @ts-expect-error: string ist breiter als 'hallo', diese Zuweisung ist ungueltig."
+    ],
+    "6": [
+      "Mit strictNullChecks sind null und undefined eigene Typen, die nicht automatisch zuweisbar sind.",
+      "str (string) kann WEDER null noch undefined erhalten. nullable (string | null) kann null aber nicht undefined erhalten.",
+      "Fuege @ts-expect-error ein bei: str = null, str = undefined, nullable = undefined, optional = null."
+    ]
+  },
+  "exercises/03-type-narrowing-challenge.ts": {
+    "1": [
+      "Verwende typeof um den Typ eines unknown-Werts zu pruefen: typeof wert === 'string', typeof wert === 'number', etc.",
+      "Fuer null pruefe mit wert === null, fuer undefined mit wert === undefined. Achte auf die Reihenfolge!",
+      "Pruefe null und undefined VOR typeof, da typeof null === 'object' ist."
+    ],
+    "2": [
+      "Ein Type Guard ist eine Funktion die 'value is Typ' zurueckgibt. Du musst jede Property einzeln pruefen.",
+      "Pruefe: typeof daten === 'object' && daten !== null && 'name' in daten && typeof (daten as any).name === 'string' ...",
+      "Oder sicherer: Caste nach der 'in'-Pruefung. Pruefe name (string), preis (number), aufLager (boolean)."
+    ],
+    "3": [
+      "Pruefe beide Parameter mit typeof. Beide muessen den GLEICHEN Typ haben.",
+      "if (typeof a === 'number' && typeof b === 'number') return a + b; — analog fuer string und bigint."
+    ],
+    "4": [
+      "JSON.parse wirft bei ungueltigem JSON einen Error. Fange ihn mit try/catch.",
+      "try { return JSON.parse(text) as unknown; } catch { return null; } — das 'as unknown' verhindert 'any'."
+    ],
+    "5": [
+      "Pruefe zuerst ob antwort ein Objekt ist, dann ob 'status' existiert, dann den status-Wert.",
+      "Nutze typeof und 'in' Operator: typeof antwort === 'object' && antwort !== null && 'status' in antwort.",
+      "Pruefe dann den status-Wert mit einer Hilfsvariable und verschachtelten if-Abfragen."
+    ]
+  },
+  "exercises/04-praxis-szenarien.ts": {
+    "1": [
+      "let erzeugt den breiten Typ 'string'. const erzeugt den Literal-Typ 'dark'. applyTheme erwartet den Literal-Typ.",
+      "Loesung 1: const userTheme = 'dark'; — Loesung 2: let userTheme = 'dark' as const; — Loesung 3: let userTheme: Theme = 'dark';"
+    ],
+    "2": [
+      "Gleitkomma-Probleme vermeidest du, indem du in Cent (ganzzahlig) rechnest.",
+      "Math.round(preis * 100) konvertiert Euro zu Cent. Am Ende durch 100 teilen und mit .toFixed(2) formatieren.",
+      "const centGesamt = artikel.reduce((sum, a) => sum + Math.round(a.preis * 100) * a.menge, 0); return (centGesamt / 100).toFixed(2);"
+    ],
+    "3": [
+      "Erstelle zuerst das ApiUser-Interface, dann einen Type Guard mit typeof-Pruefungen fuer jede Property.",
+      "Die Funktion verarbeiteApiAntwort muss pruefen ob der Input ein Array ist (Array.isArray) und dann jedes Element pruefen.",
+      "Filtere mit .filter(istApiUser) und dann .filter(u => u.role === 'admin').map(u => u.name)."
+    ],
+    "4": [
+      "as const macht ein Array readonly und gibt jedem Element seinen Literal-Typ.",
+      "type HttpMethod = typeof HTTP_METHODS[number] — das liest den Union-Typ aus den Array-Elementen.",
+      "Der Type Guard nutzt: (HTTP_METHODS as readonly string[]).includes(method)"
+    ],
+    "5": [
+      "Optionale Properties kennzeichnest du mit '?'. Pflichtfelder ohne '?'.",
+      "Bei der Pruefung: port koennte 0 sein! 0 ist falsy, daher verwende ?? statt ||.",
+      "Pruefe Pflichtfelder mit !== undefined (nicht mit !): if (input.appName !== undefined && input.port !== undefined && ...)"
+    ]
+  }
+}

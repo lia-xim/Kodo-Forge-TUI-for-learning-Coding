@@ -21,6 +21,7 @@ import {
   COURSES_ROOT, PROJECT_ROOT,
   getDueReviewCount, getReviewStreak, getRecentActivityValues,
   SESSION_START, sessionStats,
+  switchLocale, getLocale, type Locale,
 } from "./tui-state.ts";
 import { progressBar as fineProgressBar, sparkline } from "./visual-utils.ts";
 import type { ParsedKey, PlatformCourse, Screen } from "./tui-types.ts";
@@ -505,10 +506,12 @@ export function renderPlatformScreen(): void {
 
   // ─── Footer ───
   const navKey = mode === "grid-2x2" ? "↑↓←→" : "↑↓";
+  const langLabel = `${t("language.label")}: ${getLocale() === "de" ? "DE" : "EN"}`;
   const footerHints: FooterHint[] = [
     { key: navKey, label: t("platform.selectCourse") },
     { key: "Enter", label: t("platform.open"), primary: true },
     { key: "I", label: t("platform.info") },
+    { key: "L", label: langLabel },
     { key: "?", label: t("platform.help") },
     { key: "Q", label: t("platform.quit") },
   ];
@@ -642,6 +645,14 @@ export function handlePlatformInput(key: ParsedKey): void {
     }
 
     openCourseFromPlatform(course);
+    return;
+  }
+
+  // Language toggle: DE ↔ EN
+  if (key.name === "l") {
+    const next: Locale = getLocale() === "de" ? "en" : "de";
+    switchLocale(next);
+    renderPlatformScreen();
     return;
   }
 

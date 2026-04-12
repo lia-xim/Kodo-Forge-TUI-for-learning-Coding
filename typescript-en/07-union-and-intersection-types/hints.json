@@ -1,0 +1,60 @@
+{
+  "exercises/01-union-basics.ts": {
+    "1": [
+      "Ein Union Type erlaubt nur gemeinsame Operationen. Du musst erst narrowen.",
+      "Verwende typeof oder instanceof um den Typ zu pruefen, dann sind die spezifischen Methoden verfuegbar."
+    ],
+    "2": [
+      "Literal Unions sind praeziser als string — nur die angegebenen Werte sind erlaubt.",
+      "type Direction = 'north' | 'south' | 'east' | 'west'; — bietet Autocomplete und Typsicherheit."
+    ],
+    "3": [
+      "Der | Operator kann auch bei Interfaces/Objekten verwendet werden.",
+      "type Result = SuccessResult | ErrorResult; — jedes Mitglied ist ein eigener Objekttyp."
+    ],
+    "4": [
+      "null und undefined koennen Teil eines Union sein: string | null | undefined.",
+      "Das ist die Grundlage fuer nullable Types in TypeScript."
+    ]
+  },
+  "exercises/02-type-narrowing.ts": {
+    "1": [
+      "typeof prueft Primitive: 'string', 'number', 'boolean', 'object', 'undefined'.",
+      "Nach typeof x === 'string' weiss TypeScript dass x ein string ist."
+    ],
+    "2": [
+      "instanceof prueft Klassen: if (x instanceof Date) — x ist Date.",
+      "Funktioniert nicht fuer Interfaces (die existieren nicht zur Laufzeit)."
+    ],
+    "3": [
+      "Der in-Operator prueft ob eine Property existiert: 'email' in user.",
+      "Verengt auf das Union-Mitglied das die Property hat."
+    ],
+    "4": [
+      "Truthiness-Check filtert null, undefined, '', 0, false, NaN.",
+      "if (name) verengt auf den nicht-falsy-Typ."
+    ],
+    "5": [
+      "Ab TS 5.5: filter(x => x !== null) erkennt TypeScript automatisch als Type Guard.",
+      "Kein expliziter Type Guard mehr noetig — Inferred Type Predicates."
+    ]
+  },
+  "exercises/03-discriminated-unions.ts": {
+    "1": [
+      "Eine Discriminated Union braucht eine gemeinsame Tag-Property mit Literal-Typen.",
+      "type Shape = { type: 'circle'; ... } | { type: 'rect'; ... }; — 'type' ist der Diskriminator."
+    ],
+    "2": [
+      "switch auf der Tag-Property verengt automatisch auf das richtige Mitglied.",
+      "case 'circle': shape.radius ist zugreifbar — TypeScript weiss den genauen Typ."
+    ],
+    "3": [
+      "Der Exhaustive Check im default: const _: never = shape; erzwingt Vollstaendigkeit.",
+      "Wenn ein neues Mitglied hinzukommt, ist shape nicht mehr never — Compile-Error."
+    ],
+    "4": [
+      "Das Result-Pattern: { success: true; data: T } | { success: false; error: string }.",
+      "success als Diskriminator bestimmt ob data oder error zugreifbar ist."
+    ]
+  }
+}

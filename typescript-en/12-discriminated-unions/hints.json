@@ -1,0 +1,84 @@
+{
+  "exercises/01-tagged-unions.ts": {
+    "1": [
+      "Jeder Typ braucht ein gemeinsames Tag-Property mit eindeutigem Literal-Wert.",
+      "type Circle = { kind: 'circle'; radius: number }; — 'kind' ist der Diskriminator."
+    ],
+    "2": [
+      "Number Literals funktionieren genauso wie String Literals als Diskriminator.",
+      "switch(result.statusCode) { case 200: ... case 404: ... } narrowt den Typ."
+    ],
+    "3": [
+      "Boolean Literal Diskriminatoren passen natuerlich zu if/else.",
+      "if (result.success) { result.value } else { result.error }"
+    ],
+    "4": [
+      "Jede Variante hat andere Properties — passend zum channel.",
+      "switch(notification.channel) { case 'email': ... case 'sms': ... }"
+    ]
+  },
+  "exercises/02-exhaustive-check.ts": {
+    "1": [
+      "assertNever nimmt never und wirft immer einen Error.",
+      "function assertNever(value: never): never { throw new Error(...); }"
+    ],
+    "2": [
+      "switch/case mit assertNever im default-Branch.",
+      "Wenn eine neue Farbe hinzukommt, zeigt der Compiler einen Error."
+    ],
+    "3": [
+      "Early Return: if (state.status === 'x') return 'Nachricht';",
+      "TypeScript narrowt durch Elimination — nach jedem return bleiben weniger Varianten."
+    ],
+    "4": [
+      "Fall-Through bei switch: case 'monday': case 'tuesday': ... return 8;",
+      "Der explizite Return-Typ ': number' erzwingt Vollstaendigkeit."
+    ]
+  },
+  "exercises/03-option-result.ts": {
+    "1": [
+      "Option<T> = { tag: 'some'; value: T } | { tag: 'none' }",
+      "unwrapOr prueft den Tag und gibt value oder den Default zurueck."
+    ],
+    "2": [
+      "safeParseInt: isNaN(parseInt(input)) ? none() : some(parseInt(input))",
+      "safeDivide: b === 0 ? none() : some(a / b)"
+    ],
+    "3": [
+      "Result<T, E> = { ok: true; value: T } | { ok: false; error: E }",
+      "ok() und err() sind Konstruktor-Funktionen fuer die Varianten."
+    ],
+    "4": [
+      "Pruefe die Bedingungen der Reihe nach: leer, kein @, keine Domain.",
+      "switch(error.kind) fuer formatEmailError."
+    ]
+  },
+  "exercises/04-state-modeling.ts": {
+    "1": [
+      "Vier Zustaende: idle, loading, error (mit error-Property), success (mit data-Property).",
+      "switch(state.status) { case 'idle': ... case 'loading': ... }"
+    ],
+    "2": [
+      "PlayerState: stopped (keine Extras), playing/paused (track + position), buffering (track + progress).",
+      "State-Transitions mit Extract: play nimmt nur stopped/paused, pause nur playing."
+    ],
+    "3": [
+      "mapAsyncState: Nur im success-Fall transformieren, sonst unveraendert zurueckgeben.",
+      "if (state.status === 'success') return { status: 'success', data: fn(state.data) }; return state;"
+    ]
+  },
+  "exercises/05-praxis-patterns.ts": {
+    "1": [
+      "switch(response.type) fuer alle vier Varianten.",
+      "Bei success: response.data ist verfuegbar. Bei error: response.code und response.message."
+    ],
+    "2": [
+      "Reducer: switch(action.type) und fuer jeden Fall den neuen State zurueckgeben.",
+      "INCREMENT: count + 1, ADD: count + action.payload.amount, RESET: 0, SET: action.payload.value"
+    ],
+    "3": [
+      "Extract<AppError, { kind: 'network' }> | Extract<AppError, { kind: 'timeout' }> fuer RetryableError.",
+      "shouldRetry: network nur wenn retryable, timeout immer, auth/validation nie."
+    ]
+  }
+}

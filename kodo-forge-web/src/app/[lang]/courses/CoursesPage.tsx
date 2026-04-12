@@ -15,7 +15,15 @@ const fadeUp = {
   }),
 };
 
-export default function CoursesPage() {
+interface CoursesPageProps {
+  dict: Record<string, any>;
+  lang: string;
+}
+
+export default function CoursesPage({ dict, lang }: CoursesPageProps) {
+  const t = dict.coursesPage;
+  const cd = dict.coursesData;
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-20">
       {/* Header */}
@@ -24,11 +32,10 @@ export default function CoursesPage() {
           className="text-4xl sm:text-5xl font-bold text-white mb-4"
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
         >
-          Course <span className="text-[#FFB000]">Catalog</span>
+          {t.title}<span className="text-[#FFB000]">{t.titleHighlight}</span>
         </h1>
         <p className="text-zinc-400 max-w-2xl text-lg">
-          A structured learning path from TypeScript fundamentals to full-stack framework mastery.
-          Each course is designed for the terminal — no browser needed.
+          {t.subtitle}
         </p>
       </motion.div>
 
@@ -40,13 +47,13 @@ export default function CoursesPage() {
         className="mb-20"
       >
         <h2 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">
-          Recommended Learning Path
+          {t.learningPath}
         </h2>
         <div className="flex flex-wrap items-center gap-3">
           {courses.map((c, i) => (
             <div key={c.id} className="flex items-center gap-3">
               <Link
-                href={`/courses/${c.slug}`}
+                href={`/${lang}/courses/${c.slug}`}
                 className="px-4 py-2 rounded retro-glass text-sm font-bold transition-all hover:shadow-lg"
                 style={{
                   color: c.color,
@@ -74,7 +81,7 @@ export default function CoursesPage() {
             custom={i}
             variants={fadeUp}
           >
-            <Link href={`/courses/${course.slug}`}>
+            <Link href={`/${lang}/courses/${course.slug}`}>
               <div className="retro-glass retro-glass-hover rounded-lg overflow-hidden grid grid-cols-1 lg:grid-cols-[300px_1fr] group cursor-pointer">
                 {/* Image */}
                 <div className="relative h-60 lg:h-full overflow-hidden">
@@ -99,26 +106,26 @@ export default function CoursesPage() {
                     </h3>
                     {course.status === "active" && (
                       <span className="px-2 py-0.5 bg-green-500/20 border border-green-500/30 rounded text-[10px] text-green-400 font-bold uppercase">
-                        Active
+                        {t.active}
                       </span>
                     )}
                     {course.status === "planned" && (
                       <span className="px-2 py-0.5 bg-zinc-500/20 border border-zinc-500/30 rounded text-[10px] text-zinc-400 font-bold uppercase">
-                        Coming Soon
+                        {t.comingSoon}
                       </span>
                     )}
                   </div>
 
                   <p className="text-zinc-400 text-sm leading-relaxed mb-5 max-w-lg">
-                    {course.description}
+                    {cd[course.id]?.description ?? course.description}
                   </p>
 
                   <div className="flex items-center gap-6 text-sm text-zinc-500 mb-5">
                     <span className="flex items-center gap-1.5">
-                      <BookOpen size={14} /> {course.totalLessons} Lessons
+                      <BookOpen size={14} /> {course.totalLessons} {dict.common.lessons}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Layers size={14} /> {course.totalSections} Sections
+                      <Layers size={14} /> {course.totalSections} {dict.common.sections}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Clock size={14} /> {course.estimatedHours}h
@@ -138,7 +145,7 @@ export default function CoursesPage() {
 
                   {course.prerequisite && (
                     <p className="text-xs text-zinc-600">
-                      Prerequisite:{" "}
+                      {dict.coursesPage.prerequisite}:{" "}
                       <span className="text-zinc-400">
                         {courses.find((c) => c.id === course.prerequisite)?.name}
                       </span>

@@ -18,6 +18,7 @@ import { openSection } from "./tui-section-reader.ts";
 import { theme, marker as themeMarker } from "./tui-theme.ts";
 import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
 import { getSpinner } from "./tui-animation.ts";
+import { t } from "./i18n.ts";
 
 function performSearch(query: string): SearchResult[] {
   if (!query || query.length < 2) return [];
@@ -59,20 +60,20 @@ export function renderSearchScreen(): void {
   const w = W();
   const h = H();
 
-  const t = theme;
-  lines.push(renderHeaderBar(" Suche", `[Esc] Abbrechen `, w));
+  const th = theme;
+  lines.push(renderHeaderBar(` ${t("search.title")}`, `[Esc] ${t("search.cancel")} `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
-  const queryDisplay = screen.query + `${t.fg.accent}\u2588${t.mod.reset}`;
-  lines.push(bLine(`  ${t.mod.bold}Suchbegriff:${t.mod.reset} ${t.fg.info}${queryDisplay}${t.mod.reset}`, w));
+  const queryDisplay = screen.query + `${th.fg.accent}\u2588${th.mod.reset}`;
+  lines.push(bLine(`  ${th.mod.bold}${t("search.query")}${th.mod.reset} ${th.fg.info}${queryDisplay}${th.mod.reset}`, w));
   lines.push(bEmpty(w));
 
   if (screen.query.length < 2) {
-    lines.push(bLine(`  ${t.fg.muted}Mindestens 2 Zeichen eingeben...${t.mod.reset}`, w));
+    lines.push(bLine(`  ${th.fg.muted}${t("search.minChars")}${th.mod.reset}`, w));
   } else if (screen.results.length === 0) {
-    lines.push(bLine(`  ${t.fg.muted}Keine Treffer gefunden.${t.mod.reset}`, w));
+    lines.push(bLine(`  ${th.fg.muted}${t("search.noResults")}${th.mod.reset}`, w));
   } else {
-    lines.push(bLine(`  ${t.mod.bold}Ergebnisse (${screen.results.length} Treffer):${t.mod.reset}`, w));
+    lines.push(bLine(`  ${th.mod.bold}${t("search.results", { count: String(screen.results.length) })}${th.mod.reset}`, w));
     lines.push(bEmpty(w));
 
     const resultAreaHeight = h - 12;
@@ -84,8 +85,8 @@ export function renderSearchScreen(): void {
       const isSelected = i === screen.selectedResult;
       const mk = themeMarker(isSelected);
       const title = `L${result.lessonNumber} S${result.sectionNumber}: ${truncate(result.sectionTitle, w - 20)}`;
-      lines.push(bLine(`  ${mk}${isSelected ? t.mod.bold : ""}${title}${t.mod.reset}`, w));
-      lines.push(bLine(`    ${t.fg.secondary}"...${truncate(result.contextLine, w - 12)}..."${t.mod.reset}`, w));
+      lines.push(bLine(`  ${mk}${isSelected ? th.mod.bold : ""}${title}${th.mod.reset}`, w));
+      lines.push(bLine(`    ${th.fg.secondary}"...${truncate(result.contextLine, w - 12)}..."${th.mod.reset}`, w));
       lines.push(bEmpty(w));
     }
   }
@@ -93,9 +94,9 @@ export function renderSearchScreen(): void {
   const footerStart = h - 3;
   while (lines.length < footerStart) { lines.push(bEmpty(w)); }
   const footerHints: FooterHint[] = [
-    { key: "↑↓", label: "Navigieren" },
-    { key: "Enter", label: "Öffnen", primary: true },
-    { key: "Esc", label: "Zurück" },
+    { key: "↑↓", label: t("search.navigate") },
+    { key: "Enter", label: t("search.open"), primary: true },
+    { key: "Esc", label: t("search.back") },
   ];
   lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);

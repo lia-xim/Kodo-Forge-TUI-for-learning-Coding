@@ -16,22 +16,23 @@ import { openSection, openCheatsheet } from "./tui-section-reader.ts";
 import { redraw } from "./tui-redraw.ts";
 import { theme, marker as themeMarker } from "./tui-theme.ts";
 import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
+import { t } from "./i18n.ts";
 
 function getHistoryLabel(screen: Screen): string {
   switch (screen.type) {
-    case "main": return "Hauptmenue";
-    case "lesson": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > Lektionsmenue`; }
-    case "section": { const l = lessons[screen.lessonIndex]; const sec = l?.sections[screen.sectionIndex]; return `L${l?.number ?? "?"} > Sektion ${screen.sectionIndex + 1}: ${sec?.title ?? "?"}`; }
-    case "cheatsheet": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > Cheatsheet`; }
-    case "pretest": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > Pre-Test`; }
-    case "warmup": return "Warm-Up";
-    case "misconceptions": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > Misconceptions`; }
-    case "exercisemenu": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > Exercises`; }
-    case "interleaved": return "Interleaved Review";
-    case "search": return "Suche";
-    case "bookmarks": return "Lesezeichen";
-    case "competence": return "Kompetenzen";
-    case "stats": return "Statistiken";
+    case "main": return t("history.mainMenu");
+    case "lesson": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > ${t("history.lessonMenu")}`; }
+    case "section": { const l = lessons[screen.lessonIndex]; const sec = l?.sections[screen.sectionIndex]; return `L${l?.number ?? "?"} > ${t("history.section")} ${screen.sectionIndex + 1}: ${sec?.title ?? "?"}`; }
+    case "cheatsheet": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > ${t("history.cheatsheet")}`; }
+    case "pretest": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > ${t("history.pretest")}`; }
+    case "warmup": return t("history.warmup");
+    case "misconceptions": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > ${t("history.misconceptions")}`; }
+    case "exercisemenu": { const l = lessons[screen.lessonIndex]; return `L${l?.number ?? "?"} > ${t("history.exercises")}`; }
+    case "interleaved": return t("history.interleavedReview");
+    case "search": return t("history.search");
+    case "bookmarks": return t("history.bookmarks");
+    case "competence": return t("history.competence");
+    case "stats": return t("history.stats");
     default: return screen.type;
   }
 }
@@ -42,15 +43,15 @@ export function renderHistoryScreen(): void {
   const w = W();
   const h = H();
 
-  const t = theme;
+  const th = theme;
   const timerStr = formatSessionTime();
-  lines.push(renderHeaderBar(` Letzte Stellen`, `\u23F1 ${timerStr} `, w));
+  lines.push(renderHeaderBar(` ${t("history.title")}`, `\u23F1 ${timerStr} `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
   const screen = currentScreen as Extract<Screen, { type: "history" }>;
 
   if (navigationHistory.length === 0) {
-    lines.push(bLine(`  ${t.fg.muted}Noch keine Navigation aufgezeichnet.${t.mod.reset}`, w));
+    lines.push(bLine(`  ${th.fg.muted}${t("history.noEntries")}${th.mod.reset}`, w));
   } else {
     const reversed = [...navigationHistory].reverse();
     for (let i = 0; i < reversed.length; i++) {
@@ -58,8 +59,8 @@ export function renderHistoryScreen(): void {
       const isSelected = i === screen.selectedIndex;
       const mk = themeMarker(isSelected);
       const label = getHistoryLabel(entry);
-      const style = isSelected ? t.mod.bold : "";
-      lines.push(bLine(`  ${mk}${style}${truncate(label, w - 8)}${t.mod.reset}`, w));
+      const style = isSelected ? th.mod.bold : "";
+      lines.push(bLine(`  ${mk}${style}${truncate(label, w - 8)}${th.mod.reset}`, w));
     }
   }
 
@@ -67,9 +68,9 @@ export function renderHistoryScreen(): void {
   const footerStart = h - 3;
   while (lines.length < footerStart) lines.push(bEmpty(w));
   const footerHints: FooterHint[] = [
-    { key: "↑↓", label: "Navigieren" },
-    { key: "Enter", label: "Öffnen", primary: true },
-    { key: "Esc", label: "Zurück" },
+    { key: "↑↓", label: t("history.navigate") },
+    { key: "Enter", label: t("history.open"), primary: true },
+    { key: "Esc", label: t("history.back") },
   ];
   lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);

@@ -182,9 +182,171 @@
   },
   "common": {
     "lessons": "Lektionen",
+    "sections": "Sektionen",
     "content": "Inhalt",
     "phases": "Phasen",
+    "hours": "Stunden",
     "availableNow": "Jetzt verfügbar",
     "comingSoon": "Demnächst"
+  },
+  "coursesPage": {
+    "title": "Kurs",
+    "titleHighlight": "katalog",
+    "subtitle": "Ein strukturierter Lernpfad von TypeScript-Grundlagen bis zur Full-Stack-Framework-Meisterschaft. Jeder Kurs ist für das Terminal konzipiert — kein Browser nötig.",
+    "learningPath": "Empfohlener Lernpfad",
+    "active": "Aktiv",
+    "comingSoon": "Demnächst",
+    "prerequisite": "Voraussetzung",
+    "metaTitle": "Kurse — Terminal-Lernplattform",
+    "metaDescription": "Alle verfügbaren Kodo Forge Terminal-Kurse entdecken: TypeScript Deep Learning, Angular Mastery, React mit TypeScript und Next.js Production."
+  },
+  "courseDetail": {
+    "allCourses": "Alle Kurse",
+    "availableNow": "Jetzt verfügbar — Kostenlos starten",
+    "comingSoon": "Demnächst",
+    "requires": "Voraussetzung",
+    "startFree": "Diesen Kurs kostenlos starten",
+    "aboutCourse": "Über diesen Kurs",
+    "targetAudience": "Für wen ist dieser Kurs?",
+    "whatYouLearn": "Was du nach diesem Kurs kannst",
+    "didacticConcept": "Didaktisches Konzept",
+    "didacticDesc": "Dieser Kurs nutzt moderne, wissenschaftlich fundierte Lernmethoden. Jede Lektion ist so aufgebaut, dass du nicht nur liest, sondern wirklich verstehst und behältst.",
+    "coveredTopics": "Behandelte Themen",
+    "fullCurriculum": "Vollständiges Curriculum",
+    "curriculumMeta": "{lessons} Lektionen in {phases} Phasen · {sections} Sektionen · ~{hours}h Inhalt",
+    "readyToStart": "Bereit, ",
+    "readyToStart2": " zu starten?",
+    "downloadCta": "Lade Kodo Forge herunter und starte deine Lernreise. Kostenlos, offline, ohne Anmeldung.",
+    "downloadFree": "Kostenlos herunterladen",
+    "metaTitle": "{courseName} — Terminal-Kurs",
+    "metaDescription": "{description} {lessons} Lektionen, {hours} Stunden Inhalt."
+  },
+  "downloadPage": {
+    "title": "Download ",
+    "titleHighlight": "Kodo Forge",
+    "subtitle": "Eine Datei. Keine Abhängigkeiten. Doppelklicken und loslernen.",
+    "buildFromSource": "Aus Quellcode kompilieren",
+    "buildDesc": "Für Entwickler, die beitragen, anpassen oder einfach unter die Haube schauen möchten.",
+    "noInstall": "Kein Installationsassistent",
+    "noInstallDesc": "Keine Admin-Rechte nötig. Einfach die Datei irgendwo ablegen und ausführen.",
+    "portable": "Vollständig portabel",
+    "portableDesc": "Läuft vom USB-Stick. Dein Fortschritt reist mit dir.",
+    "instantBoot": "Sofortiger Start",
+    "instantBootDesc": "Startet in unter 200 ms. Keine Splash-Screens, keine Ladebalken.",
+    "needHelp": "Brauchst du Hilfe beim Einstieg?",
+    "readDocs": "Zur Dokumentation →",
+    "metaTitle": "Download Kodo Forge",
+    "metaDescription": "Kodo Forge für Windows, macOS oder Linux herunterladen. Eine einzige ausführbare Datei ohne Abhängigkeiten — keine Installation nötig."
+  },
+  "docsPage": {
+    "title": "Doku",
+    "titleHighlight": "mentation",
+    "subtitle": "Alles, was du über Kodo Forge wissen musst — vom Einstieg bis zur Erstellung eigener Terminal-Kurse.",
+    "onThisPage": "Auf dieser Seite",
+    "openSourceTitle": "Kodo Forge ist Open Source",
+    "openSourceDesc": "Von Entwicklern, für Entwickler. Beitragen, forken oder einfach den Code studieren. Die gesamte Engine ist in sauberem, gut dokumentiertem TypeScript geschrieben.",
+    "viewOnGithub": "Auf GitHub ansehen",
+    "downloadFree": "Kostenlos herunterladen",
+    "sectionTitles": {
+      "what-is-kodo-forge": "Was ist Kodo Forge?",
+      "how-it-works": "Wie es funktioniert",
+      "kinetic-reader": "Der Kinetische Reader",
+      "spaced-repetition": "Spaced-Repetition-System",
+      "open-source": "Open-Source-Philosophie",
+      "installation": "Installation",
+      "create-content": "Eigene Kurse erstellen",
+      "markdown-features": "Markdown-Referenz",
+      "architecture": "Engine-Architektur"
+    },
+    "metaTitle": "Dokumentation",
+    "metaDescription": "Erfahre, wie Kodo Forge funktioniert, wie du es installierst, wie du eigene Terminal-Kurse erstellst, und entdecke die Architektur der abhängigkeitsfreien TUI-Lern-Engine."
+  },
+  "createPage": {
+    "title": "Erstelle deinen eigenen ",
+    "titleHighlight": "Kurs",
+    "subtitle": "Kodo Forge ist nicht nur eine Lernplattform — es ist eine quelloffene, datengetriebene Lese-Engine. Du kannst beeindruckende interaktive Terminal-Kurse erstellen, die nur aus einfachen Markdown-Dateien bestehen.",
+    "howItWorks": "Wie funktioniert es?",
+    "howItWorksP1": "Die Kodo Forge Engine weiß absolut nichts über TypeScript oder React. Sie liest lediglich eine <code>platform.json</code>-Datei und parst die Ordner, die du darin definierst.",
+    "howItWorksP2": "Ein Kurs ist einfach ein Ordner auf deinem Computer. In diesem Ordner erstellst du nummerierte Unterordner für deine Lektionen (z. B. <code>01-foundations/</code>). Darin befinden sich deine Markdown-Dateien.",
+    "howItWorksP3": "Wenn du Kodo Forge startest, kompiliert die Engine dein Markdown in ein hochoptimiertes Terminal-Erlebnis — komplett mit Syntax-Highlighting, annotiertem Code, adaptiven Tiefenmodi und automatisch generierten Quizzes.",
+    "dirStructure": "VERZEICHNISSTRUKTUR",
+    "creatorExperience": "Das Autor-Erlebnis",
+    "writeMarkdown": "Schreiben in Markdown",
+    "writeMarkdownDesc": "Keine proprietären Builder. Schreibe einfach Standard Github Flavored Markdown. Wir unterstützen Code-Blöcke, Fettschrift, Kursiv, Tabellen und Blockzitate.",
+    "terminalNative": "Terminal-natives UI",
+    "terminalNativeDesc": "Kodo Forge parst deine Dateien automatisch in einen schönen TUI-Kontext und verwandelt Blockzitate in Callout-Boxen und Überschriften in semantische Trenner.",
+    "annotatedCode": "Annotierte Code-Blöcke",
+    "annotatedCodeDesc": "Füge `[annotated]` zu deinen Code-Blöcken hinzu, und die Engine teilt die Ansicht, um deine `// Kommentare` als schöne Side-by-Side-Erklärungen anzuzeigen.",
+    "aiTitle": "Der AI Course Creator Skill",
+    "aiDesc": "Wir haben einen deterministischen AI-Workflow entwickelt, der dir hilft, schnell Kurse zu prototypisieren. Gib den Prompt an KI-Tools wie Claude, Gemini oder ChatGPT, und sie generieren vollständige Kodo-Forge-kompatible Verzeichnisstrukturen und Markdown-Dateien für jedes Thema, das du lehren möchtest!",
+    "viewTutorial": "Tutorial ansehen",
+    "getAiWorkflow": "AI-Workflow holen",
+    "metaTitle": "Eigenen Kurs erstellen",
+    "metaDescription": "Lerne, wie du eigene Terminal-Kurse mit Kodo Forge erstellst. Schreibe Markdown, definiere eine Ordnerstruktur, und die Engine rendert ein schönes TUI-Lernerlebnis."
+  },
+  "coursesData": {
+    "typescript": {
+      "tagline": "Von Basics bis Type-Level Programming — 44 Lektionen, 5 Phasen",
+      "description": "Der umfassendste TypeScript-Kurs, den du im Terminal finden wirst. 44 Lektionen, 5 Phasen, von Primitives bis zur Compiler API.",
+      "longDescription": "Dieser Kurs ist kein einfaches Tutorial — es ist ein systematisches, tiefgründiges Lernprogramm, das dich über 5 Phasen und 44 Lektionen vom absoluten TypeScript-Anfänger zum echten Experten bringt.\n\nJede einzelne Lektion folgt unserem bewährten LEARN-Zyklus: Du liest die Theorie mit Diagrammen und Analogien, erkundest lauffähige Code-Beispiele, wendest dein Wissen in Übungen mit steigender Schwierigkeit an, reflektierst dein Verständnis in interaktiven Terminal-Quizzes, und behältst alles über kompakte Cheatsheets.\n\nDas Besondere: Unser Spaced-Repetition-System merkt sich, welche Konzepte du gelernt hast, und erinnert dich genau dann an sie, bevor du sie vergessen würdest. So baust du echtes, langfristiges Wissen auf — keine oberflächliche Tutorial-Erfahrung.\n\nDer Kurs deckt alles ab: von primitiven Typen und Interfaces über Generics, Mapped Types und Conditional Types bis hin zu Decorators, der Compiler API und Type-Level Programming. Phase 5 geht sogar über das Übliche hinaus mit TypeScript Security, RxJS-Integration und fortgeschrittenen Design Patterns.",
+      "targetAudience": [
+        "JavaScript-Entwickler, die TypeScript wirklich verstehen wollen",
+        "Selbstlerner, die einen strukturierten Lernpfad suchen",
+        "Entwickler, die sich auf Angular, React oder Next.js vorbereiten",
+        "Profis, die ihr Type-System-Wissen vertiefen wollen"
+      ],
+      "whatYouLearn": [
+        "Alle primitiven Typen und wann du Annotations vs. Inference verwendest",
+        "Generics: von den Basics bis zu komplexen Higher-Order Types",
+        "Mapped Types, Conditional Types und Template Literal Types meistern",
+        "Discriminated Unions und exhaustive Pattern Matching",
+        "Branded/Nominal Types für type-safe IDs und Opaque Types",
+        "Result<T,E> Patterns für type-safe Error Handling",
+        "Decorators (Legacy & Stage 3) für Metaprogrammierung",
+        "Die Compiler API und AST-Manipulation",
+        "Type-Level Programming — Computing mit dem Type System",
+        "15+ Design Patterns (GoF, SOLID, Builder, State Machine) typsicher implementiert",
+        "TypeScript Security: gefährliche Muster erkennen und vermeiden",
+        "RxJS-Pipelines vollständig typsicher designen"
+      ],
+      "didacticHighlights": [
+        {
+          "title": "Spaced Repetition",
+          "description": "Jedes Konzept wird automatisch in dein Review-System aufgenommen. Der Algorithmus plant Wiederholungen optimal — genau bevor du etwas vergisst."
+        },
+        {
+          "title": "Adaptive Lesetiefe",
+          "description": "Jede Sektion bietet 3 Modi: Kurzfassung, Standard und Vollständig. Du entscheidest, wie tief du eintauchen willst."
+        },
+        {
+          "title": "Interaktive Quizzes",
+          "description": "Am Ende jeder Lektion: Multiple Choice, Code-Lücken und Konzeptfragen direkt im Terminal."
+        },
+        {
+          "title": "Annotierte Code-Blöcke",
+          "description": "Code-Beispiele mit zeilenweisen Annotationen, die erklären, was jede Zeile tut und warum."
+        },
+        {
+          "title": "Review Challenges",
+          "description": "Alle 10 Lektionen: eine Phase-Review, die alles Gelernte kombiniert und dein Verständnis prüft."
+        },
+        {
+          "title": "Mermaid-Diagramme",
+          "description": "Komplexe Zusammenhänge werden als visuelle Diagramme direkt im Terminal dargestellt."
+        }
+      ]
+    },
+    "angular": {
+      "tagline": "Component Architecture, Signals, RxJS & DI",
+      "description": "Lerne Angular von Grund auf — mit Signals, modernem Component Design, Dependency Injection und Testing. Der Kurs setzt TypeScript Phase 2 voraus und bringt dich auf Production-Level."
+    },
+    "react": {
+      "tagline": "Hooks, Patterns, Performance — alles typsicher",
+      "description": "React, aber richtig. Mit TypeScript von Anfang an. Hooks-Typen, Component Patterns, Context, Performance-Optimierung und Testing."
+    },
+    "nextjs": {
+      "tagline": "App Router, Server Components, Deployment",
+      "description": "Das Full-Stack Framework für React. Lerne App Router, Server Components, Caching-Strategien und Production Deployment."
+    }
   }
 }

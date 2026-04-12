@@ -40,7 +40,32 @@ const platforms = [
   },
 ];
 
-export default function DownloadPage() {
+interface DownloadPageProps {
+  dict: Record<string, any>;
+  lang: string;
+}
+
+export default function DownloadPage({ dict, lang }: DownloadPageProps) {
+  const t = dict.downloadPage;
+
+  const trustSignals = [
+    {
+      icon: <Shield size={24} />,
+      title: t.noInstall,
+      desc: t.noInstallDesc,
+    },
+    {
+      icon: <HardDrive size={24} />,
+      title: t.portable,
+      desc: t.portableDesc,
+    },
+    {
+      icon: <Zap size={24} />,
+      title: t.instantBoot,
+      desc: t.instantBootDesc,
+    },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-20">
       {/* Header */}
@@ -49,10 +74,10 @@ export default function DownloadPage() {
           className="text-4xl sm:text-5xl font-bold text-white mb-4"
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
         >
-          Download <span className="text-[#FFB000]">Kodo Forge</span>
+          {t.title}<span className="text-[#FFB000]">{t.titleHighlight}</span>
         </h1>
         <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-          One file. Zero dependencies. Double-click and start learning.
+          {t.subtitle}
         </p>
       </motion.div>
 
@@ -101,11 +126,11 @@ export default function DownloadPage() {
         <div className="flex items-center gap-3 mb-4">
           <Code2 size={20} className="text-[#FFB000]" />
           <h2 className="text-xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Build from Source
+            {t.buildFromSource}
           </h2>
         </div>
         <p className="text-sm text-zinc-400 mb-6">
-          For developers who want to contribute, customize, or just peek under the hood.
+          {t.buildDesc}
         </p>
         <div className="retro-glass rounded-lg p-5 font-mono text-sm space-y-1">
           <p className="text-zinc-500"># Clone the repository</p>
@@ -118,23 +143,7 @@ export default function DownloadPage() {
 
       {/* Trust Signals */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          {
-            icon: <Shield size={24} />,
-            title: "No Install Wizard",
-            desc: "No admin rights needed. Just place the file anywhere and run it.",
-          },
-          {
-            icon: <HardDrive size={24} />,
-            title: "Fully Portable",
-            desc: "Runs from a USB stick. Your progress travels with you.",
-          },
-          {
-            icon: <Zap size={24} />,
-            title: "Instant Boot",
-            desc: "Launches in under 200ms. No splash screens, no loading bars.",
-          },
-        ].map((item, i) => (
+        {trustSignals.map((item, i) => (
           <motion.div
             key={item.title}
             initial="hidden"
@@ -154,9 +163,9 @@ export default function DownloadPage() {
       {/* Docs link */}
       <div className="text-center mt-16">
         <p className="text-sm text-zinc-500">
-          Need help getting started?{" "}
-          <Link href="/docs" className="text-[#FFB000] hover:underline">
-            Read the documentation →
+          {t.needHelp}{" "}
+          <Link href={`/${lang}/docs`} className="text-[#FFB000] hover:underline">
+            {t.readDocs}
           </Link>
         </p>
       </div>

@@ -1,29 +1,44 @@
 import type { Metadata } from "next";
 import { courses, getCourseBySlug } from "@/data/courses";
 import { notFound } from "next/navigation";
+import { getDictionary, hasLocale } from "../../dictionaries";
 import CourseDetailPage from "./CourseDetailPage";
 
-interface Props {
-  params: Promise<{ slug: string }>;
-}
-
 export async function generateStaticParams() {
-  return courses.map((c) => ({ slug: c.slug }));
+  const langs = ["en", "de"];
+  return courses.flatMap((c) => langs.map((lang) => ({ lang, slug: c.slug })));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata(
+  props: PageProps<"/[lang]/courses/[slug]">
+): Promise<Metadata> {
+  const { lang, slug } = await props.params;
+  if (!hasLocale(lang)) return {};
+  const dict = await getDictionary(lang);
   const course = getCourseBySlug(slug);
   if (!course) return {};
+
+  const courseName = course.name;
+  const courseData = (dict.coursesData as Record<string, any>)[course.id];
+  const description = courseData?.description ?? course.description;
+
   return {
-    title: `${course.name} — Terminal Course`,
-    description: `${course.description} ${course.totalLessons} lessons, ${course.estimatedHours} hours of content.`,
+    title: dict.courseDetail.metaTitle
+      .replace("{courseName}", courseName),
+    description: dict.courseDetail.metaDescription
+      .replace("{description}", description)
+      .replace("{lessons}", String(course.totalLessons))
+      .replace("{hours}", String(course.estimatedHours)),
   };
 }
 
-export default async function Page({ params }: Props) {
-  const { slug } = await params;
+export default async function Page(
+  props: PageProps<"/[lang]/courses/[slug]">
+) {
+  const { lang, slug } = await props.params;
+  if (!hasLocale(lang)) notFound();
+  const dict = await getDictionary(lang);
   const course = getCourseBySlug(slug);
   if (!course) notFound();
-  return <CourseDetailPage course={course} />;
+  return <CourseDetailPage course={course} dict={dict} lang={lang} />;
 }

@@ -32,6 +32,7 @@ import { renderCompletionProblem } from "./tui-challenges.ts";
 import { registerAnimation, hasAnimation, ensureMenuBlink } from "./tui-animation.ts";
 import { theme, marker as themeMarker } from "./tui-theme.ts";
 import { renderFooterBar, renderHeaderBar, type FooterHint } from "./tui-components.ts";
+import { t } from "./i18n.ts";
 
 export function renderLessonMenu(lessonIndex: number): void {
   updateTermSize();
@@ -49,7 +50,7 @@ export function renderLessonMenu(lessonIndex: number): void {
   const w = W();
   const h = H();
 
-  const t = theme;
+  const th = theme;
   const timerStr = formatSessionTime();
   const lessonBarW = Math.max(6, Math.floor(w * 0.12));
   const lessonBar = fineProgressBar(lpct, lessonBarW);
@@ -70,8 +71,8 @@ export function renderLessonMenu(lessonIndex: number): void {
   const leftLines: string[] = [];
   const rightLines: string[] = [];
 
-  leftLines.push(padR(`${t.mod.bold}${t.fg.info} Sektionen${t.mod.reset}`, leftColW));
-  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
+  leftLines.push(padR(`${th.mod.bold}${th.fg.info} ${t("lessonMenu.sections")}${th.mod.reset}`, leftColW));
+  leftLines.push(`${th.border.default} ${"─".repeat(leftColW - 1)}${th.mod.reset}`);
 
   for (let s = 0; s < lesson.sections.length; s++) {
     const section = lesson.sections[s];
@@ -81,17 +82,17 @@ export function renderLessonMenu(lessonIndex: number): void {
 
     let statusIc: string;
     if (status === "completed") {
-      statusIc = `${t.fg.success}✓${t.mod.reset}`;
+      statusIc = `${th.fg.success}✓${th.mod.reset}`;
     } else if (status === "in_progress") {
-      statusIc = `${t.fg.accent}▶${t.mod.reset}`;
+      statusIc = `${th.fg.accent}▶${th.mod.reset}`;
     } else {
-      statusIc = `${t.fg.muted}○${t.mod.reset}`;
+      statusIc = `${th.fg.muted}○${th.mod.reset}`;
     }
 
     let readTime = "";
     try {
       const content = fs.readFileSync(section.filePath, "utf-8");
-      readTime = `${t.fg.muted}~${estimateReadTime(content)}m${t.mod.reset}`;
+      readTime = `${th.fg.muted}~${estimateReadTime(content)}m${th.mod.reset}`;
     } catch {
       // ignorieren
     }
@@ -105,34 +106,34 @@ export function renderLessonMenu(lessonIndex: number): void {
   }
 
   leftLines.push(" ".repeat(leftColW));
-  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
-  leftLines.push(padR(`${t.mod.bold}${t.fg.heading} Praxis${t.mod.reset}`, leftColW));
-  leftLines.push(`${t.border.default} ${"─".repeat(leftColW - 1)}${t.mod.reset}`);
+  leftLines.push(`${th.border.default} ${"─".repeat(leftColW - 1)}${th.mod.reset}`);
+  leftLines.push(padR(`${th.mod.bold}${th.fg.heading} ${t("lessonMenu.practice")}${th.mod.reset}`, leftColW));
+  leftLines.push(`${th.border.default} ${"─".repeat(leftColW - 1)}${th.mod.reset}`);
 
   const exProgress = countExerciseProgress(lesson);
   const exText =
     exProgress.total > 0
-      ? `${exProgress.solved}/${exProgress.total} geloest`
-      : `${t.fg.muted}keine${t.mod.reset}`;
+      ? t("lessonMenu.solved", { solved: String(exProgress.solved), total: String(exProgress.total) })
+      : `${th.fg.muted}${t("lessonMenu.none")}${th.mod.reset}`;
   const exSelected = selectedIdx === lesson.sections.length;
   const exMk = themeMarker(exSelected);
-  leftLines.push(padR(`${exMk}${t.mod.bold}[E]${t.mod.reset} Exercises     ${exText}`, leftColW));
+  leftLines.push(padR(`${exMk}${th.mod.bold}[E]${th.mod.reset} Exercises     ${exText}`, leftColW));
 
   if (lesson.hasQuiz) {
     const quizData = progress.quizzes[lesson.number];
     const quizText = quizData
-      ? `Bestes: ${Math.round((quizData.score / quizData.total) * 100)}%`
-      : `${t.fg.muted}noch offen${t.mod.reset}`;
+      ? t("lessonMenu.quizBest", { pct: String(Math.round((quizData.score / quizData.total) * 100)) })
+      : `${th.fg.muted}${t("lessonMenu.quizOpen")}${th.mod.reset}`;
     const qSelected = selectedIdx === lesson.sections.length + 1;
     const qMk = themeMarker(qSelected);
-    leftLines.push(padR(`${qMk}${t.mod.bold}[Z]${t.mod.reset} Quiz          ${quizText}`, leftColW));
+    leftLines.push(padR(`${qMk}${th.mod.bold}[Z]${th.mod.reset} Quiz          ${quizText}`, leftColW));
   }
 
   if (lesson.hasHints) {
     const hIdx = lesson.sections.length + (lesson.hasQuiz ? 2 : 1);
     const hSelected = selectedIdx === hIdx;
     const hMk = themeMarker(hSelected);
-    leftLines.push(padR(`${hMk}${t.mod.bold}[H]${t.mod.reset} Hints`, leftColW));
+    leftLines.push(padR(`${hMk}${th.mod.bold}[H]${th.mod.reset} Hints`, leftColW));
   }
 
   const hasMisconceptions = fs.existsSync(
@@ -145,7 +146,7 @@ export function renderLessonMenu(lessonIndex: number): void {
       (lesson.hasHints ? 1 : 0);
     const mSelected = selectedIdx === mIdx;
     const mMk = themeMarker(mSelected);
-    leftLines.push(padR(`${mMk}${t.mod.bold}[G]${t.mod.reset} Misconceptions`, leftColW));
+    leftLines.push(padR(`${mMk}${th.mod.bold}[G]${th.mod.reset} Misconceptions`, leftColW));
   }
 
   if (lesson.hasCheatsheet) {
@@ -156,7 +157,7 @@ export function renderLessonMenu(lessonIndex: number): void {
       (hasMisconceptions ? 1 : 0);
     const cSelected = selectedIdx === cIdx;
     const cMk = themeMarker(cSelected);
-    leftLines.push(padR(`${cMk}${t.mod.bold}[C]${t.mod.reset} Cheatsheet`, leftColW));
+    leftLines.push(padR(`${cMk}${th.mod.bold}[C]${th.mod.reset} Cheatsheet`, leftColW));
   }
 
   const minLeft = Math.max(leftLines.length, 14);
@@ -164,8 +165,8 @@ export function renderLessonMenu(lessonIndex: number): void {
     leftLines.push(" ".repeat(leftColW));
   }
 
-  rightLines.push(`${t.mod.bold}${t.fg.info} Vorschau${t.mod.reset}`);
-  rightLines.push(`${t.border.default} ${"─".repeat(rightColW - 1)}${t.mod.reset}`);
+  rightLines.push(`${th.mod.bold}${th.fg.info} ${t("lessonMenu.preview")}${th.mod.reset}`);
+  rightLines.push(`${th.border.default} ${"─".repeat(rightColW - 1)}${th.mod.reset}`);
 
   if (selectedIdx < lesson.sections.length) {
     const section = lesson.sections[selectedIdx];
@@ -180,12 +181,12 @@ export function renderLessonMenu(lessonIndex: number): void {
         rightLines.push(` ${truncLine}`);
       }
     } catch {
-      rightLines.push(` ${c.dim}(Vorschau nicht verfuegbar)${c.reset}`);
+      rightLines.push(` ${c.dim}${t("lessonMenu.previewNotAvailable")}${c.reset}`);
     }
   } else {
     rightLines.push("");
-    rightLines.push(` ${c.dim}Waehle eine Sektion${c.reset}`);
-    rightLines.push(` ${c.dim}fuer eine Vorschau${c.reset}`);
+    rightLines.push(` ${c.dim}${t("lessonMenu.selectSection")}${c.reset}`);
+    rightLines.push(` ${c.dim}${t("lessonMenu.forPreview")}${c.reset}`);
   }
 
   while (rightLines.length < minLeft) {
@@ -208,17 +209,17 @@ export function renderLessonMenu(lessonIndex: number): void {
   }
 
   const footerHints: FooterHint[] = [
-    { key: `1-${lesson.sections.length}`, label: "Sektion" },
-    { key: "↑↓", label: "Navigieren" },
-    { key: "Enter/→", label: "Öffnen", primary: true },
-    { key: "E", label: "Exercises" },
-    { key: "Z", label: "Quiz" },
-    { key: "V", label: "VS Code" },
+    { key: `1-${lesson.sections.length}`, label: t("lessonMenu.section") },
+    { key: "↑↓", label: t("lessonMenu.navigate") },
+    { key: "Enter/→", label: t("lessonMenu.open"), primary: true },
+    { key: "E", label: t("lessonMenu.exercises") },
+    { key: "Z", label: t("lessonMenu.quiz") },
+    { key: "V", label: t("reader.vscode") },
   ];
-  if (lesson.hasHints) footerHints.push({ key: "H", label: "Hints" });
-  if (hasMisconceptions) footerHints.push({ key: "G", label: "Misconceptions" });
-  if (lesson.hasCheatsheet) footerHints.push({ key: "C", label: "Cheatsheet" });
-  footerHints.push({ key: "←/Esc", label: "Zurück" });
+  if (lesson.hasHints) footerHints.push({ key: "H", label: t("lessonMenu.hints") });
+  if (hasMisconceptions) footerHints.push({ key: "G", label: t("lessonMenu.misconceptions") });
+  if (lesson.hasCheatsheet) footerHints.push({ key: "C", label: t("lessonMenu.cheatsheet") });
+  footerHints.push({ key: "←/Esc", label: t("lessonMenu.back") });
 
   lines.push(...renderFooterBar(footerHints, w));
   

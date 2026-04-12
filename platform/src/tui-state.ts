@@ -277,6 +277,7 @@ export function getShortcutsForScreen(): Record<string, { key: string; desc: str
   platform: [
     { key: "\u2191 / \u2193", desc: t("shortcuts.platform.selectCourse") },
     { key: "Enter", desc: t("shortcuts.platform.openCourse") },
+    { key: "L", desc: t("shortcuts.platform.language") },
     { key: "?/F1", desc: t("shortcuts.platform.help") },
     { key: "Q", desc: t("shortcuts.platform.quit") },
     { key: "Ctrl+C", desc: t("shortcuts.platform.ctrlc") },

@@ -232,6 +232,7 @@
 
   "shortcuts.platform.selectCourse": "Select course",
   "shortcuts.platform.openCourse": "Open course",
+  "shortcuts.platform.language": "Switch language (DE/EN)",
   "shortcuts.platform.help": "This help",
   "shortcuts.platform.quit": "Quit",
   "shortcuts.platform.ctrlc": "Quit",

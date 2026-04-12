@@ -17,6 +17,7 @@ import type { ParsedKey, Screen } from "./tui-types.ts";
 import { renderMainMenu } from "./tui-main-menu.ts";
 import { theme } from "./tui-theme.ts";
 import { renderHeaderBar, renderFooterBar, type FooterHint } from "./tui-components.ts";
+import { t } from "./i18n.ts";
 
 // ─── Statistiken ──────────────────────────────────────────────────────────
 
@@ -28,9 +29,9 @@ export function renderStats(): void {
   const w = W();
   const h = H();
 
-  const t = theme;
+  const th = theme;
 
-  lines.push(renderHeaderBar(" Statistiken", `${lessons.length} Lektionen `, w));
+  lines.push(renderHeaderBar(` ${t("breadcrumb.stats")}`, `${t("stats.lessonsLabel", { count: String(lessons.length) })} `, w));
   lines.push(boxTop(w)); lines.push(bEmpty(w));
 
   const contentLines: string[] = [];
@@ -40,24 +41,24 @@ export function renderStats(): void {
   const today = new Date().getDay();
   const startDay = ((today === 0 ? 7 : today) - 6 + 7) % 7;
 
-  contentLines.push(` ${sectionDivider("Lernverlauf (7 Tage)", Math.max(10, w - 6))}`);
+  contentLines.push(` ${sectionDivider(t("stats.learningHistory7d"), Math.max(10, w - 6))}`);
   contentLines.push("");
 
   if (recentActivity.some((v) => v > 0)) {
     const spark = colorSparkline(recentActivity);
     const labelLine = recentActivity.map((_, idx) => dayLabels[(startDay + idx) % 7]).join(" ");
     contentLines.push(`  ${spark}`);
-    contentLines.push(`  ${t.fg.muted}${labelLine}${t.mod.reset}`);
-  } else { contentLines.push(`  ${t.fg.muted}Noch keine Aktivitäten aufgezeichnet${t.mod.reset}`); }
+    contentLines.push(`  ${th.fg.muted}${labelLine}${th.mod.reset}`);
+  } else { contentLines.push(`  ${th.fg.muted}${t("stats.noActivity")}${th.mod.reset}`); }
   contentLines.push("");
 
-  contentLines.push(` ${sectionDivider("Fortschritt pro Lektion", Math.max(10, w - 6))}`);
+  contentLines.push(` ${sectionDivider(t("stats.progressPerLesson"), Math.max(10, w - 6))}`);
   contentLines.push("");
 
   for (let i = 0; i < lessons.length; i++) {
     const lesson = lessons[i];
     const mastery = calculateMastery(i);
-    contentLines.push(`  ${t.mod.bold}${lesson.number} ${lesson.title}${t.mod.reset}  ${masteryBar(mastery)}`);
+    contentLines.push(`  ${th.mod.bold}${lesson.number} ${lesson.title}${th.mod.reset}  ${masteryBar(mastery)}`);
 
     let sectDone = 0;
     for (let s = 0; s < lesson.sections.length; s++) { if (getSectionStatus(getSectionKey(i, s)) === "completed") sectDone++; }
@@ -68,17 +69,17 @@ export function renderStats(): void {
     contentLines.push(`     Sektionen:  ${fineProgressBar(sectPct, barWidth)} ${sectDone}/${lesson.sections.length}   Exercises: ${fineProgressBar(exPct, barWidth)} ${exProg.solved}/${exProg.total}`);
     if (lesson.hasQuiz) {
       const quizData = progress.quizzes[lesson.number];
-      const quizText = quizData ? `${quizData.score}/${quizData.total} (${Math.round((quizData.score / quizData.total) * 100)}%)` : `${t.fg.muted}---${t.mod.reset}`;
+      const quizText = quizData ? `${quizData.score}/${quizData.total} (${Math.round((quizData.score / quizData.total) * 100)}%)` : `${th.fg.muted}---${th.mod.reset}`;
       contentLines.push(`     Quiz: ${quizText}`);
     }
     contentLines.push("");
   }
 
-  contentLines.push(` ${sectionDivider("Review-Statistik", Math.max(10, w - 6))}`);
+  contentLines.push(` ${sectionDivider(t("stats.reviewStats"), Math.max(10, w - 6))}`);
   contentLines.push("");
   const dueCount = getDueReviewCount();
   const streak = getReviewStreak();
-  contentLines.push(`  ${t.mod.bold}Fällige Fragen:${t.mod.reset}  ${t.fg.warning}${dueCount}${t.mod.reset}   ${t.mod.bold}Reviews:${t.mod.reset} ${t.fg.success}${streak} gesamt${t.mod.reset}`);
+  contentLines.push(`  ${th.mod.bold}${t("stats.dueQuestions")}${th.mod.reset}  ${th.fg.warning}${dueCount}${th.mod.reset}   ${th.mod.bold}${t("stats.reviews")}${th.mod.reset} ${th.fg.success}${streak} ${t("stats.total")}${th.mod.reset}`);
   contentLines.push("");
 
   const contentHeight2 = h - 6;
@@ -87,8 +88,8 @@ export function renderStats(): void {
   for (let fill = visibleLines.length; fill < contentHeight2; fill++) { lines.push(bEmpty(w)); }
 
   const footerHints: FooterHint[] = [];
-  if (offset > 0 || offset + contentHeight2 < contentLines.length) { footerHints.push({ key: "↑↓", label: "Scrollen" }); }
-  footerHints.push({ key: "←/Esc", label: "Zurück" });
+  if (offset > 0 || offset + contentHeight2 < contentLines.length) { footerHints.push({ key: "↑↓", label: t("competence.scroll") }); }
+  footerHints.push({ key: "←/Esc", label: t("competence.back") });
   lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);
 }
@@ -114,9 +115,9 @@ export function renderCompetenceDashboard(): void {
   const w = W();
   const h = H();
 
-  const t = theme;
+  const th = theme;
 
-  lines.push(renderHeaderBar(" Deine Kompetenzen", `${lessons.length} Lektionen `, w));
+  lines.push(renderHeaderBar(` ${t("competence.title")}`, `${t("stats.lessonsLabel", { count: String(lessons.length) })} `, w));
   lines.push(boxTop(w));
 
   const contentLines: string[] = [];
@@ -125,28 +126,29 @@ export function renderCompetenceDashboard(): void {
   for (let i = 0; i < lessons.length; i++) {
     const lesson = lessons[i];
     const mastery = calculateMastery(i);
-    contentLines.push(`  ${t.mod.bold}${lesson.number} ${lesson.title}${t.mod.reset}  ${masteryBar(mastery)}`);
+    contentLines.push(`  ${th.mod.bold}${lesson.number} ${lesson.title}${th.mod.reset}  ${masteryBar(mastery)}`);
 
     let sectDone = 0;
     for (let s = 0; s < lesson.sections.length; s++) { if (getSectionStatus(getSectionKey(i, s)) === "completed") sectDone++; }
     const exProg = countExerciseProgress(lesson);
     const quizData = progress.quizzes[lesson.number];
 
-    if (sectDone > 0) { contentLines.push(`     ${t.fg.success}✓${t.mod.reset} Du kannst: ${sectDone}/${lesson.sections.length} Sektionen gelesen`); }
-    if (exProg.solved > 0) { contentLines.push(`     ${t.fg.success}✓${t.mod.reset} Du kannst: ${exProg.solved}/${exProg.total} Exercises gelöst`); }
-    if (quizData) { contentLines.push(`     ${t.fg.success}✓${t.mod.reset} Quiz: ${Math.round((quizData.score / quizData.total) * 100)}% erreicht`); }
+    if (sectDone > 0) { contentLines.push(`     ${th.fg.success}✓${th.mod.reset} ${t("competence.youCan")} ${t("competence.sectionsRead", { done: String(sectDone), total: String(lesson.sections.length) })}`); }
+    if (exProg.solved > 0) { contentLines.push(`     ${th.fg.success}✓${th.mod.reset} ${t("competence.youCan")} ${t("competence.exercisesSolved", { solved: String(exProg.solved), total: String(exProg.total) })}`); }
+    if (quizData) { contentLines.push(`     ${th.fg.success}✓${th.mod.reset} ${t("competence.quizReached", { pct: String(Math.round((quizData.score / quizData.total) * 100)) })}`); }
 
     if (mastery === "newcomer") {
-      contentLines.push(`     ${t.fg.info}→${t.mod.reset} Nächstes: ${sectDone === 0 ? "Sektion 1" : `Sektion ${sectDone + 1}`} lesen`);
-    } else if (mastery === "familiar") { contentLines.push(`     ${t.fg.info}→${t.mod.reset} Nächstes: Exercises bearbeiten`); }
-    else if (mastery === "proficient") { contentLines.push(`     ${t.fg.info}→${t.mod.reset} Nächstes: Quiz oder Misconception-Challenge`); }
-    else { contentLines.push(`     ${t.fg.success}✓${t.mod.reset} Gemeistert!`); }
+      const sectionNum = sectDone === 0 ? "1" : String(sectDone + 1);
+      contentLines.push(`     ${th.fg.info}→${th.mod.reset} ${t("competence.next")} ${t("competence.readSection", { num: sectionNum })}`);
+    } else if (mastery === "familiar") { contentLines.push(`     ${th.fg.info}→${th.mod.reset} ${t("competence.next")} ${t("competence.doExercises")}`); }
+    else if (mastery === "proficient") { contentLines.push(`     ${th.fg.info}→${th.mod.reset} ${t("competence.next")} ${t("competence.quizOrMisconception")}`); }
+    else { contentLines.push(`     ${th.fg.success}✓${th.mod.reset} ${t("competence.mastered")}`); }
     contentLines.push("");
   }
 
   const recentActivity = getRecentActivityValues(7);
   if (recentActivity.some((v) => v > 0)) {
-    contentLines.push(` ${sectionDivider("Lernverlauf (letzte 7 Tage)", Math.max(10, w - 6))}`);
+    contentLines.push(` ${sectionDivider(t("stats.learningHistoryLast7d"), Math.max(10, w - 6))}`);
     contentLines.push("");
     const dayLabels = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
     const today = new Date().getDay();
@@ -154,14 +156,14 @@ export function renderCompetenceDashboard(): void {
     const spark = colorSparkline(recentActivity);
     const labelLine = recentActivity.map((_, idx) => dayLabels[(startDay + idx) % 7]).join(" ");
     contentLines.push(`  ${spark}`);
-    contentLines.push(`  ${t.fg.muted}${labelLine}${t.mod.reset}`);
+    contentLines.push(`  ${th.fg.muted}${labelLine}${th.mod.reset}`);
     contentLines.push("");
   }
 
   const completedCount = getCompletedLessonIndices().length;
   if (completedCount >= 3) {
-    contentLines.push(`  ${t.fg.accent}${t.mod.bold}Empfehlung:${t.mod.reset} Du hast ${completedCount} Lektionen abgeschlossen.`);
-    contentLines.push(`  ${t.fg.info}→ Starte eine Interleaved Review Challenge!${t.mod.reset}`);
+    contentLines.push(`  ${th.fg.accent}${th.mod.bold}${t("competence.recommendation")}${th.mod.reset} ${t("competence.completedLessons", { count: String(completedCount) })}`);
+    contentLines.push(`  ${th.fg.info}${t("competence.interleavedHint")}${th.mod.reset}`);
     contentLines.push("");
   }
 
@@ -171,8 +173,8 @@ export function renderCompetenceDashboard(): void {
   for (let fill = visibleLines.length; fill < contentHeight2; fill++) { lines.push(bEmpty(w)); }
 
   const footerHints: FooterHint[] = [
-    { key: "↑↓", label: "Scrollen" },
-    { key: "←/Esc", label: "Zurück" },
+    { key: "↑↓", label: t("competence.scroll") },
+    { key: "←/Esc", label: t("competence.back") },
   ];
   lines.push(...renderFooterBar(footerHints, w));
   flushScreen(lines);

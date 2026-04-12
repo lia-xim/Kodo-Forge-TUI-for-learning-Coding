@@ -25,12 +25,21 @@ const fadeUp = {
   }),
 };
 
-const sections = [
-  {
-    id: "what-is-kodo-forge",
-    title: "What is Kodo Forge?",
-    icon: <Terminal size={20} />,
-    content: `Kodo Forge is a **Terminal User Interface (TUI)** for learning web development. Unlike browser-based platforms like Udemy, Coursera or freeCodeCamp, Kodo Forge runs entirely inside your terminal — the same tool professional developers use every day.
+const sectionIcons: Record<string, React.ReactNode> = {
+  "what-is-kodo-forge": <Terminal size={20} />,
+  "how-it-works": <Cpu size={20} />,
+  "kinetic-reader": <Eye size={20} />,
+  "spaced-repetition": <Brain size={20} />,
+  "open-source": <Heart size={20} />,
+  "installation": <Zap size={20} />,
+  "create-content": <FolderOpen size={20} />,
+  "markdown-features": <Code2 size={20} />,
+  "architecture": <FileText size={20} />,
+};
+
+// Content stays in the component for now (very large), only UI strings are translated
+const sectionContent: Record<string, string> = {
+  "what-is-kodo-forge": `Kodo Forge is a **Terminal User Interface (TUI)** for learning web development. Unlike browser-based platforms like Udemy, Coursera or freeCodeCamp, Kodo Forge runs entirely inside your terminal — the same tool professional developers use every day.
 
 **Why a terminal?** Because it eliminates distractions. No browser tabs, no notifications, no ads. Just you and the material. Research shows that deep-focus, distraction-free environments dramatically improve learning retention.
 
@@ -39,12 +48,8 @@ Kodo Forge is:
 - **Zero dependencies** — single executable, no Node.js or Python needed
 - **Privacy first** — no accounts, no telemetry, no tracking
 - **Open source** — MIT licensed, fully transparent`,
-  },
-  {
-    id: "how-it-works",
-    title: "How It Works",
-    icon: <Cpu size={20} />,
-    content: `When you launch Kodo Forge, the engine scans your directory for a \`platform.json\` configuration file. This file tells the engine where your courses are and how they're structured.
+
+  "how-it-works": `When you launch Kodo Forge, the engine scans your directory for a \`platform.json\` configuration file. This file tells the engine where your courses are and how they're structured.
 
 The engine then renders a beautiful terminal interface with:
 1. **A platform overview** showing all available courses with progress bars and a learning path flowchart
@@ -54,12 +59,8 @@ The engine then renders a beautiful terminal interface with:
 5. **A spaced repetition system** with smart review scheduling and streak tracking
 
 Everything is keyboard-driven. Navigate with arrow keys, select with Enter, go back with Escape. It's designed to feel like a native terminal application with smooth animations.`,
-  },
-  {
-    id: "kinetic-reader",
-    title: "The Kinetic Reader",
-    icon: <Eye size={20} />,
-    content: `The Kinetic Reader is our custom-built text progression engine. Instead of dumping an entire page of text at you, it reveals content progressively — section by section, paragraph by paragraph.
+
+  "kinetic-reader": `The Kinetic Reader is our custom-built text progression engine. Instead of dumping an entire page of text at you, it reveals content progressively — section by section, paragraph by paragraph.
 
 **How it works:**
 - Text is rendered in the terminal using our custom Markdown engine
@@ -73,12 +74,8 @@ Everything is keyboard-driven. Navigate with arrow keys, select with Enter, go b
 - Each section is right-sized for focused learning (3-7 minutes)
 - Progress is saved automatically — pick up exactly where you left off
 - Adaptive depth: switch between summary, standard, and deep-dive modes per section with a single keypress`,
-  },
-  {
-    id: "spaced-repetition",
-    title: "Spaced Repetition System",
-    icon: <Brain size={20} />,
-    content: `Kodo Forge includes a built-in spaced repetition system based on proven cognitive science. After you complete a section, key concepts are automatically added to your review queue.
+
+  "spaced-repetition": `Kodo Forge includes a built-in spaced repetition system based on proven cognitive science. After you complete a section, key concepts are automatically added to your review queue.
 
 **The algorithm:**
 - New concepts are reviewed after 1 day
@@ -92,12 +89,8 @@ Everything is keyboard-driven. Navigate with arrow keys, select with Enter, go b
 - Streak tracking to maintain your learning habit
 - Activity sparklines showing your 14-day learning history
 - Smart recommendations based on your progress and review state`,
-  },
-  {
-    id: "open-source",
-    title: "Open Source Philosophy",
-    icon: <Heart size={20} />,
-    content: `Kodo Forge is **100% free and open source** under the MIT license. We believe high-quality programming education should be accessible to everyone, regardless of income or location.
+
+  "open-source": `Kodo Forge is **100% free and open source** under the MIT license. We believe high-quality programming education should be accessible to everyone, regardless of income or location.
 
 **What this means for you:**
 - All source code is available on GitHub
@@ -113,12 +106,8 @@ Everything is keyboard-driven. Navigate with arrow keys, select with Enter, go b
 - Help translate courses to other languages
 
 We believe in learning by doing. The engine itself is a great TypeScript project to study — it demonstrates clean architecture, state management, terminal rendering, and data-driven design patterns.`,
-  },
-  {
-    id: "installation",
-    title: "Installation",
-    icon: <Zap size={20} />,
-    content: `**Option 1: Download the executable (recommended for learners)**
+
+  "installation": `**Option 1: Download the executable (recommended for learners)**
 
 Go to the [Download page](/download) and grab the binary for your operating system. Place it in any directory and run it. That's it — instant learning environment.
 
@@ -139,12 +128,8 @@ npm start
 
 **Requirements for executable:**
 - Nothing. Zero dependencies. Works on Windows, macOS, and Linux.`,
-  },
-  {
-    id: "create-content",
-    title: "Creating Your Own Courses",
-    icon: <FolderOpen size={20} />,
-    content: `Kodo Forge is a **data-driven engine**. Courses are just folders of Markdown files. You can create courses on any topic — programming, languages, science, history, anything that can be taught through text.
+
+  "create-content": `Kodo Forge is a **data-driven engine**. Courses are just folders of Markdown files. You can create courses on any topic — programming, languages, science, history, anything that can be taught through text.
 
 **Step 1: Create your directory structure**
 
@@ -205,12 +190,8 @@ The engine auto-detects your course and renders it as a beautiful TUI.
 
 **Using AI to create courses:**
 You can use AI assistants (Claude, ChatGPT, Gemini) to generate course content. We provide a workflow file at \`.agent/workflows/create-kodo-course.md\` that teaches AI assistants the exact directory structure, Markdown conventions, and didactic best practices. Simply tell your AI: "Create a Kodo Forge course about [topic]" and point it to this workflow.`,
-  },
-  {
-    id: "markdown-features",
-    title: "Markdown Reference",
-    icon: <Code2 size={20} />,
-    content: `**Headings**
+
+  "markdown-features": `**Headings**
 Use \`#\`, \`##\`, \`###\` for section headers.
 
 **Code Blocks**
@@ -237,12 +218,8 @@ Standard Markdown tables with automatic column sizing and alignment.
 
 **Mermaid Diagrams**
 Use \`mermaid\` as the language in a fenced code block. Supports flowcharts, sequence diagrams, and more.`,
-  },
-  {
-    id: "architecture",
-    title: "Engine Architecture",
-    icon: <FileText size={20} />,
-    content: `Kodo Forge is built with TypeScript and runs on Node.js (or as a compiled Bun executable). The codebase is organized into clean, modular components:
+
+  "architecture": `Kodo Forge is built with TypeScript and runs on Node.js (or as a compiled Bun executable). The codebase is organized into clean, modular components:
 
 **Core Engine Modules:**
 - \`tui.ts\` — Main entry point, input loop, screen routing
@@ -263,12 +240,34 @@ Use \`mermaid\` as the language in a fenced code block. Supports flowcharts, seq
 - All state persisted to local JSON files
 - Modular architecture for easy extension
 - Data-driven — the engine knows nothing about specific course content`,
-  },
+};
+
+const sectionIds = [
+  "what-is-kodo-forge",
+  "how-it-works",
+  "kinetic-reader",
+  "spaced-repetition",
+  "open-source",
+  "installation",
+  "create-content",
+  "markdown-features",
+  "architecture",
 ];
 
-const toc = sections.map((s) => ({ id: s.id, title: s.title }));
+interface DocsPageProps {
+  dict: Record<string, any>;
+  lang: string;
+}
 
-export default function DocsPage() {
+export default function DocsPage({ dict, lang }: DocsPageProps) {
+  const t = dict.docsPage;
+  const sectionTitles = t.sectionTitles;
+
+  const toc = sectionIds.map((id) => ({
+    id,
+    title: sectionTitles[id] ?? id,
+  }));
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-20">
       <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-12">
@@ -276,7 +275,7 @@ export default function DocsPage() {
         <aside className="hidden lg:block">
           <nav className="sticky top-24" aria-label="Table of contents">
             <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">
-              On This Page
+              {t.onThisPage}
             </h3>
             <div className="space-y-1">
               {toc.map((item) => (
@@ -299,18 +298,18 @@ export default function DocsPage() {
               className="text-4xl sm:text-5xl font-bold text-white mb-4"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Docu<span className="text-[#FFB000]">mentation</span>
+              {t.title}<span className="text-[#FFB000]">{t.titleHighlight}</span>
             </h1>
             <p className="text-zinc-400 text-lg max-w-2xl">
-              Everything you need to know about Kodo Forge — from getting started to creating your own terminal courses.
+              {t.subtitle}
             </p>
           </motion.div>
 
           <div className="space-y-16">
-            {sections.map((section, i) => (
+            {sectionIds.map((id, i) => (
               <motion.section
-                key={section.id}
-                id={section.id}
+                key={id}
+                id={id}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
@@ -319,26 +318,32 @@ export default function DocsPage() {
                 className="scroll-mt-24"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="text-[#FFB000]">{section.icon}</div>
+                  <div className="text-[#FFB000]">{sectionIcons[id]}</div>
                   <h2
                     className="text-2xl font-bold text-white"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {section.title}
+                    {sectionTitles[id]}
                   </h2>
                 </div>
 
                 <div className="prose-terminal">
-                  {section.content.split("\n\n").map((paragraph, pi) => {
-                    if (paragraph.startsWith("```")) {
-                      const lines = paragraph.split("\n");
-                      const lang = lines[0].replace("```", "").trim();
+                  {sectionContent[id].split("\n\n").map((paragraph, pi) => {
+                    // Fix internal links to be locale-aware
+                    const localizedParagraph = paragraph.replace(
+                      /\[([^\]]+)\]\(\/([^)]+)\)/g,
+                      `[$1](/${lang}/$2)`
+                    );
+
+                    if (localizedParagraph.startsWith("```")) {
+                      const lines = localizedParagraph.split("\n");
+                      const codeLang = lines[0].replace("```", "").trim();
                       const code = lines.slice(1, -1).join("\n");
                       return (
                         <div key={pi} className="my-4 retro-glass rounded-lg overflow-hidden">
-                          {lang && (
+                          {codeLang && (
                             <div className="px-4 py-2 border-b border-zinc-800/40 text-xs text-zinc-500 font-mono">
-                              {lang}
+                              {codeLang}
                             </div>
                           )}
                           <pre className="p-4 text-sm text-zinc-300 overflow-x-auto font-mono leading-relaxed">
@@ -348,7 +353,7 @@ export default function DocsPage() {
                       );
                     }
 
-                    const html = paragraph
+                    const html = localizedParagraph
                       .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
                       .replace(
                         /`([^`]+)`/g,
@@ -358,9 +363,9 @@ export default function DocsPage() {
                         /\[([^\]]+)\]\(([^)]+)\)/g,
                         '<a href="$2" class="text-[#FFB000] hover:underline">$1</a>'
                       )
-                      .replace(/^- /gm, "• ");
+                      .replace(/^- /gm, "\u2022 ");
 
-                    if (paragraph.match(/^\d+\./m) || paragraph.match(/^[•\-] /m)) {
+                    if (localizedParagraph.match(/^\d+\./m) || localizedParagraph.match(/^[\u2022\-] /m)) {
                       return (
                         <div
                           key={pi}
@@ -402,11 +407,10 @@ export default function DocsPage() {
               className="text-2xl font-bold text-white mb-3"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Kodo Forge is Open Source
+              {t.openSourceTitle}
             </h2>
             <p className="text-zinc-400 text-sm max-w-lg mx-auto mb-6">
-              Built by developers, for developers. Contribute, fork, or just study the code.
-              The entire engine is written in clean, well-documented TypeScript.
+              {t.openSourceDesc}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
@@ -414,13 +418,13 @@ export default function DocsPage() {
                 target="_blank"
                 className="inline-flex items-center gap-2 px-6 py-3 retro-glass rounded text-[#FFB000] font-bold uppercase tracking-widest text-sm hover:bg-zinc-800/40 transition-colors"
               >
-                <Code2 size={16} /> View on GitHub
+                <Code2 size={16} /> {t.viewOnGithub}
               </a>
               <Link
-                href="/download"
+                href={`/${lang}/download`}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#FFB000] rounded text-[#09090b] font-bold uppercase tracking-widest text-sm"
               >
-                Download Free
+                {t.downloadFree}
               </Link>
             </div>
           </motion.div>

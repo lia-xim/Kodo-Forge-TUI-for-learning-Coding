@@ -1,0 +1,140 @@
+{
+  "exercises/01-narrowing-basics.ts": {
+    "1": [
+      "Verwende typeof um string und number zu unterscheiden.",
+      "if (typeof wert === 'string') return wert.length; else return wert * 2;"
+    ],
+    "2": [
+      "Pruefe null ZUERST mit ===, dann typeof fuer die anderen Typen.",
+      "Reihenfolge: null -> boolean -> number -> string (string bleibt uebrig).",
+      "if (wert === null) return 'null'; if (typeof wert === 'boolean') return `boolean:${wert}`; ..."
+    ],
+    "3": [
+      "Verwende if (wert === null) return 0; und if (wert === undefined) return 0; als Early Returns.",
+      "Oder kuerzer: if (wert == null) return 0; — das prueft beides gleichzeitig."
+    ],
+    "4": [
+      "Pruefe null und undefined mit === (nicht typeof!). Dann typeof fuer die Primitiven.",
+      "Reihenfolge: null -> undefined -> string -> number -> boolean -> 'unknown'."
+    ],
+    "5": [
+      "Statt (daten as { name: string }).name: Pruefe zuerst ob daten ein Objekt ist.",
+      "typeof daten === 'object' && daten !== null && 'name' in daten.",
+      "Dann pruefe typeof (daten as Record<string, unknown>).name === 'string'."
+    ]
+  },
+  "exercises/02-typeof-guards.ts": {
+    "1": [
+      "Verwende switch (typeof wert) mit cases fuer 'string', 'number', 'boolean', 'undefined'.",
+      "Jeder case narrowt den Typ automatisch. Format: `${typeof wert}:${wert}`."
+    ],
+    "2": [
+      "Pruefe null ZUERST (=== null), dann Array.isArray(), dann typeof === 'object'.",
+      "Reihenfolge ist entscheidend! typeof null === 'object' und typeof [] === 'object'."
+    ],
+    "3": [
+      "Verwende typeof wert !== 'string' mit early return null.",
+      "Danach weiss TypeScript: wert ist string."
+    ],
+    "4": [
+      "Drei typeof-Checks: string -> wert + wert, number -> wert * 2, boolean -> !wert.",
+      "Alles andere: return null."
+    ],
+    "5": [
+      "Drei-Stufen-Narrowing: (1) typeof === 'object' && !== null, (2) feld in daten, (3) typeof === 'number'.",
+      "Verwende (daten as Record<string, unknown>)[feld] um auf das Feld zuzugreifen."
+    ]
+  },
+  "exercises/03-instanceof-und-in.ts": {
+    "1": [
+      "Verwende instanceof fuer jede Fehler-Klasse: if (error instanceof HttpError) ...",
+      "Jede Klasse hat eigene Properties: statusCode, timeoutMs, input."
+    ],
+    "2": [
+      "Verwende switch (message.type) als Discriminant.",
+      "Bei Text: Kuerze auf 20 Zeichen mit slice() und fuege '...' an.",
+      "content.length > 20 ? content.slice(0, 20) + '...' : content"
+    ],
+    "3": [
+      "Vierstufiges Narrowing: (1) typeof object, (2) !== null, (3) 'name' in, (4) typeof name === 'string'.",
+      "Verwende (data as Record<string, unknown>).name fuer den typeof-Check."
+    ],
+    "4": [
+      "instanceof AdminUser prueft auf die Admin-Klasse. Dann user.permissions.includes(permission).",
+      "RegularUser hat keine permissions — gib direkt false zurueck."
+    ],
+    "5": [
+      "Die success-Property ist der Discriminant. if (result.success) narrowt zu SuccessResult.",
+      "Im true-Zweig: result.data.message und result.data.id sind verfuegbar."
+    ]
+  },
+  "exercises/04-equality-und-truthiness.ts": {
+    "1": [
+      "Verwende wert != null (lose Gleichheit) — das prueft null UND undefined.",
+      "Wichtig: 0, '' und false sind NICHT null/undefined!"
+    ],
+    "2": [
+      "Ersetze if (wert) durch if (wert != null) — damit bleiben 0 und '' erhalten.",
+      "Alternativ: if (wert !== null && wert !== undefined)."
+    ],
+    "3": [
+      "switch (method) mit case 'POST' und case 'PUT': return true.",
+      "case 'GET' und case 'DELETE': return false."
+    ],
+    "4": [
+      "Pruefe zuerst a === b (gleich). Dann typeof a !== typeof b (verschiedene Typen).",
+      "Wenn gleicher Typ aber verschiedene Werte: 'ungleich'."
+    ],
+    "5": [
+      "Verwende ?? fuer Defaults (nicht ||!) damit 0 und false nicht ueberschrieben werden.",
+      "config.port ?? 3000, config.host ?? 'localhost', config.ssl ?? false.",
+      "Pruefe config.database mit != null, dann database.host ?? 'localhost'."
+    ]
+  },
+  "exercises/05-type-predicates.ts": {
+    "1": [
+      "Pruefe ob die 'meow'-Property existiert: 'meow' in pet.",
+      "Wenn ja: pet is Cat. Der in-Operator ist hier das richtige Werkzeug."
+    ],
+    "2": [
+      "Pruefe typeof data === 'object' && data !== null, dann jede Property mit typeof.",
+      "Alle vier Felder muessen geprueft werden: id (number), name (string), price (number), inStock (boolean)."
+    ],
+    "3": [
+      "Pruefe typeof value === 'string' UND value.length > 0.",
+      "Wirf einen Error wenn einer der Checks fehlschlaegt."
+    ],
+    "4": [
+      "Ab TS 5.5: mixed.filter(x => typeof x === 'string') ergibt string[].",
+      "mixed.filter(x => typeof x === 'number') ergibt number[].",
+      "mixed.filter(x => x != null) ergibt (string | number)[]."
+    ],
+    "5": [
+      "isAdmin prueft user.role === 'admin'. Dann: users.filter(isAdmin) narrowt zu AdminUser[].",
+      "Danach .filter(admin => admin.permissions.includes('delete')).map(admin => admin.name)."
+    ]
+  },
+  "exercises/06-exhaustive-checks.ts": {
+    "1": [
+      "switch (season) mit case fuer alle vier Jahreszeiten + default: return assertNever(season).",
+      "spring -> 15, summer -> 25, autumn -> 10, winter -> 0."
+    ],
+    "2": [
+      "switch (shape.kind) mit cases fuer circle, square, triangle.",
+      "circle: Math.PI * radius^2, square: side^2, triangle: (base * height) / 2."
+    ],
+    "3": [
+      "switch (event.type) mit cases fuer click, keypress, scroll.",
+      "Verwende Template Literals fuer die Rueckgabe-Strings."
+    ],
+    "4": [
+      "switch (current) mit pending -> confirmed, confirmed -> shipped, shipped -> delivered, delivered -> delivered.",
+      "default: return assertNever(current)."
+    ],
+    "5": [
+      "Erstelle ein Objekt mit allen LogLevels als Keys: { debug: '[DEBUG]', ... }.",
+      "Verwende 'satisfies Record<LogLevel, string>' fuer den Compile-Check.",
+      "In formatLog: return `${logPrefixes[level]} ${message}`."
+    ]
+  }
+}
