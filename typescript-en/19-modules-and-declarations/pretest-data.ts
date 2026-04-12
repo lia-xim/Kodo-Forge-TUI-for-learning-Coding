@@ -1,0 +1,22 @@
+/**
+ * Lesson 19 — Pre-Test Questions: Modules & Declarations
+ */
+export interface PretestQuestion { sectionIndex: number; question: string; options: string[]; correct: number; briefExplanation: string; }
+
+export const pretestQuestions: PretestQuestion[] = [
+  { sectionIndex: 1, question: "What is the advantage of Named Exports over Default Exports?", options: ["Performance", "Consistent name, refactoring-safe", "More features", "I don't know"], correct: 1, briefExplanation: "Named Exports have a fixed name that stays consistent during refactoring." },
+  { sectionIndex: 1, question: "What does `import type` do?", options: ["Imports classes", "Imports ONLY types — removed at compile time", "Imports everything", "I don't know"], correct: 1, briefExplanation: "Type-only imports are completely removed and produce no JS code." },
+  { sectionIndex: 1, question: "What is a Barrel File?", options: ["A ZIP file", "An index.ts that bundles exports", "A config file", "I don't know"], correct: 1, briefExplanation: "Barrel files re-export modules from a directory for easier importing." },
+  { sectionIndex: 2, question: "What does esModuleInterop do?", options: ["Disables modules", "Enables default imports from CJS modules", "Faster build", "I don't know"], correct: 1, briefExplanation: "esModuleInterop makes CJS module.exports usable as a default import." },
+  { sectionIndex: 2, question: "What is the difference between CJS and ESM?", options: ["CJS: require/module.exports, ESM: import/export", "No difference", "CJS is newer", "I don't know"], correct: 0, briefExplanation: "CJS is the older Node.js format, ESM is the modern standard." },
+  { sectionIndex: 2, question: "What does moduleResolution: 'bundler' do?", options: ["Uses package.json exports, optimized for Vite/Webpack", "Bundles code", "Disables resolution", "I don't know"], correct: 0, briefExplanation: "bundler is the modern resolution strategy for bundler-based projects." },
+  { sectionIndex: 3, question: "What is a .d.ts file?", options: ["Declaration file — types only, no implementation", "JavaScript", "Config", "I don't know"], correct: 0, briefExplanation: ".d.ts describes the types of a module without executable code." },
+  { sectionIndex: 3, question: "What does declare do?", options: ["Tells TypeScript: this value exists elsewhere", "Declares variables", "Creates classes", "I don't know"], correct: 0, briefExplanation: "declare informs TypeScript about external values without generating code." },
+  { sectionIndex: 3, question: "What is @types/lodash?", options: ["Lodash itself", "A fork", "Community-maintained types for Lodash from DefinitelyTyped", "I don't know"], correct: 2, briefExplanation: "@types packages contain type definitions for untyped libraries." },
+  { sectionIndex: 4, question: "What is Module Augmentation?", options: ["Deleting modules", "Creating modules", "Extending existing modules with new types", "I don't know"], correct: 2, briefExplanation: "Module Augmentation uses Interface Merging to extend existing types." },
+  { sectionIndex: 4, question: "Why does an augmentation file need export {}?", options: ["Best practice", "Performance", "So the file is treated as a module", "I don't know"], correct: 2, briefExplanation: "Without export/import the file is a script and augmentation won't work." },
+  { sectionIndex: 4, question: "What is Interface Merging?", options: ["Inheritance", "Design pattern", "Automatic merging of interfaces with the same name", "I don't know"], correct: 2, briefExplanation: "TypeScript automatically merges interfaces with the same name — even across file boundaries." },
+  { sectionIndex: 5, question: "What is declare module '*.css'?", options: ["CSS import", "I don't know", "CSS-in-JS", "Wildcard declaration for all .css imports"], correct: 3, briefExplanation: "Wildcard Declarations define types for all imports matching a pattern." },
+  { sectionIndex: 5, question: "When should you avoid Barrel Files?", options: ["Never", "I don't know", "Always", "When tree-shaking matters"], correct: 3, briefExplanation: "Barrel files can hinder tree-shaking because they import everything." },
+  { sectionIndex: 5, question: "What is the best practice for type organization?", options: ["Everything in one file", "I don't know", "No types", "Types per feature in their own files, shared ones in types/"], correct: 3, briefExplanation: "Feature-based organization with shared types in a dedicated types directory." },
+];

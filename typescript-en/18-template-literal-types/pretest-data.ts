@@ -1,0 +1,22 @@
+/**
+ * Lesson 18 — Pre-Test Questions: Template Literal Types
+ */
+export interface PretestQuestion { sectionIndex: number; question: string; options: string[]; correct: number; briefExplanation: string; }
+
+export const pretestQuestions: PretestQuestion[] = [
+  { sectionIndex: 1, question: "What does `\\`${A}${B}\\`` produce with unions?", options: ["A | B", "Cartesian product of all combinations", "A & B", "I don't know"], correct: 1, briefExplanation: "Unions are expanded to all possible combinations." },
+  { sectionIndex: 1, question: "What is `type T = \\`Hello, ${string}!\\``?", options: ["An exact string", "A pattern that matches all strings with a Hello prefix", "An error", "I don't know"], correct: 1, briefExplanation: "string as a placeholder accepts any string at that position." },
+  { sectionIndex: 1, question: "Do Template Literal Types exist at runtime?", options: ["Yes", "No — only at compile time", "Partially", "I don't know"], correct: 1, briefExplanation: "Like all TS types, they are removed during compilation." },
+  { sectionIndex: 2, question: "What is Capitalize<'hello'>?", options: ["'HELLO'", "'Hello'", "'hello'", "I don't know"], correct: 1, briefExplanation: "Capitalize only uppercases the first letter." },
+  { sectionIndex: 2, question: "What is the difference between Uppercase and Capitalize?", options: ["Uppercase: ALL caps. Capitalize: only first letter", "No difference", "Capitalize: all caps", "I don't know"], correct: 0, briefExplanation: "Uppercase = all letters. Capitalize = only the first." },
+  { sectionIndex: 2, question: "Can the String Utilities be recreated with Conditional Types?", options: ["No — they are intrinsic to the compiler", "Yes", "Only Capitalize", "I don't know"], correct: 0, briefExplanation: "Uppercase, Lowercase, Capitalize, Uncapitalize are intrinsic." },
+  { sectionIndex: 3, question: "Can infer be used in Template Literals?", options: ["Yes — for string parsing at the type level", "No", "Only for numbers", "I don't know"], correct: 0, briefExplanation: "infer in Template Literals extracts parts of a string." },
+  { sectionIndex: 3, question: "What does Split<'a.b.c', '.'> do?", options: ["['a', 'b', 'c']", "'a.b.c'", "Error", "I don't know"], correct: 0, briefExplanation: "Recursive pattern matching splits the string into a tuple." },
+  { sectionIndex: 3, question: "Can Replace be built at the type level?", options: ["No", "Only for single characters", "Yes — with infer and Template Literal recursion", "I don't know"], correct: 2, briefExplanation: "S extends \\`${infer H}${From}${infer T}\\` enables Replace." },
+  { sectionIndex: 4, question: "How do you generate event names from properties?", options: ["Manually", "Runtime code", "Template Literal in Key Remapping: \\`${K}Changed\\`", "I don't know"], correct: 2, briefExplanation: "Key Remapping + Template Literal = automatic event names." },
+  { sectionIndex: 4, question: "What is \\`on${Capitalize<K>}\\`?", options: ["An event handler name", "An error", "React-style event prop name: onClick, onScroll", "I don't know"], correct: 2, briefExplanation: "The standard pattern for event props in React and similar frameworks." },
+  { sectionIndex: 4, question: "How do you connect event name and payload in a type-safe way?", options: ["Strings", "Runtime checks", "Interface mapping event names to payload types + Generics", "I don't know"], correct: 2, briefExplanation: "Events interface + K extends keyof Events = type-safe connection." },
+  { sectionIndex: 5, question: "How do you enforce CSS units at the type level?", options: ["Regex", "I don't know", "Validator function", "\\`${number}${'px'|'em'|'rem'}\\` as type"], correct: 3, briefExplanation: "Template Literal with number + unit union enforces correct format." },
+  { sectionIndex: 5, question: "Can route parameters be extracted at the type level?", options: ["No", "I don't know", "Only at runtime", "Yes — with recursive infer on :param patterns"], correct: 3, briefExplanation: "Recursive infer pattern finds :param segments in the path string." },
+  { sectionIndex: 5, question: "Which framework uses Template Literal Types the most?", options: ["jQuery", "I don't know", "No framework", "Modern frameworks: React (Props), Express (Routes), Prisma (Schema)"], correct: 3, briefExplanation: "Template Literal Types are ubiquitous in modern frameworks." },
+];

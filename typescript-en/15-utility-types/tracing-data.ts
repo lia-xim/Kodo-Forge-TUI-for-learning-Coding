@@ -1,0 +1,202 @@
+/**
+ * Lesson 15 — Tracing Exercises: Utility Types
+ */
+
+import type { TracingExercise } from "../tools/tracing-engine.ts";
+
+export const tracingExercises: TracingExercise[] = [
+  {
+    id: "15-partial-required-flow",
+    title: "Partial and Required — what happens to the modifiers?",
+    description: "Trace how Partial and Required change the properties.",
+    code: [
+      "interface User {",
+      "  id: number;",
+      "  name: string;",
+      "  bio?: string;",
+      "}",
+      "",
+      "type A = Partial<User>;",
+      "type B = Required<User>;",
+      "type C = Required<Partial<User>>;",
+      "type D = Partial<Required<User>>;",
+    ],
+    steps: [
+      {
+        lineIndex: 6,
+        question: "What are the properties of Partial<User>?",
+        expectedAnswer: "id?: number; name?: string; bio?: string — ALL optional",
+        variables: { "A.id": "number | undefined", "A.name": "string | undefined", "A.bio": "string | undefined" },
+        explanation: "Partial adds ? to every property. Even id and name become optional.",
+      },
+      {
+        lineIndex: 7,
+        question: "What are the properties of Required<User>?",
+        expectedAnswer: "id: number; name: string; bio: string — ALL required (bio is no longer optional!)",
+        variables: { "B.id": "number", "B.name": "string", "B.bio": "string" },
+        explanation: "Required removes ? from bio. bio is now string, not string | undefined.",
+      },
+      {
+        lineIndex: 8,
+        question: "What is Required<Partial<User>>?",
+        expectedAnswer: "id: number; name: string; bio: string — first optional, then required = all required",
+        variables: { "C.id": "number", "C.name": "string", "C.bio": "string" },
+        explanation: "Partial makes everything optional. Required makes everything required. But bio was previously optional — now it's required! Not identical to User.",
+      },
+      {
+        lineIndex: 9,
+        question: "What is Partial<Required<User>>?",
+        expectedAnswer: "id?: number; name?: string; bio?: string — first required, then optional = all optional",
+        variables: { "D.id": "number | undefined", "D.name": "string | undefined", "D.bio": "string | undefined" },
+        explanation: "Required makes everything required (including bio). Partial then makes everything optional. Also not identical to User!",
+      },
+    ],
+    concept: "partial-required-composition",
+    difficulty: 3,
+  },
+
+  {
+    id: "15-exclude-extract-steps",
+    title: "Exclude and Extract — Step by Step",
+    description: "Trace how Exclude and Extract filter union types.",
+    code: [
+      "type All = 'a' | 'b' | 'c' | 'd' | 'e';",
+      "",
+      "type Step1 = Exclude<All, 'a' | 'b'>;",
+      "type Step2 = Extract<All, 'b' | 'c' | 'f'>;",
+      "type Step3 = Exclude<Step1, 'c'>;",
+      "type Step4 = NonNullable<string | null | undefined | number>;",
+    ],
+    steps: [
+      {
+        lineIndex: 2,
+        question: "What is Exclude<All, 'a' | 'b'>?",
+        expectedAnswer: "'c' | 'd' | 'e' — 'a' and 'b' are removed",
+        variables: { "Step1": "'c' | 'd' | 'e'" },
+        explanation: "Exclude removes all members assignable to the second type. 'a' and 'b' are removed.",
+      },
+      {
+        lineIndex: 3,
+        question: "What is Extract<All, 'b' | 'c' | 'f'>?",
+        expectedAnswer: "'b' | 'c' — only members present in BOTH ('f' is not in All)",
+        variables: { "Step2": "'b' | 'c'" },
+        explanation: "Extract keeps members assignable to the target type. 'f' is not in All, so it is ignored.",
+      },
+      {
+        lineIndex: 4,
+        question: "What is Exclude<Step1, 'c'> (Step1 = 'c' | 'd' | 'e')?",
+        expectedAnswer: "'d' | 'e' — 'c' is removed from Step1",
+        variables: { "Step3": "'d' | 'e'" },
+        explanation: "Step-by-step filtering: from 5 members to 3 to 2.",
+      },
+      {
+        lineIndex: 5,
+        question: "What is NonNullable<string | null | undefined | number>?",
+        expectedAnswer: "string | number — null and undefined are removed",
+        variables: { "Step4": "string | number" },
+        explanation: "NonNullable = Exclude<T, null | undefined>. Removes both.",
+      },
+    ],
+    concept: "exclude-extract-nonnullable",
+    difficulty: 2,
+  },
+
+  {
+    id: "15-pick-omit-record",
+    title: "Pick, Omit, Record — Object Transformations",
+    description: "Trace how Pick, Omit, and Record transform types.",
+    code: [
+      "interface Product {",
+      "  id: number;",
+      "  name: string;",
+      "  price: number;",
+      "  description: string;",
+      "}",
+      "",
+      "type Summary = Pick<Product, 'id' | 'name'>;",
+      "type CreateInput = Omit<Product, 'id'>;",
+      "type BrokenOmit = Omit<Product, 'nme'>; // Typo",
+      "type PriceMap = Record<'cheap' | 'mid' | 'premium', number>;",
+    ],
+    steps: [
+      {
+        lineIndex: 7,
+        question: "What does Summary contain?",
+        expectedAnswer: "{ id: number; name: string } — only the selected properties",
+        variables: { "Summary": "{ id: number; name: string }" },
+        explanation: "Pick selects the specified keys and keeps their types.",
+      },
+      {
+        lineIndex: 8,
+        question: "What does CreateInput contain?",
+        expectedAnswer: "{ name: string; price: number; description: string } — everything except id",
+        variables: { "CreateInput": "{ name: string; price: number; description: string }" },
+        explanation: "Omit removes the specified keys. Everything else remains.",
+      },
+      {
+        lineIndex: 9,
+        question: "What does BrokenOmit contain? (Omit with typo 'nme')",
+        expectedAnswer: "{ id: number; name: string; price: number; description: string } — identical to Product!",
+        variables: { "BrokenOmit": "Identical to Product — nothing removed!" },
+        explanation: "'nme' does not exist in Product. Omit accepts it anyway and removes nothing.",
+      },
+      {
+        lineIndex: 10,
+        question: "What does PriceMap contain?",
+        expectedAnswer: "{ cheap: number; mid: number; premium: number } — exactly 3 keys",
+        variables: { "PriceMap": "{ cheap: number; mid: number; premium: number }" },
+        explanation: "Record with union keys creates an object with exactly those keys.",
+      },
+    ],
+    concept: "pick-omit-record",
+    difficulty: 2,
+  },
+
+  {
+    id: "15-returntype-awaited",
+    title: "ReturnType and Awaited — extracting function types",
+    description: "Trace how ReturnType and Awaited extract function types.",
+    code: [
+      "function sync() { return { x: 1, y: 'hello' }; }",
+      "async function async_fn() { return { x: 1, y: 'hello' }; }",
+      "",
+      "type A = ReturnType<typeof sync>;",
+      "type B = ReturnType<typeof async_fn>;",
+      "type C = Awaited<B>;",
+      "type D = Awaited<ReturnType<typeof async_fn>>;",
+      "type E = Awaited<Promise<Promise<string>>>;",
+    ],
+    steps: [
+      {
+        lineIndex: 3,
+        question: "What is ReturnType<typeof sync>?",
+        expectedAnswer: "{ x: number; y: string }",
+        variables: { "A": "{ x: number; y: string }" },
+        explanation: "Synchronous function: ReturnType returns the return type directly.",
+      },
+      {
+        lineIndex: 4,
+        question: "What is ReturnType<typeof async_fn>?",
+        expectedAnswer: "Promise<{ x: number; y: string }> — with Promise wrapper!",
+        variables: { "B": "Promise<{ x: number; y: string }>" },
+        explanation: "Async functions always return a Promise. ReturnType keeps that.",
+      },
+      {
+        lineIndex: 5,
+        question: "What is Awaited<B>? (B = Promise<{ x: number; y: string }>)",
+        expectedAnswer: "{ x: number; y: string } — Promise unwrapped",
+        variables: { "C": "{ x: number; y: string }" },
+        explanation: "Awaited unwraps the Promise and returns the inner type.",
+      },
+      {
+        lineIndex: 7,
+        question: "What is Awaited<Promise<Promise<string>>>?",
+        expectedAnswer: "string — RECURSIVELY unwrapped (both Promise levels)",
+        variables: { "E": "string" },
+        explanation: "Awaited unwraps recursively — including nested Promises. Not just one level.",
+      },
+    ],
+    concept: "returntype-awaited",
+    difficulty: 2,
+  },
+];

@@ -1,0 +1,23 @@
+/**
+ * Lesson 17 — Pre-Test Questions: Conditional Types
+ */
+
+export interface PretestQuestion { sectionIndex: number; question: string; code?: string; options: string[]; correct: number; briefExplanation: string; }
+
+export const pretestQuestions: PretestQuestion[] = [
+  { sectionIndex: 1, question: "What does `T extends U ? X : Y` do?", options: ["Runtime check", "Compile-time: if T is a subtype of U then X, else Y", "Type guard", "I don't know"], correct: 1, briefExplanation: "Conditional types are ternaries at the type level." },
+  { sectionIndex: 1, question: "Can TypeScript narrow conditional types via if/else?", options: ["Yes", "No — this is a known limitation", "Only with as const", "I don't know"], correct: 1, briefExplanation: "Control flow narrowing does not work for conditional types." },
+  { sectionIndex: 1, question: "What does `IsString<42>` return for `type IsString<T> = T extends string ? true : false`?", options: ["true", "false", "never", "I don't know"], correct: 1, briefExplanation: "42 (number) extends string is false — so false." },
+  { sectionIndex: 2, question: "What does infer do in a conditional type?", options: ["Infers variables", "Declares a type variable that is extracted from the pattern", "Creates guards", "I don't know"], correct: 1, briefExplanation: "infer = placeholder that TypeScript fills with the concrete type." },
+  { sectionIndex: 2, question: "What does `T extends Promise<infer U> ? U : T` extract?", options: ["The inner type of the Promise", "The Promise wrapper", "never", "I don't know"], correct: 0, briefExplanation: "infer U extracts the type inside Promise<>." },
+  { sectionIndex: 2, question: "Can you use multiple infer in one pattern?", options: ["Yes — e.g. (infer A, infer B) => infer R", "No", "Only two", "I don't know"], correct: 0, briefExplanation: "Any number of infer per pattern is possible." },
+  { sectionIndex: 3, question: "What happens with `ToArray<string | number>` for `type ToArray<T> = T extends any ? T[] : never`?", options: ["string[] | number[] (distributive)", "(string | number)[]", "never", "I don't know"], correct: 0, briefExplanation: "Distribution: each union member is processed individually." },
+  { sectionIndex: 3, question: "How do you prevent distribution?", options: ["[T] extends [U] — tuple wrapping", "readonly", "as const", "I don't know"], correct: 0, briefExplanation: "[T] wraps T in a tuple and prevents automatic distribution." },
+  { sectionIndex: 3, question: "What is `IsString<never>` (distributive)?", options: ["true", "false", "never", "I don't know"], correct: 2, briefExplanation: "never = empty union. Distribution over nothing = never." },
+  { sectionIndex: 4, question: "What does a recursive conditional type do?", options: ["Loop at runtime", "Error", "References itself until a termination condition is met", "I don't know"], correct: 2, briefExplanation: "Like a recursive function — calls itself until the base case is reached." },
+  { sectionIndex: 4, question: "How does `Flatten<T>` unwrap nested arrays?", options: ["shift()", "Not possible", "Recursion: T extends (infer U)[] ? Flatten<U> : T", "I don't know"], correct: 2, briefExplanation: "Array? Keep unwrapping. Not an array? Done." },
+  { sectionIndex: 4, question: "Is there a recursion limit in TypeScript?", options: ["No", "Only 5", "Yes — approximately 50-100 levels", "I don't know"], correct: 2, briefExplanation: "TypeScript limits recursion to prevent infinite loops." },
+  { sectionIndex: 5, question: "What does Methods<T> combine (Mapped + Conditional)?", options: ["Copy all properties", "I don't know", "Make all optional", "Keep only function properties, filter the rest"], correct: 3, briefExplanation: "Conditional in key remapping filters for functions — mapped type iterates." },
+  { sectionIndex: 5, question: "What is Promisify<T>?", options: ["Makes T a Promise", "I don't know", "Removes Promises", "Converts method return types to Promise<R>"], correct: 3, briefExplanation: "Mapped + Conditional + infer: methods become async, data stays." },
+  { sectionIndex: 5, question: "When do you combine Mapped + Conditional types?", options: ["Never", "I don't know", "Only with arrays", "When you want to SELECTIVELY transform properties (change some, leave others)"], correct: 3, briefExplanation: "The combination allows per-property decisions — the most powerful pattern." },
+];

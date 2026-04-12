@@ -1,0 +1,10 @@
+/**
+ * Lesson 19 — Parson's Problems: Modules & Declarations
+ */
+import type { ParsonsProblem } from "../tools/parsons-engine.ts";
+
+export const parsonsProblems: ParsonsProblem[] = [
+  { id: "L19-P1", title: "Global Augmentation for ProcessEnv", description: "Arrange the lines into a correct ProcessEnv augmentation.", correctOrder: ["declare global {", "  namespace NodeJS {", "    interface ProcessEnv {", "      NODE_ENV: 'development' | 'production';", "      DATABASE_URL: string;", "    }", "  }", "}", "", "export {};"], distractors: ["module.exports = {};", "declare namespace global {"], hint: "declare global (not declare namespace global). export {} at the end for module status.", concept: "global-augmentation", difficulty: 2 },
+  { id: "L19-P2", title: "Module Declaration for External Library", description: "Arrange the lines into a correct module declaration.", correctOrder: ["declare module 'my-cache' {", "  export function get<T>(key: string): T | undefined;", "  export function set<T>(key: string, value: T): void;", "  export function clear(): void;", "}"], distractors: ["import { Cache } from 'my-cache';", "module.exports = { get, set, clear };"], hint: "declare module for external declaration. Generics allowed. No implementation.", concept: "declare-module", difficulty: 2 },
+  { id: "L19-P3", title: "Barrel File with Type-Only Re-Exports", description: "Arrange the lines into a correct barrel file.", correctOrder: ["export { UserService } from './user-service';", "export { ProductService } from './product-service';", "export type { User } from './types';", "export type { Product } from './types';"], distractors: ["import { UserService } from './user-service';", "export default UserService;"], hint: "Re-exports with export { } from '...'. Type-only re-exports with export type { }. No default export in the barrel.", concept: "barrel-file", difficulty: 1 },
+];
