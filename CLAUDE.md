@@ -169,3 +169,4 @@ Details: `docs/04-QUALITY-PROCESS.md`
 | `09-DIDACTIC-FORMATS.md` | 12 implementierte + 8 geplante Uebungsformate |
 | `10-ADAPTIVE-SYSTEM.md` | Markdown-Marker, filterByDepth, UX-Flow |
 | `11-FRAMEWORK-DIDACTICS.md` | 15 framework-spezifische Lernformate |
+| `12-RELEASE-PROCESS.md` | Release-Flow: Version bump, Tag push, GitHub Actions Build |

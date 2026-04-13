@@ -20,28 +20,34 @@ const platforms = [
     icon: <Monitor size={32} />,
     file: "kodo-forge.exe",
     href: latestReleaseDownloadUrl("kodo-forge.exe"),
-    size: "~35 MB",
+    size: "~115 MB",
     note: "Windows 10/11 (x64)",
     primary: true,
   },
   {
     name: "macOS",
     icon: <Apple size={32} />,
-    file: "kodo-forge-mac",
-    href: latestReleaseDownloadUrl("kodo-forge-mac"),
-    size: "~33 MB",
+    file: "kodo-forge-macos-arm64",
+    href: latestReleaseDownloadUrl("kodo-forge-macos-arm64"),
+    size: "~63 MB",
     note: "Apple Silicon (M1+)",
     primary: false,
   },
   {
     name: "Linux",
     icon: <Terminal size={32} />,
-    file: "kodo-forge-linux",
-    href: latestReleaseDownloadUrl("kodo-forge-linux"),
-    size: "~34 MB",
+    file: "kodo-forge-linux-x64",
+    href: latestReleaseDownloadUrl("kodo-forge-linux-x64"),
+    size: "~100 MB",
     note: "x64, glibc 2.31+",
     primary: false,
   },
+];
+
+// Sekundaere Targets (Intel-Mac, Linux-ARM) — auf Releases-Seite verlinkt
+const otherBuilds = [
+  { label: "macOS Intel (x64)", file: "kodo-forge-macos-x64" },
+  { label: "Linux ARM64", file: "kodo-forge-linux-arm64" },
 ];
 
 interface DownloadPageProps {
@@ -135,6 +141,39 @@ export default function DownloadPage({ dict, lang }: DownloadPageProps) {
           </motion.div>
         ))}
       </div>
+
+      {/* Weitere Architektur-Varianten */}
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        custom={0}
+        variants={fadeUp}
+        className="text-center mb-16"
+      >
+        <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">Other builds</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {otherBuilds.map((b) => (
+            <a
+              key={b.file}
+              href={latestReleaseDownloadUrl(b.file)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-zinc-400 hover:text-[#FFB000] underline underline-offset-4 font-mono"
+            >
+              {b.label}
+            </a>
+          ))}
+          <a
+            href={githubRepo.releasesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-zinc-400 hover:text-[#FFB000] underline underline-offset-4"
+          >
+            All releases
+          </a>
+        </div>
+      </motion.div>
 
       {/* Alternative: Source */}
       <motion.div

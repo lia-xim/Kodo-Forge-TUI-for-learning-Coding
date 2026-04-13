@@ -28,12 +28,15 @@ There are no databases or cloud backends required to run it. The engine just par
 
 ## Try it out (No installation needed)
 
-Check out our [Releases](https://github.com/lia-xim/Learning/releases) for the standalone executable. 
+Check out our [Releases](https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding/releases) for the standalone executable.
 
 - **Windows:** Download `kodo-forge.exe` and execute it.
-- **Linux/Mac:** Download the binary and run `./kodo-forge`
+- **macOS (Apple Silicon):** Download `kodo-forge-macos-arm64`, `chmod +x`, run it.
+- **macOS (Intel):** Download `kodo-forge-macos-x64`, `chmod +x`, run it.
+- **Linux (x64):** Download `kodo-forge-linux-x64`, `chmod +x`, run it.
+- **Linux (ARM64):** Download `kodo-forge-linux-arm64`, `chmod +x`, run it.
 
-*(Note: Keep the downloaded executable in the same directory as the `platform.json` and course folders, like `typescript/`)*
+Courses are bundled inside the binary — no extra files needed. On first launch the courses extract to your OS data directory (Windows: `%LOCALAPPDATA%\KodoForge\`, macOS: `~/Library/Application Support/KodoForge/`, Linux: `~/.local/share/kodo-forge/`). See `platform/README.md` for portable-mode details.
 
 ## Building from source
 
@@ -41,10 +44,10 @@ If you want to poke around the Node/Bun codebase:
 
 ```bash
 # Clone it
-git clone https://github.com/lia-xim/Learning.git
+git clone https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding.git
 
 # Go to the platform folder
-cd Learning/platform
+cd Kodo-Forge-TUI-for-learning-Coding/platform
 
 # Install dependencies
 npm install

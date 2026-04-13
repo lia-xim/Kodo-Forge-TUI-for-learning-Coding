@@ -19,7 +19,7 @@
     "build:mac-intel": "bun build ./src/tui.ts --compile --target=bun-darwin-x64 --outfile dist/kodo-forge-macos-x64",
     "build:linux": "bun build ./src/tui.ts --compile --target=bun-linux-x64 --outfile dist/kodo-forge-linux-x64",
     "build:linux-arm64": "bun build ./src/tui.ts --compile --target=bun-linux-arm64 --outfile dist/kodo-forge-linux-arm64",
-    "build:all": "npm run pack && npm run build:win && npm run build:mac && npm run build:linux",
+    "build:all": "npm run pack && npm run build:win && npm run build:mac && npm run build:mac-intel && npm run build:linux && npm run build:linux-arm64",
     "postinstall": "node -e \"require('node:fs').existsSync('src/generated/courses-bundle-manifest.ts') || require('node:child_process').spawnSync('npx', ['tsx', 'scripts/pack-courses.ts'], { stdio: 'inherit', shell: true })\"",
     "release": "npm version patch -m \"Release v%s\" && git push --follow-tags"
   },
