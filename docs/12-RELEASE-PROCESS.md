@@ -19,12 +19,20 @@ SemVer nach `platform/package.json`.
 
 | Bump-Typ | Kommando | Wann |
 |----------|----------|------|
-| Patch (1.0.2 → 1.0.3) | `npm run release` | Bugfixes, kleine Inhalts-Updates |
-| Minor (1.0.x → 1.1.0) | `npm version minor -m "Release v%s" && git push --follow-tags` | Neue Lektionen, neue Features |
-| Major (1.x.x → 2.0.0) | `npm version major -m "Release v%s" && git push --follow-tags` | Breaking Changes (Bundle-Format, State-Schema) |
+| Patch (1.0.4 → 1.0.5) | `npm run release` | Bugfixes, kleine Inhalts-Updates |
+| Minor (1.0.x → 1.1.0) | `npm run release:minor` | Neue Lektionen, neue Features |
+| Major (1.x.x → 2.0.0) | `npm run release:major` | Breaking Changes (Bundle-Format, State-Schema) |
 
-Alle drei Varianten tun dasselbe: Version in `package.json` erhoehen, Commit
-mit Message `Release vX.Y.Z`, Git-Tag `vX.Y.Z` setzen, Commit+Tag pushen.
+Alle drei Varianten rufen `scripts/release.ts` auf und tun dasselbe:
+
+1. **Working tree check** — bricht ab wenn uncommittete Aenderungen vorhanden sind
+2. **Version bumpen** — in `package.json` UND `package-lock.json`
+3. **Tag-Check** — bricht ab wenn Tag bereits existiert
+4. **Commit** — "Release vX.Y.Z" (wird direkt mit `git commit` gemacht, nicht ueber `npm version`, weil npm version auf manchen Windows-Setups die Git-Ops ueberspringt)
+5. **Tag** — `vX.Y.Z`
+6. **Push** — `git push origin HEAD` + `git push origin vX.Y.Z`
+
+**Warum nicht `npm version patch`?** Auf manchen Windows-Setups (hier passiert) macht `npm version` nur den File-Bump und ueberspringt Commit+Tag. Der eigene Script umgeht das.
 
 ## Was automatisch passiert
 
@@ -86,10 +94,20 @@ falls er failt, manuell `tsx scripts/pack-courses.ts` laufen lassen.
 
 **Version bump rueckgaengig machen:**
 ```bash
-git tag -d v1.0.3                    # lokalen Tag loeschen
-git push origin :refs/tags/v1.0.3    # Remote-Tag loeschen
+git tag -d v1.0.5                    # lokalen Tag loeschen
+git push origin :refs/tags/v1.0.5    # Remote-Tag loeschen
 git reset --hard HEAD~1              # Bump-Commit zurueck (VORSICHT: zerstoert Work)
 ```
+
+**Tag fehlt obwohl Version gebumpt wurde (alter `npm version`-Bug):**
+Frueher stand im `release`-Script `npm version patch`. Auf manchen Windows-Setups
+hat das nur die Files bearbeitet aber nicht committet/getaggt. Fix: per Hand
+Tag setzen und pushen.
+```bash
+git tag v1.0.5 HEAD
+git push origin v1.0.5
+```
+Der neue `scripts/release.ts` hat das Problem nicht mehr.
 
 ## Referenzen
 
