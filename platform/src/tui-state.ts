@@ -28,26 +28,66 @@ import {
 
 // ─── Konstanten ─────────────────────────────────────────────────────────────
 
-export const IS_STANDALONE = !!(process as any).isBun || path.basename(process.argv[1] || "").endsWith(".exe");
+/**
+ * Erkennt, ob wir als compile-te Single-File-Binary laufen (vs. `tsx src/tui.ts`
+ * oder `bun src/tui.ts` im Dev-Modus).
+ *
+ * Kriterien:
+ *   - Bun-Runtime ist aktiv UND
+ *   - execPath ist KEIN interpreter (node, bun, tsx) — also unsere eigene Binary
+ *
+ * Der alte Check (argv[1].endsWith(".exe")) war kaputt: in einer Bun-compile-ten
+ * .exe ist argv[1] entweder leer oder ein CLI-Argument, nie der Binary-Pfad.
+ */
+const _execBasename = path.basename(process.execPath || "").toLowerCase();
+const _isInterpreter = /^(node|bun|tsx|npx|deno)(\.exe)?$/i.test(_execBasename);
+export const IS_STANDALONE =
+  typeof (globalThis as any).Bun !== "undefined" && !_isInterpreter;
 
 import { fileURLToPath } from "node:url";
+import { resolveInstallDir } from "./tui-first-run.ts";
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
 
-/** platform/ Ordner (Parent von src/ in dev, oder CWD in standalone) */
+/** platform/ Ordner (Parent von src/ in dev-Modus) */
 const devPlatformRoot = path.resolve(_dirname, "..");
 
-export const PLATFORM_ROOT = IS_STANDALONE ? process.cwd() : devPlatformRoot;
+/**
+ * Standalone: plattform-spezifisches Install-Verzeichnis (Windows:
+ * %LOCALAPPDATA%\KodoForge, macOS: ~/Library/Application Support/KodoForge,
+ * Linux: $XDG_DATA_HOME/kodo-forge oder ~/.local/share/kodo-forge).
+ *
+ * Mit --portable oder KODOFORGE_PORTABLE=1 wird der Ordner der .exe benutzt.
+ * Dev-Modus (via tsx): platform/-Verzeichnis und Parent fuer Kurse.
+ */
+const standaloneInstallDir = IS_STANDALONE
+  ? resolveInstallDir(process.argv)
+  : devPlatformRoot;
 
-/** Learning/ Ordner — enthaelt alle Kursverzeichnisse */
-export const COURSES_ROOT = IS_STANDALONE ? process.cwd() : path.resolve(devPlatformRoot, "..");
+export const PLATFORM_ROOT = standaloneInstallDir;
 
-/** platform/platform.json */
+/**
+ * Wurzel-Ordner der Kursverzeichnisse.
+ *
+ * - Standalone: gleich PLATFORM_ROOT (Kurse liegen direkt im Install-Dir)
+ * - Dev:        Parent von platform/ (Learning/)
+ */
+export const COURSES_ROOT = IS_STANDALONE
+  ? standaloneInstallDir
+  : path.resolve(devPlatformRoot, "..");
+
+/** platform.json — Kurs-Registry */
 export const PLATFORM_FILE = path.join(PLATFORM_ROOT, "platform.json");
 
-/** platform/state/ — Runtime State */
-export const STATE_DIR = path.join(PLATFORM_ROOT, IS_STANDALONE ? ".kodo-state" : "state");
+/**
+ * Runtime-State (Progress, Review-Daten, Locale-Preference).
+ * Liegt IMMER im Install-Dir unter state/ — so ueberlebt State sowohl
+ * .exe-Updates als auch Bundle-Upgrades (die nur Kurs-Ordner ersetzen).
+ */
+export const STATE_DIR = path.join(PLATFORM_ROOT, "state");
+
+export const CRASH_LOG_FILE = path.join(PLATFORM_ROOT, "kodo-crash.log");
 
 // ─── i18n Initialization ──────────────────────────────────────────────────
 initI18n(loadLocalePreference(STATE_DIR));

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { FolderOpen, PlusSquare, Brain, Terminal, FileCode2, Command, Sparkles, HelpCircle } from "lucide-react";
 import Link from "next/link";
+import { githubRepo } from "@/lib/github";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -14,7 +15,29 @@ const fadeUp = {
 };
 
 interface CreatePageProps {
-  dict: Record<string, any>;
+  dict: {
+    createPage: {
+      title: string;
+      titleHighlight: string;
+      subtitle: string;
+      howItWorks: string;
+      howItWorksP1: string;
+      howItWorksP2: string;
+      howItWorksP3: string;
+      dirStructure: string;
+      creatorExperience: string;
+      writeMarkdown: string;
+      writeMarkdownDesc: string;
+      terminalNative: string;
+      terminalNativeDesc: string;
+      annotatedCode: string;
+      annotatedCodeDesc: string;
+      aiTitle: string;
+      aiDesc: string;
+      viewTutorial: string;
+      getAiWorkflow: string;
+    };
+  };
   lang: string;
 }
 
@@ -134,7 +157,7 @@ export default function CreatePage({ dict, lang }: CreatePageProps) {
                 <HelpCircle size={18} /> {t.viewTutorial}
               </div>
             </Link>
-            <a href="https://github.com/lia-xim/Learning/blob/main/.agent/workflows/create-kodo-course.md" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 retro-glass text-white font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-zinc-800/40 transition-colors border border-zinc-700/50">
+            <a href={githubRepo.workflowUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 retro-glass text-white font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-zinc-800/40 transition-colors border border-zinc-700/50">
               <PlusSquare size={18} /> {t.getAiWorkflow}
             </a>
           </div>

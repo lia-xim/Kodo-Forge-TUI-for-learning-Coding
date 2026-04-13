@@ -4,12 +4,24 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { Terminal, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
+import BrandLogo from './BrandLogo';
+import { githubRepo } from '@/lib/github';
 
 interface NavbarProps {
   lang: string;
-  dict: Record<string, any>;
+  dict: {
+    nav: {
+      home: string;
+      courses: string;
+      docs: string;
+      createCourse: string;
+      download: string;
+      starOnGithub: string;
+      toggleMenu?: string;
+    };
+  };
 }
 
 export default function Navbar({ lang, dict }: NavbarProps) {
@@ -31,9 +43,10 @@ export default function Navbar({ lang, dict }: NavbarProps) {
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
         {/* Logo */}
         <Link href={`/${lang}`} className="flex items-center gap-3 group">
-          <Terminal
-            className="text-[#FFB000] group-hover:rotate-12 transition-transform"
-            size={22}
+          <BrandLogo
+            variant="mark"
+            alt="Kodo Forge icon"
+            className="h-9 w-9 shrink-0 transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-105"
           />
           <span className="font-bold text-white tracking-widest text-sm uppercase">
             Kodo<span className="text-[#FFB000]">Forge</span>
@@ -72,7 +85,7 @@ export default function Navbar({ lang, dict }: NavbarProps) {
         <div className="hidden md:flex items-center gap-4">
           <LanguageSwitcher lang={lang} />
           <a
-            href="https://github.com/lia-xim/Learning"
+            href={githubRepo.url}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-xs text-zinc-500 hover:text-[#FFB000] transition-colors uppercase tracking-wider"

@@ -5,7 +5,6 @@ import {
   Terminal,
   FolderOpen,
   FileText,
-  BookOpen,
   Cpu,
   Zap,
   Brain,
@@ -15,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { githubRepo } from "@/lib/github";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -116,8 +116,8 @@ Go to the [Download page](/download) and grab the binary for your operating syst
 If you want to contribute, modify, or study the code:
 
 \`\`\`bash
-git clone https://github.com/lia-xim/Learning.git
-cd Learning/platform
+git clone ${githubRepo.cloneUrl}
+cd Kodo-Forge-TUI-for-learning-Coding/platform
 npm install
 npm start
 \`\`\`
@@ -255,7 +255,19 @@ const sectionIds = [
 ];
 
 interface DocsPageProps {
-  dict: Record<string, any>;
+  dict: {
+    docsPage: {
+      title: string;
+      titleHighlight: string;
+      subtitle: string;
+      onThisPage: string;
+      sectionTitles: Record<string, string>;
+      openSourceTitle: string;
+      openSourceDesc: string;
+      viewOnGithub: string;
+      downloadFree: string;
+    };
+  };
   lang: string;
 }
 
@@ -414,7 +426,7 @@ export default function DocsPage({ dict, lang }: DocsPageProps) {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://github.com/lia-xim/Learning"
+                href={githubRepo.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 retro-glass rounded text-[#FFB000] font-bold uppercase tracking-widest text-sm hover:bg-zinc-800/40 transition-colors"

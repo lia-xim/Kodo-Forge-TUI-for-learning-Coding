@@ -11,6 +11,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "url";
 
 import {
@@ -20,7 +21,8 @@ import {
   updateTermSize, setCurrentScreen, setLessons, setIsInAltScreen,
   platformConfig, setAdaptiveState, setProjectRoot, setActiveCourseId,
   updateDerivedPaths, discoverLessons, loadProgress, resolveCoursePath,
-  PLATFORM_ROOT, COURSES_ROOT, STATE_DIR,
+  PLATFORM_ROOT, COURSES_ROOT, STATE_DIR, PLATFORM_FILE, IS_STANDALONE,
+  CRASH_LOG_FILE,
 } from "./tui-state.ts";
 import { loadAdaptiveState } from "./adaptive-engine.ts";
 import { handleInput } from "./tui-input.ts";
@@ -29,6 +31,48 @@ import { renderPlatformScreen } from "./tui-platform.ts";
 import { redraw, resizeRedraw } from "./tui-redraw.ts";
 import { detectTtsEngine } from "./tui-tts.ts";
 import { showSplash } from "./tui-splash.ts";
+import { ensureInstalled } from "./tui-first-run.ts";
+
+/**
+ * Blockiert bis der User eine Taste drueckt — robust gegen Windows-Doppelklick
+ * (wo der Console-Parent sofort schliesst und fs.readSync(0) ggf. failt).
+ *
+ * Strategie:
+ *   1. Wenn stdin ein echtes TTY ist → readSync (blockiert wie gewohnt).
+ *   2. Sonst auf Windows: externes `cmd /c pause` (haengt die Console offen).
+ *   3. Sonst Unix: externes `read -n 1` via /bin/sh.
+ */
+function pauseBeforeExit(): void {
+  console.log("\nDruecke Enter zum Beenden...");
+  // Pfad 1: Normal — stdin ist ein TTY
+  if (process.stdin.isTTY) {
+    try {
+      const buffer = Buffer.alloc(1);
+      fs.readSync(0, buffer, 0, 1, null);
+      return;
+    } catch {
+      // fall through to platform fallbacks
+    }
+  }
+  // Pfad 2: Windows ohne stdin-TTY → cmd.exe haengt die Console offen
+  try {
+    if (process.platform === "win32") {
+      spawnSync("cmd.exe", ["/c", "pause"], { stdio: "inherit" });
+      return;
+    }
+    // Pfad 3: Unix ohne TTY → /bin/sh read
+    spawnSync("/bin/sh", ["-c", "read -n 1 -s -r -p 'Druecke eine Taste...'"], {
+      stdio: "inherit",
+    });
+  } catch {
+    // Wenn alles failt, 3 Sekunden Idle um dem User wenigstens eine Chance
+    // zum Lesen zu geben.
+    const until = Date.now() + 3000;
+    while (Date.now() < until) {
+      /* busy-wait — OK weil wir eh sterben */
+    }
+  }
+}
 
 // ─── Cleanup — IMMER alternate buffer verlassen ────────────────────────────
 
@@ -39,23 +83,63 @@ process.on("uncaughtException", (err) => {
   cleanup();
   console.error("Unerwarteter Fehler:", err);
   if (true) {
-    fs.writeFileSync("kodo-crash.log", String(err.stack || err) + "\n");
-    console.log("\nApplikation abgestuerzt. Fehler wurde in 'kodo-crash.log' gespeichert.");
-    console.log("Druecke eine Taste zum Beenden...");
-    // Pause synchron blockieren, damit das Fenster nicht sofort zugeht
-    // Da readline asynchron sein kann, blockieren wir einfach durch warten auf stdin sync
     try {
-      const buffer = Buffer.alloc(1);
-      fs.readSync(0, buffer, 0, 1, null);
+      fs.mkdirSync(path.dirname(CRASH_LOG_FILE), { recursive: true });
+      fs.writeFileSync(CRASH_LOG_FILE, String(err.stack || err) + "\n");
+      console.log(`\nApplikation abgestuerzt. Fehler wurde in '${CRASH_LOG_FILE}' gespeichert.`);
     } catch {}
+    pauseBeforeExit();
   }
   process.exit(1);
 });
 
 // ─── Hauptprogramm ─────────────────────────────────────────────────────────
 
-function main(): void {
+async function main(): Promise<void> {
   updateTermSize();
+
+  // --diagnose: druckt nur Laufzeit-Info und beendet (fuer Debugging)
+  if (process.argv.includes("--diagnose")) {
+    const p: any = process;
+    console.log("=== Kodo Forge Diagnose ===");
+    console.log("IS_STANDALONE:   " + IS_STANDALONE);
+    console.log("typeof Bun:      " + typeof (globalThis as any).Bun);
+    console.log("process.execPath:" + process.execPath);
+    console.log("process.argv:    " + JSON.stringify(process.argv));
+    console.log("process.platform:" + process.platform);
+    console.log("process.versions:" + JSON.stringify(p.versions, null, 2));
+    console.log("PLATFORM_ROOT:   " + PLATFORM_ROOT);
+    console.log("PLATFORM_FILE:   " + PLATFORM_FILE);
+    console.log("STATE_DIR:       " + STATE_DIR);
+    console.log("platform.json exists: " + fs.existsSync(PLATFORM_FILE));
+    process.exit(0);
+  }
+
+  // Standalone: Kurs-Bundle beim ersten Start entpacken (bzw. bei Bundle-
+  // Upgrade aktualisieren). Im Dev-Modus via tsx uebersprungen.
+  if (IS_STANDALONE) {
+    try {
+      await ensureInstalled(process.argv);
+    } catch (err) {
+      console.error(
+        `\n${c.red}  Kodo Forge konnte die Kursdateien nicht einrichten.${c.reset}\n` +
+          `${c.dim}  ${err instanceof Error ? err.message : String(err)}${c.reset}\n` +
+          `${c.dim}  Ziel-Verzeichnis: ${PLATFORM_ROOT}${c.reset}\n`
+      );
+      pauseBeforeExit();
+      process.exit(1);
+    }
+  }
+
+  // Nach Extraktion sollte platform.json jetzt da sein. Falls nicht → Fehler.
+  if (!fs.existsSync(PLATFORM_FILE)) {
+    console.error(
+      `\n${c.red}  Fehler: 'platform.json' nicht gefunden.${c.reset}\n` +
+        `${c.dim}  Erwartet: ${PLATFORM_FILE}${c.reset}\n`
+    );
+    pauseBeforeExit();
+    process.exit(1);
+  }
 
   // Platform-Konfiguration laden
   loadPlatformConfig();
@@ -95,8 +179,10 @@ function main(): void {
   if (!process.stdin.isTTY) {
     console.error(
       `\n${c.red}  Fehler: Kein interaktives Terminal erkannt.${c.reset}\n` +
-        `${c.dim}  Das TUI benoetigt ein interaktives Terminal.${c.reset}\n`
+        `${c.dim}  Das TUI benoetigt ein interaktives Terminal.${c.reset}\n` +
+        `${c.dim}  Starte die EXE bitte direkt in PowerShell, CMD oder Windows Terminal.${c.reset}\n`
     );
+    pauseBeforeExit();
     process.exit(1);
   }
 
@@ -136,13 +222,26 @@ function main(): void {
 
 // ─── Start ─────────────────────────────────────────────────────────────────
 
-const isMainModule = process.argv[1] && (
-  fileURLToPath(import.meta.url) === process.argv[1] ||
-  process.argv[1].endsWith("tui.ts")
-);
+/**
+ * Erkennt, ob tui.ts als Entry-Point laeuft (vs. nur importiert). Wichtig fuer:
+ *   - `npm start`:         argv[1] === path/to/tui.ts
+ *   - Bun-Compiled:        argv[1] ist leer/CLI-arg; import.meta.main === true
+ *   - Import als Lib:      keines der beiden → false, damit main() nicht startet
+ */
+const _importMetaMain = (import.meta as any).main;
+const isMainModule =
+  _importMetaMain === true ||
+  (!!process.argv[1] &&
+    (fileURLToPath(import.meta.url) === process.argv[1] ||
+      process.argv[1].endsWith("tui.ts")));
 
 if (isMainModule) {
-  main();
+  main().catch((err) => {
+    cleanup();
+    console.error("Unerwarteter Fehler beim Start:", err);
+    pauseBeforeExit();
+    process.exit(1);
+  });
 }
 
 // Named exports for React App

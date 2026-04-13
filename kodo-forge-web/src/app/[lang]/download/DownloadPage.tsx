@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Download, Monitor, Apple, Terminal, Code2, Shield, Zap, HardDrive } from "lucide-react";
 import Link from "next/link";
+import { githubRepo, latestReleaseDownloadUrl } from "@/lib/github";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -18,6 +19,7 @@ const platforms = [
     name: "Windows",
     icon: <Monitor size={32} />,
     file: "kodo-forge.exe",
+    href: latestReleaseDownloadUrl("kodo-forge.exe"),
     size: "~35 MB",
     note: "Windows 10/11 (x64)",
     primary: true,
@@ -26,6 +28,7 @@ const platforms = [
     name: "macOS",
     icon: <Apple size={32} />,
     file: "kodo-forge-mac",
+    href: latestReleaseDownloadUrl("kodo-forge-mac"),
     size: "~33 MB",
     note: "Apple Silicon (M1+)",
     primary: false,
@@ -34,6 +37,7 @@ const platforms = [
     name: "Linux",
     icon: <Terminal size={32} />,
     file: "kodo-forge-linux",
+    href: latestReleaseDownloadUrl("kodo-forge-linux"),
     size: "~34 MB",
     note: "x64, glibc 2.31+",
     primary: false,
@@ -41,7 +45,23 @@ const platforms = [
 ];
 
 interface DownloadPageProps {
-  dict: Record<string, any>;
+  dict: {
+    downloadPage: {
+      title: string;
+      titleHighlight: string;
+      subtitle: string;
+      noInstall: string;
+      noInstallDesc: string;
+      portable: string;
+      portableDesc: string;
+      instantBoot: string;
+      instantBootDesc: string;
+      buildFromSource: string;
+      buildDesc: string;
+      needHelp: string;
+      readDocs: string;
+    };
+  };
   lang: string;
 }
 
@@ -93,7 +113,9 @@ export default function DownloadPage({ dict, lang }: DownloadPageProps) {
             variants={fadeUp}
           >
             <motion.a
-              href="#"
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.03, boxShadow: "0 0 30px rgba(255,176,0,0.15)" }}
               whileTap={{ scale: 0.97 }}
               className={`block retro-glass rounded-lg p-8 text-center transition-all cursor-pointer ${
@@ -134,8 +156,8 @@ export default function DownloadPage({ dict, lang }: DownloadPageProps) {
         </p>
         <div className="retro-glass rounded-lg p-5 font-mono text-sm space-y-1">
           <p className="text-zinc-500"># Clone the repository</p>
-          <p className="text-zinc-300">git clone https://github.com/lia-xim/Learning.git</p>
-          <p className="text-zinc-300">cd Learning/platform</p>
+          <p className="text-zinc-300">{`git clone ${githubRepo.cloneUrl}`}</p>
+          <p className="text-zinc-300">cd Kodo-Forge-TUI-for-learning-Coding/platform</p>
           <p className="text-zinc-300 mt-2">npm install</p>
           <p className="text-zinc-300">npm start</p>
         </div>

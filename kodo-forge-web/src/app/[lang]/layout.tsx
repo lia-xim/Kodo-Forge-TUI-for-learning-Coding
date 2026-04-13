@@ -4,6 +4,7 @@ import { getDictionary, hasLocale } from './dictionaries';
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { brandAssets } from '@/lib/brand';
 import '../../globals.css';
 
 const mono = JetBrains_Mono({
@@ -71,6 +72,24 @@ export async function generateMetadata({
     authors: [{ name: 'lia-xim', url: 'https://github.com/lia-xim' }],
     creator: 'lia-xim',
     publisher: 'Kodo Forge',
+    icons: {
+      icon: [
+        { url: brandAssets.faviconSrc, sizes: 'any' },
+        {
+          url: brandAssets.mark.pngSrc,
+          type: 'image/png',
+          sizes: '256x256',
+        },
+      ],
+      shortcut: [brandAssets.faviconSrc],
+      apple: [
+        {
+          url: brandAssets.appleTouchIconSrc,
+          sizes: '180x180',
+          type: 'image/png',
+        },
+      ],
+    },
     openGraph: {
       title: dict.meta.ogTitle,
       description: dict.meta.ogDescription,
@@ -78,11 +97,20 @@ export async function generateMetadata({
       locale: lang === 'de' ? 'de_DE' : 'en_US',
       siteName: 'Kodo Forge',
       url: `${BASE_URL}/${lang}`,
+      images: [
+        {
+          url: brandAssets.full.pngSrc,
+          width: brandAssets.full.width,
+          height: brandAssets.full.height,
+          alt: 'Kodo Forge pixel-art logo',
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: dict.meta.twitterTitle,
       description: dict.meta.twitterDescription,
+      images: [brandAssets.full.pngSrc],
     },
     robots: {
       index: true,
@@ -125,7 +153,7 @@ export default async function LocaleLayout({
         '@id': `${BASE_URL}/#organization`,
         name: 'Kodo Forge',
         url: BASE_URL,
-        logo: `${BASE_URL}/logo.png`,
+        logo: `${BASE_URL}${brandAssets.full.pngSrc}`,
         sameAs: ['https://github.com/lia-xim'],
       },
       {

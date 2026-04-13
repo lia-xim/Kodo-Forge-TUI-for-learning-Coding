@@ -1,9 +1,36 @@
 import Link from 'next/link';
-import { Terminal, Code2 } from 'lucide-react';
+import { Code2 } from 'lucide-react';
+import BrandLogo from './BrandLogo';
+import { githubRepo } from '@/lib/github';
 
 interface FooterProps {
   lang: string;
-  dict: Record<string, any>;
+  dict: {
+    footer: {
+      brandDescription: string;
+      coursesTitle: string;
+      coursesLinks: {
+        typescript: string;
+        angular: string;
+        react: string;
+        nextjs: string;
+      };
+      resourcesTitle: string;
+      resourcesLinks: {
+        documentation: string;
+        createCourse: string;
+        download: string;
+      };
+      communityTitle: string;
+      communityLinks: {
+        github: string;
+        bugs: string;
+        license: string;
+      };
+      copyright: string;
+      terminalStatus: string;
+    };
+  };
 }
 
 export default function Footer({ lang, dict }: FooterProps) {
@@ -16,7 +43,11 @@ export default function Footer({ lang, dict }: FooterProps) {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <Terminal className="text-[#FFB000]" size={20} />
+              <BrandLogo
+                variant="mark"
+                alt="Kodo Forge icon"
+                className="h-10 w-10 shrink-0"
+              />
               <span className="font-bold text-white tracking-widest text-sm uppercase">
                 Kodo<span className="text-[#FFB000]">Forge</span>
               </span>
@@ -108,7 +139,7 @@ export default function Footer({ lang, dict }: FooterProps) {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="https://github.com/lia-xim/Learning"
+                  href={githubRepo.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors flex items-center gap-2"
@@ -118,7 +149,7 @@ export default function Footer({ lang, dict }: FooterProps) {
               </li>
               <li>
                 <a
-                  href="https://github.com/lia-xim/Learning/issues"
+                  href={githubRepo.issuesUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors"
@@ -128,7 +159,7 @@ export default function Footer({ lang, dict }: FooterProps) {
               </li>
               <li>
                 <a
-                  href="https://github.com/lia-xim/Learning/blob/master/LICENSE"
+                  href={githubRepo.licenseUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-zinc-500 hover:text-[#FFB000] transition-colors"

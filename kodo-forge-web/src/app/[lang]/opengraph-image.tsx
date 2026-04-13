@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { ImageResponse } from 'next/og';
 
 export const alt = 'Kodo Forge — Master TypeScript in the Terminal';
@@ -8,6 +11,11 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image() {
+  const logoBuffer = await fs.readFile(
+    path.join(process.cwd(), 'public', 'brand', 'kodo-forge-logo.png')
+  );
+  const logoSrc = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+
   return new ImageResponse(
     (
       <div
@@ -56,20 +64,13 @@ export default async function Image() {
           v1.0 · MIT
         </div>
 
-        {/* Top line */}
-        <div
-          style={{
-            fontSize: 96,
-            fontWeight: 800,
-            color: '#FFB000',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            textShadow: '0 0 40px rgba(255, 176, 0, 0.35)',
-            marginBottom: 36,
-          }}
-        >
-          KODO FORGE
-        </div>
+        <img
+          src={logoSrc}
+          alt="Kodo Forge pixel-art logo"
+          width="280"
+          height="270"
+          style={{ marginBottom: 28 }}
+        />
 
         {/* Middle */}
         <div
@@ -78,7 +79,7 @@ export default async function Image() {
             fontWeight: 600,
             color: '#ffffff',
             textAlign: 'center',
-            marginBottom: 48,
+            marginBottom: 36,
             maxWidth: 1000,
           }}
         >

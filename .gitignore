@@ -8,6 +8,9 @@ build/
 .tsbuildinfo
 platform/.tts-cache/
 
+# Generiertes Kurs-Bundle (wird von scripts/pack-courses.ts neu erzeugt)
+platform/src/generated/courses-bundle.bin
+
 # TUI Laufzeit States (Progress Tracker nicht committen)
 platform/state/*.json
 !platform/state/.gitkeep

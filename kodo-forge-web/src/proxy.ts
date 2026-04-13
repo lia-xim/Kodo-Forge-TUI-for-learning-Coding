@@ -57,6 +57,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all paths except static assets and metadata files
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$|.*\\.jpg$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.webp$|.*\\.ico$).*)',
   ],
 };
