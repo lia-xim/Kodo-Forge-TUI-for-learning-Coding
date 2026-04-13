@@ -1,6 +1,6 @@
 {
   "name": "learning-platform",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Multi-Kurs Lernplattform — 0 externe Dependencies",
   "private": true,
   "type": "module",
