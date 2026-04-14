@@ -1,10 +1,24 @@
 <h1 align="center">
   <br>
-  Kodo Forge 
+  <img src="logo_orange.png" alt="Kodo Forge Logo" width="200">
+  <br>
+  Kodo Forge
   <br>
 </h1>
 
 <h4 align="center">A terminal-native learning platform for developers who hate browser distractions.</h4>
+
+<p align="center">
+  <a href="https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/lia-xim/Kodo-Forge-TUI-for-learning-Coding?style=flat-square&color=orange" alt="License">
+  </a>
+  <a href="https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding/releases">
+    <img src="https://img.shields.io/github/v/release/lia-xim/Kodo-Forge-TUI-for-learning-Coding?style=flat-square&color=blue" alt="Release">
+  </a>
+  <a href="https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding/stargazers">
+    <img src="https://img.shields.io/github/stars/lia-xim/Kodo-Forge-TUI-for-learning-Coding?style=flat-square" alt="Stars">
+  </a>
+</p>
 
 <br>
 
@@ -12,66 +26,66 @@
   <img src="screenshots/kodo_screen_1.png" alt="Kodo Forge Terminal App" width="800">
 </p>
 
-## What is this?
+## ✨ What is Kodo Forge?
 
-Browsers are noisy. Between social media, notifications, and 50 open tabs, it's hard to focus on deep technical learning. **Kodo Forge** is an open-source, terminal-based learning engine. It runs purely in powershell, bash, or zsh, so you can learn complex topics like TypeScript or React without leaving your terminal.
+Browsers are noisy. Between social media, notifications, and 50 open tabs, it's hard to focus on **deep technical learning**. 
 
-There are no databases or cloud backends required to run it. The engine just parses local Markdown files and turns them into an interactive TUI (Terminal User Interface).
+**Kodo Forge** is an open-source, terminal-based **interactive learning engine**. It brings the "learn by doing" philosophy directly into your terminal (PowerShell, Bash, Zsh), allowing you to master complex technologies like **TypeScript**, **Angular**, and **React** without ever leaving your development environment.
 
-## Features
+### Why Kodo Forge?
+- **Zero Distractions:** No browser tabs, no ads, just you and the code.
+- **TUI (Terminal User Interface):** Beautifully rendered interactive lessons and quizzes.
+- **Adaptive Depth:** Content adjusts based on your performance—faster for experts, deeper for beginners.
+- **Offline First:** Local-first engine that works wherever your terminal goes.
 
-- **No browser needed:** Run the executable directly in your command line.
-- **Spaced Repetition:** The app remembers when you last reviewed a concept and automatically schedules reviews.
-- **Side-by-side code annotations:** Add special tags to your markdown and the engine splits the view, placing comments right next to the code.
-- **Adaptive difficulty:** If you nail the quizzes, the text adjusts to be faster. If you struggle, it provides deeper explanations.
-- **Offline first:** Download it once, learn anywhere.
-
-## Try it out (No installation needed)
+## 🚀 Getting Started (No Installation Needed)
 
 Check out our [Releases](https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding/releases) for the standalone executable.
 
 - **Windows:** Download `kodo-forge.exe` and execute it.
-- **macOS (Apple Silicon):** Download `kodo-forge-macos-arm64`, `chmod +x`, run it.
-- **macOS (Intel):** Download `kodo-forge-macos-x64`, `chmod +x`, run it.
-- **Linux (x64):** Download `kodo-forge-linux-x64`, `chmod +x`, run it.
-- **Linux (ARM64):** Download `kodo-forge-linux-arm64`, `chmod +x`, run it.
+- **macOS (Apple Silicon):** `kodo-forge-macos-arm64`
+- **macOS (Intel):** `kodo-forge-macos-x64`
+- **Linux:** Binaries available for x64 and ARM64.
 
-Courses are bundled inside the binary — no extra files needed. On first launch the courses extract to your OS data directory (Windows: `%LOCALAPPDATA%\KodoForge\`, macOS: `~/Library/Application Support/KodoForge/`, Linux: `~/.local/share/kodo-forge/`). See `platform/README.md` for portable-mode details.
+*Courses are bundled inside the binary — they automatically extract to your OS data directory on first launch.*
 
-## Building from source
+## 🛠️ Features
 
-If you want to poke around the Node/Bun codebase:
+- **Spaced Repetition:** Smart scheduling based on learning science (Roediger 2011).
+- **Side-by-Side Annotations:** Special tags split the view, placing comments directly next to code.
+- **47-Metric Scoring:** Advanced evaluation for complex quiz types.
+- **Customizable:** Build your own courses using simple **Markdown**.
+
+## 🏗️ Building from Source
+
+If you want to contribute to the Node.js/TypeScript engine:
 
 ```bash
-# Clone it
+# Clone the repository
 git clone https://github.com/lia-xim/Kodo-Forge-TUI-for-learning-Coding.git
 
-# Go to the platform folder
+# Navigate to the platform
 cd Kodo-Forge-TUI-for-learning-Coding/platform
 
-# Install dependencies
+# Install dependencies and start
 npm install
-
-# Start the dev environment
 npm run start
 ```
 
-## Adding your own courses & PRs 🤝
+## 🤝 Community & Contributing
 
-Kodo Forge is a **community-driven project**. If you want to contribute, fix a bug, or write a tutorial, Pull Requests are highly welcome.
+Kodo Forge is a **community-driven project**. We believe the best way to learn code is to build it together.
 
-You don't need to know React or TypeScript to build a course. Courses are literally just Markdown files structured in folders. You edit a single `platform.json` file, add your `.md` files, and the engine automatically handles the syntax highlighting, UI, and quizzes.
+- **Add a Course:** You only need Markdown knowledge. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+- **Report Bugs:** Open an issue if something isn't working right.
+- **AI-Powered Authoring:** Use [`.agent/workflows/create-kodo-course.md`](.agent/workflows/create-kodo-course.md) to generate perfectly formatted lessons with LLMs.
 
-If you want to write a course fast, we have an instruction file at [`.agent/workflows/create-kodo-course.md`](.agent/workflows/create-kodo-course.md). You can drop that file into Claude or ChatGPT and have them perfectly format your markdown based on our platform's structure.
+## 🎓 Official Courses
 
-## Official Courses
+- **TypeScript Deep Learning:** 44 comprehensive sections from basics to Compiler API.
+- **Angular Mastery** *(In Development)*
+- **React with TypeScript** *(In Development)*
 
-Currently bundled in this repository:
+## 📄 License
 
-- **TypeScript Deep Learning:** 44 lessons covering fundamentals up to the Compiler API. 
-- **Angular Mastery** *(Coming Soon)* 
-- **React with TypeScript** *(Coming Soon)*
-
-## License
-
-MIT License. Hack on it, fork it, make it yours.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
